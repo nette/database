@@ -16,11 +16,11 @@ use Nette;
 
 
 /**
- * Supplemental PostgreSQL database driver.
+ * Supplemental MS SQL database driver.
  *
  * @author     David Grudl
  */
-class PdoPgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
+class MsSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
 {
 	/** @var Nette\Database\Connection */
 	private $connection;
@@ -43,8 +43,8 @@ class PdoPgSqlDriver extends Nette\Object implements Nette\Database\ISupplementa
 	 */
 	public function delimite($name)
 	{
-		// @see http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
-		return '"' . str_replace('"', '""', $name) . '"';
+		// @see http://msdn.microsoft.com/en-us/library/ms176027.aspx
+		return '[' . str_replace(array('[', ']'), array('[[', ']]'), $name) . ']';
 	}
 
 
@@ -64,7 +64,8 @@ class PdoPgSqlDriver extends Nette\Object implements Nette\Database\ISupplementa
 	 */
 	public function formatLike($value, $pos)
 	{
-		throw new \NotImplementedException;
+		$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
+		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
 
@@ -74,11 +75,14 @@ class PdoPgSqlDriver extends Nette\Object implements Nette\Database\ISupplementa
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
 	{
-		if ($limit >= 0)
-			$sql .= ' LIMIT ' . (int) $limit;
+		// offset support is missing
+		if ($limit >= 0) {
+			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
+		}
 
-		if ($offset > 0)
-			$sql .= ' OFFSET ' . (int) $offset;
+		if ($offset) {
+			throw new Nette\NotImplementedException('Offset is not implemented.');
+		}
 	}
 
 

@@ -16,24 +16,20 @@ use Nette;
 
 
 /**
- * Supplemental Oracle database driver.
+ * Supplemental PostgreSQL database driver.
  *
  * @author     David Grudl
  */
-class PdoOciDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
+class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
 {
 	/** @var Nette\Database\Connection */
 	private $connection;
-
-	/** @var string  Datetime format */
-	private $fmtDateTime;
 
 
 
 	public function __construct(Nette\Database\Connection $connection, array $options)
 	{
 		$this->connection = $connection;
-		$this->fmtDateTime = isset($options['formatDateTime']) ? $options['formatDateTime'] : 'U';
 	}
 
 
@@ -47,7 +43,7 @@ class PdoOciDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	 */
 	public function delimite($name)
 	{
-		// @see http://download.oracle.com/docs/cd/B10500_01/server.920/a96540/sql_elements9a.htm
+		// @see http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
 		return '"' . str_replace('"', '""', $name) . '"';
 	}
 
@@ -58,7 +54,7 @@ class PdoOciDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	 */
 	public function formatDateTime(\DateTime $value)
 	{
-		return $value->format($this->fmtDateTime);
+		return $value->format("'Y-m-d H:i:s'");
 	}
 
 
@@ -68,7 +64,7 @@ class PdoOciDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	 */
 	public function formatLike($value, $pos)
 	{
-		throw new \NotImplementedException;
+		throw new Nette\NotImplementedException;
 	}
 
 
@@ -78,15 +74,11 @@ class PdoOciDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
 	{
-		if ($offset > 0) {
-			// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
-			$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t '
-				. ($limit >= 0 ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '')
-				. ') WHERE "__rnum" > '. (int) $offset;
+		if ($limit >= 0)
+			$sql .= ' LIMIT ' . (int) $limit;
 
-		} elseif ($limit >= 0) {
-			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
-		}
+		if ($offset > 0)
+			$sql .= ' OFFSET ' . (int) $offset;
 	}
 
 

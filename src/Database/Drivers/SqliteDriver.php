@@ -16,20 +16,24 @@ use Nette;
 
 
 /**
- * Supplemental MS SQL database driver.
+ * Supplemental SQLite3 database driver.
  *
  * @author     David Grudl
  */
-class PdoMsSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
+class SqliteDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
 {
 	/** @var Nette\Database\Connection */
 	private $connection;
+
+	/** @var string  Datetime format */
+	private $fmtDateTime;
 
 
 
 	public function __construct(Nette\Database\Connection $connection, array $options)
 	{
 		$this->connection = $connection;
+		$this->fmtDateTime = isset($options['formatDateTime']) ? $options['formatDateTime'] : 'U';
 	}
 
 
@@ -43,8 +47,7 @@ class PdoMsSqlDriver extends Nette\Object implements Nette\Database\ISupplementa
 	 */
 	public function delimite($name)
 	{
-		// @see http://msdn.microsoft.com/en-us/library/ms176027.aspx
-		return '[' . str_replace(array('[', ']'), array('[[', ']]'), $name) . ']';
+		return '[' . strtr($name, '[]', '  ') . ']';
 	}
 
 
@@ -54,7 +57,7 @@ class PdoMsSqlDriver extends Nette\Object implements Nette\Database\ISupplementa
 	 */
 	public function formatDateTime(\DateTime $value)
 	{
-		return $value->format("'Y-m-d H:i:s'");
+		return $value->format($this->fmtDateTime);
 	}
 
 
@@ -64,8 +67,8 @@ class PdoMsSqlDriver extends Nette\Object implements Nette\Database\ISupplementa
 	 */
 	public function formatLike($value, $pos)
 	{
-		$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
-		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+		$value = addcslashes(substr($this->connection->quote($value), 1, -1), '%_\\');
+		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'") . " ESCAPE '\\'";
 	}
 
 
@@ -75,14 +78,8 @@ class PdoMsSqlDriver extends Nette\Object implements Nette\Database\ISupplementa
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
 	{
-		// offset support is missing
-		if ($limit >= 0) {
-			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ') t';
-		}
-
-		if ($offset) {
-			throw new \NotImplementedException('Offset is not implemented.');
-		}
+		if ($limit < 0 && $offset < 1) return;
+		$sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
 	}
 
 

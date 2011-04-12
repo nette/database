@@ -16,20 +16,33 @@ use Nette;
 
 
 /**
- * Supplemental ODBC database driver.
+ * Supplemental MySQL database driver.
  *
  * @author     David Grudl
  */
-class PdoOdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
+class MySqlDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
 {
 	/** @var Nette\Database\Connection */
 	private $connection;
 
 
 
+	/**
+	 * Driver options:
+	 *   - charset => character encoding to set (default is utf8)
+	 *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
+	 */
 	public function __construct(Nette\Database\Connection $connection, array $options)
 	{
 		$this->connection = $connection;
+		$charset = isset($options['charset']) ? $options['charset'] : 'utf8';
+		if ($charset) {
+			$connection->exec("SET NAMES '$charset'");
+		}
+		if (isset($options['sqlmode'])) {
+			$connection->exec("SET sql_mode='$options[sqlmode]'");
+		}
+		$connection->exec("SET time_zone='" . date('P') . "'");
 	}
 
 
@@ -43,7 +56,8 @@ class PdoOdbcDriver extends Nette\Object implements Nette\Database\ISupplemental
 	 */
 	public function delimite($name)
 	{
-		return '[' . str_replace(array('[', ']'), array('[[', ']]'), $name) . ']';
+		// @see http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
+		return '`' . str_replace('`', '``', $name) . '`';
 	}
 
 
@@ -53,7 +67,7 @@ class PdoOdbcDriver extends Nette\Object implements Nette\Database\ISupplemental
 	 */
 	public function formatDateTime(\DateTime $value)
 	{
-		return $value->format("#m/d/Y H:i:s#");
+		return $value->format("'Y-m-d H:i:s'");
 	}
 
 
@@ -63,7 +77,7 @@ class PdoOdbcDriver extends Nette\Object implements Nette\Database\ISupplemental
 	 */
 	public function formatLike($value, $pos)
 	{
-		$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
+		$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
@@ -74,14 +88,11 @@ class PdoOdbcDriver extends Nette\Object implements Nette\Database\ISupplemental
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
 	{
-		// offset support is missing
-		if ($limit >= 0) {
-			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
-		}
+		if ($limit < 0 && $offset < 1) return;
 
-		if ($offset) {
-			throw new \InvalidArgumentException('Offset is not implemented in driver odbc.');
-		}
+		// see http://dev.mysql.com/doc/refman/5.0/en/select.html
+		$sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
+			. ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
 	}
 
 

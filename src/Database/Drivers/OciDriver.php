@@ -16,33 +16,24 @@ use Nette;
 
 
 /**
- * Supplemental MySQL database driver.
+ * Supplemental Oracle database driver.
  *
  * @author     David Grudl
  */
-class PdoMySqlDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
+class OciDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
 {
 	/** @var Nette\Database\Connection */
 	private $connection;
 
+	/** @var string  Datetime format */
+	private $fmtDateTime;
 
 
-	/**
-	 * Driver options:
-	 *   - charset => character encoding to set (default is utf8)
-	 *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
-	 */
+
 	public function __construct(Nette\Database\Connection $connection, array $options)
 	{
 		$this->connection = $connection;
-		$charset = isset($options['charset']) ? $options['charset'] : 'utf8';
-		if ($charset) {
-			$connection->exec("SET NAMES '$charset'");
-		}
-		if (isset($options['sqlmode'])) {
-			$connection->exec("SET sql_mode='$options[sqlmode]'");
-		}
-		$connection->exec("SET time_zone='" . date('P') . "'");
+		$this->fmtDateTime = isset($options['formatDateTime']) ? $options['formatDateTime'] : 'U';
 	}
 
 
@@ -56,8 +47,8 @@ class PdoMySqlDriver extends Nette\Object implements Nette\Database\ISupplementa
 	 */
 	public function delimite($name)
 	{
-		// @see http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
-		return '`' . str_replace('`', '``', $name) . '`';
+		// @see http://download.oracle.com/docs/cd/B10500_01/server.920/a96540/sql_elements9a.htm
+		return '"' . str_replace('"', '""', $name) . '"';
 	}
 
 
@@ -67,7 +58,7 @@ class PdoMySqlDriver extends Nette\Object implements Nette\Database\ISupplementa
 	 */
 	public function formatDateTime(\DateTime $value)
 	{
-		return $value->format("'Y-m-d H:i:s'");
+		return $value->format($this->fmtDateTime);
 	}
 
 
@@ -77,8 +68,7 @@ class PdoMySqlDriver extends Nette\Object implements Nette\Database\ISupplementa
 	 */
 	public function formatLike($value, $pos)
 	{
-		$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
-		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
+		throw new Nette\NotImplementedException;
 	}
 
 
@@ -88,11 +78,15 @@ class PdoMySqlDriver extends Nette\Object implements Nette\Database\ISupplementa
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
 	{
-		if ($limit < 0 && $offset < 1) return;
+		if ($offset > 0) {
+			// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
+			$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t '
+				. ($limit >= 0 ? 'WHERE ROWNUM <= ' . ((int) $offset + (int) $limit) : '')
+				. ') WHERE "__rnum" > '. (int) $offset;
 
-		// see http://dev.mysql.com/doc/refman/5.0/en/select.html
-		$sql .= ' LIMIT ' . ($limit < 0 ? '18446744073709551615' : (int) $limit)
-			. ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+		} elseif ($limit >= 0) {
+			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . (int) $limit;
+		}
 	}
 
 

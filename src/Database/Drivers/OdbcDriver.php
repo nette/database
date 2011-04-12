@@ -16,24 +16,20 @@ use Nette;
 
 
 /**
- * Supplemental SQLite3 database driver.
+ * Supplemental ODBC database driver.
  *
  * @author     David Grudl
  */
-class PdoSqliteDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
+class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
 {
 	/** @var Nette\Database\Connection */
 	private $connection;
-
-	/** @var string  Datetime format */
-	private $fmtDateTime;
 
 
 
 	public function __construct(Nette\Database\Connection $connection, array $options)
 	{
 		$this->connection = $connection;
-		$this->fmtDateTime = isset($options['formatDateTime']) ? $options['formatDateTime'] : 'U';
 	}
 
 
@@ -47,7 +43,7 @@ class PdoSqliteDriver extends Nette\Object implements Nette\Database\ISupplement
 	 */
 	public function delimite($name)
 	{
-		return '[' . strtr($name, '[]', '  ') . ']';
+		return '[' . str_replace(array('[', ']'), array('[[', ']]'), $name) . ']';
 	}
 
 
@@ -57,7 +53,7 @@ class PdoSqliteDriver extends Nette\Object implements Nette\Database\ISupplement
 	 */
 	public function formatDateTime(\DateTime $value)
 	{
-		return $value->format($this->fmtDateTime);
+		return $value->format("#m/d/Y H:i:s#");
 	}
 
 
@@ -67,8 +63,8 @@ class PdoSqliteDriver extends Nette\Object implements Nette\Database\ISupplement
 	 */
 	public function formatLike($value, $pos)
 	{
-		$value = addcslashes(substr($this->connection->quote($value), 1, -1), '%_\\');
-		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'") . " ESCAPE '\\'";
+		$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
+		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
 
@@ -78,8 +74,14 @@ class PdoSqliteDriver extends Nette\Object implements Nette\Database\ISupplement
 	 */
 	public function applyLimit(&$sql, $limit, $offset)
 	{
-		if ($limit < 0 && $offset < 1) return;
-		$sql .= ' LIMIT ' . $limit . ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+		// offset support is missing
+		if ($limit >= 0) {
+			$sql = 'SELECT TOP ' . (int) $limit . ' * FROM (' . $sql . ')';
+		}
+
+		if ($offset) {
+			throw new \InvalidArgumentException('Offset is not implemented in driver odbc.');
+		}
 	}
 
 

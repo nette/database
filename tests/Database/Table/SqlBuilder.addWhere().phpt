@@ -23,6 +23,15 @@ test(function() use ($context) { // test paramateres with NULL
 });
 
 
+test(function() use ($context) { // ?name
+	$sqlBuilder = new SqlBuilder('book', $context);
+	$sqlBuilder->addWhere('?name ?', 'id', 3);
+	$sqlBuilder->addWhere('?name = ?', 'number', 4);
+	$sqlBuilder->addWhere('?name ?', 'number', NULL);
+	Assert::same(reformat('SELECT * FROM [book] WHERE (?name = ?) AND (?name = ?) AND (?name IS NULL)'), $sqlBuilder->buildSelectQuery());
+});
+
+
 test(function() use ($context) { // test Selection as a parameter
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id', $context->table('book'));

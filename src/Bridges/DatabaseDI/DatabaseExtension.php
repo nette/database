@@ -35,12 +35,16 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 	public function loadConfiguration()
 	{
 		$container = $this->getContainerBuilder();
-		$this->setupDatabase($container, $this->getConfig());
-	}
-
-
-	private function setupDatabase(ContainerBuilder $container, array $config)
-	{
+		
+		$config = $this->compiler->getConfig();
+		if (isset($config['nette']['database'])) { // back compatibility
+			$config = $config['nette']['database'];
+			$prefix = 'nette.';
+		} else {		
+			$config = isset($config[$this->name]) ? $config[$this->name] : array();
+			$prefix = '';
+		}
+		
 		if (isset($config['dsn'])) {
 			$config = array('default' => $config);
 		}
@@ -62,7 +66,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				}
 			}
 
-			$connection = $container->addDefinition($this->prefix("$name"))
+			$connection = $container->addDefinition($prefix . $this->prefix($name))
 				->setClass('Nette\Database\Connection', array($info['dsn'], $info['user'], $info['password'], $info['options']))
 				->setAutowired($info['autowired'])
 				->addSetup('Nette\Diagnostics\Debugger::getBlueScreen()->addPanel(?)', array(
@@ -80,7 +84,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				$reflection = reset($tmp);
 			}
 
-			$container->addDefinition($this->prefix("$name.context"))
+			$container->addDefinition($prefix . $this->prefix("$name.context"))
 				->setClass('Nette\Database\Context', array($connection, $reflection))
 				->setAutowired($info['autowired']);
 
@@ -88,15 +92,6 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				$connection->addSetup('Nette\Database\Helpers::createDebugPanel', array($connection, !empty($info['explain']), $name));
 			}
 		}
-	}
-
-
-	public function getConfig(array $defaults = NULL)
-	{
-		$config = $this->compiler->getConfig();
-		$config = isset($config[$this->name]) ? $config[$this->name] : (isset($config['nette']['database']) ? $config['nette']['database'] : array());
-		unset($config['services'], $config['factories']);
-		return Nette\DI\Config\Helpers::merge($config, $this->compiler->getContainerBuilder()->expand($defaults));
 	}
 
 

@@ -102,7 +102,7 @@ class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
 		return '<span title="Nette\\Database ' . htmlSpecialChars($this->name) . '">'
 			. '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAQAAAC1+jfqAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAEYSURBVBgZBcHPio5hGAfg6/2+R980k6wmJgsJ5U/ZOAqbSc2GnXOwUg7BESgLUeIQ1GSjLFnMwsKGGg1qxJRmPM97/1zXFAAAAEADdlfZzr26miup2svnelq7d2aYgt3rebl585wN6+K3I1/9fJe7O/uIePP2SypJkiRJ0vMhr55FLCA3zgIAOK9uQ4MS361ZOSX+OrTvkgINSjS/HIvhjxNNFGgQsbSmabohKDNoUGLohsls6BaiQIMSs2FYmnXdUsygQYmumy3Nhi6igwalDEOJEjPKP7CA2aFNK8Bkyy3fdNCg7r9/fW3jgpVJbDmy5+PB2IYp4MXFelQ7izPrhkPHB+P5/PjhD5gCgCenx+VR/dODEwD+A3T7nqbxwf1HAAAAAElFTkSuQmCC" />'
 			. $this->count . ' ' . ($this->count === 1 ? 'query' : 'queries')
-			. ($this->totalTime ? ' / ' . sprintf('%0.1f', $this->totalTime * 1000) . ' ms' : '')
+			. ($this->totalTime ? sprintf(' / %0.1f ms', $this->totalTime * 1000) : '')
 			. '</span>';
 	}
 
@@ -140,15 +140,15 @@ class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
 				foreach ($explain[0] as $col => $foo) {
 					$s .= '<th>' . htmlSpecialChars($col) . '</th>';
 				}
-				$s .= "</tr>";
+				$s .= '</tr>';
 				foreach ($explain as $row) {
-					$s .= "<tr>";
+					$s .= '<tr>';
 					foreach ($row as $col) {
 						$s .= '<td>' . htmlSpecialChars($col) . '</td>';
 					}
-					$s .= "</tr>";
+					$s .= '</tr>';
 				}
-				$s .= "</table>";
+				$s .= '</table>';
 			}
 			if ($source) {
 				$s .= substr_replace(Tracy\Helpers::editorLink($source[0], $source[1]), ' class="nette-DbConnectionPanel-source"', 2, 0);
@@ -161,7 +161,7 @@ class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
 			'<style class="tracy-debug"> #tracy-debug td.nette-DbConnectionPanel-sql { background: white !important }
 			#tracy-debug .nette-DbConnectionPanel-source { color: #BBB !important } </style>
 			<h1 title="' . htmlSpecialChars($connection->getDsn()) . '">Queries: ' . $this->count
-			. ($this->totalTime ? ', time: ' . sprintf('%0.3f', $this->totalTime * 1000) . ' ms' : '') . ', ' . htmlSpecialChars($this->name) . '</h1>
+			. ($this->totalTime ? sprintf(', time: %0.3f ms', $this->totalTime * 1000) : '') . ', ' . htmlSpecialChars($this->name) . '</h1>
 			<div class="tracy-inner nette-DbConnectionPanel">
 			<table>
 				<tr><th>Time&nbsp;ms</th><th>SQL Query</th><th>Rows</th></tr>' . $s . '

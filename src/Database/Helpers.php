@@ -87,7 +87,7 @@ class Helpers
 		$sql = preg_replace("#(?<=[\\s,(])($keywords1)(?=[\\s,)])#i", "\n\$1", $sql);
 
 		// reduce spaces
-		$sql = preg_replace('#[ \t]{2,}#', " ", $sql);
+		$sql = preg_replace('#[ \t]{2,}#', ' ', $sql);
 
 		$sql = wordwrap($sql, 100);
 		$sql = preg_replace('#([ \t]*\r?\n){2,}#', "\n", $sql);
@@ -127,7 +127,7 @@ class Helpers
 				if ($type === 'stream') {
 					$info = stream_get_meta_data($param);
 				}
-				return '<i' . (isset($info['uri']) ? ' title="' . htmlspecialchars($info['uri']) . '"' : NULL) . '>&lt;' . htmlSpecialChars($type) . " resource&gt;</i> ";
+				return '<i' . (isset($info['uri']) ? ' title="' . htmlspecialchars($info['uri']) . '"' : NULL) . '>&lt;' . htmlSpecialChars($type) . ' resource&gt;</i> ';
 
 			} else {
 				return htmlspecialchars($param);

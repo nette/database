@@ -35,16 +35,16 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 	public function loadConfiguration()
 	{
 		$container = $this->getContainerBuilder();
-		
+
 		$config = $this->compiler->getConfig();
 		if (isset($config['nette']['database'])) { // back compatibility
 			$config = $config['nette']['database'];
 			$prefix = 'nette.';
-		} else {		
+		} else {
 			$config = isset($config[$this->name]) ? $config[$this->name] : array();
 			$prefix = '';
 		}
-		
+
 		if (isset($config['dsn'])) {
 			$config = array('default' => $config);
 		}

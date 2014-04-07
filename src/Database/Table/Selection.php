@@ -143,7 +143,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	public function getPrimary($need = TRUE)
 	{
 		if ($this->primary === NULL && $need) {
-			throw new \LogicException("Table \"{$this->name}\" does not have a primary key.");
+			throw new \LogicException("Table '{$this->name}' does not have a primary key.");
 		}
 		return $this->primary;
 	}

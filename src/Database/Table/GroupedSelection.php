@@ -42,7 +42,7 @@ class GroupedSelection extends Selection
 	{
 		$this->refTable = $refTable;
 		$this->column = $column;
-		parent::__construct($refTable->connection, $table, $refTable->reflection, $refTable->cache ? $refTable->cache->getStorage() : NULL);
+		parent::__construct($refTable->context, $table, $refTable->reflection, $refTable->cache ? $refTable->cache->getStorage() : NULL);
 	}
 
 

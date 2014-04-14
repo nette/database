@@ -22,8 +22,8 @@ use Nette,
  */
 class Selection extends Nette\Object implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 {
-	/** @var Nette\Database\Connection */
-	protected $connection;
+	/** @var Nette\Database\Context */
+	protected $context;
 
 	/** @var Nette\Database\IReflection */
 	protected $reflection;
@@ -85,14 +85,14 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @param  Nette\Database\Connection
 	 * @param  string  database table name
 	 */
-	public function __construct(Nette\Database\Connection $connection, $table, Nette\Database\IReflection $reflection, Nette\Caching\IStorage $cacheStorage = NULL)
+	public function __construct(Nette\Database\Context $context, $table, Nette\Database\IReflection $reflection, Nette\Caching\IStorage $cacheStorage = NULL)
 	{
 		$this->name = $table;
-		$this->connection = $connection;
+		$this->context = $context;
 		$this->reflection = $reflection;
-		$this->cache = $cacheStorage ? new Nette\Caching\Cache($cacheStorage, 'Nette.Database.' . md5($connection->getDsn())) : NULL;
+		$this->cache = $cacheStorage ? new Nette\Caching\Cache($cacheStorage, 'Nette.Database.' . md5($context->getConnection()->getDsn())) : NULL;
 		$this->primary = $reflection->getPrimary($table);
-		$this->sqlBuilder = new SqlBuilder($table, $connection, $reflection);
+		$this->sqlBuilder = new SqlBuilder($table, $context->getConnection(), $reflection);
 		$this->refCache = & $this->getRefTable($refPath)->globalRefCache[$refPath];
 	}
 
@@ -114,7 +114,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 */
 	public function getConnection()
 	{
-		return $this->connection;
+		return $this->context->getConnection();
 	}
 
 
@@ -156,7 +156,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	{
 		if ($this->primarySequence === FALSE) {
 			$this->primarySequence = NULL;
-			$driver = $this->connection->getSupplementalDriver();
+			$driver = $this->context->getConnection()->getSupplementalDriver();
 			if ($driver->isSupported(ISupplementalDriver::SUPPORT_SEQUENCE) && $this->primary !== NULL) {
 				foreach ($driver->getColumns($this->name) as $column) {
 					if ($column['name'] === $this->primary) {
@@ -520,7 +520,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 	public function createSelectionInstance($table = NULL)
 	{
-		return new Selection($this->connection, $table ?: $this->name, $this->reflection, $this->cache ? $this->cache->getStorage() : NULL);
+		return new Selection($this->context, $table ?: $this->name, $this->reflection, $this->cache ? $this->cache->getStorage() : NULL);
 	}
 
 
@@ -532,7 +532,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 	protected function query($query)
 	{
-		return $this->connection->queryArgs($query, $this->sqlBuilder->getParameters());
+		return $this->context->queryArgs($query, $this->sqlBuilder->getParameters());
 	}
 
 
@@ -710,7 +710,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 			$data = iterator_to_array($data);
 		}
 
-		$return = $this->connection->query($this->sqlBuilder->buildInsertQuery(), $data);
+		$return = $this->context->query($this->sqlBuilder->buildInsertQuery(), $data);
 		$this->loadRefCache();
 
 		if ($data instanceof Nette\Database\SqlLiteral || $this->primary === NULL) {
@@ -718,7 +718,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 			return $return->getRowCount();
 		}
 
-		$primaryKey = $this->connection->getInsertId($this->getPrimarySequence());
+		$primaryKey = $this->context->getInsertId($this->getPrimarySequence());
 		if ($primaryKey === FALSE) {
 			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
 			return $return->getRowCount();
@@ -777,7 +777,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 			return 0;
 		}
 
-		return $this->connection->queryArgs(
+		return $this->context->queryArgs(
 			$this->sqlBuilder->buildUpdateQuery(),
 			array_merge(array($data), $this->sqlBuilder->getParameters())
 		)->getRowCount();

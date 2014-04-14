@@ -113,7 +113,7 @@ class Context extends Nette\Object
 	/** @return Nette\Database\Table\Selection */
 	public function table($table)
 	{
-		return new Table\Selection($this->connection, $table, $this->reflection, $this->cacheStorage);
+		return new Table\Selection($this, $table, $this->reflection, $this->cacheStorage);
 	}
 
 

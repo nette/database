@@ -78,6 +78,15 @@ class SqlBuilder extends Nette\Object
 	}
 
 
+	/**
+	 * @return string
+	 */
+	public function getTableName()
+	{
+		return $this->tableName;
+	}
+
+
 	public function buildInsertQuery()
 	{
 		return "INSERT INTO {$this->delimitedTable}";

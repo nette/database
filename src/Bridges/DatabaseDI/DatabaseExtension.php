@@ -76,9 +76,13 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			if (!$info['reflection']) {
 				$reflection = NULL;
 			} elseif (is_string($info['reflection'])) {
-				$reflection = new Nette\DI\Statement(preg_match('#^[a-z]+\z#', $info['reflection'])
-					? 'Nette\Database\Reflection\\' . ucfirst($info['reflection']) . 'Reflection'
-					: $info['reflection'], strtolower($info['reflection']) === 'discovered' ? array($connection) : array());
+				$reflection = $container->addDefinition($prefix . $this->prefix("$name.reflection"))
+					->setClass(preg_match('#^[a-z]+\z#', $info['reflection'])
+						? 'Nette\Database\Reflection\\' . ucfirst($info['reflection']) . 'Reflection'
+						: $info['reflection'])
+					->setArguments(strtolower($info['reflection']) === 'discovered' ? array($connection) : array())
+					->setAutowired($info['autowired']);
+
 			} else {
 				$tmp = Nette\DI\Compiler::filterArguments(array($info['reflection']));
 				$reflection = reset($tmp);

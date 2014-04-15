@@ -37,6 +37,14 @@ test(function() use ($context) {
 
 
 test(function() use ($context) {
+	$pairs = $context->query('SELECT id FROM book ORDER BY id')->fetchAssoc('id[]');
+	Assert::equal(array(
+		array('id' => array(1, 2, 3, 4))
+	), $pairs);
+});
+
+
+test(function() use ($context) {
 	$pairs = $context->query('UPDATE author SET born = ? WHERE id = 11', new DateTime('2002-02-20'));
 	$pairs = $context->query('UPDATE author SET born = ? WHERE id = 12', new DateTime('2002-02-02'));
 	$pairs = $context->query('SELECT * FROM author WHERE born IS NOT NULL ORDER BY born')->fetchAssoc('born=name');

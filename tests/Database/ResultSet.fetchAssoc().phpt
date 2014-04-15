@@ -37,9 +37,12 @@ test(function() use ($context) {
 
 
 test(function() use ($context) {
-	$pairs = $context->query('SELECT id FROM book ORDER BY id')->fetchAssoc('id[]');
+	$pairs = $context->query('SELECT id FROM book ORDER BY id')->fetchAssoc('id[]=id');
 	Assert::equal(array(
-		array('id' => array(1, 2, 3, 4))
+		1 => array(1),
+		2 => array(2),
+		3 => array(3),
+		4 => array(4),
 	), $pairs);
 });
 

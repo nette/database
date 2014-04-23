@@ -73,6 +73,10 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 					'Nette\Bridges\DatabaseTracy\ConnectionPanel::renderException'
 				));
 
+			$structure = $container->addDefinition($prefix . $this->prefix("$name.structure"))
+				->setClass('Nette\Database\Structure')
+				->setArguments(array($connection));
+
 			if (!$info['reflection']) {
 				$reflection = NULL;
 			} elseif (is_string($info['reflection'])) {

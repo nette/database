@@ -131,7 +131,7 @@ class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
 			if ($explain) {
 				static $counter;
 				$counter++;
-				$s .= "<br /><a class='tracy-toggle-collapsed' href='#nette-DbConnectionPanel-row-$counter'>explain</a>";
+				$s .= "<br /><a class='tracy-toggle tracy-collapsed' href='#nette-DbConnectionPanel-row-$counter'>explain</a>";
 			}
 
 			$s .= '</td><td class="nette-DbConnectionPanel-sql">' . Helpers::dumpSql($sql, $params);

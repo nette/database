@@ -8,7 +8,9 @@
 namespace Nette\Database\Table;
 
 use Nette,
-	Nette\Database\ISupplementalDriver;
+	Nette\Database\Context,
+	Nette\Database\ISupplementalDriver,
+	Nette\Database\IConventions;
 
 
 /**
@@ -25,8 +27,8 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	/** @var Nette\Database\Context */
 	protected $context;
 
-	/** @var Nette\Database\IReflection */
-	protected $reflection;
+	/** @var IConventions */
+	protected $conventions;
 
 	/** @var Nette\Caching\Cache */
 	protected $cache;
@@ -82,17 +84,20 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 	/**
 	 * Creates filtered table representation.
-	 * @param  Nette\Database\Connection
-	 * @param  string  database table name
+	 * @param  Context
+	 * @param  IConventions
+	 * @param  string  table name
+	 * @param  Nette\Caching\IStorage|NULL
 	 */
-	public function __construct(Nette\Database\Context $context, $table, Nette\Database\IReflection $reflection, Nette\Caching\IStorage $cacheStorage = NULL)
+	public function __construct(Context $context, IConventions $conventions, $tableName, Nette\Caching\IStorage $cacheStorage = NULL)
 	{
-		$this->name = $table;
 		$this->context = $context;
-		$this->reflection = $reflection;
+		$this->conventions = $conventions;
+		$this->name = $tableName;
+
 		$this->cache = $cacheStorage ? new Nette\Caching\Cache($cacheStorage, 'Nette.Database.' . md5($context->getConnection()->getDsn())) : NULL;
-		$this->primary = $reflection->getPrimary($table);
-		$this->sqlBuilder = new SqlBuilder($table, $context->getConnection(), $reflection);
+		$this->primary = $conventions->getPrimary($tableName);
+		$this->sqlBuilder = new SqlBuilder($tableName, $context->getConnection(), $conventions);
 		$this->refCache = & $this->getRefTable($refPath)->globalRefCache[$refPath];
 	}
 
@@ -109,21 +114,19 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	}
 
 
-	/**
-	 * @return Nette\Database\Connection
-	 */
+	/** @deprecated */
 	public function getConnection()
 	{
+		trigger_error(__METHOD__ . '() is deprecated; use DI container to autowire Nette\Database\Connection instead.', E_USER_DEPRECATED);
 		return $this->context->getConnection();
 	}
 
 
-	/**
-	 * @return Nette\Database\IReflection
-	 */
+	/** @deprecated */
 	public function getDatabaseReflection()
 	{
-		return $this->reflection;
+		trigger_error(__METHOD__ . '() is deprecated; use DI container to autowire Nette\Database\IConventions instead.', E_USER_DEPRECATED);
+		return $this->conventions;
 	}
 
 
@@ -520,13 +523,13 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 	public function createSelectionInstance($table = NULL)
 	{
-		return new Selection($this->context, $table ?: $this->name, $this->reflection, $this->cache ? $this->cache->getStorage() : NULL);
+		return new Selection($this->context, $this->conventions, $table ?: $this->name, $this->cache ? $this->cache->getStorage() : NULL);
 	}
 
 
 	protected function createGroupedSelectionInstance($table, $column)
 	{
-		return new GroupedSelection($this, $table, $column);
+		return new GroupedSelection($this->context, $this->conventions, $table, $column, $this, $this->cache ? $this->cache->getStorage() : NULL);
 	}
 
 

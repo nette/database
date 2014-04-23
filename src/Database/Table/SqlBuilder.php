@@ -426,13 +426,27 @@ class SqlBuilder extends Nette\Object
 			if ($keyMatch['del'] === ':') {
 				if (isset($keyMatch['throughColumn'])) {
 					$table = $keyMatch['key'];
-					list(, $primary) = $this->conventions->getBelongsToReference($table, $keyMatch['throughColumn']);
+					$belongsTo = $this->conventions->getBelongsToReference($table, $keyMatch['throughColumn']);
+					if (!$belongsTo) {
+						throw new Nette\InvalidArgumentException("No reference found for \${$parent}->{$keyMatch['key']}.");
+					}
+					list(, $primary) = $belongsTo;
+
 				} else {
-					list($table, $primary) = $this->conventions->getHasManyReference($parent, $keyMatch['key']);
+					$hasMany = $this->conventions->getHasManyReference($parent, $keyMatch['key']);
+					if (!$hasMany) {
+						throw new Nette\InvalidArgumentException("No reference found for \${$parent}->related({$keyMatch['key']}).");
+					}
+					list($table, $primary) = $hasMany;
 				}
 				$column = $this->conventions->getPrimary($parent);
+
 			} else {
-				list($table, $column) = $this->conventions->getBelongsToReference($parent, $keyMatch['key']);
+				$belongsTo = $this->conventions->getBelongsToReference($parent, $keyMatch['key']);
+				if (!$belongsTo) {
+					throw new Nette\InvalidArgumentException("No reference found for \${$parent}->{$keyMatch['key']}.");
+				}
+				list($table, $column) = $belongsTo;
 				$primary = $this->conventions->getPrimary($table);
 			}
 

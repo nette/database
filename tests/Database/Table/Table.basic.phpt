@@ -75,10 +75,11 @@ test(function() use ($context) {
 });
 
 
-test(function() use ($connection) {
+test(function() use ($connection, $structure) {
 	$context = new Nette\Database\Context(
 		$connection,
-		new Nette\Database\Reflection\DiscoveredReflection($connection)
+		$structure,
+		new Nette\Database\Conventions\DiscoveredConventions($structure)
 	);
 
 	$book = $context->table('book')->get(1);
@@ -88,9 +89,9 @@ test(function() use ($connection) {
 
 	Assert::exception(function() use ($book) {
 		$book->ref('test');
-	}, 'Nette\Database\Reflection\MissingReferenceException', 'No reference found for $book->test.');
+	}, 'Nette\MemberAccessException', 'No reference found for $book->ref(test).');
 
 	Assert::exception(function() use ($book) {
 		$book->related('test');
-	}, 'Nette\Database\Reflection\MissingReferenceException', 'No reference found for $book->related(test).');
+	}, 'Nette\MemberAccessException', 'No reference found for $book->related(test).');
 });

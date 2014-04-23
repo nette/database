@@ -61,10 +61,11 @@ test(function() use ($context) {
 });
 
 
-test(function() use ($connection) {
+test(function() use ($connection, $structure) {
 	$context = new Nette\Database\Context(
 		$connection,
-		new Nette\Database\Reflection\DiscoveredReflection($connection)
+		$structure,
+		new Nette\Database\Conventions\DiscoveredConventions($structure)
 	);
 
 	$books = $context->table('book')->select('book.*, author.name, translator.name');

@@ -8,7 +8,7 @@
  */
 
 use Tester\Assert;
-use Nette\Database\Reflection\DiscoveredReflection;
+use Nette\Database\Conventions\DiscoveredConventions;
 use Nette\Database\Table\SqlBuilder;
 
 require __DIR__ . '/../connect.inc.php'; // create $connection
@@ -28,8 +28,8 @@ class SqlBuilderMock extends SqlBuilder
 	}
 }
 
-$reflection = new DiscoveredReflection($connection);
-$sqlBuilder = new SqlBuilderMock('nUsers', $connection, $reflection);
+$conventions = new DiscoveredConventions($structure);
+$sqlBuilder = new SqlBuilderMock('nUsers', $connection, $conventions);
 
 
 $joins = array();
@@ -57,8 +57,9 @@ if (!in_array($tables[0]['name'], array('npriorities', 'ntopics', 'nusers', 'nus
 
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+$structure->rebuild();
 
-$sqlBuilder = new SqlBuilderMock('author', $connection, $reflection);
+$sqlBuilder = new SqlBuilderMock('author', $connection, $conventions);
 
 $joins = array();
 $query = 'WHERE :book(translator).next_volume IS NULL';

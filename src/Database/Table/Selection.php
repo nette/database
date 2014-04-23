@@ -802,13 +802,23 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 	/**
 	 * Returns referenced row.
+	 * @param  ActiveRow
 	 * @param  string
-	 * @param  string
-	 * @param  mixed   primary key to check for $table and $column references
-	 * @return Selection or array() if the row does not exist
+	 * @param  string|NULL
+	 * @return ActiveRow|NULL|FALSE NULL if the row does not exist, FALSE if the relationship does not exist
 	 */
-	public function getReferencedTable($table, $column, $checkPrimaryKey)
+	public function getReferencedTable(ActiveRow $row, $table, $column = NULL)
 	{
+		if (!$column) {
+			$belongsTo = $this->conventions->getBelongsToReference($this->name, $table);
+			if (!$belongsTo) {
+				return FALSE;
+			}
+			list($table, $column) = $belongsTo;
+		}
+
+		$checkPrimaryKey = $row[$column];
+
 		$referenced = & $this->refCache['referenced'][$this->getSpecificCacheKey()]["$table.$column"];
 		$selection = & $referenced['selection'];
 		$cacheKeys = & $referenced['cacheKeys'];
@@ -832,7 +842,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 			}
 		}
 
-		return $selection;
+		return isset($selection[$checkPrimaryKey]) ? $selection[$checkPrimaryKey] : NULL;
 	}
 
 
@@ -845,6 +855,16 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 */
 	public function getReferencingTable($table, $column, $active = NULL)
 	{
+		if (strpos($table, '.') !== FALSE) {
+			list($table, $column) = explode('.', $table);
+		} elseif (!$column) {
+			$hasMany = $this->conventions->getHasManyReference($this->name, $table);
+			if (!$hasMany) {
+				return FALSE;
+			}
+			list($table, $column) = $hasMany;
+		}
+
 		$prototype = & $this->refCache['referencingPrototype']["$table.$column"];
 		if (!$prototype) {
 			$prototype = $this->createGroupedSelectionInstance($table, $column);

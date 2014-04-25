@@ -262,6 +262,7 @@ class ResultSet extends Nette\Object implements \Iterator, IRowContainer
 
 	/**
 	 * Fetches single field.
+	 * @param  int
 	 * @return mixed|FALSE
 	 */
 	public function fetchField($column = 0)

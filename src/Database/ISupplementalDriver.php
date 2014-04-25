@@ -80,7 +80,7 @@ interface ISupplementalDriver
 	/**
 	 * Returns metadata for all columns in a table.
 	 * @param  string
-	 * @return array of [name, nativetype [, table, fullname, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (array) vendor]]
+	 * @return array of [name, nativetype, primary [, table, fullname, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (array) vendor]]
 	 */
 	function getColumns($table);
 
@@ -99,13 +99,15 @@ interface ISupplementalDriver
 	function getForeignKeys($table);
 
 	/**
-	 * Returns associative array of detected types (IReflection::FIELD_*) in result set.
+	 * Returns associative array of detected types (IStructure::FIELD_*) in result set.
+	 * @param  \PDOStatement
 	 * @return array
 	 */
 	function getColumnTypes(\PDOStatement $statement);
 
 	/**
 	 * Cheks if driver supports specific property
+	 * @param  string self::SUPPORT_* property
 	 * @return bool
 	 */
 	function isSupported($item);

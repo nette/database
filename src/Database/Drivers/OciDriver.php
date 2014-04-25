@@ -155,6 +155,7 @@ class OciDriver extends Nette\Object implements Nette\Database\ISupplementalDriv
 
 
 	/**
+	 * @param  string
 	 * @return bool
 	 */
 	public function isSupported($item)

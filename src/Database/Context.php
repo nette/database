@@ -21,6 +21,9 @@ class Context extends Nette\Object
 	/** @var Connection */
 	private $connection;
 
+	/** @var IStructure */
+	private $structure;
+
 	/** @var IConventions */
 	private $conventions;
 
@@ -31,9 +34,10 @@ class Context extends Nette\Object
 	private $preprocessor;
 
 
-	public function __construct(Connection $connection, IConventions $conventions = NULL, Nette\Caching\IStorage $cacheStorage = NULL)
+	public function __construct(Connection $connection, IStructure $structure, IConventions $conventions = NULL, Nette\Caching\IStorage $cacheStorage = NULL)
 	{
 		$this->connection = $connection;
+		$this->structure = $structure;
 		$this->conventions = $conventions ?: new StaticConventions;
 		$this->cacheStorage = $cacheStorage;
 	}
@@ -122,6 +126,13 @@ class Context extends Nette\Object
 	public function getConnection()
 	{
 		return $this->connection;
+	}
+
+
+	/** @return IStructure */
+	public function getStructure()
+	{
+		return $this->structure;
 	}
 
 

@@ -161,7 +161,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 			$this->primarySequence = NULL;
 			$driver = $this->context->getConnection()->getSupplementalDriver();
 			if ($driver->isSupported(ISupplementalDriver::SUPPORT_SEQUENCE) && $this->primary !== NULL) {
-				foreach ($driver->getColumns($this->name) as $column) {
+				foreach ($this->context->getStructure()->getColumns($this->name) as $column) {
 					if ($column['name'] === $this->primary) {
 						$this->primarySequence = $column['vendor']['sequence'];
 						break;

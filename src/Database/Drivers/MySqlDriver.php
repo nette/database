@@ -213,8 +213,8 @@ class MySqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 			$meta = $statement->getColumnMeta($col);
 			if (isset($meta['native_type'])) {
 				$types[$meta['name']] = $type = Nette\Database\Helpers::detectType($meta['native_type']);
-				if ($type === Nette\Database\IReflection::FIELD_TIME) {
-					$types[$meta['name']] = Nette\Database\IReflection::FIELD_TIME_INTERVAL;
+				if ($type === Nette\Database\IStructure::FIELD_TIME) {
+					$types[$meta['name']] = Nette\Database\IStructure::FIELD_TIME_INTERVAL;
 				}
 			}
 		}

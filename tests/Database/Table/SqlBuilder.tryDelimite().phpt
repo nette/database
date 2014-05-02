@@ -13,7 +13,7 @@ use Tester\Assert;
 require __DIR__ . '/../connect.inc.php'; // create $connection
 
 
-$sqlBuilder = new Nette\Database\Table\SqlBuilder('book', $connection, new Nette\Database\Reflection\ConventionalReflection);
+$sqlBuilder = new Nette\Database\Table\SqlBuilder('book', $connection, new Nette\Database\Conventions\StaticConventions());
 $tryDelimite = $sqlBuilder->reflection->getMethod('tryDelimite');
 $tryDelimite->setAccessible(TRUE);
 

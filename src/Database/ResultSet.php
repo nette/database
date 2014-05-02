@@ -148,30 +148,30 @@ class ResultSet extends Nette\Object implements \Iterator, IRowContainer
 
 		foreach ($this->types as $key => $type) {
 			$value = $row[$key];
-			if ($value === NULL || $value === FALSE || $type === IReflection::FIELD_TEXT) {
+			if ($value === NULL || $value === FALSE || $type === IStructure::FIELD_TEXT) {
 
-			} elseif ($type === IReflection::FIELD_INTEGER) {
+			} elseif ($type === IStructure::FIELD_INTEGER) {
 				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
 
-			} elseif ($type === IReflection::FIELD_FLOAT) {
+			} elseif ($type === IStructure::FIELD_FLOAT) {
 				if (($pos = strpos($value, '.')) !== FALSE) {
 					$value = rtrim(rtrim($pos === 0 ? "0$value" : $value, '0'), '.');
 				}
 				$float = (float) $value;
 				$row[$key] = (string) $float === $value ? $float : $value;
 
-			} elseif ($type === IReflection::FIELD_BOOL) {
+			} elseif ($type === IStructure::FIELD_BOOL) {
 				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
 
-			} elseif ($type === IReflection::FIELD_DATETIME || $type === IReflection::FIELD_DATE || $type === IReflection::FIELD_TIME) {
+			} elseif ($type === IStructure::FIELD_DATETIME || $type === IStructure::FIELD_DATE || $type === IStructure::FIELD_TIME) {
 				$row[$key] = new Nette\Utils\DateTime($value);
 
-			} elseif ($type === IReflection::FIELD_TIME_INTERVAL) {
+			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)\z#', $value, $m);
 				$row[$key] = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
 				$row[$key]->invert = (int) (bool) $m[1];
 
-			} elseif ($type === IReflection::FIELD_UNIX_TIMESTAMP) {
+			} elseif ($type === IStructure::FIELD_UNIX_TIMESTAMP) {
 				$row[$key] = Nette\Utils\DateTime::from($value);
 			}
 		}
@@ -262,6 +262,7 @@ class ResultSet extends Nette\Object implements \Iterator, IRowContainer
 
 	/**
 	 * Fetches single field.
+	 * @param  int
 	 * @return mixed|FALSE
 	 */
 	public function fetchField($column = 0)

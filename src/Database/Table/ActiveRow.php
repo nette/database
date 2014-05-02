@@ -7,8 +7,7 @@
 
 namespace Nette\Database\Table;
 
-use Nette,
-	Nette\Database\Reflection\MissingReferenceException;
+use Nette;
 
 
 /**
@@ -138,11 +137,12 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 */
 	public function ref($key, $throughColumn = NULL)
 	{
-		if (!$throughColumn) {
-			list($key, $throughColumn) = $this->table->getDatabaseReflection()->getBelongsToReference($this->table->getName(), $key);
+		$row = $this->table->getReferencedTable($this, $key, $throughColumn);
+		if ($row === FALSE) {
+			throw new Nette\MemberAccessException("No reference found for \${$this->table->name}->ref($key).");
 		}
 
-		return $this->getReference($key, $throughColumn);
+		return $row;
 	}
 
 
@@ -154,13 +154,12 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 */
 	public function related($key, $throughColumn = NULL)
 	{
-		if (strpos($key, '.') !== FALSE) {
-			list($key, $throughColumn) = explode('.', $key);
-		} elseif (!$throughColumn) {
-			list($key, $throughColumn) = $this->table->getDatabaseReflection()->getHasManyReference($this->table->getName(), $key);
+		$groupedSelection = $this->table->getReferencingTable($key, $throughColumn, $this[$this->table->getPrimary()]);
+		if (!$groupedSelection) {
+			throw new Nette\MemberAccessException("No reference found for \${$this->table->name}->related($key).");
 		}
 
-		return $this->table->getReferencingTable($key, $throughColumn, $this[$this->table->getPrimary()]);
+		return $groupedSelection;
 	}
 
 
@@ -277,14 +276,11 @@ class ActiveRow implements \IteratorAggregate, IRow
 			return $this->data[$key];
 		}
 
-		try {
-			list($table, $column) = $this->table->getDatabaseReflection()->getBelongsToReference($this->table->getName(), $key);
-			$referenced = $this->getReference($table, $column);
-			if ($referenced !== FALSE) {
-				$this->accessColumn($key, FALSE);
-				return $referenced;
-			}
-		} catch(MissingReferenceException $e) {}
+		$referenced = $this->table->getReferencedTable($this, $key);
+		if ($referenced !== FALSE) {
+			$this->accessColumn($key, FALSE);
+			return $referenced;
+		}
 
 		$this->removeAccessColumn($key);
 		throw new Nette\MemberAccessException("Cannot read an undeclared column '$key'.");
@@ -321,19 +317,6 @@ class ActiveRow implements \IteratorAggregate, IRow
 	protected function removeAccessColumn($key)
 	{
 		$this->table->removeAccessColumn($key);
-	}
-
-
-	protected function getReference($table, $column)
-	{
-		$this->accessColumn($column);
-		if (array_key_exists($column, $this->data)) {
-			$value = $this->data[$column];
-			$referenced = $this->table->getReferencedTable($table, $column, $value);
-			return isset($referenced[$value]) ? $referenced[$value] : NULL; // referenced row may not exist
-		}
-
-		return FALSE;
 	}
 
 }

@@ -259,6 +259,7 @@ class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalD
 
 
 	/**
+	 * @param  string
 	 * @return bool
 	 */
 	public function isSupported($item)

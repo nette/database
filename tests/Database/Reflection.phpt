@@ -177,7 +177,6 @@ switch ($driverName) {
 }
 
 
-$reflection = new Nette\Database\Reflection\DiscoveredReflection($connection);
-
-$primary = $reflection->getPrimary('book_tag');
+$structure->rebuild();
+$primary = $structure->getPrimaryKey('book_tag');
 Assert::same(array('book_id', 'tag_id'), $primary);

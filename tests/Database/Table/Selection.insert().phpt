@@ -75,7 +75,8 @@ Assert::equal(4, $context->table('book')->where('title LIKE', "Biography%")->cou
 // Insert into table without primary key
 $context = new Nette\Database\Context(
 	$connection,
-	new Nette\Database\Reflection\DiscoveredReflection($connection)
+	$structure,
+	new Nette\Database\Conventions\DiscoveredConventions($structure)
 );
 
 $inserted = $context->table('note')->insert(array(

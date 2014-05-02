@@ -7,7 +7,8 @@
 
 namespace Nette\Database;
 
-use Nette;
+use Nette,
+	Nette\Database\Conventions\StaticConventions;
 
 
 /**
@@ -20,8 +21,11 @@ class Context extends Nette\Object
 	/** @var Connection */
 	private $connection;
 
-	/** @var IReflection */
-	private $reflection;
+	/** @var IStructure */
+	private $structure;
+
+	/** @var IConventions */
+	private $conventions;
 
 	/** @var Nette\Caching\IStorage */
 	private $cacheStorage;
@@ -30,10 +34,11 @@ class Context extends Nette\Object
 	private $preprocessor;
 
 
-	public function __construct(Connection $connection, IReflection $reflection = NULL, Nette\Caching\IStorage $cacheStorage = NULL)
+	public function __construct(Connection $connection, IStructure $structure, IConventions $conventions = NULL, Nette\Caching\IStorage $cacheStorage = NULL)
 	{
 		$this->connection = $connection;
-		$this->reflection = $reflection ?: new Reflection\ConventionalReflection;
+		$this->structure = $structure;
+		$this->conventions = $conventions ?: new StaticConventions;
 		$this->cacheStorage = $cacheStorage;
 	}
 
@@ -110,10 +115,13 @@ class Context extends Nette\Object
 	}
 
 
-	/** @return Nette\Database\Table\Selection */
+	/**
+	 * @param  string
+	 * @return Nette\Database\Table\Selection
+	 */
 	public function table($table)
 	{
-		return new Table\Selection($this, $table, $this->reflection, $this->cacheStorage);
+		return new Table\Selection($this, $this->conventions, $table, $this->cacheStorage);
 	}
 
 
@@ -124,10 +132,25 @@ class Context extends Nette\Object
 	}
 
 
-	/** @return IReflection */
+	/** @return IStructure */
+	public function getStructure()
+	{
+		return $this->structure;
+	}
+
+
+	/** @return IConventions */
+	public function getConventions()
+	{
+		return $this->conventions;
+	}
+
+
+	/** @deprecated */
 	public function getDatabaseReflection()
 	{
-		return $this->reflection;
+		trigger_error(__METHOD__ . '() is deprecated; use getConventions() instead.', E_USER_DEPRECATED);
+		return $this->conventions;
 	}
 
 

@@ -7,7 +7,9 @@
 
 namespace Nette\Database\Table;
 
-use Nette;
+use Nette,
+	Nette\Database\Context,
+	Nette\Database\IConventions;
 
 
 /**
@@ -38,11 +40,11 @@ class GroupedSelection extends Selection
 	 * @param  string  database table name
 	 * @param  string  joining column
 	 */
-	public function __construct(Selection $refTable, $table, $column)
+	public function __construct(Context $context, IConventions $conventions, $tableName, $column, Selection $refTable, Nette\Caching\IStorage $cacheStorage = NULL)
 	{
 		$this->refTable = $refTable;
 		$this->column = $column;
-		parent::__construct($refTable->context, $table, $refTable->reflection, $refTable->cache ? $refTable->cache->getStorage() : NULL);
+		parent::__construct($context, $conventions, $tableName, $cacheStorage);
 	}
 
 

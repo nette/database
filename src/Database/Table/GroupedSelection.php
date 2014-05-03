@@ -36,9 +36,12 @@ class GroupedSelection extends Selection
 
 	/**
 	 * Creates filtered and grouped table representation.
-	 * @param  Selection  $refTable
+	 * @param  Context
+	 * @param  IConventions
 	 * @param  string  database table name
 	 * @param  string  joining column
+	 * @param  Selection
+	 * @param  Nette\Caching\IStorage|NULL
 	 */
 	public function __construct(Context $context, IConventions $conventions, $tableName, $column, Selection $refTable, Nette\Caching\IStorage $cacheStorage = NULL)
 	{

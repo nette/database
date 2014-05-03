@@ -9,7 +9,6 @@ namespace Nette\Database\Table;
 
 use Nette,
 	Nette\Database\Connection,
-	Nette\Database\IReflection,
 	Nette\Database\ISupplementalDriver,
 	Nette\Database\SqlLiteral,
 	Nette\Database\IConventions;
@@ -30,7 +29,7 @@ class SqlBuilder extends Nette\Object
 	/** @var string */
 	protected $tableName;
 
-	/** @var IReflection */
+	/** @var IConventions */
 	protected $conventions;
 
 	/** @var string delimited table name */

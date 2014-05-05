@@ -116,4 +116,4 @@ SELECT `id`, `name` FROM `tag` WHERE (`tag`.`id` IN (21, 22, 23))
 
 -----
 
-[![Build Status](https://secure.travis-ci.org/nette/database.png?branch=master)](http://travis-ci.org/nette/database)
+[![Build Status](https://secure.travis-ci.org/nette/database.png?branch=v2.2)](http://travis-ci.org/nette/database)

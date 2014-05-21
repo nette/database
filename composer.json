@@ -20,7 +20,8 @@
 		"nette/utils": "~2.2"
 	},
 	"require-dev": {
-		"nette/tester": "~1.0"
+		"nette/tester": "~1.0",
+		"mockery/mockery": "~0.9.1"
 	},
 	"autoload": {
 		"classmap": ["src/"]

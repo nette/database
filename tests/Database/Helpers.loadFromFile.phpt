@@ -2,8 +2,6 @@
 
 /**
  * Test: Nette\Database\Helpers::loadFromFile().
- *
- * @author     David Grudl
  * @dataProvider? databases.ini  mysql
  */
 

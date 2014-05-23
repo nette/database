@@ -2,8 +2,6 @@
 
 /**
  * Test: Nette\Database\ResultSet: Fetch assoc.
- *
- * @author     David Grudl
  * @dataProvider? databases.ini
  */
 

@@ -97,3 +97,6 @@ test(function() {
 	$conventions = new DiscoveredConventions($structure);
 	Assert::null($conventions->getBelongsToReference('books', 'author'));
 });
+
+
+Mockery::close();

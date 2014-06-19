@@ -130,3 +130,6 @@ test(function() {
 	$conventions = new DiscoveredConventions($structure);
 	Assert::null($conventions->getHasManyReference('author', 'book'));
 });
+
+
+Mockery::close();

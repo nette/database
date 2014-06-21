@@ -2,8 +2,6 @@
 
 /**
  * Test: Nette\Database\Conventions\StaticConventions.
- *
- * @author     Jan Skrasek
  */
 
 use Nette\Database\Conventions\StaticConventions;

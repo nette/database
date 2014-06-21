@@ -2,8 +2,6 @@
 
 /**
  * Test: Nette\Database\Conventions\DiscoveredConventions::getHasManyReference().
- *
- * @author     Jan Skrasek
  */
 
 use Nette\Database\Conventions\DiscoveredConventions;

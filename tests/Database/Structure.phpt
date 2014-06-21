@@ -55,6 +55,7 @@ class StructureTestCase extends TestCase
 			array('name' => 'Books', 'view' => FALSE),
 			array('name' => 'tags', 'view' => FALSE),
 			array('name' => 'books_x_tags', 'view' => FALSE),
+			array('name' => 'books_view', 'view' => TRUE),
 		));
 		$this->driver->shouldReceive('getColumns')->with('authors')->once()->andReturn(array(
 			array('name' => 'id', 'primary' => TRUE, 'vendor' => array('sequence' => '"public"."authors_id_seq"')),
@@ -95,6 +96,7 @@ class StructureTestCase extends TestCase
 			array('name' => 'Books', 'view' => FALSE),
 			array('name' => 'tags', 'view' => FALSE),
 			array('name' => 'books_x_tags', 'view' => FALSE),
+			array('name' => 'books_view', 'view' => TRUE),
 		), $this->structure->getTables());
 	}
 

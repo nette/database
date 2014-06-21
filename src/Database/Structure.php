@@ -175,6 +175,10 @@ class Structure extends Nette\Object implements IStructure
 		$structure['tables'] = $driver->getTables();
 
 		foreach ($structure['tables'] as $tablePair) {
+			if ($tablePair['view']) {
+				continue;
+			}
+
 			$table = $tablePair['name'];
 			$structure['columns'][strtolower($table)] = $columns = $driver->getColumns($table);
 			$structure['primary'][strtolower($table)] = $this->analyzePrimaryKey($columns);

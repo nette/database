@@ -48,6 +48,13 @@ interface IStructure
 	function getPrimaryKey($table);
 
 	/**
+	 * Returns table primary key sequence.
+	 * @param  string
+	 * @return string|NULL
+	 */
+	function getPrimaryKeySequence($table);
+
+	/**
 	 * Returns hasMany reference.
 	 * If a targetTable is not provided, returns references for all tables.
 	 * @param  string

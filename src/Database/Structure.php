@@ -70,6 +70,30 @@ class Structure extends Nette\Object implements IStructure
 	}
 
 
+	public function getPrimaryKeySequence($table)
+	{
+		$this->needStructure();
+		$table = strtolower($table);
+
+		if (!$this->connection->getSupplementalDriver()->isSupported(ISupplementalDriver::SUPPORT_SEQUENCE)) {
+			return NULL;
+		}
+
+		$primary = $this->getPrimaryKey($table);
+		if (!$primary || is_array($primary)) {
+			return NULL;
+		}
+
+		foreach ($this->structure['columns'][$table] as $columnMeta) {
+			if ($columnMeta['name'] === $primary) {
+				return isset($columnMeta['vendor']['sequence']) ? $columnMeta['vendor']['sequence'] : NULL;
+			}
+		}
+
+		return NULL;
+	}
+
+
 	public function getHasManyReference($table, $targetTable = NULL)
 	{
 		$this->needStructure();

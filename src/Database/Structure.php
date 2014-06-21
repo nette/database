@@ -101,10 +101,13 @@ class Structure extends Nette\Object implements IStructure
 
 		if ($targetTable) {
 			$targetTable = strtolower($targetTable);
-			if (!isset($this->structure['hasMany'][$table][$targetTable])) {
-				return NULL;
+			foreach ($this->structure['hasMany'][$table] as $key => $value) {
+				if (strtolower($key) === $targetTable) {
+					return $this->structure['hasMany'][$table][$key];
+				}
 			}
-			return $this->structure['hasMany'][$table][$targetTable];
+
+			return NULL;
 
 		} else {
 			if (!isset($this->structure['hasMany'][$table])) {

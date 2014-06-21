@@ -143,10 +143,10 @@ class StructureTestCase extends TestCase
 			'Books' => array('author_id', 'translator_id'),
 		), $this->structure->getHasManyReference('authors'));
 
-		/*Assert::same(
+		Assert::same(
 			array('author_id', 'translator_id'),
 			$this->structure->getHasManyReference('authors', 'books')
-		);*/
+		);
 	}
 
 

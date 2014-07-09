@@ -70,7 +70,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			$connection = $container->addDefinition($prefix . $this->prefix($name))
 				->setClass('Nette\Database\Connection', array($info['dsn'], $info['user'], $info['password'], $info['options']))
 				->setAutowired($info['autowired'])
-				->addSetup('Tracy\Debugger::getBlueScreen()->addPanel(?)', array(
+				->addSetup('@nette.blueScreen::addPanel', array(
 					'Nette\Bridges\DatabaseTracy\ConnectionPanel::renderException'
 				));
 

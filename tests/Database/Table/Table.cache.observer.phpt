@@ -13,43 +13,12 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-class CacheMock implements Nette\Caching\IStorage
-{
-	public $writes = 0;
-	private $defaultBook = array('id' => TRUE, 'author_id' => TRUE);
+$cacheStorage = Mockery::mock('Nette\Caching\Istorage');
+$cacheStorage->shouldReceive('read')->withAnyArgs()->once()->andReturn(array('id' => TRUE));
+$cacheStorage->shouldReceive('read')->withAnyArgs()->times(4)->andReturn(array('id' => TRUE, 'author_id' => TRUE));
+$cacheStorage->shouldReceive('write')->with(Mockery::any(), array('id' => TRUE, 'author_id' => TRUE, 'title' => TRUE), array());
 
-	function read($key)
-	{
-		$key = substr($key, strpos($key, "\x00") + 1);
-		switch ($key) {
-			case "aad5184d8c52b773bd73b5c7c5c819c9": // authors
-				return array('id' => TRUE);
-			case "d7dc896279409ab73e6742c667cf8dc1": // book
-				return $this->defaultBook;
-		}
-	}
-
-	function write($key, $data, array $dependencies)
-	{
-		$key = substr($key, strpos($key, "\x00") + 1);
-		$this->writes++;
-		switch ($key) {
-			case "aad5184d8c52b773bd73b5c7c5c819c9":
-				return;
-			case "d7dc896279409ab73e6742c667cf8dc1":
-				$this->defaultBook = $data;
-				return;
-		}
-	}
-
-	function lock($key) {}
-	function remove($key) {}
-	function clean(array $conditions) {}
-}
-
-$cacheStorage = new CacheMock;
 $context = new Nette\Database\Context($connection, $structure, $conventions, $cacheStorage);
-
 
 $queries = 0;
 $connection->onQuery[] = function($dao, ResultSet $result) use (& $queries) {
@@ -70,5 +39,5 @@ unset($book, $author);
 foreach ($stack as $selection) $selection->__destruct();
 $authors->__destruct();
 
-Assert::same(1, $cacheStorage->writes);
 Assert::same(3, $queries);
+Mockery::close();

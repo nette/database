@@ -28,7 +28,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		'debugger' => TRUE,
 		'explain' => TRUE,
 		'reflection' => NULL, // BC
-		'conventions' => 'Nette\Database\Conventions\DiscoveredConventions',
+		'conventions' => 'discovered', // Nette\Database\Conventions\DiscoveredConventions
 		'autowired' => NULL,
 	);
 

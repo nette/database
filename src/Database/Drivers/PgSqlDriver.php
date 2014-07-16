@@ -210,11 +210,13 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 				pg_catalog.pg_constraint AS co
 				JOIN pg_catalog.pg_class AS cl ON co.conrelid = cl.oid
 				JOIN pg_catalog.pg_class AS cf ON co.confrelid = cf.oid
+				JOIN pg_catalog.pg_namespace AS nf ON nf.oid = cf.relnamespace
 				JOIN pg_catalog.pg_attribute AS al ON al.attrelid = cl.oid AND al.attnum = co.conkey[1]
 				JOIN pg_catalog.pg_attribute AS af ON af.attrelid = cf.oid AND af.attnum = co.confkey[1]
 			WHERE
 				co.contype = 'f'
 				AND cl.oid = {$this->connection->quote($this->delimite($table))}::regclass
+				AND nf.nspname = ANY (pg_catalog.current_schemas(FALSE))
 		")->fetchAll();
 	}
 

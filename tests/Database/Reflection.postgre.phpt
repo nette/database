@@ -47,3 +47,10 @@ Assert::same(array('master', 'slave'), filter($driver->getTables()));
 Assert::same(array('two_id'), filter($driver->getColumns('master')));
 Assert::same(array('two_master_pkey'), filter($driver->getIndexes('master')));
 Assert::same(array('two_slave_fk'), filter($driver->getForeignKeys('slave')));
+
+// Limit foreign keys for current schemas only
+$connection->query('ALTER TABLE "one"."slave" ADD CONSTRAINT "one_two_fk" FOREIGN KEY ("one_id") REFERENCES "two"."master"("two_id")');
+$connection->query('SET search_path TO one');
+Assert::same(array('one_slave_fk'), filter($driver->getForeignKeys('slave')));
+$connection->query('SET search_path TO one, two');
+Assert::same(array('one_slave_fk', 'one_two_fk'), filter($driver->getForeignKeys('slave')));

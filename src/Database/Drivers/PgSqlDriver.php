@@ -146,7 +146,7 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 				LEFT JOIN pg_catalog.pg_constraint AS co ON co.connamespace = c.relnamespace AND contype = 'p' AND co.conrelid = c.oid AND a.attnum = ANY(co.conkey)
 			WHERE
 				c.relkind IN ('r', 'v')
-				AND c.oid = {$this->connection->quote($this->delimite($table))}::regclass
+				AND c.oid = {$this->connection->quote($this->delimiteFQN($table))}::regclass
 				AND a.attnum > 0
 				AND NOT a.attisdropped
 			ORDER BY
@@ -182,7 +182,7 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 				LEFT JOIN pg_catalog.pg_attribute AS a ON c1.oid = a.attrelid AND a.attnum = ANY(i.indkey)
 			WHERE
 				c1.relkind = 'r'
-				AND c1.oid = {$this->connection->quote($this->delimite($table))}::regclass
+				AND c1.oid = {$this->connection->quote($this->delimiteFQN($table))}::regclass
 		") as $row) {
 			$indexes[$row['name']]['name'] = $row['name'];
 			$indexes[$row['name']]['unique'] = $row['unique'];
@@ -215,7 +215,7 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 				JOIN pg_catalog.pg_attribute AS af ON af.attrelid = cf.oid AND af.attnum = co.confkey[1]
 			WHERE
 				co.contype = 'f'
-				AND cl.oid = {$this->connection->quote($this->delimite($table))}::regclass
+				AND cl.oid = {$this->connection->quote($this->delimiteFQN($table))}::regclass
 				AND nf.nspname = ANY (pg_catalog.current_schemas(FALSE))
 		")->fetchAll();
 	}
@@ -237,6 +237,20 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	public function isSupported($item)
 	{
 		return $item === self::SUPPORT_SEQUENCE || $item === self::SUPPORT_SUBSELECT;
+	}
+
+
+	/**
+	 * Converts: schema.name => "schema"."name"
+	 * @param  string
+	 * @return string	 	 
+	 */
+	private function delimiteFQN($name)
+	{
+		$_this = $this;
+		return implode('.', array_map(function($part) use ($_this) {
+			return $_this->delimite($part);
+		}, explode('.', $name)));
 	}
 
 }

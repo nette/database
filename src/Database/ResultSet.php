@@ -167,7 +167,7 @@ class ResultSet extends Nette\Object implements \Iterator, IRowContainer
 				if((string) (int) $value === $value && ($value <= PHP_INT_MAX) && ($value >= ~PHP_INT_MAX)){
         				//value is timestamp
         				$row[$key] = new Nette\Utils\DateTime;
-        				$row[$key] -> setTimestamp($value)	
+        				$row[$key] -> setTimestamp($value);	
         			} else{
 					$row[$key] = new Nette\Utils\DateTime($value);
         			}

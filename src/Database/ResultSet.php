@@ -164,7 +164,13 @@ class ResultSet extends Nette\Object implements \Iterator, IRowContainer
 				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
 
 			} elseif ($type === IStructure::FIELD_DATETIME || $type === IStructure::FIELD_DATE || $type === IStructure::FIELD_TIME) {
-				$row[$key] = new Nette\Utils\DateTime($value);
+				if(((string) (int) $value === $value && ($value <= PHP_INT_MAX) && ($value >= ~PHP_INT_MAX)){
+        				//value is timestamp
+        				$row[$key] = new Nette\Utils\DateTime;
+        				$row[$key] -> setTimestamp($value)	
+        			} else{
+					$row[$key] = new Nette\Utils\DateTime($value);
+        			}
 
 			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)\z#', $value, $m);

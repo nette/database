@@ -117,10 +117,11 @@ test(function() use ($connection, $reflection) { // tests multiline condition
 test(function() use ($context, $connection, $reflection) { // tests NOT
 	$sqlBuilder = new SqlBuilder('book', $connection, $reflection);
 	$sqlBuilder->addWhere('id NOT', array(1, 2));
+	$sqlBuilder->addWhere('id NOT', NULL);
 	$sqlBuilder->addWhere('id NOT', $context->table('book')->select('id'));
 	Assert::equal(reformat(array(
-		'mysql' => 'SELECT * FROM `book` WHERE (`id` NOT IN (?)) AND (`id` NOT IN (?))',
-		'SELECT * FROM [book] WHERE ([id] NOT IN (?)) AND ([id] NOT IN (SELECT [id] FROM [book]))',
+		'mysql' => 'SELECT * FROM `book` WHERE (`id` NOT IN (?)) AND (`id` IS NOT NULL) AND (`id` NOT IN (?))',
+		'SELECT * FROM [book] WHERE ([id] NOT IN (?)) AND ([id] IS NOT NULL) AND ([id] NOT IN (SELECT [id] FROM [book]))',
 	)), $sqlBuilder->buildSelectQuery());
 });
 

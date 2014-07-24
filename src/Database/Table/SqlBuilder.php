@@ -222,10 +222,14 @@ class SqlBuilder extends Nette\Object
 			$hasOperator = ($match[1][0] === '?' && $match[1][1] === 0) ? TRUE : !empty($match[2][0]);
 
 			if ($arg === NULL) {
-				if ($hasOperator) {
-					throw new Nette\InvalidArgumentException('Column operator does not accept NULL argument.');
-				}
 				$replace = 'IS NULL';
+				if ($hasOperator) {
+					if (trim($match[2][0]) === 'NOT') {
+						$replace = 'IS NOT NULL';
+					} else {
+						throw new Nette\InvalidArgumentException('Column operator does not accept NULL argument.');
+					}
+				}
 			} elseif (is_array($arg) || $arg instanceof Selection) {
 				if ($hasOperator) {
 					if (trim($match[2][0]) === 'NOT') {

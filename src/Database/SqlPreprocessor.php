@@ -192,12 +192,13 @@ class SqlPreprocessor extends Nette\Object
 
 			} elseif ($this->arrayMode === 'and') { // (key [operator] value) AND ...
 				foreach ($value as $k => $v) {
+					list($k, $operator) = explode(' ', $k . ' ');
 					$k = $this->delimite($k);
 					if (is_array($v)) {
-						$vx[] = $v ? ($k . ' IN (' . $this->formatValue(array_values($v)) . ')') : '1=0';
+						$vx[] = $v ? ($k . ' ' . ($operator ?: 'IN') . ' (' . $this->formatValue(array_values($v)) . ')') : '1=0';
 					} else {
 						$v = $this->formatValue($v);
-						$vx[] = $k . ($v === 'NULL' ? ' IS ' : ' = ') . $v;
+						$vx[] = $k . ' ' . ($operator ?: ($v === 'NULL' ? 'IS' : '=')) . ' ' . $v;
 					}
 				}
 				return $value ? '(' . implode(') AND (', $vx) . ')' : '1=1';

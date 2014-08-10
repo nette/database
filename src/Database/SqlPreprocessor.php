@@ -154,7 +154,7 @@ class SqlPreprocessor extends Nette\Object
 			} elseif ($this->arrayMode === 'values') { // (key, key, ...) VALUES (value, value, ...)
 				$this->arrayMode = 'multi';
 				foreach ($value as $k => $v) {
-					$kx[] = $this->driver->delimite($k);
+					$kx[] = $this->delimite($k);
 					$vx[] = $this->formatValue($v);
 				}
 				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
@@ -162,7 +162,7 @@ class SqlPreprocessor extends Nette\Object
 			} elseif ($this->arrayMode === 'select') { // (key, key, ...) SELECT value, value, ...
 				$this->arrayMode = 'union';
 				foreach ($value as $k => $v) {
-					$kx[] = $this->driver->delimite($k);
+					$kx[] = $this->delimite($k);
 					$vx[] = $this->formatValue($v);
 				}
 				return '(' . implode(', ', $kx) . ') SELECT ' . implode(', ', $vx);
@@ -170,10 +170,10 @@ class SqlPreprocessor extends Nette\Object
 			} elseif ($this->arrayMode === 'assoc') { // key=value, key=value, ...
 				foreach ($value as $k => $v) {
 					if (substr($k, -1) === '=') {
-						$k2 = $this->driver->delimite(substr($k, 0, -2));
+						$k2 = $this->delimite(substr($k, 0, -2));
 						$vx[] = $k2 . '=' . $k2 . ' ' . substr($k, -2, 1) . ' ' . $this->formatValue($v);
 					} else {
-						$vx[] = $this->driver->delimite($k) . '=' . $this->formatValue($v);
+						$vx[] = $this->delimite($k) . '=' . $this->formatValue($v);
 					}
 				}
 				return implode(', ', $vx);
@@ -192,19 +192,20 @@ class SqlPreprocessor extends Nette\Object
 
 			} elseif ($this->arrayMode === 'and') { // (key [operator] value) AND ...
 				foreach ($value as $k => $v) {
-					$k = $this->driver->delimite($k);
+					list($k, $operator) = explode(' ', $k . ' ');
+					$k = $this->delimite($k);
 					if (is_array($v)) {
-						$vx[] = $v ? ($k . ' IN (' . $this->formatValue(array_values($v)) . ')') : '1=0';
+						$vx[] = $v ? ($k . ' ' . ($operator ?: 'IN') . ' (' . $this->formatValue(array_values($v)) . ')') : '1=0';
 					} else {
 						$v = $this->formatValue($v);
-						$vx[] = $k . ($v === 'NULL' ? ' IS ' : ' = ') . $v;
+						$vx[] = $k . ' ' . ($operator ?: ($v === 'NULL' ? 'IS' : '=')) . ' ' . $v;
 					}
 				}
 				return $value ? '(' . implode(') AND (', $vx) . ')' : '1=1';
 
 			} elseif ($this->arrayMode === 'order') { // key, key DESC, ...
 				foreach ($value as $k => $v) {
-					$vx[] = $this->driver->delimite($k) . ($v > 0 ? '' : ' DESC');
+					$vx[] = $this->delimite($k) . ($v > 0 ? '' : ' DESC');
 				}
 				return implode(', ', $vx);
 			}
@@ -220,6 +221,12 @@ class SqlPreprocessor extends Nette\Object
 			$this->remaining[] = $value;
 			return '?';
 		}
+	}
+
+
+	private function delimite($name)
+	{
+		return implode('.', array_map(array($this->driver, 'delimite'), explode('.', $name)));
 	}
 
 }

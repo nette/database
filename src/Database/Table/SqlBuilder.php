@@ -8,10 +8,10 @@
 namespace Nette\Database\Table;
 
 use Nette,
-	Nette\Database\Connection,
 	Nette\Database\ISupplementalDriver,
 	Nette\Database\SqlLiteral,
-	Nette\Database\IConventions;
+	Nette\Database\IConventions,
+	Nette\Database\Context;
 
 
 /**
@@ -23,8 +23,6 @@ use Nette,
  */
 class SqlBuilder extends Nette\Object
 {
-	/** @var ISupplementalDriver */
-	private $driver;
 
 	/** @var string */
 	protected $tableName;
@@ -68,12 +66,15 @@ class SqlBuilder extends Nette\Object
 	/** @var string grouping condition */
 	protected $having = '';
 
+	/** @var ISupplementalDriver */
+	private $driver;
 
-	public function __construct($tableName, Connection $connection, IConventions $conventions)
+
+	public function __construct($tableName, Context $context)
 	{
 		$this->tableName = $tableName;
-		$this->driver = $connection->getSupplementalDriver();
-		$this->conventions = $conventions;
+		$this->driver = $context->getConnection()->getSupplementalDriver();
+		$this->conventions = $context->getConventions();
 
 		$this->delimitedTable = $this->tryDelimite($tableName);
 	}

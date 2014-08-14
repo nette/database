@@ -100,7 +100,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 		$this->cache = $cacheStorage ? new Nette\Caching\Cache($cacheStorage, 'Nette.Database.' . md5($context->getConnection()->getDsn())) : NULL;
 		$this->primary = $conventions->getPrimary($tableName);
-		$this->sqlBuilder = new SqlBuilder($tableName, $context->getConnection(), $conventions);
+		$this->sqlBuilder = new SqlBuilder($tableName, $context);
 		$this->refCache = & $this->getRefTable($refPath)->globalRefCache[$refPath];
 	}
 

@@ -27,7 +27,7 @@ class SqlBuilderMock extends SqlBuilder
 }
 
 $conventions = new DiscoveredConventions($structure);
-$sqlBuilder = new SqlBuilderMock('nUsers', $connection, $conventions);
+$sqlBuilder = new SqlBuilderMock('nUsers', $context);
 
 
 $joins = array();
@@ -57,7 +57,7 @@ if (!in_array($tables[0]['name'], array('npriorities', 'ntopics', 'nusers', 'nus
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 $structure->rebuild();
 
-$sqlBuilder = new SqlBuilderMock('author', $connection, $conventions);
+$sqlBuilder = new SqlBuilderMock('author', $context);
 
 $joins = array();
 $query = 'WHERE :book(translator).next_volume IS NULL';

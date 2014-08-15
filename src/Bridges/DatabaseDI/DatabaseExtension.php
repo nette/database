@@ -29,6 +29,8 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		'explain' => TRUE,
 		'reflection' => 'discovered', // Nette\Database\Reflection\DiscoveredReflection
 		'autowired' => NULL,
+		'implements-context' => 'Nette\Database\Context',
+		'implements-connection' => 'Nette\Database\Connection',
 	);
 
 
@@ -67,7 +69,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			}
 
 			$connection = $container->addDefinition($prefix . $this->prefix($name))
-				->setClass('Nette\Database\Connection', array($info['dsn'], $info['user'], $info['password'], $info['options']))
+				->setClass($info['implements-connection'], array($info['dsn'], $info['user'], $info['password'], $info['options']))
 				->setAutowired($info['autowired'])
 				->addSetup('Tracy\Debugger::getBlueScreen()->addPanel(?)', array(
 					'Nette\Bridges\DatabaseTracy\ConnectionPanel::renderException'
@@ -85,7 +87,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			}
 
 			$container->addDefinition($prefix . $this->prefix("$name.context"))
-				->setClass('Nette\Database\Context', array($connection, $reflection))
+				->setClass($info['implements-context'], array($connection, $reflection))
 				->setAutowired($info['autowired']);
 
 			if ($container->parameters['debugMode'] && $info['debugger']) {

@@ -11,7 +11,8 @@ use Nette,
 	Nette\Database\ISupplementalDriver,
 	Nette\Database\SqlLiteral,
 	Nette\Database\IConventions,
-	Nette\Database\Context;
+	Nette\Database\Context,
+	Nette\Database\IStructure;
 
 
 /**
@@ -69,12 +70,19 @@ class SqlBuilder extends Nette\Object
 	/** @var ISupplementalDriver */
 	private $driver;
 
+	/** @var IStructure */
+	private $structure;
+
+	/** @var array */
+	private $cacheTableList;
+
 
 	public function __construct($tableName, Context $context)
 	{
 		$this->tableName = $tableName;
 		$this->driver = $context->getConnection()->getSupplementalDriver();
 		$this->conventions = $context->getConventions();
+		$this->structure = $context->getStructure();
 
 		$this->delimitedTable = $this->tryDelimite($tableName);
 	}
@@ -410,13 +418,8 @@ class SqlBuilder extends Nette\Object
 	public function parseJoinsCb(& $joins, $match)
 	{
 		$chain = $match['chain'];
-		if (!empty($chain[0]) && ($chain[0] !== '.' || $chain[0] !== ':')) {
+		if (!empty($chain[0]) && ($chain[0] !== '.' && $chain[0] !== ':')) {
 			$chain = '.' . $chain;  // unified chain format
-		}
-
-		$parent = $parentAlias = $this->tableName;
-		if ($chain == ".{$parent}") { // case-sensitive
-			return "{$parent}.{$match['column']}";
 		}
 
 		preg_match_all('~
@@ -425,6 +428,26 @@ class SqlBuilder extends Nette\Object
 			)
 			(?P<del> [.:])?(?P<key> (?&word))(\((?P<throughColumn> (?&word))\))?
 		~xi', $chain, $keyMatches, PREG_SET_ORDER);
+
+		$parent = $this->tableName;
+		$parentAlias = preg_replace('#^(.*\.)?(.*)$#', '$2', $this->tableName);
+
+		// join schema keyMatch and table keyMatch to schema.table keyMatch
+		if ($this->driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA) && count($keyMatches) > 1) {
+			$tables = $this->getCachedTableList();
+			if (!isset($tables[$keyMatches[0]['key']]) && isset($tables[$keyMatches[0]['key'] . '.' . $keyMatches[1]['key']])) {
+				$keyMatch = array_shift($keyMatches);
+				$parentAlias = $keyMatches[0]['key'];
+				$keyMatches[0]['key'] = $keyMatch['key'] . '.' . $keyMatches[0]['key'];
+			}
+		}
+
+		// do not make a join when referencing to the current table column
+		if ($parent === $keyMatches[0]['key']) {
+			return "{$parent}.{$match['column']}";
+		} elseif ($parentAlias === $keyMatches[0]['key']) {
+			return "{$parentAlias}.{$match['column']}";
+		}
 
 		foreach ($keyMatches as $keyMatch) {
 			if ($keyMatch['del'] === ':') {
@@ -454,12 +477,14 @@ class SqlBuilder extends Nette\Object
 				$primary = $this->conventions->getPrimary($table);
 			}
 
-			$joins[$table . $column] = array($table, $keyMatch['key'] ?: $table, $parentAlias, $column, $primary);
+			$tableAlias = $keyMatch['key'] ?: preg_replace('#^(.*\.)?(.*)$#', '$2', $table);
+
+			$joins[$table . $column] = array($table, $tableAlias, $parentAlias, $column, $primary);
 			$parent = $table;
-			$parentAlias = $keyMatch['key'];
+			$parentAlias = $tableAlias;
 		}
 
-		return ($keyMatch['key'] ?: $table) . ".{$match['column']}";
+		return $tableAlias . ".{$match['column']}";
 	}
 
 
@@ -518,6 +543,18 @@ class SqlBuilder extends Nette\Object
 		} else {
 			return $this->addWhere('(' . implode(', ', $columns) . ') IN', $parameters);
 		}
+	}
+
+
+	private function getCachedTableList()
+	{
+		if (!$this->cacheTableList) {
+			$this->cacheTableList = array_flip(array_map(function ($pair) {
+				return isset($pair['fullName']) ? $pair['fullName'] : $pair['name'];
+			}, $this->structure->getTables()));
+		}
+
+		return $this->cacheTableList;
 	}
 
 }

@@ -53,7 +53,13 @@ Assert::same(array('two_slave_fk'), filter($driver->getForeignKeys('slave')));
 // Reflection for FQN
 Assert::same(array('one_id'), filter($driver->getColumns('one.master')));
 Assert::same(array('one_master_pkey'), filter($driver->getIndexes('one.master')));
-Assert::same(array('one_slave_fk'), filter($driver->getForeignKeys('one.slave')));
+$foreign = $driver->getForeignKeys('one.slave');
+Assert::same(array(
+	'name' => 'one_slave_fk',
+	'local' => 'one_id',
+	'table' => 'one.master',
+	'foreign' => 'one_id',
+), (array) $foreign[0]);
 
 
 // Limit foreign keys for current schemas only

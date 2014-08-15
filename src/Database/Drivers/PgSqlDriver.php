@@ -103,7 +103,8 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 		foreach ($this->connection->query("
 			SELECT DISTINCT ON (c.relname)
 				c.relname::varchar AS name,
-				c.relkind = 'v' AS view
+				c.relkind = 'v' AS view,
+				n.nspname::varchar || '.' || c.relname::varchar AS \"fullName\"
 			FROM
 				pg_catalog.pg_class AS c
 				JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace
@@ -204,7 +205,7 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 			SELECT
 				co.conname::varchar AS name,
 				al.attname::varchar AS local,
-				cf.relname::varchar AS table,
+				nf.nspname || '.' || cf.relname::varchar AS table,
 				af.attname::varchar AS foreign
 			FROM
 				pg_catalog.pg_constraint AS co
@@ -236,7 +237,7 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	 */
 	public function isSupported($item)
 	{
-		return $item === self::SUPPORT_SEQUENCE || $item === self::SUPPORT_SUBSELECT;
+		return $item === self::SUPPORT_SEQUENCE || $item === self::SUPPORT_SUBSELECT || $item === self::SUPPORT_SCHEMA;
 	}
 
 

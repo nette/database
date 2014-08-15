@@ -47,7 +47,7 @@ class Structure extends Nette\Object implements IStructure
 	public function getColumns($table)
 	{
 		$this->needStructure();
-		$table = strtolower($table);
+		$table = $this->resolveFQTableName($table);
 
 		if (!isset($this->structure['columns'][$table])) {
 			throw new Nette\InvalidArgumentException("Table '$table' does not exist.");
@@ -60,7 +60,7 @@ class Structure extends Nette\Object implements IStructure
 	public function getPrimaryKey($table)
 	{
 		$this->needStructure();
-		$table = strtolower($table);
+		$table = $this->resolveFQTableName($table);
 
 		if (!isset($this->structure['primary'][$table])) {
 			return NULL;
@@ -73,7 +73,7 @@ class Structure extends Nette\Object implements IStructure
 	public function getPrimaryKeySequence($table)
 	{
 		$this->needStructure();
-		$table = strtolower($table);
+		$table = $this->resolveFQTableName($table);
 
 		if (!$this->connection->getSupplementalDriver()->isSupported(ISupplementalDriver::SUPPORT_SEQUENCE)) {
 			return NULL;
@@ -97,10 +97,10 @@ class Structure extends Nette\Object implements IStructure
 	public function getHasManyReference($table, $targetTable = NULL)
 	{
 		$this->needStructure();
-		$table = strtolower($table);
+		$table = $this->resolveFQTableName($table);
 
 		if ($targetTable) {
-			$targetTable = strtolower($targetTable);
+			$targetTable = $this->resolveFQTableName($targetTable);
 			foreach ($this->structure['hasMany'][$table] as $key => $value) {
 				if (strtolower($key) === $targetTable) {
 					return $this->structure['hasMany'][$table][$key];
@@ -121,7 +121,7 @@ class Structure extends Nette\Object implements IStructure
 	public function getBelongsToReference($table, $column = NULL)
 	{
 		$this->needStructure();
-		$table = strtolower($table);
+		$table = $this->resolveFQTableName($table);
 
 		if ($column) {
 			$column = strtolower($column);
@@ -179,7 +179,13 @@ class Structure extends Nette\Object implements IStructure
 				continue;
 			}
 
-			$table = $tablePair['name'];
+			if (isset($tablePair['fullName'])) {
+				$table = $tablePair['fullName'];
+				$structure['aliases'][strtolower($tablePair['name'])] = strtolower($table);
+			} else {
+				$table = $tablePair['name'];
+			}
+
 			$structure['columns'][strtolower($table)] = $columns = $driver->getColumns($table);
 			$structure['primary'][strtolower($table)] = $this->analyzePrimaryKey($columns);
 			$this->analyzeForeignKeys($structure, $table);
@@ -228,6 +234,21 @@ class Structure extends Nette\Object implements IStructure
 				return strlen($a) - strlen($b);
 			});
 		}
+	}
+
+
+	protected function resolveFQTableName($table)
+	{
+		$name = strtolower($table);
+		if (isset($this->structure['columns'][$name])) {
+			return $name;
+		}
+
+		if (isset($this->structure['aliases'][$name])) {
+			return $this->structure['aliases'][$name];
+		}
+
+		return $name;
 	}
 
 }

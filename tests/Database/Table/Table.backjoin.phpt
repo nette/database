@@ -5,11 +5,13 @@
  * @dataProvider? ../databases.ini
  */
 
+use Nette\Database\ISupplementalDriver;
 use Tester\Assert;
 
 require __DIR__ . '/../connect.inc.php'; // create $connection
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+$driver = $connection->getSupplementalDriver();
 
 
 test(function() use ($context) {
@@ -32,9 +34,20 @@ test(function() use ($context) {
 });
 
 
-test(function() use ($context) {
+test(function() use ($context, $driver) {
 	$authorsSelection = $context->table('author')->where(':book.translator_id IS NOT NULL')->wherePrimary(12);
-	Assert::same(reformat('SELECT [author].* FROM [author] LEFT JOIN [book] ON [author].[id] = [book].[author_id] WHERE ([book].[translator_id] IS NOT NULL) AND ([author].[id] = ?)'), $authorsSelection->getSql());
+
+	if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
+		Assert::same(
+			reformat('SELECT [author].* FROM [author] LEFT JOIN [public].[book] AS [book] ON [author].[id] = [book].[author_id] WHERE ([book].[translator_id] IS NOT NULL) AND ([author].[id] = ?)'),
+			$authorsSelection->getSql()
+		);
+	} else {
+		Assert::same(
+			reformat('SELECT [author].* FROM [author] LEFT JOIN [book] ON [author].[id] = [book].[author_id] WHERE ([book].[translator_id] IS NOT NULL) AND ([author].[id] = ?)'),
+			$authorsSelection->getSql()
+		);
+	}
 
 	$authors = array();
 	foreach ($authorsSelection as $author) {

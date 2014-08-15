@@ -21,7 +21,8 @@ interface ISupplementalDriver
 		SUPPORT_SELECT_UNGROUPED_COLUMNS = 'ungrouped_cols',
 		SUPPORT_MULTI_INSERT_AS_SELECT = 'insert_as_select',
 		SUPPORT_MULTI_COLUMN_AS_OR_COND = 'multi_column_as_or',
-		SUPPORT_SUBSELECT = 'subselect';
+		SUPPORT_SUBSELECT = 'subselect',
+		SUPPORT_SCHEMA = 'schema';
 
 	/**
 	 * Delimites identifier for use in a SQL statement.

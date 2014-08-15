@@ -39,32 +39,33 @@ class DiscoveredConventions implements IConventions
 		$candidates = $columnCandidates = array();
 		$targets = $this->structure->getHasManyReference($table);
 
-		foreach ($targets as $targetTable => $targetColumns) {
+		foreach ($targets as $targetNsTable => $targetColumns) {
+			$targetTable = preg_replace('#^(.*)?\.(.*)$#', '$2', $targetNsTable);
 			if (stripos($targetTable, $key) === FALSE) {
 				continue;
 			}
 
 			foreach ($targetColumns as $targetColumn) {
 				if (stripos($targetColumn, $table) !== FALSE) {
-					$columnCandidates[] = $candidate = array($targetTable, $targetColumn);
+					$columnCandidates[] = $candidate = array($targetNsTable, $targetColumn);
 					if (strtolower($targetTable) === strtolower($key)) {
 						return $candidate;
 					}
 				}
 
-				$candidates[] = array($targetTable, $targetColumn);
+				$candidates[] = array($targetTable, array($targetNsTable, $targetColumn));
 			}
 		}
 
 		if (count($columnCandidates) === 1) {
-			return reset($columnCandidates);
+			return $columnCandidates[0];
 		} elseif (count($candidates) === 1) {
-			return reset($candidates);
+			return $candidates[0][1];
 		}
 
 		foreach ($candidates as $candidate) {
 			if (strtolower($candidate[0]) === strtolower($key)) {
-				return $candidate;
+				return $candidate[1];
 			}
 		}
 

@@ -24,6 +24,19 @@ test(function() {
 	Assert::same(array('authors', 'translator_id'), $conventions->getBelongsToReference('books', 'translator'));
 });
 
+// basic test
+test(function() {
+	$structure = Mockery::mock('Nette\Database\IStructure');
+	$structure->shouldReceive('getBelongsToReference')->with('public.books')->andReturn(array(
+		'author_id' => 'public.authors',
+		'translator_id' => 'public.authors',
+		'another_id' => 'public.another_table',
+	))->twice();
+
+	$conventions = new DiscoveredConventions($structure);
+	Assert::same(array('public.authors', 'author_id'), $conventions->getBelongsToReference('public.books', 'author'));
+	Assert::same(array('public.authors', 'translator_id'), $conventions->getBelongsToReference('public.books', 'translator'));
+});
 
 // tests order of table columns with foreign keys
 test(function() {

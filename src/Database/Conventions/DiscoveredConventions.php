@@ -34,21 +34,22 @@ class DiscoveredConventions implements IConventions
 	}
 
 
-	public function getHasManyReference($table, $key)
+	public function getHasManyReference($nsTable, $key)
 	{
 		$candidates = $columnCandidates = array();
-		$targets = $this->structure->getHasManyReference($table);
+		$targets = $this->structure->getHasManyReference($nsTable);
+		$table = preg_replace('#^(.*\.)?(.*)$#', '$2', $nsTable);
 
 		foreach ($targets as $targetNsTable => $targetColumns) {
-			$targetTable = preg_replace('#^(.*)?\.(.*)$#', '$2', $targetNsTable);
-			if (stripos($targetTable, $key) === FALSE) {
+			$targetTable = preg_replace('#^(.*\.)?(.*)$#', '$2', $targetNsTable);
+			if (stripos($targetNsTable, $key) === FALSE) {
 				continue;
 			}
 
 			foreach ($targetColumns as $targetColumn) {
 				if (stripos($targetColumn, $table) !== FALSE) {
 					$columnCandidates[] = $candidate = array($targetNsTable, $targetColumn);
-					if (strtolower($targetTable) === strtolower($key)) {
+					if (strcmp($targetTable, $key) === 0 || strcmp($targetNsTable, $key) === 0) {
 						return $candidate;
 					}
 				}
@@ -78,7 +79,7 @@ class DiscoveredConventions implements IConventions
 		}
 
 		$this->structure->rebuild();
-		return $this->getHasManyReference($table, $key);
+		return $this->getHasManyReference($nsTable, $key);
 	}
 
 

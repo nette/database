@@ -40,6 +40,50 @@ test(function() {
 });
 
 
+// basic test singular with schema
+test(function() {
+	$structure = Mockery::mock('Nette\Database\IStructure');
+	$structure->shouldReceive('getHasManyReference')->with('public.author')->andReturn(array(
+		'public.book' => array('author_id', 'translator_id'),
+		'public.book_topics' => array('author_id'),
+		'public.another' => array('author_id'),
+	))->times(6);
+	$structure->shouldReceive('getHasManyReference')->with('public.author')->andReturn(array(
+		'public.book' => array('author_id'),
+	))->times(2);
+
+	$conventions = new DiscoveredConventions($structure);
+
+	// match by key = target ns table
+	Assert::same(array('public.book', 'author_id'), $conventions->getHasManyReference('public.author', 'public.book'));
+
+	// match by key = target table
+	Assert::same(array('public.book', 'author_id'), $conventions->getHasManyReference('public.author', 'book'));
+
+	// match by key = target ns table
+	Assert::same(array('public.book_topics', 'author_id'), $conventions->getHasManyReference('public.author', 'public.book_topics'));
+
+	// match by key = target table
+	Assert::same(array('public.book_topics', 'author_id'), $conventions->getHasManyReference('public.author', 'book_topics'));
+
+	// test too many column candidates, ns table name
+	Assert::throws(function() use ($conventions) {
+		$conventions->getHasManyReference('public.author', 'public.boo');
+	}, 'Nette\Database\Conventions\AmbiguousReferenceKeyException');
+
+	// test too many column candidates
+	Assert::throws(function() use ($conventions) {
+		$conventions->getHasManyReference('public.author', 'boo');
+	}, 'Nette\Database\Conventions\AmbiguousReferenceKeyException');
+
+	// test one column candidate, ns table name
+	Assert::same(array('public.book', 'author_id'), $conventions->getHasManyReference('public.author', 'public.boo'));
+
+	// test one column candidate
+	Assert::same(array('public.book', 'author_id'), $conventions->getHasManyReference('public.author', 'boo'));
+});
+
+
 // basic test plural
 test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');

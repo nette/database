@@ -81,3 +81,30 @@ Assert::same(
 	'LEFT JOIN book ON author.id = book.translator_id',
 	trim($join)
 );
+
+
+if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
+	$sqlBuilder = new SqlBuilderMock('public.book', $context);
+} else {
+	$sqlBuilder = new SqlBuilderMock('book', $context);
+}
+
+$joins = array();
+$query = 'WHERE :book.translator_id IS NULL AND :book:book.translator_id IS NULL';
+$sqlBuilder->parseJoins($joins, $query);
+$join = $sqlBuilder->buildQueryJoins($joins);
+Assert::same('WHERE book_ref.translator_id IS NULL AND book_ref_ref.translator_id IS NULL', $query);
+
+if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
+	Assert::same(
+		'LEFT JOIN public.book AS book_ref ON book.id = book_ref.next_volume ' .
+		'LEFT JOIN public.book AS book_ref_ref ON book_ref.id = book_ref_ref.next_volume',
+		trim($join)
+	);
+} else {
+	Assert::same(
+		'LEFT JOIN book AS book_ref ON book.id = book_ref.next_volume ' .
+		'LEFT JOIN book AS book_ref_ref ON book_ref.id = book_ref_ref.next_volume',
+		trim($join)
+	);
+}

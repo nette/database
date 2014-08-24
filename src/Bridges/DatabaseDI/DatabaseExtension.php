@@ -7,8 +7,7 @@
 
 namespace Nette\Bridges\DatabaseDI;
 
-use Nette,
-	Nette\DI\ContainerBuilder;
+use Nette;
 
 
 /**

@@ -9,7 +9,6 @@ namespace Nette\Database\Table;
 
 use Nette,
 	Nette\Database\Context,
-	Nette\Database\ISupplementalDriver,
 	Nette\Database\IConventions;
 
 

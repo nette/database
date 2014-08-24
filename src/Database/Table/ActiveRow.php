@@ -28,9 +28,6 @@ class ActiveRow implements \IteratorAggregate, IRow
 	/** @var bool */
 	private $dataRefreshed = FALSE;
 
-	/** @var bool */
-	private $isModified = FALSE;
-
 
 	public function __construct(array $data, Selection $table)
 	{
@@ -174,7 +171,6 @@ class ActiveRow implements \IteratorAggregate, IRow
 			->wherePrimary($this->getPrimary());
 
 		if ($selection->update($data)) {
-			$this->isModified = TRUE;
 			$selection->select('*');
 			if (($row = $selection->fetch()) === FALSE) {
 				throw new Nette\InvalidStateException('Database refetch failed; row does not exist!');

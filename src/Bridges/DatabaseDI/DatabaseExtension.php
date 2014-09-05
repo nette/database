@@ -54,7 +54,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			if (!is_array($info)) {
 				continue;
 			}
-			$this->validate($info, $this->databaseDefaults, 'database');
+			$this->validateConfig($this->databaseDefaults, $info);
 
 			$info += array('autowired' => $autowired) + $this->databaseDefaults;
 			$autowired = FALSE;
@@ -111,15 +111,6 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			if ($container->parameters['debugMode'] && $info['debugger']) {
 				$connection->addSetup('Nette\Database\Helpers::createDebugPanel', array($connection, !empty($info['explain']), $name));
 			}
-		}
-	}
-
-
-	private function validate(array $config, array $expected, $name)
-	{
-		if ($extra = array_diff_key($config, $expected)) {
-			$extra = implode(", $name.", array_keys($extra));
-			throw new Nette\InvalidStateException("Unknown option $name.$extra.");
 		}
 	}
 

@@ -254,9 +254,9 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	/**
 	 * @inheritDoc
 	 */
-	public function fetchAll()
+	public function fetchAll($use_keys = true)
 	{
-		return iterator_to_array($this);
+		return iterator_to_array($this, $use_keys);
 	}
 
 

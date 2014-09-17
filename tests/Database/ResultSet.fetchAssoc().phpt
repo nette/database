@@ -33,6 +33,16 @@ test(function() use ($context) {
 	), $pairs);
 });
 
+test(function() use ($context) {
+	$pairs = $context->query('SELECT id FROM book ORDER BY id')->fetchAssoc('id[]=id');
+	Assert::equal(array(
+		1 => array(1),
+		2 => array(2),
+		3 => array(3),
+		4 => array(4),
+	), $pairs);
+});
+
 
 test(function() use ($context) {
 	$pairs = $context->query('UPDATE author SET born = ? WHERE id = 11', new DateTime('2002-02-20'));

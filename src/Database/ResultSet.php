@@ -293,9 +293,7 @@ class ResultSet extends Nette\Object implements \Iterator, IRowContainer
 
 
 	/**
-	 * Fetches all rows and returns associative tree.
-	 * @param  string  associative descriptor
-	 * @return array
+	 * @inheritDoc
 	 */
 	public function fetchAssoc($path)
 	{

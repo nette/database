@@ -9,7 +9,8 @@ namespace Nette\Database\Table;
 
 use Nette,
 	Nette\Database\Context,
-	Nette\Database\IConventions;
+	Nette\Database\IConventions,
+	Nette\Database\Table\IRowFactory;
 
 
 /**
@@ -28,6 +29,9 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 	/** @var IConventions */
 	protected $conventions;
+
+	/** @var IRowFactory */
+	protected $rowFactory;
 
 	/** @var Nette\Caching\Cache */
 	protected $cache;
@@ -91,10 +95,11 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @param  string  table name
 	 * @param  Nette\Caching\IStorage|NULL
 	 */
-	public function __construct(Context $context, IConventions $conventions, $tableName, Nette\Caching\IStorage $cacheStorage = NULL)
+	public function __construct(Context $context, IConventions $conventions, IRowFactory $rowFactory, $tableName, Nette\Caching\IStorage $cacheStorage = NULL)
 	{
 		$this->context = $context;
 		$this->conventions = $conventions;
+		$this->rowFactory = $rowFactory;
 		$this->name = $tableName;
 
 		$this->cache = $cacheStorage ? new Nette\Caching\Cache($cacheStorage, 'Nette.Database.' . md5($context->getConnection()->getDsn())) : NULL;
@@ -510,7 +515,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 	protected function createRow(array $row)
 	{
-		return new ActiveRow($row, $this);
+		return $this->rowFactory->create($this->name, $row, $this);
 	}
 
 

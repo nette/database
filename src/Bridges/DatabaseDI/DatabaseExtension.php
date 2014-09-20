@@ -78,6 +78,9 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				->setClass('Nette\Database\Structure')
 				->setArguments(array($connection));
 
+			$rowFactory = $container->addDefinition($prefix . $this->prefix("$name.rowFactory"))
+				->setClass('Nette\Database\Table\RowFactory');
+
 			if (!empty($info['reflection'])) {
 				$conventionsServiceName = 'reflection';
 				$info['conventions'] = $info['reflection'];
@@ -105,7 +108,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			}
 
 			$container->addDefinition($prefix . $this->prefix("$name.context"))
-				->setClass('Nette\Database\Context', array($connection, $structure, $conventions))
+				->setClass('Nette\Database\Context', array($connection, $structure, $rowFactory, $conventions))
 				->setAutowired($info['autowired']);
 
 			if ($container->parameters['debugMode'] && $info['debugger']) {

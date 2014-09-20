@@ -8,6 +8,7 @@
 namespace Nette\Database;
 
 use Nette,
+	Nette\Database\Table\IRowFactory,
 	Nette\Database\Conventions\StaticConventions;
 
 
@@ -24,6 +25,9 @@ class Context extends Nette\Object
 	/** @var IStructure */
 	private $structure;
 
+	/** @var IRowFactory */
+	private $rowFactory;
+
 	/** @var IConventions */
 	private $conventions;
 
@@ -34,10 +38,11 @@ class Context extends Nette\Object
 	private $preprocessor;
 
 
-	public function __construct(Connection $connection, IStructure $structure, IConventions $conventions = NULL, Nette\Caching\IStorage $cacheStorage = NULL)
+	public function __construct(Connection $connection, IStructure $structure, IRowFactory $rowFactory, IConventions $conventions = NULL, Nette\Caching\IStorage $cacheStorage = NULL)
 	{
 		$this->connection = $connection;
 		$this->structure = $structure;
+		$this->rowFactory = $rowFactory;
 		$this->conventions = $conventions ?: new StaticConventions;
 		$this->cacheStorage = $cacheStorage;
 	}
@@ -121,7 +126,7 @@ class Context extends Nette\Object
 	 */
 	public function table($table)
 	{
-		return new Table\Selection($this, $this->conventions, $table, $this->cacheStorage);
+		return new Table\Selection($this, $this->conventions, $this->rowFactory, $table, $this->cacheStorage);
 	}
 
 

@@ -437,7 +437,6 @@ class SqlBuilder extends Nette\Object
 			$tables = $this->getCachedTableList();
 			if (!isset($tables[$keyMatches[0]['key']]) && isset($tables[$keyMatches[0]['key'] . '.' . $keyMatches[1]['key']])) {
 				$keyMatch = array_shift($keyMatches);
-				$parentAlias = $keyMatches[0]['key'];
 				$keyMatches[0]['key'] = $keyMatch['key'] . '.' . $keyMatches[0]['key'];
 				$keyMatches[0]['del'] = $keyMatch['del'];
 			}

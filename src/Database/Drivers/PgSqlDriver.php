@@ -132,7 +132,7 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 				a.attname::varchar AS name,
 				c.relname::varchar AS table,
 				upper(t.typname) AS nativetype,
-				NULL AS size,
+				CASE WHEN a.atttypmod = -1 THEN NULL ELSE a.atttypmod -4 END AS size,
 				FALSE AS unsigned,
 				NOT (a.attnotnull OR t.typtype = 'd' AND t.typnotnull) AS nullable,
 				pg_catalog.pg_get_expr(ad.adbin, 'pg_catalog.pg_attrdef'::regclass)::varchar AS default,

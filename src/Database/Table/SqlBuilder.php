@@ -339,6 +339,13 @@ class SqlBuilder extends Nette\Object
 	}
 
 
+	public function setOrder(array $columns, array $parameters)
+	{
+		$this->order = $columns;
+		$this->parameters['order'] = $parameters;
+	}
+
+
 	public function getOrder()
 	{
 		return $this->order;

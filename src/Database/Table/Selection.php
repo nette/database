@@ -247,7 +247,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 */
 	public function fetchPairs($key = NULL, $value = NULL)
 	{
-		return Nette\Database\Helpers::toPairs(iterator_to_array($this), $key, $value);
+		return Nette\Database\Helpers::toPairs($this->fetchAll(), $key, $value);
 	}
 
 
@@ -257,6 +257,15 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	public function fetchAll()
 	{
 		return iterator_to_array($this);
+	}
+
+
+	/**
+	 * @inheritDoc
+	 */
+	public function fetchAssoc($path)
+	{
+		return Nette\Utils\Arrays::associate($this->fetchAll(), $path);
 	}
 
 

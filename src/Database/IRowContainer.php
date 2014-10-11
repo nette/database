@@ -35,5 +35,12 @@ interface IRowContainer extends \Traversable
 	 * @return IRow[]
 	 */
 	function fetchAll();
+	
+	/**
+	 * Fetches all rows and returns associative tree.
+	 * @param  string  associative descriptor
+	 * @return array
+	 */
+	function fetchAssoc($path);
 
 }

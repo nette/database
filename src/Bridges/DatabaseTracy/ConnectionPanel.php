@@ -70,10 +70,7 @@ class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
 		if ($result instanceof Nette\Database\ResultSet) {
 			$this->totalTime += $result->getTime();
 			if ($this->count < $this->maxQueries) {
-				$parameters = array_map(function ($param) use ($connection) {
-					return $connection->quote($param);
-				}, $result->getParameters());
-				$this->queries[] = array($connection, $result->getQueryString(), $parameters, $source, $result->getTime(), $result->getRowCount(), NULL);
+				$this->queries[] = array($connection, $result->getQueryString(), $result->getParameters(), $source, $result->getTime(), $result->getRowCount(), NULL);
 			}
 
 		} elseif ($result instanceof \PDOException && $this->count < $this->maxQueries) {

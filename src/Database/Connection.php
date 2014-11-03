@@ -75,6 +75,19 @@ class Connection extends Nette\Object
 	}
 
 
+	public function reconnect()
+	{
+		$this->disconnect();
+		$this->connect();
+	}
+
+
+	public function disconnect()
+	{
+		$this->pdo = NULL;
+	}
+
+
 	/** @return string */
 	public function getDsn()
 	{

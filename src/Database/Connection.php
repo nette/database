@@ -58,6 +58,7 @@ class Connection extends Nette\Object
 	}
 
 
+	/** @return void */
 	public function connect()
 	{
 		if ($this->pdo) {
@@ -72,6 +73,21 @@ class Connection extends Nette\Object
 		$this->driver = new $class($this, $this->options);
 		$this->preprocessor = new SqlPreprocessor($this);
 		$this->onConnect($this);
+	}
+
+
+	/** @return void */
+	public function reconnect()
+	{
+		$this->disconnect();
+		$this->connect();
+	}
+
+
+	/** @return void */
+	public function disconnect()
+	{
+		$this->pdo = NULL;
 	}
 
 

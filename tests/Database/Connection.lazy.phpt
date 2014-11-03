@@ -11,7 +11,6 @@ use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
-
 if (!class_exists('PDO')) {
 	Tester\Environment::skip('Requires PHP extension PDO.');
 }
@@ -38,4 +37,41 @@ test(function() {
 	Assert::exception(function() use ($connection) {
 		$connection->quote('x');
 	}, 'PDOException', 'invalid data source name');
+});
+
+
+test(function() { // connect & disconnect
+	$options = Tester\Environment::loadData() + array('user' => NULL, 'password' => NULL);
+	$connections = 1;
+
+	$connection = new Nette\Database\Connection($options['dsn'], $options['user'], $options['password']);
+	$connection->onConnect[] = function() use (& $connections) {
+		$connections++;
+	};
+
+	// first connection
+	$pdo = $connection->getPdo();
+	$driver = $connection->getSupplementalDriver();
+	Assert::same(1, $connections);
+
+	// still first connection
+	$connection->connect();
+	Assert::same($pdo, $connection->getPdo());
+	Assert::same($driver, $connection->getSupplementalDriver());
+	Assert::same(1, $connections);
+
+	// second connection
+	$connection->reconnect();
+	$pdo2 = $connection->getPdo();
+	$driver2 = $connection->getSupplementalDriver();
+
+	Assert::notSame($pdo, $pdo2);
+	Assert::notSame($driver, $driver2);
+	Assert::same(2, $connections);
+
+	// third connection
+	$connection->disconnect();
+	Assert::notSame($pdo2, $connection->getPdo());
+	Assert::notSame($driver2, $connection->getSupplementalDriver());
+	Assert::same(3, $connections);
 });

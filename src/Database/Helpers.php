@@ -76,7 +76,7 @@ class Helpers
 	 * @param  string
 	 * @return string
 	 */
-	public static function dumpSql($sql, array $params = NULL)
+	public static function dumpSql($sql, array $params = NULL, Connection $connection = NULL)
 	{
 		static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
 		static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|[RI]?LIKE|REGEXP|TRUE|FALSE';
@@ -109,7 +109,7 @@ class Helpers
 		}, $sql);
 
 		// parameters
-		$sql = preg_replace_callback('#\?#', function() use ($params) {
+		$sql = preg_replace_callback('#\?#', function() use ($params, $connection) {
 			static $i = 0;
 			if (!isset($params[$i])) {
 				return '?';
@@ -119,7 +119,10 @@ class Helpers
 				return '<i title="Length ' . strlen($param) . ' bytes">&lt;binary&gt;</i>';
 
 			} elseif (is_string($param)) {
-				return '<span title="Length ' . Nette\Utils\Strings::length($param) . ' characters">\'' . htmlspecialchars(Nette\Utils\Strings::truncate($param, Helpers::$maxLength)) . "'</span>";
+				$length = Nette\Utils\Strings::length($param);
+				$truncated = Nette\Utils\Strings::truncate($param, Helpers::$maxLength);
+				$text = htmlspecialchars($connection ? $connection->quote($truncated) : '\'' . $truncated . '\'');
+				return '<span title="Length ' . $length . ' characters">' . $text . '</span>';
 
 			} elseif (is_resource($param)) {
 				$type = get_resource_type($param);

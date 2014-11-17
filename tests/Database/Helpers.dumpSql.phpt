@@ -42,4 +42,3 @@ test(function() use ($connection) { // string check with \'
 	Assert::same(
 "<pre class=\"dump\"><strong style=\"color:blue\">SELECT</strong> id \n<strong style=\"color:blue\">FROM</strong> author \n<strong style=\"color:blue\">WHERE</strong> name = <span title=\"Length 16 characters\">'Alexej Ch…'</span></pre>\n", Nette\Database\Helpers::dumpSql('SELECT id FROM author WHERE name = ?', array("Alexej Ch'ruščev"), $connection));
 });
-

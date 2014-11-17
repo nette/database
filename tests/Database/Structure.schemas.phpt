@@ -83,7 +83,7 @@ class StructureSchemasTestCase extends TestCase
 		Assert::same(array(
 			'books.books' => array('author_id', 'translator_id'),
 		), $this->structure->getHasManyReference('authors.authors'));
- 	}
+	}
 
 
 	public function testGetBelongsToReference()

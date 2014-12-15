@@ -27,6 +27,30 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	}
 
 
+	public function convertException(\PDOException $e)
+	{
+		$code = isset($e->errorInfo[0]) ? $e->errorInfo[0] : NULL;
+		if ($code === '0A000' && strpos($e->getMessage(), 'truncate') !== FALSE) {
+			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
+
+		} elseif ($code === '23502') {
+			return Nette\Database\NotNullConstraintViolationException::from($e);
+
+		} elseif ($code === '23503') {
+			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
+
+		} elseif ($code === '23505') {
+			return Nette\Database\UniqueConstraintViolationException::from($e);
+
+		} elseif ($code === '08006') {
+			return Nette\Database\ConnectionException::from($e);
+
+		} else {
+			return Nette\Database\DriverException::from($e);
+		}
+	}
+
+
 	/********************* SQL ****************d*g**/
 
 

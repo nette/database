@@ -43,6 +43,30 @@ class MySqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	}
 
 
+	/**
+	 * @return Nette\Database\DriverException
+	 */
+	public function convertException(\PDOException $e)
+	{
+		$code = isset($e->errorInfo[1]) ? $e->errorInfo[1] : NULL;
+		if (in_array($code, array(1216, 1217, 1451, 1452, 1701), TRUE)) {
+			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
+
+		} elseif (in_array($code, array(1062, 1557, 1569, 1586), TRUE)) {
+			return Nette\Database\UniqueConstraintViolationException::from($e);
+
+		} elseif ($code >= 2001 && $code <= 2028) {
+			return Nette\Database\ConnectionException::from($e);
+
+		} elseif (in_array($code, array(1048, 1121, 1138, 1171, 1252, 1263, 1566), TRUE)) {
+			return Nette\Database\NotNullConstraintViolationException::from($e);
+
+		} else {
+			return Nette\Database\DriverException::from($e);
+		}
+	}
+
+
 	/********************* SQL ****************d*g**/
 
 

@@ -18,6 +18,12 @@ use Nette;
 class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
 {
 
+	public function convertException(\PDOException $e)
+	{
+		return Nette\Database\DriverException::from($e);
+	}
+
+
 	/********************* SQL ****************d*g**/
 
 

@@ -63,15 +63,25 @@ class Connection extends Nette\Object
 		if ($this->pdo) {
 			return;
 		}
-		$this->pdo = new PDO($this->params[0], $this->params[1], $this->params[2], $this->options);
-		$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-		$class = empty($this->options['driverClass'])
-			? 'Nette\Database\Drivers\\' . ucfirst(str_replace('sql', 'Sql', $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) . 'Driver'
-			: $this->options['driverClass'];
-		$this->driver = new $class($this, $this->options);
+		$this->pdo = $this->createPdo();
+		$this->driver = $this->createDriver();
 		$this->preprocessor = new SqlPreprocessor($this);
+
 		$this->onConnect($this);
+	}
+
+
+	public function reconnect()
+	{
+		$this->disconnect();
+		$this->connect();
+	}
+
+
+	public function disconnect()
+	{
+		$this->pdo = NULL;
 	}
 
 
@@ -95,6 +105,14 @@ class Connection extends Nette\Object
 	{
 		$this->connect();
 		return $this->driver;
+	}
+
+
+	/** @return SqlPreprocessor */
+	public function getPreprocessor()
+	{
+		$this->connect();
+		return $this->preprocessor;
 	}
 
 
@@ -154,7 +172,7 @@ class Connection extends Nette\Object
 		$this->connect();
 		if ($params) {
 			array_unshift($params, $statement);
-			list($statement, $params) = $this->preprocessor->process($params);
+			list($statement, $params) = $this->getPreprocessor()->process($params);
 		}
 
 		try {
@@ -209,6 +227,27 @@ class Connection extends Nette\Object
 	{
 		$args = func_get_args();
 		return new SqlLiteral(array_shift($args), $args);
+	}
+
+
+	/** @return PDO */
+	private function createPdo()
+	{
+		$pdo = new PDO($this->params[0], $this->params[1], $this->params[2], $this->options);
+		$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+		return $pdo;
+	}
+
+
+	/** @return ISupplementalDriver */
+	private function createDriver()
+	{
+		$class = empty($this->options['driverClass'])
+			? 'Nette\Database\Drivers\\' . ucfirst(str_replace('sql', 'Sql', $this->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME))) . 'Driver'
+			: $this->options['driverClass'];
+
+		return new $class($this, $this->options);
 	}
 
 }

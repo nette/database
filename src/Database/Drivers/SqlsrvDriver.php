@@ -28,6 +28,12 @@ class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	}
 
 
+	public function convertException(\PDOException $e)
+	{
+		return Nette\Database\DriverException::from($e);
+	}
+
+
 	/********************* SQL ****************d*g**/
 
 

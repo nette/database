@@ -19,7 +19,7 @@ if (!class_exists('PDO')) {
 test(function() { // non lazy
 	Assert::exception(function() {
 		$connection = new Nette\Database\Connection('dsn', 'user', 'password');
-	}, 'PDOException', 'invalid data source name');
+	}, 'Nette\Database\DriverException', 'invalid data source name');
 });
 
 
@@ -28,7 +28,7 @@ test(function() { // lazy
 	$context = new Nette\Database\Context($connection, new Structure($connection, new DevNullStorage()));
 	Assert::exception(function() use ($context) {
 		$context->query('SELECT ?', 10);
-	}, 'PDOException', 'invalid data source name');
+	}, 'Nette\Database\DriverException', 'invalid data source name');
 });
 
 
@@ -36,7 +36,7 @@ test(function() {
 	$connection = new Nette\Database\Connection('dsn', 'user', 'password', array('lazy' => TRUE));
 	Assert::exception(function() use ($connection) {
 		$connection->quote('x');
-	}, 'PDOException', 'invalid data source name');
+	}, 'Nette\Database\DriverException', 'invalid data source name');
 });
 
 

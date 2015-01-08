@@ -31,6 +31,35 @@ class SqliteDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	}
 
 
+	public function convertException(\PDOException $e)
+	{
+		$code = isset($e->errorInfo[1]) ? $e->errorInfo[1] : NULL;
+		$msg = $e->getMessage();
+		if ($code !== 19) {
+			return Nette\Database\DriverException::from($e);
+
+		} elseif (strpos($msg, 'must be unique') !== FALSE
+			|| strpos($msg, 'is not unique') !== FALSE
+			|| strpos($msg, 'UNIQUE constraint failed') !== FALSE
+		) {
+			return Nette\Database\UniqueConstraintViolationException::from($e);
+
+		} elseif (strpos($msg, 'may not be NULL') !== FALSE
+			|| strpos($msg, 'NOT NULL constraint failed') !== FALSE
+		) {
+			return Nette\Database\NotNullConstraintViolationException::from($e);
+
+		} elseif (strpos($msg, 'foreign key constraint failed') !== FALSE
+			|| strpos($msg, 'FOREIGN KEY constraint failed') !== FALSE
+		) {
+			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
+
+		} else {
+			return Nette\Database\ConstraintViolationException::from($e);
+		}
+	}
+
+
 	/********************* SQL ****************d*g**/
 
 

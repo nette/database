@@ -31,6 +31,24 @@ class OciDriver extends Nette\Object implements Nette\Database\ISupplementalDriv
 	}
 
 
+	public function convertException(\PDOException $e)
+	{
+		$code = isset($e->errorInfo[1]) ? $e->errorInfo[1] : NULL;
+		if (in_array($code, array(1, 2299, 38911), TRUE)) {
+			return Nette\Database\UniqueConstraintViolationException::from($e);
+
+		} elseif (in_array($code, array(1400), TRUE)) {
+			return Nette\Database\NotNullConstraintViolationException::from($e);
+
+		} elseif (in_array($code, array(2266, 2291, 2292), TRUE)) {
+			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
+
+		} else {
+			return Nette\Database\DriverException::from($e);
+		}
+	}
+
+
 	/********************* SQL ****************d*g**/
 
 

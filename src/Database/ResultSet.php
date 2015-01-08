@@ -60,12 +60,18 @@ class ResultSet extends Nette\Object implements \Iterator, IRowContainer
 		$this->queryString = $queryString;
 		$this->params = $params;
 
-		if (substr($queryString, 0, 2) === '::') {
-			$connection->getPdo()->{substr($queryString, 2)}();
-		} elseif ($queryString !== NULL) {
-			$this->pdoStatement = $connection->getPdo()->prepare($queryString);
-			$this->pdoStatement->setFetchMode(PDO::FETCH_ASSOC);
-			$this->pdoStatement->execute($params);
+		try {
+			if (substr($queryString, 0, 2) === '::') {
+				$connection->getPdo()->{substr($queryString, 2)}();
+			} elseif ($queryString !== NULL) {
+				$this->pdoStatement = $connection->getPdo()->prepare($queryString);
+				$this->pdoStatement->setFetchMode(PDO::FETCH_ASSOC);
+				$this->pdoStatement->execute($params);
+			}
+		} catch (\PDOException $e) {
+			$e = $this->supplementalDriver->convertException($e);
+			$e->queryString = $queryString;
+			throw $e;
 		}
 		$this->time = microtime(TRUE) - $time;
 	}

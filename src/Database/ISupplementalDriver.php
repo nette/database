@@ -25,6 +25,11 @@ interface ISupplementalDriver
 		SUPPORT_SCHEMA = 'schema';
 
 	/**
+	 * @return DriverException
+	 */
+	function convertException(\PDOException $e);
+
+	/**
 	 * Delimites identifier for use in a SQL statement.
 	 * @param  string
 	 * @return string

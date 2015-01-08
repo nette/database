@@ -105,8 +105,7 @@ class Context extends Nette\Object
 
 		try {
 			$result = new ResultSet($this->connection, $statement, $params);
-		} catch (\PDOException $e) {
-			$e->queryString = $statement;
+		} catch (DriverException $e) {
 			$this->connection->onQuery($this->connection, $e);
 			throw $e;
 		}

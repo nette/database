@@ -411,7 +411,7 @@ class SqlBuilder extends Nette\Object
 		$builder = $this;
 		$query = preg_replace_callback('~
 			(?(DEFINE)
-				(?P<word> [a-z][\w_]* )
+				(?P<word> [\w_]*[a-z][\w_]* )
 				(?P<del> [.:] )
 				(?P<node> (?&del)? (?&word) (\((?&word)\))? )
 			)
@@ -431,7 +431,7 @@ class SqlBuilder extends Nette\Object
 
 		preg_match_all('~
 			(?(DEFINE)
-				(?P<word> [a-z][\w_]* )
+				(?P<word> [\w_]*[a-z][\w_]* )
 			)
 			(?P<del> [.:])?(?P<key> (?&word))(\((?P<throughColumn> (?&word))\))?
 		~xi', $chain, $keyMatches, PREG_SET_ORDER);

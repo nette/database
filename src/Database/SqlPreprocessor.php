@@ -32,7 +32,7 @@ class SqlPreprocessor extends Nette\Object
 	/** @var int */
 	private $counter;
 
-	/** @var string values|assoc|and|order */
+	/** @var string values|set|and|order */
 	private $arrayMode;
 
 
@@ -52,7 +52,7 @@ class SqlPreprocessor extends Nette\Object
 		$this->params = $params;
 		$this->counter = 0;
 		$this->remaining = array();
-		$this->arrayMode = 'assoc';
+		$this->arrayMode = 'set';
 		$res = array();
 
 		while ($this->counter < count($params)) {
@@ -63,7 +63,7 @@ class SqlPreprocessor extends Nette\Object
 			} else {
 				$res[] = Nette\Utils\Strings::replace(
 					$param,
-					'~\'.*?\'|".*?"|\?(?:name)?|\b(?:INSERT|REPLACE|UPDATE|WHERE|HAVING|ORDER BY|GROUP BY)\b|/\*.*?\*/|--[^\n]*~si',
+					'~\'.*?\'|".*?"|\?[a-z]*|\b(?:INSERT|REPLACE|UPDATE|WHERE|HAVING|ORDER BY|GROUP BY)\b|/\*.*?\*/|--[^\n]*~si',
 					array($this, 'callback')
 				);
 			}
@@ -83,18 +83,22 @@ class SqlPreprocessor extends Nette\Object
 		} elseif ($m[0] === '?') { // placeholder
 			if ($this->counter >= count($this->params)) {
 				throw new Nette\InvalidArgumentException('There are more placeholders than passed parameters.');
-			}
-			if ($m === '?') {
-				return $this->formatValue($this->params[$this->counter++], $this->arrayMode);
-			} else {
+
+			} elseif (in_array($m, array('?', '?and', '?or', '?set', '?values', '?order'), TRUE)) {
+				return $this->formatValue($this->params[$this->counter++], substr($m, 1) ?: $this->arrayMode);
+
+			} elseif ($m === '?name') {
 				return $this->driver->delimite($this->params[$this->counter++]);
+
+			} else {
+				throw new Nette\InvalidArgumentException("Unknown placeholder $m.");
 			}
 
 		} else { // command
 			static $modes = array(
 				'INSERT' => 'values',
 				'REPLACE' => 'values',
-				'UPDATE' => 'assoc',
+				'UPDATE' => 'set',
 				'WHERE' => 'and',
 				'HAVING' => 'and',
 				'ORDER BY' => 'order',
@@ -166,7 +170,7 @@ class SqlPreprocessor extends Nette\Object
 				}
 				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
-			} elseif (!$mode || $mode === 'assoc') { // key=value, key=value, ...
+			} elseif (!$mode || $mode === 'set') { // key=value, key=value, ...
 				foreach ($value as $k => $v) {
 					if (substr($k, -1) === '=') {
 						$k2 = $this->delimite(substr($k, 0, -2));
@@ -177,7 +181,7 @@ class SqlPreprocessor extends Nette\Object
 				}
 				return implode(', ', $vx);
 
-			} elseif ($mode === 'and') { // (key [operator] value) AND ...
+			} elseif ($mode === 'and' || $mode === 'or') { // (key [operator] value) AND ...
 				foreach ($value as $k => $v) {
 					list($k, $operator) = explode(' ', $k . ' ');
 					$k = $this->delimite($k);
@@ -188,7 +192,7 @@ class SqlPreprocessor extends Nette\Object
 						$vx[] = $k . ' ' . ($operator ?: ($v === 'NULL' ? 'IS' : '=')) . ' ' . $v;
 					}
 				}
-				return $value ? '(' . implode(') AND (', $vx) . ')' : '1=1';
+				return $value ? '(' . implode(') ' . strtoupper($mode) . ' (', $vx) . ')' : '1=1';
 
 			} elseif ($mode === 'order') { // key, key DESC, ...
 				foreach ($value as $k => $v) {

@@ -139,8 +139,10 @@ class SqlPreprocessor extends Nette\Object
 				return $this->driver->formatDateTime($value);
 
 			} elseif ($value instanceof SqlLiteral) {
-				$this->remaining = array_merge($this->remaining, $value->getParameters());
-				return $value->__toString();
+				$prep = clone $this;
+				list($res, $params) = $prep->process(array_merge(array($value->__toString()), $value->getParameters()));
+				$this->remaining = array_merge($this->remaining, $params);
+				return $res;
 			}
 
 		} elseif ($mode === 'name') {

@@ -59,7 +59,7 @@ class SqlPreprocessor extends Nette\Object
 			$param = $params[$this->counter++];
 
 			if (($this->counter === 2 && count($params) === 2) || !is_scalar($param)) {
-				$res[] = $this->formatValue($param);
+				$res[] = $this->formatValue($param, $this->arrayMode);
 			} else {
 				$res[] = Nette\Utils\Strings::replace(
 					$param,
@@ -85,7 +85,7 @@ class SqlPreprocessor extends Nette\Object
 				throw new Nette\InvalidArgumentException('There are more placeholders than passed parameters.');
 			}
 			if ($m === '?') {
-				return $this->formatValue($this->params[$this->counter++]);
+				return $this->formatValue($this->params[$this->counter++], $this->arrayMode);
 			} else {
 				return $this->driver->delimite($this->params[$this->counter++]);
 			}
@@ -106,7 +106,7 @@ class SqlPreprocessor extends Nette\Object
 	}
 
 
-	private function formatValue($value)
+	private function formatValue($value, $mode = NULL)
 	{
 		if (is_string($value)) {
 			if (strlen($value) > 20) {
@@ -147,7 +147,7 @@ class SqlPreprocessor extends Nette\Object
 					}
 					$vx[] = implode(', ', $vx2);
 				}
-				if ($this->arrayMode === 'values') { // multi-insert
+				if ($mode === 'values') { // multi-insert
 					$select = $this->driver->isSupported(ISupplementalDriver::SUPPORT_MULTI_INSERT_AS_SELECT);
 					foreach ($value[0] as $k => $v) {
 						$kx[] = $this->delimite($k);
@@ -159,14 +159,14 @@ class SqlPreprocessor extends Nette\Object
 					return is_array($val) ? '(' . implode('), (', $vx) . ')' : implode(', ', $vx);
 				}
 
-			} elseif ($this->arrayMode === 'values') { // (key, key, ...) VALUES (value, value, ...)
+			} elseif ($mode === 'values') { // (key, key, ...) VALUES (value, value, ...)
 				foreach ($value as $k => $v) {
 					$kx[] = $this->delimite($k);
 					$vx[] = $this->formatValue($v);
 				}
 				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
-			} elseif ($this->arrayMode === 'assoc') { // key=value, key=value, ...
+			} elseif (!$mode || $mode === 'assoc') { // key=value, key=value, ...
 				foreach ($value as $k => $v) {
 					if (substr($k, -1) === '=') {
 						$k2 = $this->delimite(substr($k, 0, -2));
@@ -177,7 +177,7 @@ class SqlPreprocessor extends Nette\Object
 				}
 				return implode(', ', $vx);
 
-			} elseif ($this->arrayMode === 'and') { // (key [operator] value) AND ...
+			} elseif ($mode === 'and') { // (key [operator] value) AND ...
 				foreach ($value as $k => $v) {
 					list($k, $operator) = explode(' ', $k . ' ');
 					$k = $this->delimite($k);
@@ -190,7 +190,7 @@ class SqlPreprocessor extends Nette\Object
 				}
 				return $value ? '(' . implode(') AND (', $vx) . ')' : '1=1';
 
-			} elseif ($this->arrayMode === 'order') { // key, key DESC, ...
+			} elseif ($mode === 'order') { // key, key DESC, ...
 				foreach ($value as $k => $v) {
 					$vx[] = $this->delimite($k) . ($v > 0 ? '' : ' DESC');
 				}

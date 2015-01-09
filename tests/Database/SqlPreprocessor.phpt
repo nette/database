@@ -150,6 +150,10 @@ test(function() use ($preprocessor) { // missing parameters
 	Assert::exception(function() use ($preprocessor) {
 		$preprocessor->process(array('SELECT id FROM author WHERE id =', '? OR id = ?', 11));
 	}, 'Nette\InvalidArgumentException', 'There are more placeholders than passed parameters.');
+
+	Assert::exception(function() use ($preprocessor) {
+		$preprocessor->process(array('SELECT id FROM author WHERE id =', new SqlLiteral('? OR ?name = ?', array(11)), 'id', 12));
+	}, 'Nette\InvalidArgumentException', 'There are more placeholders than passed parameters.');
 });
 
 
@@ -172,16 +176,16 @@ test(function() use ($preprocessor) { // unknown placeholder
 
 
 test(function() use ($preprocessor) { // SqlLiteral
-	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE id =', new SqlLiteral('? OR id = ?', array(11, 12)) ));
-	Assert::same( 'SELECT id FROM author WHERE id = ? OR id = ?', $sql );
-	Assert::same( array(11, 12), $params );
+	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE id =', new SqlLiteral('? OR ?name = ?', array(11, 'id', 12)) ));
+	Assert::same( reformat('SELECT id FROM author WHERE id = 11 OR [id] = 12'), $sql );
+	Assert::same( array(), $params );
 });
 
 
 test(function() use ($preprocessor) {
 	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE', new SqlLiteral('id=11'), 'OR', new SqlLiteral('id=?', array(12))));
-	Assert::same( 'SELECT id FROM author WHERE id=11 OR id=?', $sql );
-	Assert::same( array(12), $params );
+	Assert::same( 'SELECT id FROM author WHERE id=11 OR id=12', $sql );
+	Assert::same( array(), $params );
 });
 
 
@@ -301,8 +305,8 @@ test(function() use ($preprocessor) { // update
 		array('id' => 12, 'name' => new SqlLiteral('UPPER(?)', array('John Doe'))),
 	));
 
-	Assert::same( reformat("UPDATE author SET [id]=12, [name]=UPPER(?)"), $sql );
-	Assert::same( array('John Doe'), $params );
+	Assert::same( reformat("UPDATE author SET [id]=12, [name]=UPPER('John Doe')"), $sql );
+	Assert::same( array(), $params );
 
 
 	list($sql, $params) = $preprocessor->process(array("UPDATE author SET \n",

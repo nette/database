@@ -20,9 +20,13 @@ test(function() use ($preprocessor) { // basic
 });
 
 
-test(function() use ($preprocessor) {
+test(function() use ($preprocessor) { // two args without placeholder
 	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE id =', 11));
 	Assert::same( 'SELECT id FROM author WHERE id = 11', $sql );
+	Assert::same( array(), $params );
+
+	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE id =', '11'));
+	Assert::same( "SELECT id FROM author WHERE id = '11'", $sql );
 	Assert::same( array(), $params );
 });
 
@@ -146,6 +150,17 @@ test(function() use ($preprocessor) { // missing parameters
 	Assert::exception(function() use ($preprocessor) {
 		$preprocessor->process(array('SELECT id FROM author WHERE id =', '? OR id = ?', 11));
 	}, 'Nette\InvalidArgumentException', 'There are more placeholders than passed parameters.');
+});
+
+
+test(function() use ($preprocessor) { // extra parameters
+	Assert::exception(function() use ($preprocessor) {
+		$preprocessor->process(array('SELECT id FROM author WHERE id =', 11, 12));
+	}, 'Nette\InvalidArgumentException', 'There are more parameters than placeholders.');
+
+	Assert::exception(function() use ($preprocessor) {
+		$preprocessor->process(array('SELECT id FROM author WHERE id =?', 11, 12));
+	}, 'Nette\InvalidArgumentException', 'There are more parameters than placeholders.');
 });
 
 

@@ -60,12 +60,14 @@ class SqlPreprocessor extends Nette\Object
 
 			if (($this->counter === 2 && count($params) === 2) || !is_scalar($param)) {
 				$res[] = $this->formatValue($param, $this->arrayMode);
-			} else {
+			} elseif (is_string($param)) {
 				$res[] = Nette\Utils\Strings::replace(
 					$param,
 					'~\'.*?\'|".*?"|\?[a-z]*|\b(?:INSERT|REPLACE|UPDATE|WHERE|HAVING|ORDER BY|GROUP BY)\b|/\*.*?\*/|--[^\n]*~si',
 					array($this, 'callback')
 				);
+			} else {
+				throw new Nette\InvalidArgumentException('There are more parameters than placeholders.');
 			}
 		}
 

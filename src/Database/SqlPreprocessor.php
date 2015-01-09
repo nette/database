@@ -32,26 +32,14 @@ class SqlPreprocessor extends Nette\Object
 	/** @var int */
 	private $counter;
 
-	/** @var string values|assoc|multi|select|union */
+	/** @var string values|assoc|and|order */
 	private $arrayMode;
-
-	/** @var array */
-	private $arrayModes;
 
 
 	public function __construct(Connection $connection)
 	{
 		$this->connection = $connection;
 		$this->driver = $connection->getSupplementalDriver();
-		$this->arrayModes = array(
-			'INSERT' => $this->driver->isSupported(ISupplementalDriver::SUPPORT_MULTI_INSERT_AS_SELECT) ? 'select' : 'values',
-			'REPLACE' => 'values',
-			'UPDATE' => 'assoc',
-			'WHERE' => 'and',
-			'HAVING' => 'and',
-			'ORDER BY' => 'order',
-			'GROUP BY' => 'order',
-		);
 	}
 
 
@@ -103,7 +91,16 @@ class SqlPreprocessor extends Nette\Object
 			}
 
 		} else { // command
-			$this->arrayMode = $this->arrayModes[strtoupper($m)];
+			static $modes = array(
+				'INSERT' => 'values',
+				'REPLACE' => 'values',
+				'UPDATE' => 'assoc',
+				'WHERE' => 'and',
+				'HAVING' => 'and',
+				'ORDER BY' => 'order',
+				'GROUP BY' => 'order',
+			);
+			$this->arrayMode = $modes[strtoupper($m)];
 			return $m;
 		}
 	}
@@ -142,34 +139,32 @@ class SqlPreprocessor extends Nette\Object
 				$value = iterator_to_array($value);
 			}
 
-			if (array_key_exists(0, $value)) { // non-associative; value, value, value
-				foreach ($value as $v) {
-					if (is_array($v) && isset($v[0])) { // no-associative; (value), (value), (value)
-						$vx[] = '(' . $this->formatValue($v) . ')';
-					} else {
-						$vx[] = $this->formatValue($v);
+			if (array_key_exists(0, $value)) { // non-associative
+				foreach ($value as $val) {
+					$vx2 = array();
+					foreach (is_array($val) ? $val : array($val) as $v) {
+						$vx2[] = $this->formatValue($v);
 					}
+					$vx[] = implode(', ', $vx2);
 				}
-				if ($this->arrayMode === 'union') {
-					return implode(' ', $vx);
+				if ($this->arrayMode === 'values') { // multi-insert
+					$select = $this->driver->isSupported(ISupplementalDriver::SUPPORT_MULTI_INSERT_AS_SELECT);
+					foreach ($value[0] as $k => $v) {
+						$kx[] = $this->delimite($k);
+					}
+					return '(' . implode(', ', $kx) . ($select ? ') SELECT ' : ') VALUES (')
+						. implode($select ? ' UNION ALL SELECT ' : '), (', $vx) . ($select ? '' : ')');
+
+				} else { // value, value, ... OR (1, 2), (3, 4)
+					return is_array($val) ? '(' . implode('), (', $vx) . ')' : implode(', ', $vx);
 				}
-				return implode(', ', $vx);
 
 			} elseif ($this->arrayMode === 'values') { // (key, key, ...) VALUES (value, value, ...)
-				$this->arrayMode = 'multi';
 				foreach ($value as $k => $v) {
 					$kx[] = $this->delimite($k);
 					$vx[] = $this->formatValue($v);
 				}
 				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
-
-			} elseif ($this->arrayMode === 'select') { // (key, key, ...) SELECT value, value, ...
-				$this->arrayMode = 'union';
-				foreach ($value as $k => $v) {
-					$kx[] = $this->delimite($k);
-					$vx[] = $this->formatValue($v);
-				}
-				return '(' . implode(', ', $kx) . ') SELECT ' . implode(', ', $vx);
 
 			} elseif ($this->arrayMode === 'assoc') { // key=value, key=value, ...
 				foreach ($value as $k => $v) {
@@ -181,18 +176,6 @@ class SqlPreprocessor extends Nette\Object
 					}
 				}
 				return implode(', ', $vx);
-
-			} elseif ($this->arrayMode === 'multi') { // multiple insert (value, value, ...), ...
-				foreach ($value as $v) {
-					$vx[] = $this->formatValue($v);
-				}
-				return '(' . implode(', ', $vx) . ')';
-
-			} elseif ($this->arrayMode === 'union') { // UNION ALL SELECT value, value, ...
-				foreach ($value as $v) {
-					$vx[] = $this->formatValue($v);
-				}
-				return 'UNION ALL SELECT ' . implode(', ', $vx);
 
 			} elseif ($this->arrayMode === 'and') { // (key [operator] value) AND ...
 				foreach ($value as $k => $v) {

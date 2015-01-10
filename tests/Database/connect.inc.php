@@ -10,10 +10,6 @@
 require __DIR__ . '/../bootstrap.php';
 
 
-if (!class_exists('PDO')) {
-	Tester\Environment::skip('Requires PHP extension PDO.');
-}
-
 try {
 	$options = Tester\Environment::loadData() + array('user' => NULL, 'password' => NULL);
 } catch (Exception $e) {

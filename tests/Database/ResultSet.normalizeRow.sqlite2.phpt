@@ -9,10 +9,6 @@ use Tester\Assert;
 require __DIR__ . '/../bootstrap.php';
 
 
-if (!class_exists('PDO')) {
-	Tester\Environment::skip('Requires PHP extension PDO.');
-}
-
 try {
 	$connection = new Nette\Database\Connection('sqlite2::memory:');
 } catch (PDOException $e) {

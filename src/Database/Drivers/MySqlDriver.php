@@ -27,13 +27,15 @@ class MySqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 
 	/**
 	 * Driver options:
-	 *   - charset => character encoding to set (default is utf8)
+	 *   - charset => character encoding to set (default is utf8 or utf8mb4 since MySQL 5.5.3)
 	 *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
 	 */
 	public function __construct(Nette\Database\Connection $connection, array $options)
 	{
 		$this->connection = $connection;
-		$charset = isset($options['charset']) ? $options['charset'] : 'utf8';
+		$charset = isset($options['charset'])
+			? $options['charset']
+			: (version_compare($connection->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION), '5.5.3', '>=') ? 'utf8mb4' : 'utf8');
 		if ($charset) {
 			$connection->query("SET NAMES '$charset'");
 		}

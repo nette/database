@@ -1,13 +1,9 @@
 /*!40102 SET storage_engine = InnoDB */;
 
-DROP DATABASE IF EXISTS nette_test;
 CREATE DATABASE IF NOT EXISTS nette_test;
 USE nette_test;
 
-SET FOREIGN_KEY_CHECKS = 0;
-
-DROP TABLE IF EXISTS `types`;
-CREATE TABLE `types` (
+CREATE TEMPORARY TABLE `types` (
   `unsigned_int` int(11) unsigned,
   `int` int(11),
   `smallint` smallint(6),

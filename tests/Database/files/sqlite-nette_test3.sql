@@ -1,7 +1,4 @@
---DROP TABLE IF EXISTS types
-
-
-CREATE TABLE types (
+CREATE TEMPORARY TABLE types (
 	[int] INT,
 	[integer] INTEGER,
 	[tinyint] TINYINT,

@@ -1,5 +1,5 @@
 DROP DATABASE IF EXISTS nette_test;
-CREATE DATABASE IF NOT EXISTS nette_test;
+CREATE DATABASE nette_test;
 USE nette_test;
 
 SET FOREIGN_KEY_CHECKS = 0;

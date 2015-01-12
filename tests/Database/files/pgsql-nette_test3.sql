@@ -1,8 +1,4 @@
-DROP SCHEMA IF EXISTS public CASCADE;
-CREATE SCHEMA public;
-
-DROP TABLE IF EXISTS "types";
-CREATE TABLE "types" (
+CREATE TEMPORARY TABLE "types" (
   "smallint" smallint NULL,
   "integer" integer NULL,
   "bigint" bigint NULL,

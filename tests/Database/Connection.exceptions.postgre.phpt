@@ -12,7 +12,7 @@ require __DIR__ . '/connect.inc.php'; // create $options
 
 $e = Assert::exception(function() use ($options) {
 	$connection = new Nette\Database\Connection($options['dsn'], 'unknown', 'unknown');
-}, 'Nette\Database\ConnectionException', '%a% role "unknown" does not exist', '08006');
+}, 'Nette\Database\ConnectionException', NULL, '08006');
 
 Assert::same(7, $e->getDriverCode());
 Assert::same($e->getCode(), $e->getSqlState());

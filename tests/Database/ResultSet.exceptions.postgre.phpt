@@ -13,7 +13,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 
 
 $e = Assert::exception(function() use ($context) {
-	$context->query('SELECT');
+	$context->query('SELECT INTO');
 }, 'Nette\Database\DriverException', '%a% syntax error %A%', '42601');
 
 Assert::same(7, $e->getDriverCode());

@@ -45,20 +45,6 @@ test(function() use ($preprocessor) {
 });
 
 
-test(function() use ($preprocessor) {
-	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE id =', '?', 11, 'OR id = ?', 12));
-	Assert::same( 'SELECT id FROM author WHERE id = 11 OR id = 12', $sql );
-	Assert::same( array(), $params );
-});
-
-
-test(function() use ($preprocessor) {
-	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE id =', '? OR id = ?', 11, 12));
-	Assert::same( 'SELECT id FROM author WHERE id = 11 OR id = 12', $sql );
-	Assert::same( array(), $params );
-});
-
-
 test(function() use ($preprocessor) { // IN
 	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE id IN (?)', array(10, 11)));
 	Assert::same( 'SELECT id FROM author WHERE id IN (10, 11)', $sql );
@@ -148,7 +134,7 @@ test(function() use ($preprocessor) { // ?order
 
 test(function() use ($preprocessor) { // missing parameters
 	Assert::exception(function() use ($preprocessor) {
-		$preprocessor->process(array('SELECT id FROM author WHERE id =', '? OR id = ?', 11));
+		$preprocessor->process(array('SELECT id FROM author WHERE id =? OR id = ?', 11));
 	}, 'Nette\InvalidArgumentException', 'There are more placeholders than passed parameters.');
 
 	Assert::exception(function() use ($preprocessor) {
@@ -164,6 +150,14 @@ test(function() use ($preprocessor) { // extra parameters
 
 	Assert::exception(function() use ($preprocessor) {
 		$preprocessor->process(array('SELECT id FROM author WHERE id =?', 11, 12));
+	}, 'Nette\InvalidArgumentException', 'There are more parameters than placeholders.');
+
+	Assert::exception(function() use ($preprocessor) {
+		$preprocessor->process(array('SELECT id FROM author WHERE id =', 'a', 'b'));
+	}, 'Nette\InvalidArgumentException', 'There are more parameters than placeholders.');
+
+	Assert::exception(function() use ($preprocessor) {
+		$preprocessor->process(array('SELECT id FROM author WHERE id =', '?', 11, 'OR id = ?', 12));
 	}, 'Nette\InvalidArgumentException', 'There are more parameters than placeholders.');
 });
 

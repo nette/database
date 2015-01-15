@@ -163,27 +163,23 @@ class SqlPreprocessor extends Nette\Object
 				$mode = $this->arrayMode;
 			}
 
-			if (array_key_exists(0, $value)) { // non-associative
-				foreach ($value as $val) {
-					$vx2 = array();
-					foreach (is_array($val) ? $val : array($val) as $v) {
-						$vx2[] = $this->formatValue($v);
-					}
-					$vx[] = implode(', ', $vx2);
-				}
-				if ($mode === 'values') { // multi-insert
-					$select = $this->driver->isSupported(ISupplementalDriver::SUPPORT_MULTI_INSERT_AS_SELECT);
+			if ($mode === 'values') { // (key, key, ...) VALUES (value, value, ...)
+				if (array_key_exists(0, $value)) { // multi-insert
 					foreach ($value[0] as $k => $v) {
 						$kx[] = $this->delimite($k);
 					}
+					foreach ($value as $val) {
+						$vx2 = array();
+							foreach ($val as $v) {
+							$vx2[] = $this->formatValue($v);
+						}
+						$vx[] = implode(', ', $vx2);
+					}
+					$select = $this->driver->isSupported(ISupplementalDriver::SUPPORT_MULTI_INSERT_AS_SELECT);
 					return '(' . implode(', ', $kx) . ($select ? ') SELECT ' : ') VALUES (')
 						. implode($select ? ' UNION ALL SELECT ' : '), (', $vx) . ($select ? '' : ')');
-
-				} else { // value, value, ... OR (1, 2), (3, 4)
-					return is_array($val) ? '(' . implode('), (', $vx) . ')' : implode(', ', $vx);
 				}
 
-			} elseif ($mode === 'values') { // (key, key, ...) VALUES (value, value, ...)
 				foreach ($value as $k => $v) {
 					$kx[] = $this->delimite($k);
 					$vx[] = $this->formatValue($v);
@@ -192,7 +188,9 @@ class SqlPreprocessor extends Nette\Object
 
 			} elseif (!$mode || $mode === 'set') { // key=value, key=value, ...
 				foreach ($value as $k => $v) {
-					if (substr($k, -1) === '=') {
+					if (is_int($k)) { // value, value, ... OR (1, 2), (3, 4)
+						$vx[] = is_array($v) ? '(' . $this->formatValue($v) . ')' : $this->formatValue($v);
+					} elseif (substr($k, -1) === '=') {
 						$k2 = $this->delimite(substr($k, 0, -2));
 						$vx[] = $k2 . '=' . $k2 . ' ' . substr($k, -2, 1) . ' ' . $this->formatValue($v);
 					} else {
@@ -203,6 +201,10 @@ class SqlPreprocessor extends Nette\Object
 
 			} elseif ($mode === 'and' || $mode === 'or') { // (key [operator] value) AND ...
 				foreach ($value as $k => $v) {
+					if (is_int($k)) {
+						$vx[] = $this->formatValue($v);
+						continue;
+					}
 					list($k, $operator) = explode(' ', $k . ' ');
 					$k = $this->delimite($k);
 					if (is_array($v)) {

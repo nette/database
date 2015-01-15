@@ -301,11 +301,13 @@ test(function() use ($preprocessor, $driverName) { // multi insert ?values
 
 
 test(function() use ($preprocessor) { // update
-	list($sql, $params) = $preprocessor->process(array('UPDATE author SET ?',
-		array('id' => 12, 'name' => new SqlLiteral('UPPER(?)', array('John Doe'))),
-	));
+	list($sql, $params) = $preprocessor->process(array('UPDATE author SET ?', array(
+		'id' => 12,
+		'name' => new SqlLiteral('UPPER(?)', array('John Doe')),
+		new SqlLiteral('UPPER(?) = ?', array('John', 'DOE')),
+	)));
 
-	Assert::same( reformat("UPDATE author SET [id]=12, [name]=UPPER('John Doe')"), $sql );
+	Assert::same( reformat("UPDATE author SET [id]=12, [name]=UPPER('John Doe'), UPPER('John') = 'DOE'"), $sql );
 	Assert::same( array(), $params );
 
 
@@ -368,4 +370,23 @@ test(function() use ($preprocessor) { // invalid usage of ?and, ...
 	Assert::exception(function() use ($preprocessor) {
 		$preprocessor->process(array('SELECT ?name', array('id', 'table.id')));
 	}, 'Nette\InvalidArgumentException', 'Placeholder ?name expects string, array given.');
+});
+
+
+test(function() use ($preprocessor) {
+	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE ?or', array(
+		new SqlLiteral('max > ?', array(10)),
+		new SqlLiteral('min < ?', array(20)),
+	)));
+	Assert::same( reformat('SELECT id FROM author WHERE (max > 10) OR (min < 20)'), $sql );
+});
+
+
+test(function() use ($preprocessor) {
+	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE', new SqlLiteral('?or', array(array(
+		new SqlLiteral('?and', array(array('a' => 1, 'b' => 2))),
+		new SqlLiteral('?and', array(array('c' => 3, 'd' => 4))),
+	)))));
+	Assert::same( reformat('SELECT id FROM author WHERE (([a] = 1) AND ([b] = 2)) OR (([c] = 3) AND ([d] = 4))'), $sql );
+	Assert::same( array(), $params );
 });

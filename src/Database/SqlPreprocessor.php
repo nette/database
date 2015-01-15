@@ -82,22 +82,14 @@ class SqlPreprocessor extends Nette\Object
 	public function callback($m)
 	{
 		$m = $m[0];
-		if ($m[0] === "'" || $m[0] === '"' || $m[0] === '/' || $m[0] === '-') { // string or comment
-			return $m;
-
-		} elseif ($m[0] === '?') { // placeholder
+		if ($m[0] === '?') { // placeholder
 			if ($this->counter >= count($this->params)) {
 				throw new Nette\InvalidArgumentException('There are more placeholders than passed parameters.');
-
-			} elseif (in_array($m, array('?', '?and', '?or', '?set', '?values', '?order'), TRUE)) {
-				return $this->formatValue($this->params[$this->counter++], substr($m, 1) ?: 'auto');
-
-			} elseif ($m === '?name') {
-				return $this->delimite($this->params[$this->counter++]);
-
-			} else {
-				throw new Nette\InvalidArgumentException("Unknown placeholder $m.");
 			}
+			return $this->formatValue($this->params[$this->counter++], substr($m, 1) ?: 'auto');
+
+		} elseif ($m[0] === "'" || $m[0] === '"' || $m[0] === '/' || $m[0] === '-') { // string or comment
+			return $m;
 
 		} else { // command
 			static $modes = array(
@@ -118,38 +110,55 @@ class SqlPreprocessor extends Nette\Object
 
 	private function formatValue($value, $mode = NULL)
 	{
-		if (is_string($value)) {
-			if (strlen($value) > 20) {
-				$this->remaining[] = $value;
-				return '?';
+		if (!$mode || $mode === 'auto') {
+			if (is_string($value)) {
+				if (strlen($value) > 20) {
+					$this->remaining[] = $value;
+					return '?';
 
-			} else {
-				return $this->connection->quote($value);
+				} else {
+					return $this->connection->quote($value);
+				}
+
+			} elseif (is_int($value)) {
+				return (string) $value;
+
+			} elseif (is_float($value)) {
+				return rtrim(rtrim(number_format($value, 10, '.', ''), '0'), '.');
+
+			} elseif (is_bool($value)) {
+				return $this->driver->formatBool($value);
+
+			} elseif ($value === NULL) {
+				return 'NULL';
+
+			} elseif ($value instanceof Table\IRow) {
+				return $value->getPrimary();
+
+			} elseif ($value instanceof \DateTime || $value instanceof \DateTimeInterface) {
+				return $this->driver->formatDateTime($value);
+
+			} elseif ($value instanceof SqlLiteral) {
+				$this->remaining = array_merge($this->remaining, $value->getParameters());
+				return $value->__toString();
 			}
 
-		} elseif (is_int($value)) {
-			return (string) $value;
+		} elseif ($mode === 'name') {
+			if (!is_string($value)) {
+				$type = gettype($value);
+				throw new Nette\InvalidArgumentException("Placeholder ?$mode expects string, $type given.");
+			}
+			return $this->delimite($value);
+		}
 
-		} elseif (is_float($value)) {
-			return rtrim(rtrim(number_format($value, 10, '.', ''), '0'), '.');
+		if ($value instanceof \Traversable && !$value instanceof Table\IRow) {
+			$value = iterator_to_array($value);
+		}
 
-		} elseif (is_bool($value)) {
-			return $this->driver->formatBool($value);
-
-		} elseif ($value === NULL) {
-			return 'NULL';
-
-		} elseif ($value instanceof Table\IRow) {
-			return $value->getPrimary();
-
-		} elseif (is_array($value) || $value instanceof \Traversable) {
+		if (is_array($value)) {
 			$vx = $kx = array();
 			if ($mode === 'auto') {
 				$mode = $this->arrayMode;
-			}
-
-			if ($value instanceof \Traversable) {
-				$value = iterator_to_array($value);
 			}
 
 			if (array_key_exists(0, $value)) { // non-associative
@@ -208,14 +217,17 @@ class SqlPreprocessor extends Nette\Object
 					$vx[] = $this->delimite($k) . ($v > 0 ? '' : ' DESC');
 				}
 				return implode(', ', $vx);
+
+			} else {
+				throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
 			}
 
-		} elseif ($value instanceof \DateTime || $value instanceof \DateTimeInterface) {
-			return $this->driver->formatDateTime($value);
+		} elseif (in_array($mode, array('and', 'or', 'set', 'values', 'order'), TRUE)) {
+			$type = gettype($value);
+			throw new Nette\InvalidArgumentException("Placeholder ?$mode expects array or Traversable object, $type given.");
 
-		} elseif ($value instanceof SqlLiteral) {
-			$this->remaining = array_merge($this->remaining, $value->getParameters());
-			return $value->__toString();
+		} elseif ($mode && $mode !== 'auto') {
+			throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
 
 		} else {
 			$this->remaining[] = $value;

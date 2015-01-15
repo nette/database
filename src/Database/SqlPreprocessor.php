@@ -50,7 +50,7 @@ class SqlPreprocessor extends Nette\Object
 	public function process($params)
 	{
 		$this->params = $params;
-		$this->counter = 0;
+		$this->counter = 0; $prev = -1;
 		$this->remaining = array();
 		$this->arrayMode = NULL;
 		$res = array();
@@ -62,7 +62,8 @@ class SqlPreprocessor extends Nette\Object
 				$res[] = $this->formatValue($param, 'auto');
 				$this->arrayMode = NULL;
 
-			} elseif (is_string($param)) {
+			} elseif (is_string($param) && $this->counter > $prev + 1) {
+				$prev = $this->counter;
 				$this->arrayMode = NULL;
 				$res[] = Nette\Utils\Strings::replace(
 					$param,

@@ -52,14 +52,14 @@ class SqlPreprocessor extends Nette\Object
 		$this->params = $params;
 		$this->counter = 0;
 		$this->remaining = array();
-		$this->arrayMode = 'set';
+		$this->arrayMode = NULL;
 		$res = array();
 
 		while ($this->counter < count($params)) {
 			$param = $params[$this->counter++];
 
 			if (($this->counter === 2 && count($params) === 2) || !is_scalar($param)) {
-				$res[] = $this->formatValue($param, $this->arrayMode);
+				$res[] = $this->formatValue($param, 'auto');
 			} elseif (is_string($param)) {
 				$res[] = Nette\Utils\Strings::replace(
 					$param,
@@ -87,7 +87,7 @@ class SqlPreprocessor extends Nette\Object
 				throw new Nette\InvalidArgumentException('There are more placeholders than passed parameters.');
 
 			} elseif (in_array($m, array('?', '?and', '?or', '?set', '?values', '?order'), TRUE)) {
-				return $this->formatValue($this->params[$this->counter++], substr($m, 1) ?: $this->arrayMode);
+				return $this->formatValue($this->params[$this->counter++], substr($m, 1) ?: 'auto');
 
 			} elseif ($m === '?name') {
 				return $this->driver->delimite($this->params[$this->counter++]);
@@ -140,6 +140,9 @@ class SqlPreprocessor extends Nette\Object
 
 		} elseif (is_array($value) || $value instanceof \Traversable) {
 			$vx = $kx = array();
+			if ($mode === 'auto') {
+				$mode = $this->arrayMode;
+			}
 
 			if ($value instanceof \Traversable) {
 				$value = iterator_to_array($value);

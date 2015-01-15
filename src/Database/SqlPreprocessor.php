@@ -60,10 +60,13 @@ class SqlPreprocessor extends Nette\Object
 
 			if (($this->counter === 2 && count($params) === 2) || !is_scalar($param)) {
 				$res[] = $this->formatValue($param, 'auto');
+				$this->arrayMode = NULL;
+
 			} elseif (is_string($param)) {
+				$this->arrayMode = NULL;
 				$res[] = Nette\Utils\Strings::replace(
 					$param,
-					'~\'.*?\'|".*?"|\?[a-z]*|\b(?:INSERT|REPLACE|UPDATE|WHERE|HAVING|ORDER BY|GROUP BY)\b|/\*.*?\*/|--[^\n]*~si',
+					'~\'[^\']*+\'|"[^"]*+"|\?[a-z]*|^\s*+(?:INSERT|REPLACE)\b|\b(?:SET|WHERE|HAVING|ORDER BY|GROUP BY|KEY UPDATE)(?=[\s?]*+\z)|/\*.*?\*/|--[^\n]*~si',
 					array($this, 'callback')
 				);
 			} else {
@@ -100,13 +103,14 @@ class SqlPreprocessor extends Nette\Object
 			static $modes = array(
 				'INSERT' => 'values',
 				'REPLACE' => 'values',
-				'UPDATE' => 'set',
+				'KEY UPDATE' => 'set',
+				'SET' => 'set',
 				'WHERE' => 'and',
 				'HAVING' => 'and',
 				'ORDER BY' => 'order',
 				'GROUP BY' => 'order',
 			);
-			$this->arrayMode = $modes[strtoupper($m)];
+			$this->arrayMode = $modes[ltrim(strtoupper($m))];
 			return $m;
 		}
 	}

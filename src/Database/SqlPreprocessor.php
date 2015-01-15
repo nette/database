@@ -93,7 +93,7 @@ class SqlPreprocessor extends Nette\Object
 				return $this->formatValue($this->params[$this->counter++], substr($m, 1) ?: 'auto');
 
 			} elseif ($m === '?name') {
-				return $this->driver->delimite($this->params[$this->counter++]);
+				return $this->delimite($this->params[$this->counter++]);
 
 			} else {
 				throw new Nette\InvalidArgumentException("Unknown placeholder $m.");

@@ -70,9 +70,9 @@ test(function() use ($preprocessor) { // IN
 });
 
 
-test(function() use ($preprocessor) {
-	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE ?name = ? OR ?name = ?', 'id', 12, 'number', 23));
-	Assert::same( reformat('SELECT id FROM author WHERE [id] = 12 OR [number] = 23'), $sql );
+test(function() use ($preprocessor) { // ?name
+	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE ?name = ? OR ?name = ?', 'id', 12, 'table.number', 23));
+	Assert::same( reformat('SELECT id FROM author WHERE [id] = 12 OR [table].[number] = 23'), $sql );
 	Assert::same( array(), $params );
 });
 

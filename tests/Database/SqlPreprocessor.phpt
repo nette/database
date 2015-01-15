@@ -352,3 +352,16 @@ test(function() use ($preprocessor, $driverName) { // insert & update
 	Assert::same( reformat("INSERT INTO author ([id], [name]) VALUES (12, 'John Doe') ON DUPLICATE KEY UPDATE [web]='http://nette.org', [name]='Dave Lister'"), $sql );
 	Assert::same( array(), $params );
 });
+
+
+test(function() use ($preprocessor) { // invalid usage of ?and, ...
+	foreach (array('?and', '?or', '?set', '?values', '?order') as $mode) {
+		Assert::exception(function() use ($preprocessor, $mode) {
+			$preprocessor->process(array($mode, 'string'));
+		}, 'Nette\InvalidArgumentException', "Placeholder $mode expects array or Traversable object, string given.");
+	}
+
+	Assert::exception(function() use ($preprocessor) {
+		$preprocessor->process(array('SELECT ?name', array('id', 'table.id')));
+	}, 'Nette\InvalidArgumentException', 'Placeholder ?name expects string, array given.');
+});

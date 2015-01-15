@@ -20,7 +20,7 @@ test(function() use ($preprocessor) { // basic
 });
 
 
-test(function() use ($preprocessor) { // two args without placeholder
+test(function() use ($preprocessor) { // arg without placeholder
 	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE id =', 11));
 	Assert::same( 'SELECT id FROM author WHERE id = 11', $sql );
 	Assert::same( array(), $params );
@@ -237,6 +237,24 @@ test(function() use ($preprocessor, $driverName) { // insert
 		"INSERT INTO author ([name], [born]) VALUES ('Catelyn Stark', '2011-11-11 00:00:00')",
 	)), $sql );
 	Assert::same( array(), $params );
+
+
+	list($sql, $params) = $preprocessor->process(array("\r\n  INSERT INTO author",
+		array('name' => 'Catelyn Stark'),
+	));
+	Assert::same( reformat("\r\n  INSERT INTO author ([name]) VALUES ('Catelyn Stark')"), $sql );
+
+
+	list($sql, $params) = $preprocessor->process(array('REPLACE author ?',
+		array('name' => 'Catelyn Stark'),
+	));
+	Assert::same( reformat("REPLACE author ([name]) VALUES ('Catelyn Stark')"), $sql );
+
+
+	list($sql, $params) = $preprocessor->process(array("/* comment */  INSERT INTO author",
+		array('name' => 'Catelyn Stark'),
+	));
+	Assert::same( reformat("/* comment */  INSERT INTO author [name]='Catelyn Stark'"), $sql ); // autodetection not used
 });
 
 
@@ -285,6 +303,24 @@ test(function() use ($preprocessor) { // update
 
 	Assert::same( reformat("UPDATE author SET [id]=12, [name]=UPPER(?)"), $sql );
 	Assert::same( array('John Doe'), $params );
+
+
+	list($sql, $params) = $preprocessor->process(array("UPDATE author SET \n",
+		array('id' => 12, 'name' => 'John Doe'),
+	));
+	Assert::same( reformat("UPDATE author SET \n [id]=12, [name]='John Doe'"), $sql );
+
+
+	list($sql, $params) = $preprocessor->process(array('UPDATE author SET',
+		array('id' => 12, 'name' => 'John Doe'),
+	));
+	Assert::same( reformat("UPDATE author SET [id]=12, [name]='John Doe'"), $sql );
+
+
+	list($sql, $params) = $preprocessor->process(array('UPDATE author SET a=1,',
+		array('id' => 12, 'name' => 'John Doe'),
+	));
+	Assert::same( reformat("UPDATE author SET a=1, [id]=12, [name]='John Doe'"), $sql );
 });
 
 

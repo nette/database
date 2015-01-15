@@ -724,16 +724,18 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	public function insert($data)
 	{
 		if ($data instanceof Selection) {
-			$data = new Nette\Database\SqlLiteral($data->getSql(), $data->getSqlBuilder()->getParameters());
+			$return = $this->context->queryArgs($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), $data->getSqlBuilder()->getParameters());
 
-		} elseif ($data instanceof \Traversable) {
-			$data = iterator_to_array($data);
+		} else {
+			if ($data instanceof \Traversable) {
+				$data = iterator_to_array($data);
+			}
+			$return = $this->context->query($this->sqlBuilder->buildInsertQuery() . ' ?values', $data);
 		}
 
-		$return = $this->context->query($this->sqlBuilder->buildInsertQuery(), $data);
 		$this->loadRefCache();
 
-		if ($data instanceof Nette\Database\SqlLiteral || $this->primary === NULL) {
+		if ($data instanceof Selection || $this->primary === NULL) {
 			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
 			return $return->getRowCount();
 		}

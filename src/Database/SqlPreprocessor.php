@@ -209,7 +209,12 @@ class SqlPreprocessor extends Nette\Object
 					list($k, $operator) = explode(' ', $k . ' ');
 					$k = $this->delimite($k);
 					if (is_array($v)) {
-						$vx[] = $v ? ($k . ' ' . ($operator ?: 'IN') . ' (' . $this->formatValue(array_values($v)) . ')') : '1=0';
+						if ($v) {
+							$vx[] = $k . ' ' . ($operator ? $operator . ' ' : '') . 'IN (' . $this->formatValue(array_values($v)) . ')';
+						} elseif ($operator === 'NOT') {
+						} else {
+							$vx[] = '1=0';
+						}
 					} else {
 						$v = $this->formatValue($v);
 						$vx[] = $k . ' ' . ($operator ?: ($v === 'NULL' ? 'IS' : '=')) . ' ' . $v;

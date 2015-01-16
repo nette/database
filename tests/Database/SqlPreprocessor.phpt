@@ -53,6 +53,17 @@ test(function() use ($preprocessor) { // IN
 	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE (id, name) IN (?)', array(array(10, 'a'), array(11, 'b'))));
 	Assert::same( "SELECT id FROM author WHERE (id, name) IN ((10, 'a'), (11, 'b'))", $sql );
 	Assert::same( array(), $params );
+
+
+	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE', array(
+		'a' => array(NULL, 1, 2, 3),
+		'b' => array(),
+		'c NOT IN' => array(NULL, 1, 2, 3),
+		'd NOT IN' => array(),
+	)));
+
+	Assert::same( reformat('SELECT id FROM author WHERE ([a] IN (NULL, 1, 2, 3)) AND (1=0) AND ([c] NOT IN (NULL, 1, 2, 3))'), $sql );
+	Assert::same( array(), $params );
 });
 
 

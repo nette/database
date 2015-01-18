@@ -149,28 +149,33 @@ class Connection extends Nette\Object
 	}
 
 
-	/** @deprecated */
+	/** @return void */
 	function beginTransaction()
 	{
 		$this->queryArgs('::beginTransaction', array());
 	}
 
 
-	/** @deprecated */
+	/** @return void */
 	function commit()
 	{
 		$this->queryArgs('::commit', array());
 	}
 
 
-	/** @deprecated */
+	/** @return void */
 	public function rollBack()
 	{
 		$this->queryArgs('::rollBack', array());
 	}
 
 
-	/** @deprecated */
+	/**
+	 * Generates and executes SQL query.
+	 * @param  string  statement
+	 * @param  mixed   [parameters, ...]
+	 * @return ResultSet
+	 */
 	public function query($statement)
 	{
 		$args = func_get_args();
@@ -178,8 +183,12 @@ class Connection extends Nette\Object
 	}
 
 
-	/** @deprecated */
-	function queryArgs($statement, array $params)
+	/**
+	 * @param  string  statement
+	 * @param  array
+	 * @return ResultSet
+	 */
+	public function queryArgs($statement, array $params)
 	{
 		$this->connect();
 		if ($params) {
@@ -201,40 +210,62 @@ class Connection extends Nette\Object
 	/********************* shortcuts ****************d*g**/
 
 
-	/** @deprecated */
-	function fetch($args)
+	/**
+	 * Shortcut for query()->fetch()
+	 * @param  string  statement
+	 * @param  mixed   [parameters, ...]
+	 * @return Row
+	 */
+	public function fetch($args)
 	{
 		$args = func_get_args();
 		return $this->queryArgs(array_shift($args), $args)->fetch();
 	}
 
 
-	/** @deprecated */
-	function fetchField($args)
+	/**
+	 * Shortcut for query()->fetchField()
+	 * @param  string  statement
+	 * @param  mixed   [parameters, ...]
+	 * @return mixed
+	 */
+	public function fetchField($args)
 	{
 		$args = func_get_args();
 		return $this->queryArgs(array_shift($args), $args)->fetchField();
 	}
 
 
-	/** @deprecated */
-	function fetchPairs($args)
+	/**
+	 * Shortcut for query()->fetchPairs()
+	 * @param  string  statement
+	 * @param  mixed   [parameters, ...]
+	 * @return array
+	 */
+	public function fetchPairs($args)
 	{
 		$args = func_get_args();
 		return $this->queryArgs(array_shift($args), $args)->fetchPairs();
 	}
 
 
-	/** @deprecated */
-	function fetchAll($args)
+	/**
+	 * Shortcut for query()->fetchAll()
+	 * @param  string  statement
+	 * @param  mixed   [parameters, ...]
+	 * @return array
+	 */
+	public function fetchAll($args)
 	{
 		$args = func_get_args();
 		return $this->queryArgs(array_shift($args), $args)->fetchAll();
 	}
 
 
-	/** @deprecated */
-	static function literal($value)
+	/**
+	 * @return SqlLiteral
+	 */
+	public static function literal($value)
 	{
 		$args = func_get_args();
 		return new SqlLiteral(array_shift($args), $args);

@@ -26,9 +26,6 @@ class Context extends Nette\Object
 	/** @var Nette\Caching\IStorage */
 	private $cacheStorage;
 
-	/** @var SqlPreprocessor */
-	private $preprocessor;
-
 
 	public function __construct(Connection $connection, IReflection $reflection = NULL, Nette\Caching\IStorage $cacheStorage = NULL)
 	{
@@ -41,21 +38,21 @@ class Context extends Nette\Object
 	/** @return void */
 	public function beginTransaction()
 	{
-		$this->queryArgs('::beginTransaction', array());
+		$this->connection->beginTransaction();
 	}
 
 
 	/** @return void */
 	public function commit()
 	{
-		$this->queryArgs('::commit', array());
+		$this->connection->commit();
 	}
 
 
 	/** @return void */
 	public function rollBack()
 	{
-		$this->queryArgs('::rollBack', array());
+		$this->connection->rollBack();
 	}
 
 
@@ -77,8 +74,7 @@ class Context extends Nette\Object
 	 */
 	public function query($statement)
 	{
-		$args = func_get_args();
-		return $this->queryArgs(array_shift($args), $args);
+		return $this->connection->query(func_get_args());
 	}
 
 
@@ -89,24 +85,7 @@ class Context extends Nette\Object
 	 */
 	public function queryArgs($statement, array $params)
 	{
-		$this->connection->connect();
-		if ($params) {
-			if (!$this->preprocessor) {
-				$this->preprocessor = new SqlPreprocessor($this->connection);
-			}
-			array_unshift($params, $statement);
-			list($statement, $params) = $this->preprocessor->process($params);
-		}
-
-		try {
-			$result = new ResultSet($this->connection, $statement, $params);
-		} catch (\PDOException $e) {
-			$e->queryString = $statement;
-			$this->connection->onQuery($this->connection, $e);
-			throw $e;
-		}
-		$this->connection->onQuery($this->connection, $result);
-		return $result;
+		return $this->connection->queryArgs($statement, $params);
 	}
 
 
@@ -145,8 +124,7 @@ class Context extends Nette\Object
 	 */
 	public function fetch($args)
 	{
-		$args = func_get_args();
-		return $this->queryArgs(array_shift($args), $args)->fetch();
+		return $this->connection->query(func_get_args())->fetch();
 	}
 
 
@@ -158,8 +136,7 @@ class Context extends Nette\Object
 	 */
 	public function fetchField($args)
 	{
-		$args = func_get_args();
-		return $this->queryArgs(array_shift($args), $args)->fetchField();
+		return $this->connection->query(func_get_args())->fetchField();
 	}
 
 
@@ -171,8 +148,7 @@ class Context extends Nette\Object
 	 */
 	public function fetchPairs($args)
 	{
-		$args = func_get_args();
-		return $this->queryArgs(array_shift($args), $args)->fetchPairs();
+		return $this->connection->query(func_get_args())->fetchPairs();
 	}
 
 
@@ -184,8 +160,7 @@ class Context extends Nette\Object
 	 */
 	public function fetchAll($args)
 	{
-		$args = func_get_args();
-		return $this->queryArgs(array_shift($args), $args)->fetchAll();
+		return $this->connection->query(func_get_args())->fetchAll();
 	}
 
 

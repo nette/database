@@ -18,7 +18,6 @@ use Nette;
  */
 class DatabaseExtension extends Nette\DI\CompilerExtension
 {
-
 	public $databaseDefaults = array(
 		'dsn' => NULL,
 		'user' => NULL,
@@ -34,83 +33,88 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 
 	public function loadConfiguration()
 	{
-		$container = $this->getContainerBuilder();
-
-		$config = $this->compiler->getConfig();
-		if (isset($config['nette']['database'])) { // back compatibility
-			$config = $config['nette']['database'];
+		$configs = $this->compiler->getConfig();
+		if (isset($configs['nette']['database'])) { // back compatibility
+			$configs = $configs['nette']['database'];
 			$prefix = 'nette.';
 		} else {
-			$config = isset($config[$this->name]) ? $config[$this->name] : array();
+			$configs = isset($configs[$this->name]) ? $configs[$this->name] : array();
 			$prefix = '';
 		}
 
-		if (isset($config['dsn'])) {
-			$config = array('default' => $config);
+		if (isset($configs['dsn'])) {
+			$configs = array('default' => $configs);
 		}
 
 		$autowired = TRUE;
-		foreach ((array) $config as $name => $info) {
-			if (!is_array($info)) {
+		foreach ((array) $configs as $name => $config) {
+			if (!is_array($config)) {
 				continue;
 			}
-			$this->validate($info, $this->databaseDefaults, 'database');
+			$this->validate($config, $this->databaseDefaults, 'database');
 
-			$info += array('autowired' => $autowired) + $this->databaseDefaults;
+			$config += array('autowired' => $autowired) + $this->databaseDefaults;
 			$autowired = FALSE;
+			$this->setupDatabase($config, $name, $prefix);
+		}
+	}
 
-			foreach ((array) $info['options'] as $key => $value) {
-				if (preg_match('#^PDO::\w+\z#', $key)) {
-					unset($info['options'][$key]);
-					$info['options'][constant($key)] = $value;
-				}
+
+	private function setupDatabase($config, $name, $prefix)
+	{
+		$container = $this->getContainerBuilder();
+
+		foreach ((array) $config['options'] as $key => $value) {
+			if (preg_match('#^PDO::\w+\z#', $key)) {
+				unset($config['options'][$key]);
+				$config['options'][constant($key)] = $value;
 			}
+		}
 
-			$hasBlueScreenService = $container->hasDefinition('nette.blueScreen');
-			$connection = $container->addDefinition($prefix . $this->prefix($name))
-				->setClass('Nette\Database\Connection', array($info['dsn'], $info['user'], $info['password'], $info['options']))
-				->setAutowired($info['autowired'])
-				->addSetup($hasBlueScreenService ? '@nette.blueScreen::addPanel' : 'Tracy\Debugger::getBlueScreen()->addPanel(?)', array(
-					'Nette\Bridges\DatabaseTracy\ConnectionPanel::renderException'
-				));
+		$hasBlueScreenService = $container->hasDefinition('nette.blueScreen');
+		$connection = $container->addDefinition($prefix . $this->prefix($name))
+			->setClass('Nette\Database\Connection', array($config['dsn'], $config['user'], $config['password'], $config['options']))
+			->setAutowired($config['autowired'])
+			->addSetup($hasBlueScreenService ? '@nette.blueScreen::addPanel' : 'Tracy\Debugger::getBlueScreen()->addPanel(?)', array(
+				'Nette\Bridges\DatabaseTracy\ConnectionPanel::renderException'
+			));
 
-			$structure = $container->addDefinition($prefix . $this->prefix("$name.structure"))
-				->setClass('Nette\Database\Structure')
-				->setArguments(array($connection));
+		$structure = $container->addDefinition($prefix . $this->prefix("$name.structure"))
+			->setClass('Nette\Database\Structure')
+			->setArguments(array($connection));
 
-			if (!empty($info['reflection'])) {
-				$conventionsServiceName = 'reflection';
-				$info['conventions'] = $info['reflection'];
-				if (strtolower($info['conventions']) === 'conventional') {
-					$info['conventions'] = 'Static';
-				}
-			} else {
-				$conventionsServiceName = 'conventions';
+		if (!empty($config['reflection'])) {
+			$conventionsServiceName = 'reflection';
+			$config['conventions'] = $config['reflection'];
+			if (strtolower($config['conventions']) === 'conventional') {
+				$config['conventions'] = 'Static';
 			}
+		} else {
+			$conventionsServiceName = 'conventions';
+		}
 
-			if (!$info['conventions']) {
-				$conventions = NULL;
+		if (!$config['conventions']) {
+			$conventions = NULL;
 
-			} elseif (is_string($info['conventions'])) {
-				$conventions = $container->addDefinition($prefix . $this->prefix("$name.$conventionsServiceName"))
-					->setClass(preg_match('#^[a-z]+\z#', $info['conventions'])
-						? 'Nette\Database\Conventions\\' . ucfirst($info['conventions']) . 'Conventions'
-						: $info['conventions'])
-					->setArguments(strtolower($info['conventions']) === 'discovered' ? array($structure) : array())
-					->setAutowired($info['autowired']);
+		} elseif (is_string($config['conventions'])) {
+			$conventions = $container->addDefinition($prefix . $this->prefix("$name.$conventionsServiceName"))
+				->setClass(preg_match('#^[a-z]+\z#', $config['conventions'])
+					? 'Nette\Database\Conventions\\' . ucfirst($config['conventions']) . 'Conventions'
+					: $config['conventions'])
+				->setArguments(strtolower($config['conventions']) === 'discovered' ? array($structure) : array())
+				->setAutowired($config['autowired']);
 
-			} else {
-				$tmp = Nette\DI\Compiler::filterArguments(array($info['conventions']));
-				$conventions = reset($tmp);
-			}
+		} else {
+			$tmp = Nette\DI\Compiler::filterArguments(array($config['conventions']));
+			$conventions = reset($tmp);
+		}
 
-			$container->addDefinition($prefix . $this->prefix("$name.context"))
-				->setClass('Nette\Database\Context', array($connection, $structure, $conventions))
-				->setAutowired($info['autowired']);
+		$container->addDefinition($prefix . $this->prefix("$name.context"))
+			->setClass('Nette\Database\Context', array($connection, $structure, $conventions))
+			->setAutowired($config['autowired']);
 
-			if ($container->parameters['debugMode'] && $info['debugger']) {
-				$connection->addSetup('Nette\Database\Helpers::createDebugPanel', array($connection, !empty($info['explain']), $name));
-			}
+		if ($container->parameters['debugMode'] && $config['debugger']) {
+			$connection->addSetup('Nette\Database\Helpers::createDebugPanel', array($connection, !empty($config['explain']), $name));
 		}
 	}
 

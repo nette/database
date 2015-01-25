@@ -29,5 +29,5 @@ test(function() use ($context) {
 
 
 	$book->delete();  // DELETE FROM `book` WHERE (`id` = ?)
-	Assert::same(0, count($context->table('book')->wherePrimary(3)));  // SELECT * FROM `book` WHERE (`id` = ?)
+	Assert::count(0, $context->table('book')->wherePrimary(3));  // SELECT * FROM `book` WHERE (`id` = ?)
 });

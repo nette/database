@@ -20,7 +20,7 @@
 		"nette/utils": "~2.2"
 	},
 	"require-dev": {
-		"nette/tester": "~1.1",
+		"nette/tester": "~1.3",
 		"nette/di": "~2.3",
 		"mockery/mockery": "~0.9.1"
 	},

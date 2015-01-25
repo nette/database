@@ -23,10 +23,10 @@ use Nette,
  */
 class Connection extends Nette\Object
 {
-	/** @var array of function(Connection $connection); Occurs after connection is established */
+	/** @var callable[]  function(Connection $connection); Occurs after connection is established */
 	public $onConnect;
 
-	/** @var array of function(Connection $connection, ResultSet|DriverException $result); Occurs after query is executed */
+	/** @var callable[]  function(Connection $connection, ResultSet|DriverException $result); Occurs after query is executed */
 	public $onQuery;
 
 	/** @var array */

@@ -208,6 +208,18 @@ class Connection extends Nette\Object
 	}
 
 
+	/**
+	 * @return [string, array]
+	 */
+	public function preprocess($statement)
+	{
+		$this->connect();
+		return func_num_args() > 1
+			? $this->preprocessor->process(func_get_args())
+			: array($statement, array());
+	}
+
+
 	/********************* shortcuts ****************d*g**/
 
 

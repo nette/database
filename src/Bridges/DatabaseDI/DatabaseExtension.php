@@ -94,7 +94,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 
 		} elseif (is_string($config['conventions'])) {
 			$conventions = $container->addDefinition($this->prefix("$name.$conventionsServiceName"))
-				->setClass(preg_match('#^[a-z]+\z#', $config['conventions'])
+				->setClass(preg_match('#^[a-z]+\z#i', $config['conventions'])
 					? 'Nette\Database\Conventions\\' . ucfirst($config['conventions']) . 'Conventions'
 					: $config['conventions'])
 				->setArguments(strtolower($config['conventions']) === 'discovered' ? array($structure) : array())

@@ -11,7 +11,7 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 
 
 $sqlBuilder = new Nette\Database\Table\SqlBuilder('book', $connection, new Nette\Database\Reflection\ConventionalReflection);
-$tryDelimite = $sqlBuilder->reflection->getMethod('tryDelimite');
+$tryDelimite = $sqlBuilder->getReflection()->getMethod('tryDelimite');
 $tryDelimite->setAccessible(TRUE);
 
 Assert::same(reformat('[hello]'), $tryDelimite->invoke($sqlBuilder, 'hello'));

@@ -22,7 +22,7 @@ $context = new Nette\Database\Context($connection, $structure, $conventions, $ca
 
 $queries = 0;
 $connection->onQuery[] = function($dao, ResultSet $result) use (& $queries) {
-	if (!preg_match('#SHOW|CONSTRAINT_NAME|pg_catalog|sys\.|SET|PRAGMA|FROM sqlite_#i', $result->queryString)) {
+	if (!preg_match('#SHOW|CONSTRAINT_NAME|pg_catalog|sys\.|SET|PRAGMA|FROM sqlite_#i', $result->getQueryString())) {
 		$queries++;
 	}
 };

@@ -31,7 +31,7 @@ class DiscoveredReflection extends Nette\Object implements Nette\Database\IRefle
 	 */
 	public function __construct(Nette\Database\Connection $connection, Nette\Caching\IStorage $cacheStorage = NULL)
 	{
-		trigger_error(__CLASS__ . '() is deprecated; use Nette\Database\Conventions\DiscoverConventions instead.', E_USER_DEPRECATED);
+		trigger_error(__CLASS__ . '() is deprecated; use Nette\Database\Conventions\DiscoveredConventions instead.', E_USER_DEPRECATED);
 
 		$this->connection = $connection;
 		if ($cacheStorage) {

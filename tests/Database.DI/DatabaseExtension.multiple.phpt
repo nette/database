@@ -16,12 +16,21 @@ test(function() {
 	$loader = new DI\Config\Loader;
 	$config = $loader->load(Tester\FileMock::create('
 	database:
-		dsn: "sqlite::memory:"
-		user: name
-		password: secret
-		debugger: no
-		options:
-			lazy: yes
+		first:
+			dsn: "sqlite::memory:"
+			user: name
+			password: secret
+			debugger: no
+			options:
+				lazy: yes
+
+		second:
+			dsn: "sqlite::memory:"
+			user: name
+			password: secret
+			debugger: no
+			options:
+				lazy: yes
 	', 'neon'));
 
 	$compiler = new DI\Compiler;
@@ -32,18 +41,22 @@ test(function() {
 	$container = new Container1;
 	$container->initialize();
 
-	$connection = $container->getService('database.default');
+	$connection = $container->getService('database.first');
 	Assert::type('Nette\Database\Connection', $connection);
+	Assert::same($connection, $container->getByType('Nette\Database\Connection'));
 	Assert::same('sqlite::memory:', $connection->getDsn());
 
-	$context = $container->getService('database.default.context');
+	$context = $container->getService('database.first.context');
 	Assert::type('Nette\Database\Context', $context);
+	Assert::same($context, $container->getByType('Nette\Database\Context'));
 	Assert::same($connection, $context->getConnection());
 
 	Assert::type('Nette\Database\Structure', $context->getStructure());
+	Assert::same($context->getStructure(), $container->getByType('Nette\Database\IStructure'));
 	Assert::type('Nette\Database\Conventions\DiscoveredConventions', $context->getConventions());
+	Assert::same($context->getConventions(), $container->getByType('Nette\Database\IConventions'));
 
 	// aliases
-	Assert::same($connection, $container->getService('nette.database.default'));
-	Assert::same($context, $container->getService('nette.database.default.context'));
+	Assert::same($connection, $container->getService('nette.database.first'));
+	Assert::same($context, $container->getService('nette.database.first.context'));
 });

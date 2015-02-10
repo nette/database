@@ -77,7 +77,8 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 
 		$structure = $container->addDefinition($this->prefix("$name.structure"))
 			->setClass('Nette\Database\Structure')
-			->setArguments(array($connection));
+			->setArguments(array($connection))
+			->setAutowired($config['autowired']);
 
 		if (!empty($config['reflection'])) {
 			$conventionsServiceName = 'reflection';

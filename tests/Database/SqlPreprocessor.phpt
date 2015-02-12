@@ -410,3 +410,15 @@ test(function() use ($preprocessor) { // object
 	Assert::same( "SELECT 'hello'", $sql );
 	Assert::same( array(), $params );
 });
+
+
+Assert::exception(function() use ($preprocessor) { // object
+	$preprocessor->process(array('SELECT ?', new stdClass));
+}, 'Nette\InvalidArgumentException', 'Unexpected type of parameter: stdClass');
+
+
+test(function() use ($preprocessor) { // resource
+	list($sql, $params) = $preprocessor->process(array('SELECT ?', $res = fopen(__FILE__, 'r')));
+	Assert::same( 'SELECT ?', $sql );
+	Assert::same( array($res), $params );
+});

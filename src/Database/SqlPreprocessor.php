@@ -147,6 +147,10 @@ class SqlPreprocessor extends Nette\Object
 
 			} elseif (is_object($value) && method_exists($value, '__toString')) {
 				return $this->formatValue((string) $value);
+
+			} elseif (is_resource($value)) {
+				$this->remaining[] = $value;
+				return '?';
 			}
 
 		} elseif ($mode === 'name') {
@@ -243,8 +247,7 @@ class SqlPreprocessor extends Nette\Object
 			throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
 
 		} else {
-			$this->remaining[] = $value;
-			return '?';
+			throw new Nette\InvalidArgumentException('Unexpected type of parameter: ' . (is_object($value) ? get_class($value) : gettype($value)));
 		}
 	}
 

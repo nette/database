@@ -395,3 +395,18 @@ test(function() use ($preprocessor) {
 	Assert::same( reformat('SELECT id FROM author WHERE (([a] = 1) AND ([b] = 2)) OR (([c] = 3) AND ([d] = 4))'), $sql );
 	Assert::same( array(), $params );
 });
+
+
+class ToString
+{
+	function __toString()
+	{
+		return 'hello';
+	}
+}
+
+test(function() use ($preprocessor) { // object
+	list($sql, $params) = $preprocessor->process(array('SELECT ?', new ToString));
+	Assert::same( "SELECT 'hello'", $sql );
+	Assert::same( array(), $params );
+});

@@ -46,6 +46,10 @@ test(function() use ($preprocessor) {
 
 
 test(function() use ($preprocessor) { // IN
+	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE id IN (?)', array()));
+	Assert::same( 'SELECT id FROM author WHERE id IN (1=1)', $sql );
+	Assert::same( array(), $params );
+
 	list($sql, $params) = $preprocessor->process(array('SELECT id FROM author WHERE id IN (?)', array(10, 11)));
 	Assert::same( 'SELECT id FROM author WHERE id IN (10, 11)', $sql );
 	Assert::same( array(), $params );

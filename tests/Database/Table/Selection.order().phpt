@@ -25,3 +25,18 @@ test(function() use ($context) {
 		'1001 tipu a triku pro PHP',
 	), $apps);
 });
+
+test(function() use ($context) {
+	$apps = array();
+
+	$selection = $context->table('book')->order('title DESC')->resetOrder()->limit(3);
+	foreach ($selection as $book) {  // SELECT * FROM `book` LIMIT 3
+		$apps[] = $book->title;
+	}
+
+	Assert::same(array(
+		'1001 tipu a triku pro PHP',
+		'JUSH',
+		'Nette',
+	), $apps);
+});

@@ -31,3 +31,20 @@ test(function() use ($context) {
 test(function() use ($context) {
 	Assert::null($context->table('book')->get(2)->ref('author', 'translator_id'));
 });
+
+test(function() use ($context, $connection) {
+	$counter = 0;
+
+	$connection->onQuery[] = function($connection, $result) use (&$counter) {
+		$counter++;
+	};
+
+	$table = $context->table('book');
+
+	$names = array();
+	foreach ($table as $book) {
+		$translator = $book->ref('author', 'translator_id');
+	}
+
+	Assert::equal(2, $counter);
+});

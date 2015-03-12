@@ -205,7 +205,7 @@ class SqlPreprocessor extends Nette\Object
 						$vx[] = $this->delimite($k) . '=' . $this->formatValue($v);
 					}
 				}
-				return $vx ? implode(', ', $vx) : '1=1';
+				return implode(', ', $vx);
 
 			} elseif ($mode === 'and' || $mode === 'or') { // (key [operator] value) AND ...
 				foreach ($value as $k => $v) {

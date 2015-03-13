@@ -55,6 +55,15 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 
 
 	/**
+	 * Formats date-time interval for use in a SQL statement.
+	 */
+	public function formatDateInterval(\DateInterval $value)
+	{
+		throw new Nette\NotSupportedException;
+	}
+
+
+	/**
 	 * Encodes string for use in a LIKE statement.
 	 */
 	public function formatLike($value, $pos)

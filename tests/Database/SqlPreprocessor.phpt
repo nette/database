@@ -236,7 +236,35 @@ test(function() use ($preprocessor) { // ?or
 });
 
 
-test(function() use ($preprocessor, $driverName) { // insert
+test(function() use ($preprocessor, $driverName) { // date time
+	list($sql, $params) = $preprocessor->process(array('SELECT ?', array(new DateTime('2011-11-11'))));
+	Assert::same( reformat(array(
+		'sqlite' => "SELECT 1320966000",
+		"SELECT '2011-11-11 00:00:00'",
+	)), $sql );
+	Assert::same( array(), $params );
+
+
+	if ($driverName === 'mysql') {
+		$interval = new DateInterval('PT26H8M10S');
+		$interval->invert = TRUE;
+		list($sql, $params) = $preprocessor->process(array('SELECT ?', array($interval)));
+		Assert::same( reformat("SELECT '-26:08:10'"), $sql );
+	}
+
+
+	Assert::same( array(), $params );
+	if (PHP_VERSION_ID >= 50500) {
+		list($sql, $params) = $preprocessor->process(array('SELECT ?', array(new DateTimeImmutable('2011-11-11'))));
+		Assert::same( reformat(array(
+			'sqlite' => "SELECT 1320966000",
+			"SELECT '2011-11-11 00:00:00'",
+		)), $sql );
+	}
+});
+
+
+test(function() use ($preprocessor) { // insert
 	list($sql, $params) = $preprocessor->process(array('INSERT INTO author',
 		array('name' => 'Catelyn Stark', 'born' => new DateTime('2011-11-11')),
 	));
@@ -267,7 +295,7 @@ test(function() use ($preprocessor, $driverName) { // insert
 });
 
 
-test(function() use ($preprocessor, $driverName) { // ?values
+test(function() use ($preprocessor) { // ?values
 	list($sql, $params) = $preprocessor->process(array('INSERT INTO update ?values',
 		array('name' => 'Catelyn Stark'),
 	));
@@ -277,7 +305,7 @@ test(function() use ($preprocessor, $driverName) { // ?values
 });
 
 
-test(function() use ($preprocessor, $driverName) { // multi insert
+test(function() use ($preprocessor) { // multi insert
 	list($sql, $params) = $preprocessor->process(array('INSERT INTO author', array(
 		array('name' => 'Catelyn Stark', 'born' => new DateTime('2011-11-11')),
 		array('name' => 'Sansa Stark', 'born' => new DateTime('2021-11-11'))
@@ -291,7 +319,7 @@ test(function() use ($preprocessor, $driverName) { // multi insert
 });
 
 
-test(function() use ($preprocessor, $driverName) { // multi insert ?values
+test(function() use ($preprocessor) { // multi insert ?values
 	list($sql, $params) = $preprocessor->process(array('INSERT INTO author ?values', array(
 		array('name' => 'Catelyn Stark', 'born' => new DateTime('2011-11-11')),
 		array('name' => 'Sansa Stark', 'born' => new DateTime('2021-11-11'))
@@ -354,7 +382,7 @@ test(function() use ($preprocessor) { // update +=
 });
 
 
-test(function() use ($preprocessor, $driverName) { // insert & update
+test(function() use ($preprocessor) { // insert & update
 	list($sql, $params) = $preprocessor->process(array('INSERT INTO author ? ON DUPLICATE KEY UPDATE ?',
 		array('id' => 12, 'name' => 'John Doe'),
 		array('web' => 'http://nette.org', 'name' => 'Dave Lister'),

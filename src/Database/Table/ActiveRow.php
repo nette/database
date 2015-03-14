@@ -167,10 +167,23 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 */
 	public function update($data)
 	{
+		if ($data instanceof \Traversable) {
+			$data = iterator_to_array($data);
+		}
+
+		$primary = $this->getPrimary();
+		if (!is_array($primary)) {
+			$primary = array($this->table->getPrimary() => $primary);
+		}
+
 		$selection = $this->table->createSelectionInstance()
-			->wherePrimary($this->getPrimary());
+			->wherePrimary($primary);
 
 		if ($selection->update($data)) {
+			if ($tmp = array_intersect_key($data, $primary)) {
+				$selection = $this->table->createSelectionInstance()
+					->wherePrimary($tmp + $primary);
+			}
 			$selection->select('*');
 			if (($row = $selection->fetch()) === FALSE) {
 				throw new Nette\InvalidStateException('Database refetch failed; row does not exist!');

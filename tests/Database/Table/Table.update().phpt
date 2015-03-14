@@ -68,3 +68,23 @@ $bookTag = $book2->related('book_tag')->insert(array(
 $app = $context->table('book')->get(5);  // SELECT * FROM `book` WHERE (`id` = ?)
 $tags = iterator_to_array($app->related('book_tag'));  // SELECT * FROM `book_tag` WHERE (`book_tag`.`book_id` IN (5))
 Assert::same('Xbox Game', reset($tags)->tag->name);  // SELECT * FROM `tag` WHERE (`tag`.`id` IN (24))
+
+
+$tag2 = $context->table('tag')->insert(array(
+	'name' => 'PS4 Game',
+));  // INSERT INTO `tag` (`name`) VALUES ('PS4 Game')
+
+$tag2->update(array(
+	'id' => 1,
+));  // UPDATE `tag` SET `id`=1 WHERE (`id` = (?))
+Assert::same(1, $tag2->id);
+
+
+$book_tag = $context->table('book_tag')->get(array(
+	'book_id' => 5,
+	'tag_id' => 25,
+));  // SELECT * FROM `book_tag` WHERE (`book_id` = (?) AND `tag_id` = (?))
+$book_tag->update(array(
+	'tag_id' => 21,
+));  // UPDATE `book_tag` SET `tag_id`=21 WHERE (`book_id` = (?) AND `tag_id` = (?))
+Assert::same(21, $book_tag->tag_id);

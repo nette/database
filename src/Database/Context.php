@@ -96,7 +96,7 @@ class Context extends Nette\Object
 
 	/**
 	 * @param  string
-	 * @return Nette\Database\Table\Selection
+	 * @return Table\Selection
 	 */
 	public function table($table)
 	{

@@ -11,7 +11,7 @@ use Nette;
 
 
 /** @deprecated */
-interface IReflection extends Nette\Database\IConventions
+interface IReflection extends IConventions
 {
 	/** @deprecated */
 	const

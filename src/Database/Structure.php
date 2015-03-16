@@ -17,7 +17,7 @@ use Nette;
  */
 class Structure extends Nette\Object implements IStructure
 {
-	/** @var Nette\Database\Connection */
+	/** @var Connection */
 	protected $connection;
 
 	/** @var Nette\Caching\Cache */
@@ -30,7 +30,7 @@ class Structure extends Nette\Object implements IStructure
 	protected $isRebuilt = FALSE;
 
 
-	public function __construct(Nette\Database\Connection $connection, Nette\Caching\IStorage $cacheStorage)
+	public function __construct(Connection $connection, Nette\Caching\IStorage $cacheStorage)
 	{
 		$this->connection = $connection;
 		$this->cache = new Nette\Caching\Cache($cacheStorage, 'Nette.Database.Structure.' . md5($this->connection->getDsn()));

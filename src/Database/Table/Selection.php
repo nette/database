@@ -23,7 +23,7 @@ use Nette,
  */
 class Selection extends Nette\Object implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 {
-	/** @var Nette\Database\Context */
+	/** @var Context */
 	protected $context;
 
 	/** @var IConventions */

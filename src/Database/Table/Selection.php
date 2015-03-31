@@ -265,7 +265,8 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 */
 	public function fetchAssoc($path)
 	{
-		return Nette\Utils\Arrays::associate($this->fetchAll(), $path);
+		$rows = array_map('iterator_to_array', $this->fetchAll());
+		return Nette\Utils\Arrays::associate($rows, $path);
 	}
 
 

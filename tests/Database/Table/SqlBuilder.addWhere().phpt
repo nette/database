@@ -9,6 +9,7 @@ use Tester\Assert;
 use Nette\Database\SqlLiteral;
 use Nette\Database\Conventions\DiscoveredConventions;
 use Nette\Database\Table\SqlBuilder;
+use Nette\Database\ISupplementalDriver;
 
 require __DIR__ . '/../connect.inc.php'; // create $connection
 
@@ -41,6 +42,16 @@ test(function() use ($context) { // test Selection as a parameter
 	)), $sqlBuilder->buildSelectQuery());
 });
 
+test(function() use ($context) { // test Selection with parameters as a parameter
+	$sqlBuilder = new SqlBuilder('book', $context);
+	$sqlBuilder->addWhere('id', $context->table('book')->having('COUNT(:book_tag.tag_id) >', 1));
+	$schemaSupported = $context->getConnection()->getSupplementalDriver()->isSupported(ISupplementalDriver::SUPPORT_SCHEMA);
+	Assert::equal(reformat(array(
+		'mysql' => 'SELECT * FROM `book` WHERE (`id` IN (?))',
+		'SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book] LEFT JOIN ' . ($schemaSupported ? '[public].[book_tag] AS ' : '') . '[book_tag] ON [book].[id] = [book_tag].[book_id] HAVING COUNT([book_tag].[tag_id]) >))',
+	)), $sqlBuilder->buildSelectQuery());
+	Assert::count(1, $sqlBuilder->getParameters());
+});
 
 test(function() use ($context) { // test Selection with column as a parameter
 	$sqlBuilder = new SqlBuilder('book', $context);

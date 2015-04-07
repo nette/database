@@ -273,7 +273,7 @@ class SqlBuilder extends Nette\Object
 					if ($this->driver->isSupported(ISupplementalDriver::SUPPORT_SUBSELECT)) {
 						$arg = NULL;
 						$replace = $match[2][0] . '(' . $clone->getSql() . ')';
-						$this->parameters['where'] = array_merge($this->parameters['where'], $clone->getSqlBuilder()->parameters['where']);
+						$this->parameters['where'] = array_merge($this->parameters['where'], $clone->getSqlBuilder()->getParameters());
 					} else {
 						$arg = array();
 						foreach ($clone as $row) {

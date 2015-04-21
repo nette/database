@@ -840,6 +840,9 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 			}
 			list($table, $column) = $belongsTo;
 		}
+		if (!$row->accessColumn($column)) {
+			return FALSE;
+		}
 
 		$checkPrimaryKey = $row[$column];
 

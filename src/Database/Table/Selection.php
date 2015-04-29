@@ -893,7 +893,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 			list($table, $column) = $hasMany;
 		}
 
-		$prototype = & $this->refCache['referencingPrototype']["$table.$column"];
+		$prototype = & $this->refCache['referencingPrototype'][$this->getSpecificCacheKey()]["$table.$column"];
 		if (!$prototype) {
 			$prototype = $this->createGroupedSelectionInstance($table, $column);
 			$prototype->where("$table.$column", array_keys((array) $this->rows));

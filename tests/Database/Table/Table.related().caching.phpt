@@ -78,3 +78,22 @@ test(function () use ($context) {
 		'Jakub Vrana',
 	), $translators);
 });
+
+
+
+test(function() use ($context) { // cache can't be affected by inner query!
+	$author = $context->table('author')->get(11);
+	$secondBookTagRels = NULL;
+	foreach ($author->related('book')->order('id') as $book) {
+		if (!isset($secondBookTagRels)) {
+			$bookFromAnotherSelection = $author->related('book')->where('id', $book->id)->fetch();
+			$bookFromAnotherSelection->related('book_tag')->fetchPairs('id');
+			$secondBookTagRels = array();
+		} else {
+			foreach ($book->related('book_tag') as $bookTagRel) {
+				$secondBookTagRels[] = $bookTagRel->tag->name;
+			}
+		}
+	}
+	Assert::same(array('JavaScript'), $secondBookTagRels);
+});

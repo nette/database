@@ -21,7 +21,7 @@ test(function() use ($context) {
 	);
 	$books = $context->table('book');
 	foreach($books as $book){
-		$pairs = $book->related('book_tag')->group('tag_id')->fetchPairs(NULL, 'tag_id');
+		$pairs = $book->related('book_tag')->group('tag_id')->order('tag_id')->fetchPairs(NULL, 'tag_id');
 		Assert::same($results[$book->id], array_values($pairs));
 	}
 });

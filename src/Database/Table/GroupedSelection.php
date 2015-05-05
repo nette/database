@@ -85,6 +85,15 @@ class GroupedSelection extends Selection
 	}
 
 
+	public function group($columns)
+	{
+		$this->emptyResultSet();
+		$columns .= ", $this->name.$this->column";
+		$this->sqlBuilder->setGroup($columns);
+		return $this;
+	}
+
+
 	/********************* aggregations ****************d*g**/
 
 

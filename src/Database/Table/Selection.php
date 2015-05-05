@@ -351,6 +351,18 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 
 	/**
+	 * Resets current order clause.
+	 * @return self
+	 */
+	public function resetOrder()
+	{
+		$this->emptyResultSet();
+		$this->sqlBuilder->setOrder(array(), array());
+		return $this;
+	}
+
+
+	/**
 	 * Sets limit clause, more calls rewrite old values.
 	 * @param  int
 	 * @param  int

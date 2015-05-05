@@ -14,12 +14,29 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 test(function() use ($context) {
 	$apps = array();
-	foreach ($context->table('book')->where('title LIKE ?', '%t%')->order('title')->limit(3) as $book) {  // SELECT * FROM `book` WHERE (`title` LIKE ?) ORDER BY `title` LIMIT 3
+
+	$selection = $context->table('book')->where('title LIKE ?', '%t%')->order('title DESC')->limit(3);
+	foreach ($selection as $book) {  // SELECT * FROM `book` WHERE (`title` LIKE ?) ORDER BY `title` DESC LIMIT 3
+		$apps[] = $book->title;
+	}
+
+	Assert::same(array(
+		'Nette',
+		'1001 tipu a triku pro PHP',
+	), $apps);
+});
+
+test(function() use ($context) {
+	$apps = array();
+
+	$selection = $context->table('book')->order('title DESC')->resetOrder()->limit(3);
+	foreach ($selection as $book) {  // SELECT * FROM `book` LIMIT 3
 		$apps[] = $book->title;
 	}
 
 	Assert::same(array(
 		'1001 tipu a triku pro PHP',
+		'JUSH',
 		'Nette',
 	), $apps);
 });

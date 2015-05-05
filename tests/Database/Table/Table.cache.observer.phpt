@@ -5,6 +5,7 @@
  * @dataProvider? ../databases.ini
  */
 
+use Nette\Caching\Storages\MemoryStorage;
 use Tester\Assert;
 use Nette\Database\ResultSet;
 
@@ -13,11 +14,12 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-$cacheStorage = Mockery::mock('Nette\Caching\Istorage');
-$cacheStorage->shouldReceive('read')->withAnyArgs()->once()->andReturn(array('id' => TRUE));
-$cacheStorage->shouldReceive('read')->withAnyArgs()->times(4)->andReturn(array('id' => TRUE, 'author_id' => TRUE));
-$cacheStorage->shouldReceive('write')->with(Mockery::any(), array('id' => TRUE, 'author_id' => TRUE, 'title' => TRUE), array());
+class CacheMock extends MemoryStorage
+{
 
+}
+
+$cacheStorage = new CacheMock;
 $context = new Nette\Database\Context($connection, $structure, $conventions, $cacheStorage);
 
 $queries = 0;
@@ -39,5 +41,5 @@ unset($book, $author);
 foreach ($stack as $selection) $selection->__destruct();
 $authors->__destruct();
 
-Assert::same(3, $queries);
+Assert::same(2, $queries);
 Mockery::close();

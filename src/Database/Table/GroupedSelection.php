@@ -134,7 +134,7 @@ class GroupedSelection extends Selection
 		$accessedColumns = $this->accessedColumns;
 		$this->loadRefCache();
 
-		if (!isset($this->refCacheCurrent['data'])) {
+		if (!isset($this->refCacheCurrent['data']) || $this->rows === NULL) {
 			// we have not fetched any data yet => init accessedColumns by cached accessedColumns
 			$this->accessedColumns = $accessedColumns;
 

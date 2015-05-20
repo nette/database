@@ -610,7 +610,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 		$key = [__CLASS__, $this->name, $this->sqlBuilder->getConditions()];
 		if (!$this->generalCacheTraceKey) {
 			$trace = [];
-			foreach (debug_backtrace(PHP_VERSION_ID >= 50306 ? DEBUG_BACKTRACE_IGNORE_ARGS : FALSE) as $item) {
+			foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $item) {
 				$trace[] = isset($item['file'], $item['line']) ? $item['file'] . $item['line'] : NULL;
 			};
 			$this->generalCacheTraceKey = $trace;

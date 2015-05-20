@@ -120,7 +120,7 @@ class Helpers
 
 			} elseif (is_string($param)) {
 				$length = Nette\Utils\Strings::length($param);
-				$truncated = Nette\Utils\Strings::truncate($param, Helpers::$maxLength);
+				$truncated = Nette\Utils\Strings::truncate($param, self::$maxLength);
 				$text = htmlspecialchars($connection ? $connection->quote($truncated) : '\'' . $truncated . '\'', ENT_NOQUOTES, 'UTF-8');
 				return '<span title="Length ' . $length . ' characters">' . $text . '</span>';
 

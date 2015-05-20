@@ -55,7 +55,7 @@ class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
 		$this->count++;
 
 		$source = NULL;
-		$trace = $result instanceof \PDOException ? $result->getTrace() : debug_backtrace(PHP_VERSION_ID >= 50306 ? DEBUG_BACKTRACE_IGNORE_ARGS : FALSE);
+		$trace = $result instanceof \PDOException ? $result->getTrace() : debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		foreach ($trace as $row) {
 			if (isset($row['file']) && is_file($row['file']) && !Tracy\Debugger::getBluescreen()->isCollapsed($row['file'])) {
 				if ((isset($row['function']) && strpos($row['function'], 'call_user_func') === 0)

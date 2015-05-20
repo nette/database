@@ -20,9 +20,9 @@ $context->query('
 ');
 
 
-$insertedRows = $context->table('bug1342')->insert(array(
+$insertedRows = $context->table('bug1342')->insert([
 	'a1' => 1,
 	'a2' => 2,
-));
+]);
 
 Assert::same(1, $insertedRows);

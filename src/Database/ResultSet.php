@@ -64,8 +64,8 @@ class ResultSet extends Nette\Object implements \Iterator, IRowContainer
 			if (substr($queryString, 0, 2) === '::') {
 				$connection->getPdo()->{substr($queryString, 2)}();
 			} elseif ($queryString !== NULL) {
-				static $types = array('boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT,
-					'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL);
+				static $types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT,
+					'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 				$this->pdoStatement = $connection->getPdo()->prepare($queryString);
 				foreach ($params as $key => $value) {
 					$type = gettype($value);

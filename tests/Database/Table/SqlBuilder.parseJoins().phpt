@@ -32,14 +32,14 @@ $sqlBuilder = new SqlBuilderMock('nUsers', $context);
 $driver = $connection->getSupplementalDriver();
 
 
-$joins = array();
+$joins = [];
 $query = 'WHERE :nusers_ntopics.topic.priorit.id IS NULL';
 $sqlBuilder->parseJoins($joins, $query);
 $join = $sqlBuilder->buildQueryJoins($joins);
 Assert::same('WHERE priorit.id IS NULL', $query);
 
 $tables = $connection->getSupplementalDriver()->getTables();
-if (!in_array($tables[0]['name'], array('npriorities', 'ntopics', 'nusers', 'nusers_ntopics', 'nusers_ntopics_alt'), TRUE)) {
+if (!in_array($tables[0]['name'], ['npriorities', 'ntopics', 'nusers', 'nusers_ntopics', 'nusers_ntopics_alt'], TRUE)) {
 	if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
 		Assert::same(
 			'LEFT JOIN public.nUsers_nTopics AS nusers_ntopics ON nUsers.nUserId = nusers_ntopics.nUserId ' .
@@ -72,7 +72,7 @@ $structure->rebuild();
 
 $sqlBuilder = new SqlBuilderMock('author', $context);
 
-$joins = array();
+$joins = [];
 $query = 'WHERE :book(translator).next_volume IS NULL';
 $sqlBuilder->parseJoins($joins, $query);
 $join = $sqlBuilder->buildQueryJoins($joins);
@@ -89,7 +89,7 @@ if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
 	$sqlBuilder = new SqlBuilderMock('book', $context);
 }
 
-$joins = array();
+$joins = [];
 $query = 'WHERE :book.translator_id IS NULL AND :book:book.translator_id IS NULL';
 $sqlBuilder->parseJoins($joins, $query);
 $join = $sqlBuilder->buildQueryJoins($joins);

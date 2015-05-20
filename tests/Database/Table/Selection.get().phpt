@@ -15,11 +15,11 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 test(function() use ($context) {
 	$book = $context->table('book')->get(1);  // SELECT * FROM `book` WHERE (`id` = ?)
 
-	Assert::same(array(
+	Assert::same([
 		'id' => 1,
 		'author_id' => 11,
 		'translator_id' => 11,
 		'title' => '1001 tipu a triku pro PHP',
 		'next_volume' => NULL,
-	), $book->toArray());
+	], $book->toArray());
 });

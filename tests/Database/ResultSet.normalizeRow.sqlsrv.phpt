@@ -15,7 +15,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlsrv-nette
 
 $res = $context->query('SELECT * FROM types');
 
-Assert::equal( array(
+Assert::equal( [
 	'bigint' => 1,
 	'binary_3' => '0000FF',
 	'bit' => '1',
@@ -46,9 +46,9 @@ Assert::equal( array(
 	'varbinary' => '01',
 	'varchar' => 'a',
 	'xml' => '<doc/>',
-), (array) $res->fetch() );
+], (array) $res->fetch() );
 
-Assert::equal( array(
+Assert::equal( [
 	'bigint' => 0,
 	'binary_3' => '000000',
 	'bit' => '0',
@@ -79,9 +79,9 @@ Assert::equal( array(
 	'varbinary' => '00',
 	'varchar' => '',
 	'xml' => '',
-), (array) $res->fetch() );
+], (array) $res->fetch() );
 
-Assert::same( array(
+Assert::same( [
 	'bigint' => NULL,
 	'binary_3' => NULL,
 	'bit' => NULL,
@@ -112,14 +112,14 @@ Assert::same( array(
 	'varbinary' => NULL,
 	'varchar' => NULL,
 	'xml' => NULL,
-), (array) $res->fetch() );
+], (array) $res->fetch() );
 
 
 $res = $context->query('SELECT [int] AS a, [text] AS a FROM types');
 
-Assert::same( array(
+Assert::same( [
 	'a' => 'a',
-), (array) @$res->fetch() );
+], (array) @$res->fetch() );
 
 
 function isTimestamp($str) {

@@ -19,18 +19,18 @@ test(function() use ($context) {
 
 
 test(function() use ($context) {
-	$tags = array();
+	$tags = [];
 	foreach ($context->table('book') as $book) {  // SELECT * FROM `book`
 		$count = $book->related('book_tag')->count('*');  // SELECT COUNT(*), `book_id` FROM `book_tag` WHERE (`book_tag`.`book_id` IN (1, 2, 3, 4)) GROUP BY `book_id`
 		$tags[$book->title] = $count;
 	}
 
-	Assert::same(array(
+	Assert::same([
 		'1001 tipu a triku pro PHP' => 2,
 		'JUSH' => 1,
 		'Nette' => 1,
 		'Dibi' => 2,
-	), $tags);
+	], $tags);
 });
 
 

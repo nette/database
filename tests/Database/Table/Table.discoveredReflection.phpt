@@ -13,53 +13,53 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 
 test(function() use ($context) {
-	$appTags = array();
+	$appTags = [];
 	foreach ($context->table('book') as $book) {
-		$appTags[$book->title] = array(
+		$appTags[$book->title] = [
 			'author' => $book->author->name,
-			'tags' => array(),
-		);
+			'tags' => [],
+		];
 
 		foreach ($book->related('book_tag') as $book_tag) {
 			$appTags[$book->title]['tags'][] = $book_tag->tag->name;
 		}
 	}
 
-	Assert::same(array(
-		'1001 tipu a triku pro PHP' => array(
+	Assert::same([
+		'1001 tipu a triku pro PHP' => [
 			'author' => 'Jakub Vrana',
-			'tags' => array('PHP', 'MySQL'),
-		),
-		'JUSH' => array(
+			'tags' => ['PHP', 'MySQL'],
+		],
+		'JUSH' => [
 			'author' => 'Jakub Vrana',
-			'tags' => array('JavaScript'),
-		),
-		'Nette' => array(
+			'tags' => ['JavaScript'],
+		],
+		'Nette' => [
 			'author' => 'David Grudl',
-			'tags' => array('PHP'),
-		),
-		'Dibi' => array(
+			'tags' => ['PHP'],
+		],
+		'Dibi' => [
 			'author' => 'David Grudl',
-			'tags' => array('PHP', 'MySQL'),
-		),
-	), $appTags);
+			'tags' => ['PHP', 'MySQL'],
+		],
+	], $appTags);
 });
 
 
 test(function() use ($context) {
-	$books = array();
+	$books = [];
 	foreach ($context->table('author') as $author) {
 		foreach ($author->related('book') as $book) {
 			$books[$book->title] = $author->name;
 		}
 	}
 
-	Assert::same(array(
+	Assert::same([
 		'1001 tipu a triku pro PHP' => 'Jakub Vrana',
 		'JUSH' => 'Jakub Vrana',
 		'Nette' => 'David Grudl',
 		'Dibi' => 'David Grudl',
-	), $books);
+	], $books);
 });
 
 
@@ -92,19 +92,19 @@ test(function() use ($connection, $context) {
 		$lowerCase->Value != 0
 	) {
 		// tests case-insensitive reflection
-		$books = array();
+		$books = [];
 		foreach ($context->table('Author') as $author) {
 			foreach ($author->related('book') as $book) {
 				$books[$book->title] = $author->name;
 			}
 		}
 
-		Assert::same(array(
+		Assert::same([
 			'1001 tipu a triku pro PHP' => 'Jakub Vrana',
 			'JUSH' => 'Jakub Vrana',
 			'Nette' => 'David Grudl',
 			'Dibi' => 'David Grudl',
-		), $books);
+		], $books);
 	}
 });
 

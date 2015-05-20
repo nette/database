@@ -93,7 +93,7 @@ class GroupedSelection extends Selection
 		$aggregation = & $this->getRefTable($refPath)->aggregation[$refPath . $function . $this->getSql() . json_encode($this->sqlBuilder->getParameters())];
 
 		if ($aggregation === NULL) {
-			$aggregation = array();
+			$aggregation = [];
 
 			$selection = $this->createSelectionInstance();
 			$selection->getSqlBuilder()->importConditions($this->getSqlBuilder());
@@ -145,8 +145,8 @@ class GroupedSelection extends Selection
 			}
 			parent::execute();
 			$this->sqlBuilder->setLimit($limit, NULL);
-			$data = array();
-			$offset = array();
+			$data = [];
+			$offset = [];
 			$this->accessColumn($this->column);
 			foreach ((array) $this->rows as $key => $row) {
 				$ref = & $data[$row[$this->column]];
@@ -166,7 +166,7 @@ class GroupedSelection extends Selection
 
 		$this->observeCache = $this;
 		if ($this->data === NULL) {
-			$this->data = array();
+			$this->data = [];
 		} else {
 			foreach ($this->data as $row) {
 				$row->setTable($this); // injects correct parent GroupedSelection

@@ -15,10 +15,10 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 test(function() use ($context) {
 	$apps = $context->table('book')->order('title')->fetchAssoc('id=title');  // SELECT * FROM `book` ORDER BY `title`
-	Assert::same(array(
+	Assert::same([
 		1 => '1001 tipu a triku pro PHP',
 		4 => 'Dibi',
 		2 => 'JUSH',
 		3 => 'Nette',
-	), $apps);
+	], $apps);
 });

@@ -18,7 +18,7 @@ test(function() use ($context) {
 	$sqlBuilder->addOrder('FIELD(title, ?, ?)', 'a', 'b');
 
 	Assert::same(reformat('SELECT * FROM [book] ORDER BY [id], [title] DESC, FIELD([title], ?, ?)'), $sqlBuilder->buildSelectQuery());
-	Assert::same(array('a', 'b'), $sqlBuilder->getParameters());
+	Assert::same(['a', 'b'], $sqlBuilder->getParameters());
 });
 
 
@@ -26,8 +26,8 @@ test(function() use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addOrder('id');
 	$sqlBuilder->addOrder('title DESC');
-	$sqlBuilder->setOrder(array('FIELD(title, ?, ?)'), array('a', 'b'));
+	$sqlBuilder->setOrder(['FIELD(title, ?, ?)'], ['a', 'b']);
 
 	Assert::same(reformat('SELECT * FROM [book] ORDER BY FIELD([title], ?, ?)'), $sqlBuilder->buildSelectQuery());
-	Assert::same(array('a', 'b'), $sqlBuilder->getParameters());
+	Assert::same(['a', 'b'], $sqlBuilder->getParameters());
 });

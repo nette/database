@@ -20,7 +20,7 @@ test(function() { // non lazy
 
 
 test(function() { // lazy
-	$connection = new Nette\Database\Connection('dsn', 'user', 'password', array('lazy' => TRUE));
+	$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => TRUE]);
 	$context = new Nette\Database\Context($connection, new Structure($connection, new DevNullStorage()));
 	Assert::exception(function() use ($context) {
 		$context->query('SELECT ?', 10);
@@ -29,7 +29,7 @@ test(function() { // lazy
 
 
 test(function() {
-	$connection = new Nette\Database\Connection('dsn', 'user', 'password', array('lazy' => TRUE));
+	$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => TRUE]);
 	Assert::exception(function() use ($connection) {
 		$connection->quote('x');
 	}, 'Nette\Database\DriverException', 'invalid data source name');
@@ -37,7 +37,7 @@ test(function() {
 
 
 test(function() { // connect & disconnect
-	$options = Tester\Environment::loadData() + array('user' => NULL, 'password' => NULL);
+	$options = Tester\Environment::loadData() + ['user' => NULL, 'password' => NULL];
 	$connections = 1;
 
 	$connection = new Nette\Database\Connection($options['dsn'], $options['user'], $options['password']);

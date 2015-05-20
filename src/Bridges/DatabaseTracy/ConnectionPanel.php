@@ -29,7 +29,7 @@ class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
 	private $count = 0;
 
 	/** @var array */
-	private $queries = array();
+	private $queries = [];
 
 	/** @var string */
 	public $name;
@@ -43,7 +43,7 @@ class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
 
 	public function __construct(Nette\Database\Connection $connection)
 	{
-		$connection->onQuery[] = array($this, 'logQuery');
+		$connection->onQuery[] = [$this, 'logQuery'];
 	}
 
 
@@ -63,18 +63,18 @@ class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
 				) {
 					continue;
 				}
-				$source = array($row['file'], (int) $row['line']);
+				$source = [$row['file'], (int) $row['line']];
 				break;
 			}
 		}
 		if ($result instanceof Nette\Database\ResultSet) {
 			$this->totalTime += $result->getTime();
 			if ($this->count < $this->maxQueries) {
-				$this->queries[] = array($connection, $result->getQueryString(), $result->getParameters(), $source, $result->getTime(), $result->getRowCount(), NULL);
+				$this->queries[] = [$connection, $result->getQueryString(), $result->getParameters(), $source, $result->getTime(), $result->getRowCount(), NULL];
 			}
 
 		} elseif ($result instanceof \PDOException && $this->count < $this->maxQueries) {
-			$this->queries[] = array($connection, $result->queryString, NULL, $source, NULL, NULL, $result->getMessage());
+			$this->queries[] = [$connection, $result->queryString, NULL, $source, NULL, NULL, $result->getMessage()];
 		}
 	}
 
@@ -90,10 +90,10 @@ class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
 		} elseif ($item = Tracy\Helpers::findTrace($e->getTrace(), 'PDO::prepare')) {
 			$sql = $item['args'][0];
 		}
-		return isset($sql) ? array(
+		return isset($sql) ? [
 			'tab' => 'SQL',
 			'panel' => Helpers::dumpSql($sql),
-		) : NULL;
+		] : NULL;
 	}
 
 
@@ -118,7 +118,7 @@ class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
 		$name = $this->name;
 		$count = $this->count;
 		$totalTime = $this->totalTime;
-		$queries = array();
+		$queries = [];
 		foreach ($this->queries as $query) {
 			list($connection, $sql, $params, $source, $time, $rows, $error) = $query;
 			$explain = NULL;

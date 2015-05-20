@@ -13,71 +13,71 @@ require __DIR__ . '/../../bootstrap.php';
 // basic test
 test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
-	$structure->shouldReceive('getBelongsToReference')->with('books')->andReturn(array(
+	$structure->shouldReceive('getBelongsToReference')->with('books')->andReturn([
 		'author_id' => 'authors',
 		'translator_id' => 'authors',
 		'another_id' => 'another_table',
-	))->twice();
+	])->twice();
 
 	$conventions = new DiscoveredConventions($structure);
-	Assert::same(array('authors', 'author_id'), $conventions->getBelongsToReference('books', 'author'));
-	Assert::same(array('authors', 'translator_id'), $conventions->getBelongsToReference('books', 'translator'));
+	Assert::same(['authors', 'author_id'], $conventions->getBelongsToReference('books', 'author'));
+	Assert::same(['authors', 'translator_id'], $conventions->getBelongsToReference('books', 'translator'));
 });
 
 // basic test
 test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
-	$structure->shouldReceive('getBelongsToReference')->with('public.books')->andReturn(array(
+	$structure->shouldReceive('getBelongsToReference')->with('public.books')->andReturn([
 		'author_id' => 'public.authors',
 		'translator_id' => 'public.authors',
 		'another_id' => 'public.another_table',
-	))->twice();
+	])->twice();
 
 	$conventions = new DiscoveredConventions($structure);
-	Assert::same(array('public.authors', 'author_id'), $conventions->getBelongsToReference('public.books', 'author'));
-	Assert::same(array('public.authors', 'translator_id'), $conventions->getBelongsToReference('public.books', 'translator'));
+	Assert::same(['public.authors', 'author_id'], $conventions->getBelongsToReference('public.books', 'author'));
+	Assert::same(['public.authors', 'translator_id'], $conventions->getBelongsToReference('public.books', 'translator'));
 });
 
 // tests order of table columns with foreign keys
 test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
-	$structure->shouldReceive('getBelongsToReference')->with('books')->andReturn(array(
+	$structure->shouldReceive('getBelongsToReference')->with('books')->andReturn([
 		'translator_id' => 'authors',
 		'author_id' => 'authors',
-	))->twice();
+	])->twice();
 
 	$conventions = new DiscoveredConventions($structure);
-	Assert::same(array('authors', 'author_id'), $conventions->getBelongsToReference('books', 'author'));
-	Assert::same(array('authors', 'translator_id'), $conventions->getBelongsToReference('books', 'translator'));
+	Assert::same(['authors', 'author_id'], $conventions->getBelongsToReference('books', 'author'));
+	Assert::same(['authors', 'translator_id'], $conventions->getBelongsToReference('books', 'translator'));
 });
 
 
 // tests case insensivity
 test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
-	$structure->shouldReceive('getBelongsToReference')->with('books')->andReturn(array(
+	$structure->shouldReceive('getBelongsToReference')->with('books')->andReturn([
 		'author_id' => 'authors',
 		'translator_id' => 'authors',
-	))->twice();
+	])->twice();
 
 	$conventions = new DiscoveredConventions($structure);
-	Assert::same(array('authors', 'author_id'), $conventions->getBelongsToReference('books', 'Author'));
-	Assert::same(array('authors', 'translator_id'), $conventions->getBelongsToReference('books', 'Translator'));
+	Assert::same(['authors', 'author_id'], $conventions->getBelongsToReference('books', 'Author'));
+	Assert::same(['authors', 'translator_id'], $conventions->getBelongsToReference('books', 'Translator'));
 });
 
 
 // tests case insensivity and prefixes
 test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
-	$structure->shouldReceive('getBelongsToReference')->with('nBooks')->andReturn(array(
+	$structure->shouldReceive('getBelongsToReference')->with('nBooks')->andReturn([
 		'authorId' => 'nAuthors',
 		'translatorId' => 'nAuthors',
-	))->twice();
+	])->twice();
 
 	$conventions = new DiscoveredConventions($structure);
 
-	Assert::same(array('nAuthors', 'authorId'), $conventions->getBelongsToReference('nBooks', 'author'));
-	Assert::same(array('nAuthors', 'translatorId'), $conventions->getBelongsToReference('nBooks', 'translator'));
+	Assert::same(['nAuthors', 'authorId'], $conventions->getBelongsToReference('nBooks', 'author'));
+	Assert::same(['nAuthors', 'translatorId'], $conventions->getBelongsToReference('nBooks', 'translator'));
 });
 
 
@@ -86,16 +86,16 @@ test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
 	$structure->shouldReceive('isRebuilt')->andReturn(FALSE);
 	$structure->shouldReceive('rebuild');
-	$structure->shouldReceive('getBelongsToReference')->andReturn(array())->once();
-	$structure->shouldReceive('getBelongsToReference')->with('books')->andReturn(array(
+	$structure->shouldReceive('getBelongsToReference')->andReturn([])->once();
+	$structure->shouldReceive('getBelongsToReference')->with('books')->andReturn([
 		'author_id' => 'authors',
 		'translator_id' => 'authors',
 		'another_id' => 'another_table',
-	))->twice();
+	])->twice();
 
 	$conventions = new DiscoveredConventions($structure);
-	Assert::same(array('authors', 'author_id'), $conventions->getBelongsToReference('books', 'author'));
-	Assert::same(array('authors', 'translator_id'), $conventions->getBelongsToReference('books', 'translator'));
+	Assert::same(['authors', 'author_id'], $conventions->getBelongsToReference('books', 'author'));
+	Assert::same(['authors', 'translator_id'], $conventions->getBelongsToReference('books', 'translator'));
 });
 
 
@@ -103,7 +103,7 @@ test(function() {
 test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
 	$structure->shouldReceive('isRebuilt')->andReturn(TRUE);
-	$structure->shouldReceive('getBelongsToReference')->with('books')->andReturn(array())->once();
+	$structure->shouldReceive('getBelongsToReference')->with('books')->andReturn([])->once();
 
 	$conventions = new DiscoveredConventions($structure);
 	Assert::null($conventions->getBelongsToReference('books', 'author'));

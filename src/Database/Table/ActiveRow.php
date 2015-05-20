@@ -99,7 +99,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 			}
 
 		} else {
-			$primaryVal = array();
+			$primaryVal = [];
 			foreach ($primary as $key) {
 				if (!isset($this->data[$key])) {
 					if ($need) {
@@ -173,7 +173,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 		$primary = $this->getPrimary();
 		if (!is_array($primary)) {
-			$primary = array($this->table->getPrimary() => $primary);
+			$primary = [$this->table->getPrimary() => $primary];
 		}
 
 		$selection = $this->table->createSelectionInstance()

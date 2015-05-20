@@ -34,13 +34,13 @@ class OciDriver extends Nette\Object implements Nette\Database\ISupplementalDriv
 	public function convertException(\PDOException $e)
 	{
 		$code = isset($e->errorInfo[1]) ? $e->errorInfo[1] : NULL;
-		if (in_array($code, array(1, 2299, 38911), TRUE)) {
+		if (in_array($code, [1, 2299, 38911], TRUE)) {
 			return Nette\Database\UniqueConstraintViolationException::from($e);
 
-		} elseif (in_array($code, array(1400), TRUE)) {
+		} elseif (in_array($code, [1400], TRUE)) {
 			return Nette\Database\NotNullConstraintViolationException::from($e);
 
-		} elseif (in_array($code, array(2266, 2291, 2292), TRUE)) {
+		} elseif (in_array($code, [2266, 2291, 2292], TRUE)) {
 			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
 
 		} else {
@@ -132,13 +132,13 @@ class OciDriver extends Nette\Object implements Nette\Database\ISupplementalDriv
 	 */
 	public function getTables()
 	{
-		$tables = array();
+		$tables = [];
 		foreach ($this->connection->query('SELECT * FROM cat') as $row) {
 			if ($row[1] === 'TABLE' || $row[1] === 'VIEW') {
-				$tables[] = array(
+				$tables[] = [
 					'name' => $row[0],
 					'view' => $row[1] === 'VIEW',
-				);
+				];
 			}
 		}
 		return $tables;

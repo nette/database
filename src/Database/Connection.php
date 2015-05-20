@@ -50,7 +50,7 @@ class Connection extends Nette\Object
 		if (func_num_args() > 4) { // compatibility
 			$options['driverClass'] = func_get_arg(4);
 		}
-		$this->params = array($dsn, $user, $password);
+		$this->params = [$dsn, $user, $password];
 		$this->options = (array) $options;
 
 		if (empty($options['lazy'])) {
@@ -183,7 +183,7 @@ class Connection extends Nette\Object
 		$args = is_array($statement) ? $statement : func_get_args(); // accepts arrays only internally
 		list($statement, $params) = count($args) > 1
 			? $this->preprocessor->process($args)
-			: array($args[0], array());
+			: [$args[0], []];
 
 		try {
 			$result = new ResultSet($this, $statement, $params);
@@ -216,7 +216,7 @@ class Connection extends Nette\Object
 		$this->connect();
 		return func_num_args() > 1
 			? $this->preprocessor->process(func_get_args())
-			: array($statement, array());
+			: [$statement, []];
 	}
 
 

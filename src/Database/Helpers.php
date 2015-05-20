@@ -22,7 +22,7 @@ class Helpers
 	static public $maxLength = 100;
 
 	/** @var array */
-	public static $typePatterns = array(
+	public static $typePatterns = [
 		'^_' => IStructure::FIELD_TEXT, // PostgreSQL arrays
 		'BYTEA|BLOB|BIN' => IStructure::FIELD_BINARY,
 		'TEXT|CHAR|POINT|INTERVAL' => IStructure::FIELD_TEXT,
@@ -32,7 +32,7 @@ class Helpers
 		'TIME' => IStructure::FIELD_DATETIME, // DATETIME, TIMESTAMP
 		'DATE' => IStructure::FIELD_DATE,
 		'BOOL' => IStructure::FIELD_BOOL,
-	);
+	];
 
 
 	/**
@@ -147,7 +147,7 @@ class Helpers
 	 */
 	public static function detectTypes(\PDOStatement $statement)
 	{
-		$types = array();
+		$types = [];
 		$count = $statement->columnCount(); // driver must be meta-aware, see PHP bugs #53782, #54695
 		for ($col = 0; $col < $count; $col++) {
 			$meta = $statement->getColumnMeta($col);
@@ -237,7 +237,7 @@ class Helpers
 	public static function toPairs(array $rows, $key = NULL, $value = NULL)
 	{
 		if (!$rows) {
-			return array();
+			return [];
 		}
 
 		$keys = array_keys((array) reset($rows));
@@ -252,7 +252,7 @@ class Helpers
 			}
 		}
 
-		$return = array();
+		$return = [];
 		if ($key === NULL) {
 			foreach ($rows as $row) {
 				$return[] = ($value === NULL ? $row : $row[$value]);

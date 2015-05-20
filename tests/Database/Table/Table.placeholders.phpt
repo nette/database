@@ -44,7 +44,7 @@ test(function() use ($context, $driverName) {
 
 
 test(function() use ($context) {
-	$bookTagsCount = array();
+	$bookTagsCount = [];
 	$books = $context
 		->table('book')
 		->select('book.title, COUNT(DISTINCT :book_tag.tag_id) AS tagsCount')
@@ -56,22 +56,22 @@ test(function() use ($context) {
 		$bookTagsCount[$book->title] = $book->tagsCount;
 	}
 
-	Assert::same(array(
+	Assert::same([
 		'JUSH' => 1,
 		'Nette' => 1,
-	), $bookTagsCount);
+	], $bookTagsCount);
 });
 
 
 test(function() use ($context, $driverName) {
 	if ($driverName === 'mysql') {
-		$authors = array();
-		$selection = $context->table('author')->order('FIELD(name, ?)', array('Jakub Vrana', 'David Grudl', 'Geek'));
+		$authors = [];
+		$selection = $context->table('author')->order('FIELD(name, ?)', ['Jakub Vrana', 'David Grudl', 'Geek']);
 		foreach ($selection as $author) {
 			$authors[] = $author->name;
 		}
 
-		Assert::same(array('Jakub Vrana', 'David Grudl', 'Geek'), $authors);
+		Assert::same(['Jakub Vrana', 'David Grudl', 'Geek'], $authors);
 	}
 });
 

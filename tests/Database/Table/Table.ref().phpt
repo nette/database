@@ -17,9 +17,9 @@ Assert::same('Jakub Vrana', $context->table('book')->get(1)->ref('author')->name
 
 test(function() use ($context) {
 	$book = $context->table('book')->get(1);
-	$book->update(array(
+	$book->update([
 		'translator_id' => 12,
-	));
+	]);
 
 
 	$book = $context->table('book')->get(1);
@@ -41,7 +41,7 @@ test(function() use ($context, $connection) {
 
 	$table = $context->table('book');
 
-	$names = array();
+	$names = [];
 	foreach ($table as $book) {
 		$translator = $book->ref('author', 'translator_id');
 	}

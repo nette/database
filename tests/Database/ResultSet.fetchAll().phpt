@@ -28,16 +28,16 @@ switch ($driverName) {
 Assert::same(1, $res->getColumnCount());
 Assert::same('SELECT id FROM book ORDER BY id', $res->getQueryString());
 
-Assert::equal(array(
-	Nette\Database\Row::from(array('id' => 1)),
-	Nette\Database\Row::from(array('id' => 2)),
-	Nette\Database\Row::from(array('id' => 3)),
-	Nette\Database\Row::from(array('id' => 4)),
-), $res->fetchAll());
+Assert::equal([
+	Nette\Database\Row::from(['id' => 1]),
+	Nette\Database\Row::from(['id' => 2]),
+	Nette\Database\Row::from(['id' => 3]),
+	Nette\Database\Row::from(['id' => 4]),
+], $res->fetchAll());
 
-Assert::equal(array(
-	Nette\Database\Row::from(array('id' => 1)),
-	Nette\Database\Row::from(array('id' => 2)),
-	Nette\Database\Row::from(array('id' => 3)),
-	Nette\Database\Row::from(array('id' => 4)),
-), $res->fetchAll());
+Assert::equal([
+	Nette\Database\Row::from(['id' => 1]),
+	Nette\Database\Row::from(['id' => 2]),
+	Nette\Database\Row::from(['id' => 3]),
+	Nette\Database\Row::from(['id' => 4]),
+], $res->fetchAll());

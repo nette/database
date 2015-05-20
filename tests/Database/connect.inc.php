@@ -11,7 +11,7 @@ require __DIR__ . '/../bootstrap.php';
 
 
 try {
-	$options = Tester\Environment::loadData() + array('user' => NULL, 'password' => NULL);
+	$options = Tester\Environment::loadData() + ['user' => NULL, 'password' => NULL];
 } catch (Exception $e) {
 	Tester\Environment::skip($e->getMessage());
 }

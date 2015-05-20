@@ -37,26 +37,26 @@ test(function() use ($context) {
 	}
 	$related->__destruct();
 
-	$states = array();
+	$states = [];
 	$book = $context->table('book')->get(3);
 	foreach ($book->related('book_tag_alt') as $bookTag) {
 		$states[] = $bookTag->state;
 	}
 
-	Assert::same(array(
+	Assert::same([
 		'public',
 		'private',
 		'private',
 		'public',
-	), $states);
+	], $states);
 });
 
 
 test(function() use ($context) {
-	$context->table('book_tag')->insert(array(
+	$context->table('book_tag')->insert([
 		'book_id' => 1,
 		'tag_id' => 21, // PHP tag
-	));
+	]);
 	$count = $context->table('book_tag')->where('book_id', 1)->count('*');
 	Assert::same(2, $count);
 });

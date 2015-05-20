@@ -21,7 +21,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlite-nette
 
 $res = $connection->query('SELECT * FROM types');
 
-Assert::equal( array(
+Assert::equal( [
 	'int' => '1',
 	'integer' => '1',
 	'tinyint' => '1',
@@ -49,9 +49,9 @@ Assert::equal( array(
 	'boolean' => '1',
 	'date' => '2012-10-13',
 	'datetime' => '2012-10-13 10:10:10',
-), (array) $res->fetch() );
+], (array) $res->fetch() );
 
-Assert::equal( array(
+Assert::equal( [
 	'int' => '0',
 	'integer' => '0',
 	'tinyint' => '0',
@@ -79,9 +79,9 @@ Assert::equal( array(
 	'boolean' => '0',
 	'date' => '1970-01-01',
 	'datetime' => '1970-01-01 00:00:00',
-), (array) $res->fetch() );
+], (array) $res->fetch() );
 
-Assert::same( array(
+Assert::same( [
 	'int' => NULL,
 	'integer' => NULL,
 	'tinyint' => NULL,
@@ -109,4 +109,4 @@ Assert::same( array(
 	'boolean' => NULL,
 	'date' => NULL,
 	'datetime' => NULL,
-), (array) $res->fetch() );
+], (array) $res->fetch() );

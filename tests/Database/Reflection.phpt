@@ -15,24 +15,24 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 
 $driver = $connection->getSupplementalDriver();
 $tables = $driver->getTables();
-$tables = array_filter($tables, function($t) { return in_array($t['name'], array('author', 'book', 'book_tag', 'tag')); });
+$tables = array_filter($tables, function($t) { return in_array($t['name'], ['author', 'book', 'book_tag', 'tag']); });
 usort($tables, function($a, $b) { return strcmp($a['name'], $b['name']); });
 
 if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
-	Assert::same(array(
-		array('name' => 'author', 'view' => FALSE, 'fullName' => 'public.author'),
-		array('name' => 'book', 'view' => FALSE, 'fullName' => 'public.book'),
-		array('name' => 'book_tag', 'view' => FALSE, 'fullName' => 'public.book_tag'),
-		array('name' => 'tag', 'view' => FALSE, 'fullName' => 'public.tag'),
-	),
+	Assert::same([
+		['name' => 'author', 'view' => FALSE, 'fullName' => 'public.author'],
+		['name' => 'book', 'view' => FALSE, 'fullName' => 'public.book'],
+		['name' => 'book_tag', 'view' => FALSE, 'fullName' => 'public.book_tag'],
+		['name' => 'tag', 'view' => FALSE, 'fullName' => 'public.tag'],
+	],
 	$tables);
 } else {
-	Assert::same( array(
-		array('name' => 'author', 'view' => FALSE),
-		array('name' => 'book', 'view' => FALSE),
-		array('name' => 'book_tag', 'view' => FALSE),
-		array('name' => 'tag', 'view' => FALSE),
-	), $tables );
+	Assert::same( [
+		['name' => 'author', 'view' => FALSE],
+		['name' => 'book', 'view' => FALSE],
+		['name' => 'book_tag', 'view' => FALSE],
+		['name' => 'tag', 'view' => FALSE],
+	], $tables );
 }
 
 
@@ -42,8 +42,8 @@ array_walk($columns, function(& $item) {
 	unset($item['vendor']);
 });
 
-$expectedColumns = array(
-	array(
+$expectedColumns = [
+	[
 		'name' => 'id',
 		'table' => 'author',
 		'nativetype' => 'INT',
@@ -53,8 +53,8 @@ $expectedColumns = array(
 		'default' => NULL,
 		'autoincrement' => TRUE,
 		'primary' => TRUE,
-	),
-	array(
+	],
+	[
 		'name' => 'name',
 		'table' => 'author',
 		'nativetype' => 'VARCHAR',
@@ -64,8 +64,8 @@ $expectedColumns = array(
 		'default' => NULL,
 		'autoincrement' => FALSE,
 		'primary' => FALSE,
-	),
-	array(
+	],
+	[
 		'name' => 'web',
 		'table' => 'author',
 		'nativetype' => 'VARCHAR',
@@ -75,8 +75,8 @@ $expectedColumns = array(
 		'default' => NULL,
 		'autoincrement' => FALSE,
 		'primary' => FALSE,
-	),
-	array(
+	],
+	[
 		'name' => 'born',
 		'table' => 'author',
 		'nativetype' => 'DATE',
@@ -86,8 +86,8 @@ $expectedColumns = array(
 		'default' => NULL,
 		'autoincrement' => FALSE,
 		'primary' => FALSE,
-	),
-);
+	],
+];
 
 switch ($driverName) {
 	case 'mysql':
@@ -120,64 +120,64 @@ Assert::same($expectedColumns, $columns);
 $indexes = $driver->getIndexes('book_tag');
 switch ($driverName) {
 	case 'pgsql':
-		Assert::same( array(
-			array(
+		Assert::same( [
+			[
 				'name' => 'book_tag_pkey',
 				'unique' => TRUE,
 				'primary' => TRUE,
-				'columns' => array(
+				'columns' => [
 					'book_id',
 					'tag_id',
-				),
-			),
-		), $indexes);
+				],
+			],
+		], $indexes);
 		break;
 	case 'sqlite':
-		Assert::same( array(
-			array(
+		Assert::same( [
+			[
 				'name' => 'sqlite_autoindex_book_tag_1',
 				'unique' => TRUE,
 				'primary' => TRUE,
-				'columns' => array(
+				'columns' => [
 					'book_id',
 					'tag_id',
-				),
-			),
-		), $indexes);
+				],
+			],
+		], $indexes);
 		break;
 	case 'sqlsrv':
-		Assert::same( array(
-			array(
+		Assert::same( [
+			[
 				'name' => 'PK_book_tag',
 				'unique' => TRUE,
 				'primary' => TRUE,
-				'columns' => array(
+				'columns' => [
 					'book_id',
 					'tag_id',
-				),
-			),
-		), $indexes);
+				],
+			],
+		], $indexes);
 		break;
 	case 'mysql':
-		Assert::same( array(
-			array(
+		Assert::same( [
+			[
 				'name' => 'PRIMARY',
 				'unique' => TRUE,
 				'primary' => TRUE,
-				'columns' => array(
+				'columns' => [
 					'book_id',
 					'tag_id',
-				),
-			),
-			array(
+				],
+			],
+			[
 				'name' => 'book_tag_tag',
 				'unique' => FALSE,
 				'primary' => FALSE,
-				'columns' => array(
+				'columns' => [
 					'tag_id',
-				),
-			),
-		), $indexes);
+				],
+			],
+		], $indexes);
 		break;
 	default:
 		Assert::fail("Unsupported driver $driverName");
@@ -186,4 +186,4 @@ switch ($driverName) {
 
 $structure->rebuild();
 $primary = $structure->getPrimaryKey('book_tag');
-Assert::same(array('book_id', 'tag_id'), $primary);
+Assert::same(['book_id', 'tag_id'], $primary);

@@ -12,8 +12,8 @@ require __DIR__ . '/../../bootstrap.php';
 
 test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
-	$structure->shouldReceive('getPrimaryKey')->with('books_x_tags')->andReturn(array('book_id', 'tag_id'));
+	$structure->shouldReceive('getPrimaryKey')->with('books_x_tags')->andReturn(['book_id', 'tag_id']);
 
 	$conventions = new DiscoveredConventions($structure);
-	Assert::same(array('book_id', 'tag_id'), $conventions->getPrimary('books_x_tags'));
+	Assert::same(['book_id', 'tag_id'], $conventions->getPrimary('books_x_tags'));
 });

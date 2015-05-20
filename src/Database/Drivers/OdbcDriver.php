@@ -32,7 +32,7 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	 */
 	public function delimite($name)
 	{
-		return '[' . str_replace(array('[', ']'), array('[[', ']]'), $name) . ']';
+		return '[' . str_replace(['[', ']'], ['[[', ']]'], $name) . ']';
 	}
 
 
@@ -68,7 +68,7 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	 */
 	public function formatLike($value, $pos)
 	{
-		$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
+		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 

@@ -15,7 +15,7 @@ $e = Assert::exception(function() use ($options) {
 }, 'Nette\Database\ConnectionException', '%a% Access denied for user %a%');
 
 Assert::same(1045, $e->getDriverCode());
-Assert::contains($e->getSqlState(), array('HY000', '28000'));
+Assert::contains($e->getSqlState(), ['HY000', '28000']);
 Assert::same($e->getCode(), $e->getSqlState());
 
 

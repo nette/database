@@ -18,7 +18,7 @@ use Nette;
  */
 class DatabaseExtension extends Nette\DI\CompilerExtension
 {
-	public $databaseDefaults = array(
+	public $databaseDefaults = [
 		'dsn' => NULL,
 		'user' => NULL,
 		'password' => NULL,
@@ -28,7 +28,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		'reflection' => NULL, // BC
 		'conventions' => 'discovered', // Nette\Database\Conventions\DiscoveredConventions
 		'autowired' => NULL,
-	);
+	];
 
 	/** @var bool */
 	private $debugMode;
@@ -44,7 +44,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 	{
 		$configs = $this->getConfig();
 		if (isset($configs['dsn'])) {
-			$configs = array('default' => $configs);
+			$configs = ['default' => $configs];
 		}
 
 		$defaults = $this->databaseDefaults;
@@ -72,12 +72,12 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		}
 
 		$connection = $container->addDefinition($this->prefix("$name.connection"))
-			->setClass('Nette\Database\Connection', array($config['dsn'], $config['user'], $config['password'], $config['options']))
+			->setClass('Nette\Database\Connection', [$config['dsn'], $config['user'], $config['password'], $config['options']])
 			->setAutowired($config['autowired']);
 
 		$structure = $container->addDefinition($this->prefix("$name.structure"))
 			->setClass('Nette\Database\Structure')
-			->setArguments(array($connection))
+			->setArguments([$connection])
 			->setAutowired($config['autowired']);
 
 		if (!empty($config['reflection'])) {
@@ -98,24 +98,24 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				->setClass(preg_match('#^[a-z]+\z#i', $config['conventions'])
 					? 'Nette\Database\Conventions\\' . ucfirst($config['conventions']) . 'Conventions'
 					: $config['conventions'])
-				->setArguments(strtolower($config['conventions']) === 'discovered' ? array($structure) : array())
+				->setArguments(strtolower($config['conventions']) === 'discovered' ? [$structure] : [])
 				->setAutowired($config['autowired']);
 
 		} else {
-			$tmp = Nette\DI\Compiler::filterArguments(array($config['conventions']));
+			$tmp = Nette\DI\Compiler::filterArguments([$config['conventions']]);
 			$conventions = reset($tmp);
 		}
 
 		$container->addDefinition($this->prefix("$name.context"))
-			->setClass('Nette\Database\Context', array($connection, $structure, $conventions))
+			->setClass('Nette\Database\Context', [$connection, $structure, $conventions])
 			->setAutowired($config['autowired']);
 
 		if ($config['debugger']) {
-			$connection->addSetup('@Tracy\BlueScreen::addPanel', array(
+			$connection->addSetup('@Tracy\BlueScreen::addPanel', [
 				'Nette\Bridges\DatabaseTracy\ConnectionPanel::renderException'
-			));
+			]);
 			if ($this->debugMode) {
-				$connection->addSetup('Nette\Database\Helpers::createDebugPanel', array($connection, !empty($config['explain']), $name));
+				$connection->addSetup('Nette\Database\Helpers::createDebugPanel', [$connection, !empty($config['explain']), $name]);
 			}
 		}
 

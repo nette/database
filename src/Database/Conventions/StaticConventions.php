@@ -52,20 +52,20 @@ class StaticConventions extends Object implements IConventions
 	public function getHasManyReference($table, $key)
 	{
 		$table = $this->getColumnFromTable($table);
-		return array(
+		return [
 			sprintf($this->table, $key, $table),
 			sprintf($this->foreign, $table, $key),
-		);
+		];
 	}
 
 
 	public function getBelongsToReference($table, $key)
 	{
 		$table = $this->getColumnFromTable($table);
-		return array(
+		return [
 			sprintf($this->table, $key, $table),
 			sprintf($this->foreign, $key, $table),
-		);
+		];
 	}
 
 

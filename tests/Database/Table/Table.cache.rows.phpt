@@ -12,7 +12,7 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-$selections = array();
+$selections = [];
 foreach ($selections[] = $context->table('book') as $book) {
 	$book->author->name;
 	$selections[] = $book->author->getTable();
@@ -21,20 +21,20 @@ foreach ($selections as $selection) {
 	$selection->__destruct();
 }
 
-$authors = array();
+$authors = [];
 foreach ($context->table('book') as $book) {
 	$authors[] = $book->author;
 }
 
-$webs = array();
+$webs = [];
 foreach ($authors as $author) {
 	$webs[$author->web] = NULL;
 }
 ksort($webs);
-Assert::same(array(
+Assert::same([
 	'http://davidgrudl.com/',
 	'http://www.vrana.cz/',
-), array_keys($webs));
+], array_keys($webs));
 
 
 $bookSelection = $context->table('book')->order('id');
@@ -43,7 +43,7 @@ $book->author_id;
 $bookSelection->__destruct();
 
 $bookSelection = $context->table('book')->order('id');
-$books = array();
+$books = [];
 $books[] = $bookSelection->fetch();
 $books[] = $bookSelection->fetch()->toArray();
 $books[] = $bookSelection->fetch()->toArray();
@@ -52,10 +52,10 @@ Assert::same(2, $books[1]['id']);
 Assert::same(3, $books[2]['id']);
 
 
-$row = $context->table('author')->insert(array(
+$row = $context->table('author')->insert([
 	'name' => 'Eddard Stark',
 	'web' => 'http://example.com',
-));  // INSERT INTO `author` (`name`, `web`) VALUES ('Eddard Stark', 'http://example.com')
+]);  // INSERT INTO `author` (`name`, `web`) VALUES ('Eddard Stark', 'http://example.com')
 Assert::true(is_array($row->toArray()));
 // id = 14
 

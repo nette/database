@@ -33,7 +33,7 @@ class MsSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	public function delimite($name)
 	{
 		// @see http://msdn.microsoft.com/en-us/library/ms176027.aspx
-		return '[' . str_replace(array('[', ']'), array('[[', ']]'), $name) . ']';
+		return '[' . str_replace(['[', ']'], ['[[', ']]'], $name) . ']';
 	}
 
 
@@ -69,7 +69,7 @@ class MsSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	 */
 	public function formatLike($value, $pos)
 	{
-		$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
+		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 

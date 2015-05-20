@@ -81,7 +81,7 @@ class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	public function formatLike($value, $pos)
 	{
 		/** @see http://msdn.microsoft.com/en-us/library/ms179859.aspx */
-		$value = strtr($value, array("'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]'));
+		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
@@ -121,7 +121,7 @@ class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	 */
 	public function getTables()
 	{
-		$tables = array();
+		$tables = [];
 		foreach ($this->connection->query("
 			SELECT
 				name,
@@ -134,10 +134,10 @@ class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalD
 			WHERE
 				type IN ('U', 'V')
 		") as $row) {
-			$tables[] = array(
+			$tables[] = [
 				'name' => $row->name,
 				'view' => (bool) $row->view,
-			);
+			];
 		}
 
 		return $tables;
@@ -149,7 +149,7 @@ class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	 */
 	public function getColumns($table)
 	{
-		$columns = array();
+		$columns = [];
 		foreach ($this->connection->query("
 			SELECT
 				c.name AS name,
@@ -193,7 +193,7 @@ class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	 */
 	public function getIndexes($table)
 	{
-		$indexes = array();
+		$indexes = [];
 		foreach ($this->connection->query("
 			SELECT
 				i.name AS name,
@@ -230,7 +230,7 @@ class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	public function getForeignKeys($table)
 	{
 		// Does't work with multicolumn foreign keys
-		$keys = array();
+		$keys = [];
 		foreach ($this->connection->query("
 			SELECT
 				fk.name AS name,
@@ -259,7 +259,7 @@ class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	 */
 	public function getColumnTypes(\PDOStatement $statement)
 	{
-		$types = array();
+		$types = [];
 		$count = $statement->columnCount();
 		for ($col = 0; $col < $count; $col++) {
 			$meta = $statement->getColumnMeta($col);

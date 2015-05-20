@@ -13,7 +13,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 
 test(function() use ($context) {
-	$books1 = $books2 = $books3 = array();
+	$books1 = $books2 = $books3 = [];
 
 	foreach ($context->table('author') as $author) {  // SELECT * FROM `author`
 		foreach ($author->related('book', 'translator_id') as $book) {  // SELECT * FROM `book` WHERE (`book`.`translator_id` IN (11, 12, 13))
@@ -29,18 +29,18 @@ test(function() use ($context) {
 		}
 	}
 
-	Assert::same(array(
+	Assert::same([
 		'1001 tipu a triku pro PHP' => 'Jakub Vrana',
 		'Nette' => 'David Grudl',
 		'Dibi' => 'David Grudl',
-	), $books1);
+	], $books1);
 
-	$expectBooks = array(
+	$expectBooks = [
 		'1001 tipu a triku pro PHP' => 'Jakub Vrana',
 		'JUSH' => 'Jakub Vrana',
 		'Nette' => 'David Grudl',
 		'Dibi' => 'David Grudl',
-	);
+	];
 
 	Assert::same($expectBooks, $books2);
 	Assert::same($expectBooks, $books3);
@@ -48,7 +48,7 @@ test(function() use ($context) {
 
 
 test(function() use ($context) {
-	$tagsAuthors = array();
+	$tagsAuthors = [];
 	foreach ($context->table('tag') as $tag) {
 
 		$book_tags = $tag->related('book_tag')->group('book_tag.tag_id, book.author_id, book.author.name')->select('book.author_id')->order('book.author.name');
@@ -58,31 +58,31 @@ test(function() use ($context) {
 
 	}
 
-	Assert::same(array(
-		'PHP' => array(
+	Assert::same([
+		'PHP' => [
 			'David Grudl',
 			'Jakub Vrana',
-		),
-		'MySQL' => array(
+		],
+		'MySQL' => [
 			'David Grudl',
 			'Jakub Vrana',
-		),
-		'JavaScript' => array(
+		],
+		'JavaScript' => [
 			'Jakub Vrana',
-		),
-	), $tagsAuthors);
+		],
+	], $tagsAuthors);
 });
 
 
 test(function() use ($context) {
-	$counts1 = $counts2 = array();
+	$counts1 = $counts2 = [];
 	foreach($context->table('author')->order('id') as $author) {
 		$counts1[] = $author->related('book.author_id')->count('id');
 		$counts2[] = $author->related('book.author_id')->where('translator_id', NULL)->count('id');
 	}
 
-	Assert::same(array(2, 2, 0), $counts1);
-	Assert::same(array(1, 0, 0), $counts2);
+	Assert::same([2, 2, 0], $counts1);
+	Assert::same([1, 0, 0], $counts2);
 });
 
 

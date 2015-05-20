@@ -98,7 +98,7 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	{
 		$bs = substr($this->connection->quote('\\', \PDO::PARAM_STR), 1, -1); // standard_conforming_strings = on/off
 		$value = substr($this->connection->quote($value, \PDO::PARAM_STR), 1, -1);
-		$value = strtr($value, array('%' => $bs . '%', '_' => $bs . '_', '\\' => '\\\\'));
+		$value = strtr($value, ['%' => $bs . '%', '_' => $bs . '_', '\\' => '\\\\']);
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
@@ -134,7 +134,7 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	 */
 	public function getTables()
 	{
-		$tables = array();
+		$tables = [];
 		foreach ($this->connection->query("
 			SELECT DISTINCT ON (c.relname)
 				c.relname::varchar AS name,
@@ -161,7 +161,7 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	 */
 	public function getColumns($table)
 	{
-		$columns = array();
+		$columns = [];
 		foreach ($this->connection->query("
 			SELECT
 				a.attname::varchar AS name,
@@ -204,7 +204,7 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	 */
 	public function getIndexes($table)
 	{
-		$indexes = array();
+		$indexes = [];
 		foreach ($this->connection->query("
 			SELECT
 				c2.relname::varchar AS name,
@@ -283,7 +283,7 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	 */
 	private function delimiteFQN($name)
 	{
-		return implode('.', array_map(array($this, 'delimite'), explode('.', $name)));
+		return implode('.', array_map([$this, 'delimite'], explode('.', $name)));
 	}
 
 }

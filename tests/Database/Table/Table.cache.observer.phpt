@@ -14,9 +14,9 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 
 $cacheStorage = Mockery::mock('Nette\Caching\Istorage');
-$cacheStorage->shouldReceive('read')->withAnyArgs()->once()->andReturn(array('id' => TRUE));
-$cacheStorage->shouldReceive('read')->withAnyArgs()->times(4)->andReturn(array('id' => TRUE, 'author_id' => TRUE));
-$cacheStorage->shouldReceive('write')->with(Mockery::any(), array('id' => TRUE, 'author_id' => TRUE, 'title' => TRUE), array());
+$cacheStorage->shouldReceive('read')->withAnyArgs()->once()->andReturn(['id' => TRUE]);
+$cacheStorage->shouldReceive('read')->withAnyArgs()->times(4)->andReturn(['id' => TRUE, 'author_id' => TRUE]);
+$cacheStorage->shouldReceive('write')->with(Mockery::any(), ['id' => TRUE, 'author_id' => TRUE, 'title' => TRUE], []);
 
 $context = new Nette\Database\Context($connection, $structure, $conventions, $cacheStorage);
 
@@ -28,7 +28,7 @@ $connection->onQuery[] = function($dao, ResultSet $result) use (& $queries) {
 };
 
 $authors = $context->table('author');
-$stack = array();
+$stack = [];
 foreach ($authors as $author) {
 	foreach ($stack[] = $author->related('book') as $book) {
 		$book->title;

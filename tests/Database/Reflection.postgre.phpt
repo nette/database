@@ -38,33 +38,33 @@ function filter($columns) {
 
 // Reflection for tables with the same name but different schema
 $connection->query('SET search_path TO one, two');
-Assert::same(array('master', 'slave'), filter($driver->getTables()));
-Assert::same(array('one_id'), filter($driver->getColumns('master')));
-Assert::same(array('one_master_pkey'), filter($driver->getIndexes('master')));
-Assert::same(array('one_slave_fk'), filter($driver->getForeignKeys('slave')));
+Assert::same(['master', 'slave'], filter($driver->getTables()));
+Assert::same(['one_id'], filter($driver->getColumns('master')));
+Assert::same(['one_master_pkey'], filter($driver->getIndexes('master')));
+Assert::same(['one_slave_fk'], filter($driver->getForeignKeys('slave')));
 
 $connection->query('SET search_path TO two, one');
-Assert::same(array('master', 'slave'), filter($driver->getTables()));
-Assert::same(array('two_id'), filter($driver->getColumns('master')));
-Assert::same(array('two_master_pkey'), filter($driver->getIndexes('master')));
-Assert::same(array('two_slave_fk'), filter($driver->getForeignKeys('slave')));
+Assert::same(['master', 'slave'], filter($driver->getTables()));
+Assert::same(['two_id'], filter($driver->getColumns('master')));
+Assert::same(['two_master_pkey'], filter($driver->getIndexes('master')));
+Assert::same(['two_slave_fk'], filter($driver->getForeignKeys('slave')));
 
 
 // Reflection for FQN
-Assert::same(array('one_id'), filter($driver->getColumns('one.master')));
-Assert::same(array('one_master_pkey'), filter($driver->getIndexes('one.master')));
+Assert::same(['one_id'], filter($driver->getColumns('one.master')));
+Assert::same(['one_master_pkey'], filter($driver->getIndexes('one.master')));
 $foreign = $driver->getForeignKeys('one.slave');
-Assert::same(array(
+Assert::same([
 	'name' => 'one_slave_fk',
 	'local' => 'one_id',
 	'table' => 'one.master',
 	'foreign' => 'one_id',
-), (array) $foreign[0]);
+], (array) $foreign[0]);
 
 
 // Limit foreign keys for current schemas only
 $connection->query('ALTER TABLE "one"."slave" ADD CONSTRAINT "one_two_fk" FOREIGN KEY ("one_id") REFERENCES "two"."master"("two_id")');
 $connection->query('SET search_path TO one');
-Assert::same(array('one_slave_fk'), filter($driver->getForeignKeys('slave')));
+Assert::same(['one_slave_fk'], filter($driver->getForeignKeys('slave')));
 $connection->query('SET search_path TO one, two');
-Assert::same(array('one_slave_fk', 'one_two_fk'), filter($driver->getForeignKeys('slave')));
+Assert::same(['one_slave_fk', 'one_two_fk'], filter($driver->getForeignKeys('slave')));

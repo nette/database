@@ -35,25 +35,25 @@ class SqlBuilder extends Nette\Object
 	protected $delimitedTable;
 
 	/** @var array of column to select */
-	protected $select = array();
+	protected $select = [];
 
 	/** @var array of where conditions */
-	protected $where = array();
+	protected $where = [];
 
 	/** @var array of where conditions for caching */
-	protected $conditions = array();
+	protected $conditions = [];
 
 	/** @var array of parameters passed to where conditions */
-	protected $parameters = array(
-		'select' => array(),
-		'where' => array(),
-		'group' => array(),
-		'having' => array(),
-		'order' => array(),
-	);
+	protected $parameters = [
+		'select' => [],
+		'where' => [],
+		'group' => [],
+		'having' => [],
+		'order' => [],
+	];
 
 	/** @var array or columns to order by */
-	protected $order = array();
+	protected $order = [];
 
 	/** @var int number of rows to fetch */
 	protected $limit = NULL;
@@ -84,7 +84,7 @@ class SqlBuilder extends Nette\Object
 		$this->conventions = $context->getConventions();
 		$this->structure = $context->getStructure();
 
-		$this->delimitedTable = implode('.', array_map(array($this->driver, 'delimite'), explode('.', $tableName)));
+		$this->delimitedTable = implode('.', array_map([$this->driver, 'delimite'], explode('.', $tableName)));
 	}
 
 
@@ -131,7 +131,7 @@ class SqlBuilder extends Nette\Object
 		$queryCondition = $this->buildConditions();
 		$queryEnd       = $this->buildQueryEnd();
 
-		$joins = array();
+		$joins = [];
 		$this->parseJoins($joins, $queryCondition);
 		$this->parseJoins($joins, $queryEnd);
 
@@ -141,19 +141,19 @@ class SqlBuilder extends Nette\Object
 
 		} elseif ($columns) {
 			$prefix = $joins ? "{$this->delimitedTable}." : '';
-			$cols = array();
+			$cols = [];
 			foreach ($columns as $col) {
 				$cols[] = $prefix . $col;
 			}
 			$querySelect = $this->buildSelect($cols);
 
 		} elseif ($this->group && !$this->driver->isSupported(ISupplementalDriver::SUPPORT_SELECT_UNGROUPED_COLUMNS)) {
-			$querySelect = $this->buildSelect(array($this->group));
+			$querySelect = $this->buildSelect([$this->group]);
 			$this->parseJoins($joins, $querySelect);
 
 		} else {
 			$prefix = $joins ? "{$this->delimitedTable}." : '';
-			$querySelect = $this->buildSelect(array($prefix . '*'));
+			$querySelect = $this->buildSelect([$prefix . '*']);
 
 		}
 
@@ -207,7 +207,7 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-	public function addWhere($condition, $parameters = array())
+	public function addWhere($condition, $parameters = [])
 	{
 		if (is_array($condition) && is_array($parameters) && !empty($parameters)) {
 			return $this->addWhereComposition($condition, $parameters);
@@ -275,7 +275,7 @@ class SqlBuilder extends Nette\Object
 						$replace = $match[2][0] . '(' . $clone->getSql() . ')';
 						$this->parameters['where'] = array_merge($this->parameters['where'], $clone->getSqlBuilder()->getParameters());
 					} else {
-						$arg = array();
+						$arg = [];
 						foreach ($clone as $row) {
 							$arg[] = array_values(iterator_to_array($row));
 						}
@@ -494,7 +494,7 @@ class SqlBuilder extends Nette\Object
 				$tableAlias = $parentAlias . '_ref';
 			}
 
-			$joins[$tableAlias . $column] = array($table, $tableAlias, $parentAlias, $column, $primary);
+			$joins[$tableAlias . $column] = [$table, $tableAlias, $parentAlias, $column, $primary];
 			$parent = $table;
 			$parentAlias = $tableAlias;
 		}

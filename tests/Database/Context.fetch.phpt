@@ -15,10 +15,10 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 test(function() use ($context) { // fetch
 	$row = $context->fetch('SELECT name, id FROM author WHERE id = ?', 11);
 	Assert::type( 'Nette\Database\Row', $row );
-	Assert::equal(Nette\Database\Row::from(array(
+	Assert::equal(Nette\Database\Row::from([
 		'name' => 'Jakub Vrana',
 		'id' => 11,
-	)), $row);
+	]), $row);
 });
 
 
@@ -29,17 +29,17 @@ test(function() use ($context) { // fetchField
 
 test(function() use ($context) { // fetchPairs
 	$pairs = $context->fetchPairs('SELECT name, id FROM author WHERE id > ? ORDER BY id', 11);
-	Assert::same(array(
+	Assert::same([
 		'David Grudl' => 12,
 		'Geek' => 13,
-	), $pairs);
+	], $pairs);
 });
 
 
 test(function() use ($context) { // fetchAll
 	$arr = $context->fetchAll('SELECT name, id FROM author WHERE id < ? ORDER BY id', 13);
-	Assert::equal(array(
-		Nette\Database\Row::from(array('name' => 'Jakub Vrana', 'id' => 11)),
-		Nette\Database\Row::from(array('name' => 'David Grudl', 'id' => 12)),
-	), $arr);
+	Assert::equal([
+		Nette\Database\Row::from(['name' => 'Jakub Vrana', 'id' => 11]),
+		Nette\Database\Row::from(['name' => 'David Grudl', 'id' => 12]),
+	], $arr);
 });

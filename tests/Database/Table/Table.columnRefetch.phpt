@@ -18,25 +18,25 @@ foreach ($books as $book) {
 }
 $books->__destruct();
 
-$res = array();
+$res = [];
 $books = $context->table('book')->order('id DESC')->limit(2);
 foreach ($books as $book) {
 	$res[] = (string) $book->title;
 }
-Assert::same(array('Dibi', 'Nette'), $res);
+Assert::same(['Dibi', 'Nette'], $res);
 
-$context->table('book')->insert(array(
+$context->table('book')->insert([
 	'title' => 'New book #1',
 	'author_id' => 11,
-));
-$context->table('book')->insert(array(
+]);
+$context->table('book')->insert([
 	'title' => 'New book #2',
 	'author_id' => 11,
-));
+]);
 
-$res = array();
+$res = [];
 foreach ($books as $book) {
 	$res[] = (string) $book->title;
 	$res[] = (string) $book->author->name;
 }
-Assert::same(array('Dibi', 'David Grudl', 'Nette', 'David Grudl'), $res);
+Assert::same(['Dibi', 'David Grudl', 'Nette', 'David Grudl'], $res);

@@ -13,22 +13,22 @@ require __DIR__ . '/../../bootstrap.php';
 // basic test singular
 test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
-	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn(array(
-		'book' => array('author_id', 'translator_id'),
-		'book_topics' => array('author_id'),
-		'another' => array('author_id'),
-	))->times(3);
-	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn(array(
-		'book' => array('author_id'),
-	));
+	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn([
+		'book' => ['author_id', 'translator_id'],
+		'book_topics' => ['author_id'],
+		'another' => ['author_id'],
+	])->times(3);
+	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn([
+		'book' => ['author_id'],
+	]);
 
 	$conventions = new DiscoveredConventions($structure);
 
 	// match by key = target_table
-	Assert::same(array('book', 'author_id'), $conventions->getHasManyReference('author', 'book'));
+	Assert::same(['book', 'author_id'], $conventions->getHasManyReference('author', 'book'));
 
 	// match by key = target table
-	Assert::same(array('book_topics', 'author_id'), $conventions->getHasManyReference('author', 'book_topics'));
+	Assert::same(['book_topics', 'author_id'], $conventions->getHasManyReference('author', 'book_topics'));
 
 	// test too many column candidates
 	Assert::throws(function() use ($conventions) {
@@ -36,35 +36,35 @@ test(function() {
 	}, 'Nette\Database\Conventions\AmbiguousReferenceKeyException');
 
 	// test one column candidate
-	Assert::same(array('book', 'author_id'), $conventions->getHasManyReference('author', 'boo'));
+	Assert::same(['book', 'author_id'], $conventions->getHasManyReference('author', 'boo'));
 });
 
 
 // basic test singular with schema
 test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
-	$structure->shouldReceive('getHasManyReference')->with('public.author')->andReturn(array(
-		'public.book' => array('author_id', 'translator_id'),
-		'public.book_topics' => array('author_id'),
-		'public.another' => array('author_id'),
-	))->times(6);
-	$structure->shouldReceive('getHasManyReference')->with('public.author')->andReturn(array(
-		'public.book' => array('author_id'),
-	))->times(2);
+	$structure->shouldReceive('getHasManyReference')->with('public.author')->andReturn([
+		'public.book' => ['author_id', 'translator_id'],
+		'public.book_topics' => ['author_id'],
+		'public.another' => ['author_id'],
+	])->times(6);
+	$structure->shouldReceive('getHasManyReference')->with('public.author')->andReturn([
+		'public.book' => ['author_id'],
+	])->times(2);
 
 	$conventions = new DiscoveredConventions($structure);
 
 	// match by key = target ns table
-	Assert::same(array('public.book', 'author_id'), $conventions->getHasManyReference('public.author', 'public.book'));
+	Assert::same(['public.book', 'author_id'], $conventions->getHasManyReference('public.author', 'public.book'));
 
 	// match by key = target table
-	Assert::same(array('public.book', 'author_id'), $conventions->getHasManyReference('public.author', 'book'));
+	Assert::same(['public.book', 'author_id'], $conventions->getHasManyReference('public.author', 'book'));
 
 	// match by key = target ns table
-	Assert::same(array('public.book_topics', 'author_id'), $conventions->getHasManyReference('public.author', 'public.book_topics'));
+	Assert::same(['public.book_topics', 'author_id'], $conventions->getHasManyReference('public.author', 'public.book_topics'));
 
 	// match by key = target table
-	Assert::same(array('public.book_topics', 'author_id'), $conventions->getHasManyReference('public.author', 'book_topics'));
+	Assert::same(['public.book_topics', 'author_id'], $conventions->getHasManyReference('public.author', 'book_topics'));
 
 	// test too many column candidates, ns table name
 	Assert::throws(function() use ($conventions) {
@@ -77,29 +77,29 @@ test(function() {
 	}, 'Nette\Database\Conventions\AmbiguousReferenceKeyException');
 
 	// test one column candidate, ns table name
-	Assert::same(array('public.book', 'author_id'), $conventions->getHasManyReference('public.author', 'public.boo'));
+	Assert::same(['public.book', 'author_id'], $conventions->getHasManyReference('public.author', 'public.boo'));
 
 	// test one column candidate
-	Assert::same(array('public.book', 'author_id'), $conventions->getHasManyReference('public.author', 'boo'));
+	Assert::same(['public.book', 'author_id'], $conventions->getHasManyReference('public.author', 'boo'));
 });
 
 
 // basic test plural
 test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
-	$structure->shouldReceive('getHasManyReference')->with('authors')->andReturn(array(
-		'books' => array('author_id', 'translator_id'),
-	))->once();
-	$structure->shouldReceive('getHasManyReference')->with('authors')->andReturn(array(
-		'books' => array('author_id'),
-		'book_topics' => array('author_id'),
-		'another' => array('author_id'),
-	))->twice();
+	$structure->shouldReceive('getHasManyReference')->with('authors')->andReturn([
+		'books' => ['author_id', 'translator_id'],
+	])->once();
+	$structure->shouldReceive('getHasManyReference')->with('authors')->andReturn([
+		'books' => ['author_id'],
+		'book_topics' => ['author_id'],
+		'another' => ['author_id'],
+	])->twice();
 
 	$conventions = new DiscoveredConventions($structure);
 
-	Assert::same(array('books', 'author_id'), $conventions->getHasManyReference('authors', 'books'));
-	Assert::same(array('book_topics', 'author_id'), $conventions->getHasManyReference('authors', 'topics'));
+	Assert::same(['books', 'author_id'], $conventions->getHasManyReference('authors', 'books'));
+	Assert::same(['book_topics', 'author_id'], $conventions->getHasManyReference('authors', 'topics'));
 
 	// test too many candidates
 	Assert::throws(function() use ($conventions) {
@@ -111,22 +111,22 @@ test(function() {
 // tests column match with source table
 test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
-	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn(array(
-		'book' => array('author_id', 'tran_id'),
-	))->once();
-	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn(array(
-		'book' => array('auth_id', 't_id'),
-	))->once();
-	$structure->shouldReceive('getHasManyReference')->with('authors')->andReturn(array(
-		'books' => array('auth_id', 't_id'),
-	))->once();
+	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn([
+		'book' => ['author_id', 'tran_id'],
+	])->once();
+	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn([
+		'book' => ['auth_id', 't_id'],
+	])->once();
+	$structure->shouldReceive('getHasManyReference')->with('authors')->andReturn([
+		'books' => ['auth_id', 't_id'],
+	])->once();
 
 	$conventions = new DiscoveredConventions($structure);
 
 	// prefer the match of source table with joining column
-	Assert::same(array('book', 'author_id'), $conventions->getHasManyReference('author', 'book'));
+	Assert::same(['book', 'author_id'], $conventions->getHasManyReference('author', 'book'));
 	// prefer the first possible column
-	Assert::same(array('book', 'auth_id'), $conventions->getHasManyReference('author', 'book'));
+	Assert::same(['book', 'auth_id'], $conventions->getHasManyReference('author', 'book'));
 
 	// no propper match of key and target table name
 	Assert::throws(function() use ($conventions) {
@@ -138,13 +138,13 @@ test(function() {
 // tests case insensivity and prefixes
 test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
-	$structure->shouldReceive('getHasManyReference')->with('nAuthors')->andReturn(array(
-		'nBooks' => array('authorId', 'translatorId'),
-	))->once();
+	$structure->shouldReceive('getHasManyReference')->with('nAuthors')->andReturn([
+		'nBooks' => ['authorId', 'translatorId'],
+	])->once();
 
 	$conventions = new DiscoveredConventions($structure);
 
-	Assert::same(array('nBooks', 'authorId'), $conventions->getHasManyReference('nAuthors', 'nbooks'));
+	Assert::same(['nBooks', 'authorId'], $conventions->getHasManyReference('nAuthors', 'nbooks'));
 });
 
 
@@ -153,13 +153,13 @@ test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
 	$structure->shouldReceive('isRebuilt')->andReturn(FALSE);
 	$structure->shouldReceive('rebuild');
-	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn(array())->once();
-	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn(array(
-		'book' => array('author_id', 'translator_id'),
-	))->once();
+	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn([])->once();
+	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn([
+		'book' => ['author_id', 'translator_id'],
+	])->once();
 
 	$conventions = new DiscoveredConventions($structure);
-	Assert::same(array('book', 'author_id'), $conventions->getHasManyReference('author', 'book'));
+	Assert::same(['book', 'author_id'], $conventions->getHasManyReference('author', 'book'));
 });
 
 
@@ -167,7 +167,7 @@ test(function() {
 test(function() {
 	$structure = Mockery::mock('Nette\Database\IStructure');
 	$structure->shouldReceive('isRebuilt')->andReturn(TRUE);
-	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn(array())->once();
+	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn([])->once();
 
 	$conventions = new DiscoveredConventions($structure);
 	Assert::null($conventions->getHasManyReference('author', 'book'));

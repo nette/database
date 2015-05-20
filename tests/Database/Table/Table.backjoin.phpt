@@ -15,7 +15,7 @@ $driver = $connection->getSupplementalDriver();
 
 
 test(function() use ($context) {
-	$authorTagsCount = array();
+	$authorTagsCount = [];
 	$authors = $context
 		->table('author')
 		->select('author.name, COUNT(DISTINCT :book:book_tag.tag_id) AS tagsCount')
@@ -27,10 +27,10 @@ test(function() use ($context) {
 		$authorTagsCount[$author->name] = $author->tagsCount;
 	}
 
-	Assert::same(array(
+	Assert::same([
 		'David Grudl' => 2,
 		'Geek' => 0,
-	), $authorTagsCount);
+	], $authorTagsCount);
 });
 
 
@@ -49,12 +49,12 @@ test(function() use ($context, $driver) {
 		);
 	}
 
-	$authors = array();
+	$authors = [];
 	foreach ($authorsSelection as $author) {
 		$authors[$author->id] = $author->name;
 	}
 
-	Assert::same(array(12 => 'David Grudl'), $authors);
+	Assert::same([12 => 'David Grudl'], $authors);
 });
 
 

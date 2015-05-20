@@ -20,25 +20,25 @@ test(function() use ($context) {
 		}
 	}
 
-	$tags = array();
+	$tags = [];
 	foreach ($books as $book) {
 		foreach ($book->related('book_tag_alt') as $bookTag) {
 			$tags[] = $bookTag->tag->name;
 		}
 	}
 
-	Assert::same(array(
+	Assert::same([
 		'PHP',
 		'MySQL',
 		'JavaScript',
 		'Neon',
-	), $tags);
+	], $tags);
 });
 
 
 test(function() use ($context) {
 	$authors = $context->table('author')->where('id', 11);
-	$books = array();
+	$books = [];
 	foreach ($authors as $author) {
 		foreach ($author->related('book')->where('translator_id', NULL) as $book) {
 			foreach ($book->related('book_tag') as $bookTag) {
@@ -46,7 +46,7 @@ test(function() use ($context) {
 			}
 		}
 	}
-	Assert::same(array('JavaScript'), $books);
+	Assert::same(['JavaScript'], $books);
 
 	foreach ($authors as $author) {
 		foreach ($author->related('book')->where('NOT translator_id', NULL) as $book) {
@@ -55,7 +55,7 @@ test(function() use ($context) {
 			}
 		}
 	}
-	Assert::same(array('JavaScript', 'PHP', 'MySQL'), $books);
+	Assert::same(['JavaScript', 'PHP', 'MySQL'], $books);
 });
 
 
@@ -67,16 +67,16 @@ test(function() use ($context) {
 		$book->ref('author', 'translator_id')->name;
 	}
 
-	$translators = array();
+	$translators = [];
 	foreach ($author->related('book')->limit(2) as $book) {
 		$translators[] = $book->ref('author', 'translator_id')->name;
 	}
 	sort($translators);
 
-	Assert::same(array(
+	Assert::same([
 		'David Grudl',
 		'Jakub Vrana',
-	), $translators);
+	], $translators);
 });
 
 
@@ -88,12 +88,12 @@ test(function() use ($context) { // cache can't be affected by inner query!
 		if (!isset($secondBookTagRels)) {
 			$bookFromAnotherSelection = $author->related('book')->where('id', $book->id)->fetch();
 			$bookFromAnotherSelection->related('book_tag')->fetchPairs('id');
-			$secondBookTagRels = array();
+			$secondBookTagRels = [];
 		} else {
 			foreach ($book->related('book_tag') as $bookTagRel) {
 				$secondBookTagRels[] = $bookTagRel->tag->name;
 			}
 		}
 	}
-	Assert::same(array('JavaScript'), $secondBookTagRels);
+	Assert::same(['JavaScript'], $secondBookTagRels);
 });

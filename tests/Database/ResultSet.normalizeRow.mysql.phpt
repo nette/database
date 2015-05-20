@@ -15,7 +15,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_
 
 $res = $context->query('SELECT * FROM types');
 
-Assert::equal( array(
+Assert::equal( [
 	'unsigned_int' => 1,
 	'int' => 1,
 	'smallint' => 1,
@@ -46,9 +46,9 @@ Assert::equal( array(
 	'longtext' => 'a',
 	'enum' => 'a',
 	'set' => 'a',
-), (array) $res->fetch() );
+], (array) $res->fetch() );
 
-Assert::equal( array(
+Assert::equal( [
 	'unsigned_int' => 0,
 	'int' => 0,
 	'smallint' => 0,
@@ -79,9 +79,9 @@ Assert::equal( array(
 	'longtext' => '',
 	'enum' => 'b',
 	'set' => '',
-), (array) $res->fetch() );
+], (array) $res->fetch() );
 
-Assert::same( array(
+Assert::same( [
 	'unsigned_int' => NULL,
 	'int' => NULL,
 	'smallint' => NULL,
@@ -112,11 +112,11 @@ Assert::same( array(
 	'longtext' => NULL,
 	'enum' => NULL,
 	'set' => NULL,
-), (array) $res->fetch() );
+], (array) $res->fetch() );
 
 
 $res = $context->query('SELECT `int` AS a, `char` AS a FROM types');
 
-Assert::same( array(
+Assert::same( [
 	'a' => 'a',
-), (array) @$res->fetch() );
+], (array) @$res->fetch() );

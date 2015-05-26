@@ -24,7 +24,7 @@ interface IRowContainer extends \Traversable
 
 	/**
 	 * Fetches all rows as associative array.
-	 * @param  string column name used for an array key or NULL for numeric index
+	 * @param  string|array column name(s) used for an array key or NULL for numeric index
 	 * @param  string column name used for an array value or NULL for the whole row
 	 * @return array
 	 */

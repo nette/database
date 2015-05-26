@@ -257,6 +257,14 @@ class Helpers
 			foreach ($rows as $row) {
 				$return[] = ($value === NULL ? $row : $row[$value]);
 			}
+		} elseif (is_array($key)) {
+			foreach ($rows as $row) {
+				$node = &$return;
+				foreach ($key as $nodeKey) {
+					$node = &$node[is_object($row[$nodeKey]) ? (string) $row[$nodeKey] : $row[$nodeKey]];
+				}
+				$node = ($value === NULL ? $row : $row[$value]);
+			}
 		} else {
 			foreach ($rows as $row) {
 				$return[is_object($row[$key]) ? (string) $row[$key] : $row[$key]] = ($value === NULL ? $row : $row[$value]);

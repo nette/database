@@ -125,14 +125,6 @@ class Context extends Nette\Object
 	}
 
 
-	/** @deprecated */
-	public function getDatabaseReflection()
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use getConventions() instead.', E_USER_DEPRECATED);
-		return $this->conventions;
-	}
-
-
 	/********************* shortcuts ****************d*g**/
 
 

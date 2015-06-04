@@ -116,22 +116,6 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	}
 
 
-	/** @deprecated */
-	public function getConnection()
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use DI container to autowire Nette\Database\Connection instead.', E_USER_DEPRECATED);
-		return $this->context->getConnection();
-	}
-
-
-	/** @deprecated */
-	public function getDatabaseReflection()
-	{
-		trigger_error(__METHOD__ . '() is deprecated; use DI container to autowire Nette\Database\IConventions instead.', E_USER_DEPRECATED);
-		return $this->conventions;
-	}
-
-
 	/**
 	 * @return string
 	 */

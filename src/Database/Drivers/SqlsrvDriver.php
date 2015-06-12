@@ -18,10 +18,14 @@ class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	/** @var Nette\Database\Connection */
 	private $connection;
 
+	/** @var string */
+	private $version;
+
 
 	public function __construct(Nette\Database\Connection $connection, array $options)
 	{
 		$this->connection = $connection;
+		$this->version = $connection->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION);
 	}
 
 
@@ -88,15 +92,21 @@ class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	 */
 	public function applyLimit(& $sql, $limit, $offset)
 	{
-		if ($limit >= 0) {
-			$sql = preg_replace('#^\s*(SELECT(\s+DISTINCT|\s+ALL)?|UPDATE|DELETE)#i', '$0 TOP ' . (int) $limit, $sql, 1, $count);
-			if (!$count) {
-				throw new Nette\InvalidArgumentException('SQL query must begin with SELECT, UPDATE or DELETE command.');
+		if (version_compare($this->version, 11, '<')) { // 11 == SQL Server 2012
+			if ($limit >= 0) {
+				$sql = preg_replace('#^\s*(SELECT(\s+DISTINCT|\s+ALL)?|UPDATE|DELETE)#i', '$0 TOP ' . (int) $limit, $sql, 1, $count);
+				if (!$count) {
+					throw new Nette\InvalidArgumentException('SQL query must begin with SELECT, UPDATE or DELETE command.');
+				}
 			}
-		}
 
-		if ($offset > 0) {
-			throw new Nette\NotSupportedException('Offset is not supported by this database.');
+			if ($offset > 0) {
+				throw new Nette\NotSupportedException('Offset is not supported by this database.');
+			}
+		} elseif ($limit >= 0 || $offset > 0) {
+			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
+			$sql .= ' OFFSET ' . (int) $offset . ' ROWS '
+				. 'FETCH NEXT ' . (int) $limit . ' ROWS ONLY';
 		}
 	}
 

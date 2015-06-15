@@ -19,7 +19,7 @@ use Nette,
 class Helpers
 {
 	/** @var int maximum SQL length */
-	static public $maxLength = 100;
+	public static $maxLength = 100;
 
 	/** @var array */
 	public static $typePatterns = [

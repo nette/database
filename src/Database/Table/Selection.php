@@ -564,7 +564,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 	/**
 	 * Returns Selection parent for caching.
-	 * @return Selection
+	 * @return self
 	 */
 	protected function getRefTable(& $refPath)
 	{

@@ -12,36 +12,36 @@ use Tester\Assert;
 require __DIR__ . '/../bootstrap.php';
 
 
-test(function() { // non lazy
-	Assert::exception(function() {
+test(function () { // non lazy
+	Assert::exception(function () {
 		$connection = new Nette\Database\Connection('dsn', 'user', 'password');
 	}, 'Nette\Database\DriverException', 'invalid data source name');
 });
 
 
-test(function() { // lazy
+test(function () { // lazy
 	$connection = new Nette\Database\Connection('dsn', 'user', 'password', array('lazy' => TRUE));
 	$context = new Nette\Database\Context($connection, new Structure($connection, new DevNullStorage()));
-	Assert::exception(function() use ($context) {
+	Assert::exception(function () use ($context) {
 		$context->query('SELECT ?', 10);
 	}, 'Nette\Database\DriverException', 'invalid data source name');
 });
 
 
-test(function() {
+test(function () {
 	$connection = new Nette\Database\Connection('dsn', 'user', 'password', array('lazy' => TRUE));
-	Assert::exception(function() use ($connection) {
+	Assert::exception(function () use ($connection) {
 		$connection->quote('x');
 	}, 'Nette\Database\DriverException', 'invalid data source name');
 });
 
 
-test(function() { // connect & disconnect
+test(function () { // connect & disconnect
 	$options = Tester\Environment::loadData() + array('user' => NULL, 'password' => NULL);
 	$connections = 1;
 
 	$connection = new Nette\Database\Connection($options['dsn'], $options['user'], $options['password']);
-	$connection->onConnect[] = function() use (& $connections) {
+	$connection->onConnect[] = function () use (& $connections) {
 		$connections++;
 	};
 

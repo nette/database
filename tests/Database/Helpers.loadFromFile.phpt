@@ -10,7 +10,7 @@ use Tester\Assert;
 require __DIR__ . '/connect.inc.php'; // create $connection
 
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/mysql-delimiter.sql");
+Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-delimiter.sql');
 
 $arr = $connection->query('SELECT name, id FROM author ORDER BY id')->fetchAll();
 Assert::equal(array(

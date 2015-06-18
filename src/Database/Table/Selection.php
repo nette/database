@@ -7,9 +7,9 @@
 
 namespace Nette\Database\Table;
 
-use Nette,
-	Nette\Database\Context,
-	Nette\Database\IConventions;
+use Nette;
+use Nette\Database\Context;
+use Nette\Database\IConventions;
 
 
 /**
@@ -526,7 +526,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 	public function createSelectionInstance($table = NULL)
 	{
-		return new Selection($this->context, $this->conventions, $table ?: $this->name, $this->cache ? $this->cache->getStorage() : NULL);
+		return new self($this->context, $this->conventions, $table ?: $this->name, $this->cache ? $this->cache->getStorage() : NULL);
 	}
 
 
@@ -724,7 +724,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 */
 	public function insert($data)
 	{
-		if ($data instanceof Selection) {
+		if ($data instanceof self) {
 			$return = $this->context->queryArgs($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), $data->getSqlBuilder()->getParameters());
 
 		} else {
@@ -736,7 +736,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 		$this->loadRefCache();
 
-		if ($data instanceof Selection || $this->primary === NULL) {
+		if ($data instanceof self || $this->primary === NULL) {
 			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
 			return $return->getRowCount();
 		}

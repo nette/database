@@ -7,9 +7,9 @@
 
 namespace Nette\Database\Table;
 
-use Nette,
-	Nette\Database\Context,
-	Nette\Database\IConventions;
+use Nette;
+use Nette\Database\Context;
+use Nette\Database\IConventions;
 
 
 /**
@@ -180,7 +180,7 @@ class GroupedSelection extends Selection
 	{
 		$refObj = $this->refTable;
 		$refPath = $this->name . '.';
-		while ($refObj instanceof GroupedSelection) {
+		while ($refObj instanceof self) {
 			$refPath .= $refObj->name . '.';
 			$refObj = $refObj->refTable;
 		}
@@ -193,11 +193,11 @@ class GroupedSelection extends Selection
 	{
 		$hash = $this->getSpecificCacheKey();
 		$referencing = & $this->refCache['referencing'][$this->getGeneralCacheKey()];
-		$this->observeCache      = & $referencing['observeCache'];
-		$this->refCacheCurrent   = & $referencing[$hash];
-		$this->accessedColumns   = & $referencing[$hash]['accessed'];
-		$this->specificCacheKey  = & $referencing[$hash]['specificCacheKey'];
-		$this->rows              = & $referencing[$hash]['rows'];
+		$this->observeCache = & $referencing['observeCache'];
+		$this->refCacheCurrent = & $referencing[$hash];
+		$this->accessedColumns = & $referencing[$hash]['accessed'];
+		$this->specificCacheKey = & $referencing[$hash]['specificCacheKey'];
+		$this->rows = & $referencing[$hash]['rows'];
 
 		if (isset($referencing[$hash]['data'][$this->active])) {
 			$this->data = & $referencing[$hash]['data'][$this->active];

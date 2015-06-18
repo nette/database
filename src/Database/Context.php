@@ -7,8 +7,8 @@
 
 namespace Nette\Database;
 
-use Nette,
-	Nette\Database\Conventions\StaticConventions;
+use Nette;
+use Nette\Database\Conventions\StaticConventions;
 
 
 /**

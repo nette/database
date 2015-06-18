@@ -16,7 +16,7 @@ $context = new \Nette\Database\Context($context->getConnection(), $context->getS
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-nette_test1.sql");
 
 
-test(function() use ($context) {
+test(function () use ($context) {
 	$book = $context->table('book')->where('id = ?', 1)->fetch();
 	Assert::exception(function () use ($book) {
 		$book->unknown_column;

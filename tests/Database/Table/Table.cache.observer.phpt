@@ -21,7 +21,7 @@ $cacheStorage->shouldReceive('write')->with(Mockery::any(), array('id' => TRUE, 
 $context = new Nette\Database\Context($connection, $structure, $conventions, $cacheStorage);
 
 $queries = 0;
-$connection->onQuery[] = function($dao, ResultSet $result) use (& $queries) {
+$connection->onQuery[] = function ($dao, ResultSet $result) use (& $queries) {
 	if (!preg_match('#SHOW|CONSTRAINT_NAME|pg_catalog|sys\.|SET|PRAGMA|FROM sqlite_#i', $result->getQueryString())) {
 		$queries++;
 	}
@@ -36,7 +36,9 @@ foreach ($authors as $author) {
 }
 
 unset($book, $author);
-foreach ($stack as $selection) $selection->__destruct();
+foreach ($stack as $selection) {
+	$selection->__destruct();
+}
 $authors->__destruct();
 
 Assert::same(3, $queries);

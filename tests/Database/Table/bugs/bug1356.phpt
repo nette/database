@@ -13,7 +13,9 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driv
 
 
 $books = $context->table('book')->limit(1);
-foreach ($books as $book) $book->id;
+foreach ($books as $book) {
+	$book->id;
+}
 $books->__destruct();
 
 

@@ -7,8 +7,8 @@
 
 namespace Nette\Database\Table;
 
-use Nette,
-	Nette\Database\ISupplementalDriver;
+use Nette;
+use Nette\Database\ISupplementalDriver;
 
 
 /**
@@ -520,7 +520,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 	public function createSelectionInstance($table = NULL)
 	{
-		return new Selection($this->connection, $table ?: $this->name, $this->reflection, $this->cache ? $this->cache->getStorage() : NULL);
+		return new self($this->connection, $table ?: $this->name, $this->reflection, $this->cache ? $this->cache->getStorage() : NULL);
 	}
 
 
@@ -703,7 +703,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 */
 	public function insert($data)
 	{
-		if ($data instanceof Selection) {
+		if ($data instanceof self) {
 			$data = new Nette\Database\SqlLiteral($data->getSql(), $data->getSqlBuilder()->getParameters());
 
 		} elseif ($data instanceof \Traversable) {

@@ -175,7 +175,7 @@ class GroupedSelection extends Selection
 	{
 		$refObj = $this->refTable;
 		$refPath = $this->name . '.';
-		while ($refObj instanceof GroupedSelection) {
+		while ($refObj instanceof self) {
 			$refPath .= $refObj->name . '.';
 			$refObj = $refObj->refTable;
 		}

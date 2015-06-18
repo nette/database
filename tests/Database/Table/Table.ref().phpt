@@ -15,7 +15,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 Assert::same('Jakub Vrana', $context->table('book')->get(1)->ref('author')->name);
 
 
-test(function() use ($context) {
+test(function () use ($context) {
 	$book = $context->table('book')->get(1);
 	$book->update(array(
 		'translator_id' => 12,
@@ -28,14 +28,14 @@ test(function() use ($context) {
 });
 
 
-test(function() use ($context) {
+test(function () use ($context) {
 	Assert::null($context->table('book')->get(2)->ref('author', 'translator_id'));
 });
 
-test(function() use ($context, $connection) {
+test(function () use ($context, $connection) {
 	$counter = 0;
 
-	$connection->onQuery[] = function($connection, $result) use (&$counter) {
+	$connection->onQuery[] = function ($connection, $result) use (&$counter) {
 		$counter++;
 	};
 

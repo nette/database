@@ -112,7 +112,7 @@ class StructureTestCase extends TestCase
 		Assert::same($columns, $this->structure->getColumns('Tags'));
 
 		$structure = $this->structure;
-		Assert::exception(function() use ($structure) {
+		Assert::exception(function () use ($structure) {
 			$structure->getColumns('InvaliD');
 		}, 'Nette\InvalidArgumentException', "Table 'invalid' does not exist.");
 	}

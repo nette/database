@@ -5,8 +5,8 @@
  * @dataProvider? databases.ini  postgresql
  */
 
-use Tester\Assert,
-	Nette\Utils\DateTime;
+use Tester\Assert;
+use Nette\Utils\DateTime;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
 

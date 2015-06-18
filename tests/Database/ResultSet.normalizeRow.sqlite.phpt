@@ -5,8 +5,8 @@
  * @dataProvider? databases.ini  sqlite
  */
 
-use Tester\Assert,
-	Nette\Utils\DateTime;
+use Tester\Assert;
+use Nette\Utils\DateTime;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
 
@@ -15,7 +15,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlite-nette
 
 $res = $context->query('SELECT * FROM types');
 
-Assert::equal( [
+Assert::equal([
 	'int' => 1,
 	'integer' => 1,
 	'tinyint' => 1,
@@ -43,9 +43,9 @@ Assert::equal( [
 	'boolean' => TRUE,
 	'date' => new DateTime('2012-10-13'),
 	'datetime' => new DateTime('2012-10-13 10:10:10'),
-], (array) $res->fetch() );
+], (array) $res->fetch());
 
-Assert::equal( [
+Assert::equal([
 	'int' => 0,
 	'integer' => 0,
 	'tinyint' => 0,
@@ -73,9 +73,9 @@ Assert::equal( [
 	'boolean' => FALSE,
 	'date' => new DateTime('1970-01-01'),
 	'datetime' => new DateTime('1970-01-01 00:00:00'),
-], (array) $res->fetch() );
+], (array) $res->fetch());
 
-Assert::same( [
+Assert::same([
 	'int' => NULL,
 	'integer' => NULL,
 	'tinyint' => NULL,
@@ -103,11 +103,11 @@ Assert::same( [
 	'boolean' => NULL,
 	'date' => NULL,
 	'datetime' => NULL,
-], (array) $res->fetch() );
+], (array) $res->fetch());
 
 
 $res = $context->query('SELECT [int] AS a, [text] AS a FROM types');
 
-Assert::same( [
+Assert::same([
 	'a' => 'a',
-], (array) @$res->fetch() );
+], (array) @$res->fetch());

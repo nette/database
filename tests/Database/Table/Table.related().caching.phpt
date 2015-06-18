@@ -12,7 +12,7 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test(function() use ($context) {
+test(function () use ($context) {
 	$books = $context->table('book');
 	foreach ($books as $book) {
 		foreach ($book->related('book_tag') as $bookTag) {
@@ -36,7 +36,7 @@ test(function() use ($context) {
 });
 
 
-test(function() use ($context) {
+test(function () use ($context) {
 	$authors = $context->table('author')->where('id', 11);
 	$books = [];
 	foreach ($authors as $author) {
@@ -59,7 +59,7 @@ test(function() use ($context) {
 });
 
 
-test(function() use ($context) {
+test(function () use ($context) {
 	$context->query('UPDATE book SET translator_id = 12 WHERE id = 2');
 	$author = $context->table('author')->get(11);
 
@@ -81,7 +81,7 @@ test(function() use ($context) {
 
 
 
-test(function() use ($context) { // cache can't be affected by inner query!
+test(function () use ($context) { // cache can't be affected by inner query!
 	$author = $context->table('author')->get(11);
 	$secondBookTagRels = NULL;
 	foreach ($author->related('book')->order('id') as $book) {

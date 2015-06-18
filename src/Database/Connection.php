@@ -7,9 +7,9 @@
 
 namespace Nette\Database;
 
-use Nette,
-	PDO,
-	PDOException;
+use Nette;
+use PDO;
+use PDOException;
 
 
 /**
@@ -23,10 +23,10 @@ use Nette,
  */
 class Connection extends Nette\Object
 {
-	/** @var callable[]  function(Connection $connection); Occurs after connection is established */
+	/** @var callable[]  function (Connection $connection); Occurs after connection is established */
 	public $onConnect;
 
-	/** @var callable[]  function(Connection $connection, ResultSet|DriverException $result); Occurs after query is executed */
+	/** @var callable[]  function (Connection $connection, ResultSet|DriverException $result); Occurs after query is executed */
 	public $onQuery;
 
 	/** @var array */
@@ -279,5 +279,4 @@ class Connection extends Nette\Object
 		$args = func_get_args();
 		return new SqlLiteral(array_shift($args), $args);
 	}
-
 }

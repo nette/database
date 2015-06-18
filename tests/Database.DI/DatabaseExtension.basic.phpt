@@ -4,15 +4,15 @@
  * Test: DatabaseExtension.
  */
 
-use Nette\DI,
-	Nette\Bridges\DatabaseDI\DatabaseExtension,
-	Tester\Assert;
+use Nette\DI;
+use Nette\Bridges\DatabaseDI\DatabaseExtension;
+use Tester\Assert;
 
 
 require __DIR__ . '/../bootstrap.php';
 
 
-test(function() {
+test(function () {
 	$loader = new DI\Config\Loader;
 	$config = $loader->load(Tester\FileMock::create('
 	database:

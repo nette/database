@@ -12,7 +12,7 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test(function() use ($context) {
+test(function () use ($context) {
 	$books1 = $books2 = $books3 = [];
 
 	foreach ($context->table('author') as $author) {  // SELECT * FROM `author`
@@ -47,7 +47,7 @@ test(function() use ($context) {
 });
 
 
-test(function() use ($context) {
+test(function () use ($context) {
 	$tagsAuthors = [];
 	foreach ($context->table('tag') as $tag) {
 
@@ -74,9 +74,9 @@ test(function() use ($context) {
 });
 
 
-test(function() use ($context) {
+test(function () use ($context) {
 	$counts1 = $counts2 = [];
-	foreach($context->table('author')->order('id') as $author) {
+	foreach ($context->table('author')->order('id') as $author) {
 		$counts1[] = $author->related('book.author_id')->count('id');
 		$counts2[] = $author->related('book.author_id')->where('translator_id', NULL)->count('id');
 	}
@@ -86,7 +86,7 @@ test(function() use ($context) {
 });
 
 
-test(function() use ($context) {
+test(function () use ($context) {
 	$author = $context->table('author')->get(11);
 	$books  = $author->related('book')->where('translator_id', 11);
 	Assert::same('1001 tipu a triku pro PHP', $books->fetch()->title);

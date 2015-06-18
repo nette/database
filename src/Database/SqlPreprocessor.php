@@ -50,7 +50,8 @@ class SqlPreprocessor extends Nette\Object
 	public function process($params)
 	{
 		$this->params = $params;
-		$this->counter = 0; $prev = -1;
+		$this->counter = 0;
+		$prev = -1;
 		$this->remaining = [];
 		$this->arrayMode = NULL;
 		$res = [];
@@ -181,7 +182,7 @@ class SqlPreprocessor extends Nette\Object
 					}
 					foreach ($value as $val) {
 						$vx2 = [];
-							foreach ($val as $v) {
+						foreach ($val as $v) {
 							$vx2[] = $this->formatValue($v);
 						}
 						$vx[] = implode(', ', $vx2);

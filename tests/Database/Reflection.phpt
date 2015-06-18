@@ -15,8 +15,8 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 
 $driver = $connection->getSupplementalDriver();
 $tables = $driver->getTables();
-$tables = array_filter($tables, function($t) { return in_array($t['name'], ['author', 'book', 'book_tag', 'tag']); });
-usort($tables, function($a, $b) { return strcmp($a['name'], $b['name']); });
+$tables = array_filter($tables, function ($t) { return in_array($t['name'], ['author', 'book', 'book_tag', 'tag']); });
+usort($tables, function ($a, $b) { return strcmp($a['name'], $b['name']); });
 
 if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
 	Assert::same([
@@ -27,18 +27,18 @@ if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
 	],
 	$tables);
 } else {
-	Assert::same( [
+	Assert::same([
 		['name' => 'author', 'view' => FALSE],
 		['name' => 'book', 'view' => FALSE],
 		['name' => 'book_tag', 'view' => FALSE],
 		['name' => 'tag', 'view' => FALSE],
-	], $tables );
+	], $tables);
 }
 
 
 $columns = $driver->getColumns('author');
-array_walk($columns, function(& $item) {
-	Assert::type( 'array', $item['vendor'] );
+array_walk($columns, function (& $item) {
+	Assert::type('array', $item['vendor']);
 	unset($item['vendor']);
 });
 
@@ -120,7 +120,7 @@ Assert::same($expectedColumns, $columns);
 $indexes = $driver->getIndexes('book_tag');
 switch ($driverName) {
 	case 'pgsql':
-		Assert::same( [
+		Assert::same([
 			[
 				'name' => 'book_tag_pkey',
 				'unique' => TRUE,
@@ -133,7 +133,7 @@ switch ($driverName) {
 		], $indexes);
 		break;
 	case 'sqlite':
-		Assert::same( [
+		Assert::same([
 			[
 				'name' => 'sqlite_autoindex_book_tag_1',
 				'unique' => TRUE,
@@ -146,7 +146,7 @@ switch ($driverName) {
 		], $indexes);
 		break;
 	case 'sqlsrv':
-		Assert::same( [
+		Assert::same([
 			[
 				'name' => 'PK_book_tag',
 				'unique' => TRUE,
@@ -159,7 +159,7 @@ switch ($driverName) {
 		], $indexes);
 		break;
 	case 'mysql':
-		Assert::same( [
+		Assert::same([
 			[
 				'name' => 'PRIMARY',
 				'unique' => TRUE,

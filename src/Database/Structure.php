@@ -193,7 +193,7 @@ class Structure extends Nette\Object implements IStructure
 
 		if (isset($structure['hasMany'])) {
 			foreach ($structure['hasMany'] as & $table) {
-				uksort($table, function($a, $b) {
+				uksort($table, function ($a, $b) {
 					return strlen($a) - strlen($b);
 				});
 			}
@@ -230,7 +230,7 @@ class Structure extends Nette\Object implements IStructure
 		}
 
 		if (isset($structure['belongsTo'][$table])) {
-			uksort($structure['belongsTo'][$table], function($a, $b) {
+			uksort($structure['belongsTo'][$table], function ($a, $b) {
 				return strlen($a) - strlen($b);
 			});
 		}

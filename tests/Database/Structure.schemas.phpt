@@ -99,7 +99,7 @@ class StructureSchemasTestCase extends TestCase
 		Assert::same([
 			'author_id' => 'authors.authors',
 			'translator_id' => 'authors.authors',
-		], $this->structure->getBelongsToReference('books.books'));;
+		], $this->structure->getBelongsToReference('books.books'));
 	}
 
 

@@ -5,8 +5,8 @@
  * @dataProvider? databases.ini  sqlsrv
  */
 
-use Tester\Assert,
-	Nette\Utils\DateTime;
+use Tester\Assert;
+use Nette\Utils\DateTime;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
 
@@ -15,7 +15,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlsrv-nette
 
 $res = $context->query('SELECT * FROM types');
 
-Assert::equal( [
+Assert::equal([
 	'bigint' => 1,
 	'binary_3' => '0000FF',
 	'bit' => '1',
@@ -46,9 +46,9 @@ Assert::equal( [
 	'varbinary' => '01',
 	'varchar' => 'a',
 	'xml' => '<doc/>',
-], (array) $res->fetch() );
+], (array) $res->fetch());
 
-Assert::equal( [
+Assert::equal([
 	'bigint' => 0,
 	'binary_3' => '000000',
 	'bit' => '0',
@@ -79,9 +79,9 @@ Assert::equal( [
 	'varbinary' => '00',
 	'varchar' => '',
 	'xml' => '',
-], (array) $res->fetch() );
+], (array) $res->fetch());
 
-Assert::same( [
+Assert::same([
 	'bigint' => NULL,
 	'binary_3' => NULL,
 	'bit' => NULL,
@@ -112,14 +112,14 @@ Assert::same( [
 	'varbinary' => NULL,
 	'varchar' => NULL,
 	'xml' => NULL,
-], (array) $res->fetch() );
+], (array) $res->fetch());
 
 
 $res = $context->query('SELECT [int] AS a, [text] AS a FROM types');
 
-Assert::same( [
+Assert::same([
 	'a' => 'a',
-], (array) @$res->fetch() );
+], (array) @$res->fetch());
 
 
 function isTimestamp($str) {
@@ -127,13 +127,13 @@ function isTimestamp($str) {
 }
 
 $row = (array) $context->query('SELECT [datetimeoffset], CAST([sql_variant] AS int) AS [sql_variant], [timestamp] FROM types2 WHERE id = 1')->fetch();
-Assert::type( 'DateTime', $row['datetimeoffset'] );
+Assert::type('DateTime', $row['datetimeoffset']);
 Assert::same($row['datetimeoffset']->format('Y-m-d H:i:s P'), '2012-10-13 10:10:10 +02:00');
 Assert::same($row['sql_variant'], 123456);
 Assert::true(isTimestamp($row['timestamp']));
 
 $row = (array) $context->query('SELECT [datetimeoffset], CAST([sql_variant] AS varchar) AS [sql_variant], [timestamp] FROM types2 WHERE id = 2')->fetch();
-Assert::type( 'DateTime', $row['datetimeoffset'] );
+Assert::type('DateTime', $row['datetimeoffset']);
 Assert::same($row['datetimeoffset']->format('Y-m-d H:i:s P'), '0001-01-01 00:00:00 +00:00');
 Assert::same($row['sql_variant'], 'abcd');
 Assert::true(isTimestamp($row['timestamp']));

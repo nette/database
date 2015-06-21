@@ -22,11 +22,13 @@ test(function () {
 		debugger: no
 		options:
 			lazy: yes
+
+	services:
+		cache: Nette\Caching\Storages\DevNullStorage
 	', 'neon'));
 
 	$compiler = new DI\Compiler;
 	$compiler->addExtension('database', new DatabaseExtension(FALSE));
-	$compiler->addExtension('cache', new Nette\Bridges\CacheDI\CacheExtension(TEMP_DIR));
 	eval($compiler->compile($config, 'Container1'));
 
 	$container = new Container1;

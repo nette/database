@@ -7,8 +7,6 @@
 
 namespace Nette\Database;
 
-use Nette;
-
 
 /**
  * Supplemental PDO database driver.

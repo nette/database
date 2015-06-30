@@ -163,7 +163,6 @@ class Structure extends Nette\Object implements IStructure
 
 	/**
 	 * @internal
-	 * @ignore
 	 */
 	public function loadStructure()
 	{

@@ -35,7 +35,6 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * @internal
-	 * @ignore
 	 */
 	public function setTable(Selection $table)
 	{

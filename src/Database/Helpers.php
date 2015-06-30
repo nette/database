@@ -184,9 +184,9 @@ class Helpers
 	 */
 	public static function loadFromFile(Connection $connection, $file)
 	{
-		@set_time_limit(0); // intentionally @
+		@set_time_limit(0); // @ function may be disabled
 
-		$handle = @fopen($file, 'r'); // intentionally @
+		$handle = @fopen($file, 'r'); // @ is escalated to exception
 		if (!$handle) {
 			throw new Nette\FileNotFoundException("Cannot open file '$file'.");
 		}

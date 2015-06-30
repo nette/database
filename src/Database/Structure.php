@@ -12,8 +12,6 @@ use Nette;
 
 /**
  * Cached reflection of database structure.
- *
- * @author     Jan Skrasek
  */
 class Structure extends Nette\Object implements IStructure
 {

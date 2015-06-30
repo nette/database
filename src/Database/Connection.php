@@ -15,8 +15,6 @@ use PDOException;
 /**
  * Represents a connection between PHP and a database server.
  *
- * @author     David Grudl
- *
  * @property-read  ISupplementalDriver  $supplementalDriver
  * @property-read  string               $dsn
  * @property-read  PDO                  $pdo

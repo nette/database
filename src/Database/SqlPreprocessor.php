@@ -12,8 +12,6 @@ use Nette;
 
 /**
  * SQL preprocessor.
- *
- * @author     David Grudl
  */
 class SqlPreprocessor extends Nette\Object
 {

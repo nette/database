@@ -14,9 +14,6 @@ use PDO;
 /**
  * Represents a result set.
  *
- * @author     David Grudl
- * @author     Jan Skrasek
- *
  * @property-read Connection $connection
  */
 class ResultSet extends Nette\Object implements \Iterator, IRowContainer

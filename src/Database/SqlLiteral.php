@@ -12,9 +12,6 @@ use Nette;
 
 /**
  * SQL literal value.
- *
- * @author     Jakub Vrana
- * @author     Jan Skrasek
  */
 class SqlLiteral extends Nette\Object
 {

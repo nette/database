@@ -13,8 +13,6 @@ use Tracy;
 
 /**
  * Database helpers.
- *
- * @author     David Grudl
  */
 class Helpers
 {

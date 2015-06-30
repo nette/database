@@ -15,9 +15,6 @@ use Nette\Database\IConventions;
 /**
  * Representation of filtered table grouped by some column.
  * GroupedSelection is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
- *
- * @author     Jakub Vrana
- * @author     Jan Skrasek
  */
 class GroupedSelection extends Selection
 {

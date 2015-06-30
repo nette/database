@@ -12,8 +12,6 @@ use Nette;
 
 /**
  * Supplemental MS SQL database driver.
- *
- * @author     David Grudl
  */
 class MsSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
 {

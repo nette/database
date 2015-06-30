@@ -10,8 +10,6 @@ namespace Nette\Database;
 
 /**
  * Supplemental PDO database driver.
- *
- * @author     David Grudl
  */
 interface ISupplementalDriver
 {

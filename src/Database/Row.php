@@ -12,9 +12,6 @@ use Nette;
 
 /**
  * Represents a single table row.
- *
- * @author     David Grudl
- * @author     Jan Skrasek
  */
 class Row extends Nette\Utils\ArrayHash implements IRow
 {

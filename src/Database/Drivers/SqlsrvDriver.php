@@ -12,9 +12,6 @@ use Nette;
 
 /**
  * Supplemental SQL Server 2005 and later database driver.
- *
- * @author     David Grudl
- * @author     Miloslav Hůla
  */
 class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
 {

@@ -12,8 +12,6 @@ use Nette;
 
 /**
  * Supplemental ODBC database driver.
- *
- * @author     David Grudl
  */
 class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
 {

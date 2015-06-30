@@ -13,9 +13,6 @@ use Nette;
 /**
  * Single row representation.
  * ActiveRow is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
- *
- * @author     Jakub Vrana
- * @author     Jan Skrasek
  */
 class ActiveRow implements \IteratorAggregate, IRow
 {

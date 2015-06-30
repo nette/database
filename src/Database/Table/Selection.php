@@ -16,9 +16,6 @@ use Nette\Database\IConventions;
  * Filtered table representation.
  * Selection is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
  *
- * @author     Jakub Vrana
- * @author     Jan Skrasek
- *
  * @property-read string $sql
  */
 class Selection extends Nette\Object implements \Iterator, IRowContainer, \ArrayAccess, \Countable

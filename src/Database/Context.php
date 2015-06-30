@@ -13,8 +13,6 @@ use Nette\Database\Conventions\StaticConventions;
 
 /**
  * Database context.
- *
- * @author     David Grudl
  */
 class Context extends Nette\Object
 {

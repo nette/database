@@ -18,9 +18,6 @@ use Nette\Database\IStructure;
 /**
  * Builds SQL query.
  * SqlBuilder is based on great library NotORM http://www.notorm.com written by Jakub Vrana.
- *
- * @author     Jakub Vrana
- * @author     Jan Skrasek
  */
 class SqlBuilder extends Nette\Object
 {

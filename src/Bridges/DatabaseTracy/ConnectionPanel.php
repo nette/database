@@ -14,8 +14,6 @@ use Tracy;
 
 /**
  * Debug panel for Nette\Database.
- *
- * @author     David Grudl
  */
 class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
 {

@@ -2,9 +2,6 @@
 
 /**
  * Test: Nette\Database test bootstrap.
- *
- * @author     Jakub Vrana
- * @author     Jan Skrasek
  */
 
 require __DIR__ . '/../bootstrap.php';

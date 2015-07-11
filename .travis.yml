@@ -26,11 +26,17 @@ after_failure:
 
 before_script:
     # Install Nette Tester & Code Checker
-    - composer update --no-interaction --prefer-source $dependencies
-    - composer create-project nette/code-checker code-checker ~2.3 --no-interaction --prefer-source
+    - travis_retry composer update --no-interaction --prefer-dist $dependencies
+    - travis_retry composer create-project nette/code-checker code-checker ~2.5 --no-interaction
 
     # Create databases.ini
     - cp ./tests/Database/databases.sample.ini ./tests/Database/databases.ini
 
     # Create Postgre database
     - psql -c 'CREATE DATABASE nette_test' -U postgres
+  
+sudo: false
+
+cache:
+    directories:
+        - $HOME/.composer/cache

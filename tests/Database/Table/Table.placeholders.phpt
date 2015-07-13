@@ -34,7 +34,7 @@ test(function () use ($context, $driverName) {
 
 	$selection = $context
 		->table('book')
-		->select('? AS col1', 'hi there!')
+		->select($driverName === 'pgsql' ? '?::text AS col1' : '? AS col1', 'hi there!')
 		->select('? AS col2', $literal);
 
 	$row = $selection->fetch();

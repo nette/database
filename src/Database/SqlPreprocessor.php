@@ -113,19 +113,9 @@ class SqlPreprocessor
 	private function formatValue($value, $mode = null)
 	{
 		if (!$mode || $mode === 'auto') {
-			if (is_string($value)) {
-				if (strlen($value) > 20 || strpos($value, '\\') !== false) {
-					$this->remaining[] = $value;
-					return '?';
-
-				} else {
-					$res = $this->connection->quote($value);
-					if ($res === false) {
-						$this->remaining[] = $value;
-						return '?';
-					}
-					return $res;
-				}
+			if (is_string($value) || is_resource($value)) {
+				$this->remaining[] = $value;
+				return '?';
 
 			} elseif (is_int($value)) {
 				return (string) $value;
@@ -156,10 +146,6 @@ class SqlPreprocessor
 
 			} elseif (is_object($value) && method_exists($value, '__toString')) {
 				return $this->formatValue((string) $value);
-
-			} elseif (is_resource($value)) {
-				$this->remaining[] = $value;
-				return '?';
 			}
 
 		} elseif ($mode === 'name') {

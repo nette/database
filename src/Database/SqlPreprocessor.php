@@ -114,29 +114,16 @@ class SqlPreprocessor
 	private function formatValue($value, $mode = NULL)
 	{
 		if (!$mode || $mode === 'auto') {
-			if (is_string($value)) {
-				if (strlen($value) > 20) {
-					$this->remaining[] = $value;
-					return '?';
-
-				} else {
-					return $this->connection->quote($value);
-				}
-
-			} elseif (is_int($value)) {
-				return (string) $value;
-
-			} elseif (is_float($value)) {
-				return rtrim(rtrim(number_format($value, 10, '.', ''), '0'), '.');
-
-			} elseif (is_bool($value)) {
-				return $this->driver->formatBool($value);
+			if (is_scalar($value) || is_resource($value)) {
+				$this->remaining[] = $value;
+				return '?';
 
 			} elseif ($value === NULL) {
 				return 'NULL';
 
 			} elseif ($value instanceof Table\IRow) {
-				return $this->formatValue($value->getPrimary());
+				$this->remaining[] = $value->getPrimary();
+				return '?';
 
 			} elseif ($value instanceof SqlLiteral) {
 				$prep = clone $this;
@@ -151,10 +138,7 @@ class SqlPreprocessor
 				return $this->driver->formatDateInterval($value);
 
 			} elseif (is_object($value) && method_exists($value, '__toString')) {
-				return $this->formatValue((string) $value);
-
-			} elseif (is_resource($value)) {
-				$this->remaining[] = $value;
+				$this->remaining[] = (string) $value;
 				return '?';
 			}
 

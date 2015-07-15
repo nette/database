@@ -22,6 +22,21 @@ test(function () use ($connection) { // string check
 "<pre class=\"dump\"><strong style=\"color:blue\">SELECT</strong> id \n<strong style=\"color:blue\">FROM</strong> author \n<strong style=\"color:blue\">WHERE</strong> name = <span title=\"Length 15 characters\">'Alexej Chruščev'</span></pre>\n", Nette\Database\Helpers::dumpSql('SELECT id FROM author WHERE name = ?', ['Alexej Chruščev'], $connection));
 });
 
+test(function () use ($connection) { // named param
+	Assert::same(
+"<pre class=\"dump\"><strong style=\"color:blue\">SELECT</strong> id \n<strong style=\"color:blue\">FROM</strong> author \n<strong style=\"color:blue\">WHERE</strong> name = <span title=\"Length 15 characters\">'Alexej Chruščev'</span></pre>\n", Nette\Database\Helpers::dumpSql('SELECT id FROM author WHERE name = :name', [':name' => 'Alexej Chruščev'], $connection));
+});
+
+test(function () use ($connection) { // named param with compare
+	Assert::same(
+"<pre class=\"dump\"><strong style=\"color:blue\">SELECT</strong> id \n<strong style=\"color:blue\">FROM</strong> author \n<strong style=\"color:blue\">WHERE</strong> name &lt;&gt; <span title=\"Length 15 characters\">'Alexej Chruščev'</span></pre>\n", Nette\Database\Helpers::dumpSql('SELECT id FROM author WHERE name <> :name', [':name' => 'Alexej Chruščev'], $connection));
+});
+
+test(function () use ($connection) { // named param with compare
+	Assert::same(
+"<pre class=\"dump\"><strong style=\"color:blue\">SELECT</strong> id \n<strong style=\"color:blue\">FROM</strong> author \n<strong style=\"color:blue\">WHERE</strong> name &gt; <span title=\"Length 15 characters\">'Alexej Chruščev'</span></pre>\n", Nette\Database\Helpers::dumpSql('SELECT id FROM author WHERE name > :name', [':name' => 'Alexej Chruščev'], $connection));
+});
+
 test(function () use ($connection) { // string check with \'
 	Assert::same(
 "<pre class=\"dump\"><strong style=\"color:blue\">SELECT</strong> id \n<strong style=\"color:blue\">FROM</strong> author \n<strong style=\"color:blue\">WHERE</strong> name = <span title=\"Length 16 characters\">'Alexej Ch\'ruščev'</span></pre>\n", Nette\Database\Helpers::dumpSql('SELECT id FROM author WHERE name = ?', ["Alexej Ch'ruščev"], $connection));

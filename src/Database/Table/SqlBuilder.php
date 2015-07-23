@@ -507,7 +507,7 @@ class SqlBuilder extends Nette\Object
 			list($joinTable, $joinAlias, $table, $tableColumn, $joinColumn) = $join;
 
 			$return .=
-				" LEFT JOIN {$joinTable}" . ($joinTable !== $joinAlias ? " AS {$joinAlias}" : '') .
+				" LEFT JOIN {$joinTable}" . ($joinTable !== $joinAlias ? " {$joinAlias}" : '') .
 				" ON {$table}.{$tableColumn} = {$joinAlias}.{$joinColumn}";
 		}
 

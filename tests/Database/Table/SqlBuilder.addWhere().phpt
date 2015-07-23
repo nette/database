@@ -48,7 +48,7 @@ test(function () use ($context) { // test Selection with parameters as a paramet
 	$schemaSupported = $context->getConnection()->getSupplementalDriver()->isSupported(ISupplementalDriver::SUPPORT_SCHEMA);
 	Assert::equal(reformat(array(
 		'mysql' => 'SELECT * FROM `book` WHERE (`id` IN (?))',
-		'SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book] LEFT JOIN ' . ($schemaSupported ? '[public].[book_tag] AS ' : '') . '[book_tag] ON [book].[id] = [book_tag].[book_id] HAVING COUNT([book_tag].[tag_id]) >))',
+		'SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book] LEFT JOIN ' . ($schemaSupported ? '[public].[book_tag] ' : '') . '[book_tag] ON [book].[id] = [book_tag].[book_id] HAVING COUNT([book_tag].[tag_id]) >))',
 	)), $sqlBuilder->buildSelectQuery());
 	Assert::count(1, $sqlBuilder->getParameters());
 });

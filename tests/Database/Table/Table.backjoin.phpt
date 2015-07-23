@@ -39,7 +39,7 @@ test(function () use ($context, $driver) {
 
 	if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
 		Assert::same(
-			reformat('SELECT [author].* FROM [author] LEFT JOIN [public].[book] AS [book] ON [author].[id] = [book].[author_id] WHERE ([book].[translator_id] IS NOT NULL) AND ([author].[id] = ?)'),
+			reformat('SELECT [author].* FROM [author] LEFT JOIN [public].[book] [book] ON [author].[id] = [book].[author_id] WHERE ([book].[translator_id] IS NOT NULL) AND ([author].[id] = ?)'),
 			$authorsSelection->getSql()
 		);
 	} else {

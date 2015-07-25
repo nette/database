@@ -47,10 +47,6 @@ class Structure extends Nette\Object implements IStructure
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
 
-		if (!isset($this->structure['columns'][$table])) {
-			throw new Nette\InvalidArgumentException("Table '$table' does not exist.");
-		}
-
 		return $this->structure['columns'][$table];
 	}
 
@@ -245,7 +241,7 @@ class Structure extends Nette\Object implements IStructure
 			return $this->structure['aliases'][$name];
 		}
 
-		return $name;
+		throw new Nette\InvalidArgumentException("Table '$name' does not exist.");
 	}
 
 }

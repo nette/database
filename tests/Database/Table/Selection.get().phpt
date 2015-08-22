@@ -22,4 +22,8 @@ test(function () use ($context) {
 		'title' => '1001 tipu a triku pro PHP',
 		'next_volume' => NULL,
 	], $book->toArray());
+
+	Assert::exception(function() use ($context){
+		$context->table('not_existing_table')->get(1);
+	}, 'Nette\InvalidArgumentException', "Table 'not_existing_table' does not exist.");
 });

@@ -12,7 +12,7 @@ require __DIR__ . '/../../bootstrap.php';
 
 // basic test singular
 test(function () {
-	$structure = Mockery::mock('Nette\Database\IStructure');
+	$structure = Mockery::mock(Nette\Database\IStructure::class);
 	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn([
 		'book' => ['author_id', 'translator_id'],
 		'book_topics' => ['author_id'],
@@ -33,7 +33,7 @@ test(function () {
 	// test too many column candidates
 	Assert::exception(function () use ($conventions) {
 		$conventions->getHasManyReference('author', 'boo');
-	}, 'Nette\Database\Conventions\AmbiguousReferenceKeyException');
+	}, Nette\Database\Conventions\AmbiguousReferenceKeyException::class);
 
 	// test one column candidate
 	Assert::same(['book', 'author_id'], $conventions->getHasManyReference('author', 'boo'));
@@ -42,7 +42,7 @@ test(function () {
 
 // basic test singular with schema
 test(function () {
-	$structure = Mockery::mock('Nette\Database\IStructure');
+	$structure = Mockery::mock(Nette\Database\IStructure::class);
 	$structure->shouldReceive('getHasManyReference')->with('public.author')->andReturn([
 		'public.book' => ['author_id', 'translator_id'],
 		'public.book_topics' => ['author_id'],
@@ -69,12 +69,12 @@ test(function () {
 	// test too many column candidates, ns table name
 	Assert::exception(function () use ($conventions) {
 		$conventions->getHasManyReference('public.author', 'public.boo');
-	}, 'Nette\Database\Conventions\AmbiguousReferenceKeyException');
+	}, Nette\Database\Conventions\AmbiguousReferenceKeyException::class);
 
 	// test too many column candidates
 	Assert::exception(function () use ($conventions) {
 		$conventions->getHasManyReference('public.author', 'boo');
-	}, 'Nette\Database\Conventions\AmbiguousReferenceKeyException');
+	}, Nette\Database\Conventions\AmbiguousReferenceKeyException::class);
 
 	// test one column candidate, ns table name
 	Assert::same(['public.book', 'author_id'], $conventions->getHasManyReference('public.author', 'public.boo'));
@@ -86,7 +86,7 @@ test(function () {
 
 // basic test plural
 test(function () {
-	$structure = Mockery::mock('Nette\Database\IStructure');
+	$structure = Mockery::mock(Nette\Database\IStructure::class);
 	$structure->shouldReceive('getHasManyReference')->with('authors')->andReturn([
 		'books' => ['author_id', 'translator_id'],
 	])->once();
@@ -104,13 +104,13 @@ test(function () {
 	// test too many candidates
 	Assert::exception(function () use ($conventions) {
 		$conventions->getHasManyReference('authors', 'boo');
-	}, 'Nette\Database\Conventions\AmbiguousReferenceKeyException');
+	}, Nette\Database\Conventions\AmbiguousReferenceKeyException::class);
 });
 
 
 // tests column match with source table
 test(function () {
-	$structure = Mockery::mock('Nette\Database\IStructure');
+	$structure = Mockery::mock(Nette\Database\IStructure::class);
 	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn([
 		'book' => ['author_id', 'tran_id'],
 	])->once();
@@ -131,13 +131,13 @@ test(function () {
 	// no propper match of key and target table name
 	Assert::exception(function () use ($conventions) {
 		$conventions->getHasManyReference('authors', 'book');
-	}, 'Nette\Database\Conventions\AmbiguousReferenceKeyException');
+	}, Nette\Database\Conventions\AmbiguousReferenceKeyException::class);
 });
 
 
 // tests case insensivity and prefixes
 test(function () {
-	$structure = Mockery::mock('Nette\Database\IStructure');
+	$structure = Mockery::mock(Nette\Database\IStructure::class);
 	$structure->shouldReceive('getHasManyReference')->with('nAuthors')->andReturn([
 		'nBooks' => ['authorId', 'translatorId'],
 	])->once();
@@ -150,7 +150,7 @@ test(function () {
 
 // tests rebuilt
 test(function () {
-	$structure = Mockery::mock('Nette\Database\IStructure');
+	$structure = Mockery::mock(Nette\Database\IStructure::class);
 	$structure->shouldReceive('isRebuilt')->andReturn(FALSE);
 	$structure->shouldReceive('rebuild');
 	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn([])->once();
@@ -165,7 +165,7 @@ test(function () {
 
 // tests already rebuilt structure
 test(function () {
-	$structure = Mockery::mock('Nette\Database\IStructure');
+	$structure = Mockery::mock(Nette\Database\IStructure::class);
 	$structure->shouldReceive('isRebuilt')->andReturn(TRUE);
 	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn([])->once();
 

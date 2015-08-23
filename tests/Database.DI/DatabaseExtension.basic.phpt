@@ -35,15 +35,15 @@ test(function () {
 	$container->initialize();
 
 	$connection = $container->getService('database.default');
-	Assert::type('Nette\Database\Connection', $connection);
+	Assert::type(Nette\Database\Connection::class, $connection);
 	Assert::same('sqlite::memory:', $connection->getDsn());
 
 	$context = $container->getService('database.default.context');
-	Assert::type('Nette\Database\Context', $context);
+	Assert::type(Nette\Database\Context::class, $context);
 	Assert::same($connection, $context->getConnection());
 
-	Assert::type('Nette\Database\Structure', $context->getStructure());
-	Assert::type('Nette\Database\Conventions\DiscoveredConventions', $context->getConventions());
+	Assert::type(Nette\Database\Structure::class, $context->getStructure());
+	Assert::type(Nette\Database\Conventions\DiscoveredConventions::class, $context->getConventions());
 
 	// aliases
 	Assert::same($connection, $container->getService('nette.database.default'));

@@ -19,7 +19,7 @@ Assert::same(
 
 Assert::exception(function () use ($context) {
 	$context->table('author')->limit(2, 10)->getSql();
-}, 'Nette\NotSupportedException', 'Offset is not supported by this database.');
+}, Nette\NotSupportedException::class, 'Offset is not supported by this database.');
 
 Assert::same(
 	'SELECT TOP 2 * FROM [author] ORDER BY [name]',
@@ -38,8 +38,8 @@ Assert::same(
 
 Assert::exception(function () use ($context) {
 	$context->table('author')->page(2, 10, $count)->getSql();
-}, 'Nette\NotSupportedException', 'Offset is not supported by this database.');
+}, Nette\NotSupportedException::class, 'Offset is not supported by this database.');
 
 Assert::exception(function () use ($context) {
 	$context->table('author')->page(2, 2, $count)->getSql();
-}, 'Nette\NotSupportedException', 'Offset is not supported by this database.');
+}, Nette\NotSupportedException::class, 'Offset is not supported by this database.');

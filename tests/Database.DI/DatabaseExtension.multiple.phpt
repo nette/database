@@ -44,19 +44,19 @@ test(function () {
 	$container->initialize();
 
 	$connection = $container->getService('database.first');
-	Assert::type('Nette\Database\Connection', $connection);
-	Assert::same($connection, $container->getByType('Nette\Database\Connection'));
+	Assert::type(Nette\Database\Connection::class, $connection);
+	Assert::same($connection, $container->getByType(Nette\Database\Connection::class));
 	Assert::same('sqlite::memory:', $connection->getDsn());
 
 	$context = $container->getService('database.first.context');
-	Assert::type('Nette\Database\Context', $context);
-	Assert::same($context, $container->getByType('Nette\Database\Context'));
+	Assert::type(Nette\Database\Context::class, $context);
+	Assert::same($context, $container->getByType(Nette\Database\Context::class));
 	Assert::same($connection, $context->getConnection());
 
-	Assert::type('Nette\Database\Structure', $context->getStructure());
-	Assert::same($context->getStructure(), $container->getByType('Nette\Database\IStructure'));
-	Assert::type('Nette\Database\Conventions\DiscoveredConventions', $context->getConventions());
-	Assert::same($context->getConventions(), $container->getByType('Nette\Database\IConventions'));
+	Assert::type(Nette\Database\Structure::class, $context->getStructure());
+	Assert::same($context->getStructure(), $container->getByType(Nette\Database\IStructure::class));
+	Assert::type(Nette\Database\Conventions\DiscoveredConventions::class, $context->getConventions());
+	Assert::same($context->getConventions(), $container->getByType(Nette\Database\IConventions::class));
 
 	// aliases
 	Assert::same($connection, $container->getService('nette.database.first'));

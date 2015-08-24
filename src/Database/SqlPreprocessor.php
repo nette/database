@@ -141,7 +141,7 @@ class SqlPreprocessor extends Nette\Object
 				$this->remaining = array_merge($this->remaining, $params);
 				return $res;
 
-			} elseif ($value instanceof \DateTime || $value instanceof \DateTimeInterface) {
+			} elseif ($value instanceof \DateTimeInterface) {
 				return $this->driver->formatDateTime($value);
 
 			} elseif ($value instanceof \DateInterval) {

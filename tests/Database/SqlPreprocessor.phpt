@@ -254,13 +254,11 @@ test(function () use ($preprocessor, $driverName) { // date time
 
 
 	Assert::same([], $params);
-	if (PHP_VERSION_ID >= 50500) {
-		list($sql, $params) = $preprocessor->process(['SELECT ?', [new DateTimeImmutable('2011-11-11')]]);
-		Assert::same(reformat([
-			'sqlite' => 'SELECT 1320966000',
-			"SELECT '2011-11-11 00:00:00'",
-		]), $sql);
-	}
+	list($sql, $params) = $preprocessor->process(['SELECT ?', [new DateTimeImmutable('2011-11-11')]]);
+	Assert::same(reformat([
+		'sqlite' => 'SELECT 1320966000',
+		"SELECT '2011-11-11 00:00:00'",
+	]), $sql);
 });
 
 

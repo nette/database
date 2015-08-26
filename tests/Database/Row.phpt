@@ -28,9 +28,9 @@ test(function () use ($context) {
 
 	Assert::error(function () use ($row) {
 		$row->{2};
-	}, 'Nette\MemberAccessException', "Cannot read an undeclared column '2'.");
+	}, Nette\MemberAccessException::class, "Cannot read an undeclared column '2'.");
 
 	Assert::error(function () use ($row) {
 		$row[2];
-	}, 'Nette\MemberAccessException', "Cannot read an undeclared column '2'.");
+	}, Nette\MemberAccessException::class, "Cannot read an undeclared column '2'.");
 });

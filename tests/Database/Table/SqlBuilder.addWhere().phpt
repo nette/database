@@ -95,11 +95,11 @@ test(function () use ($context) { // test empty array
 
 	Assert::exception(function () use ($sqlBuilder) {
 		$sqlBuilder->addWhere('TRUE AND id', []);
-	}, 'Nette\InvalidArgumentException', 'Possible SQL query corruption. Add parentheses around operators.');
+	}, Nette\InvalidArgumentException::class, 'Possible SQL query corruption. Add parentheses around operators.');
 
 	Assert::exception(function () use ($sqlBuilder) {
 		$sqlBuilder->addWhere('NOT id', []);
-	}, 'Nette\InvalidArgumentException', 'Possible SQL query corruption. Add parentheses around operators.');
+	}, Nette\InvalidArgumentException::class, 'Possible SQL query corruption. Add parentheses around operators.');
 
 	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] IS NULL AND FALSE) AND ([id] IS NULL OR TRUE) AND (NOT ([id] IS NULL AND FALSE))'), $sqlBuilder->buildSelectQuery());
 });
@@ -176,25 +176,25 @@ Assert::exception(function () use ($context) {
 	$context->table('book')->where('id',
 		$context->table('book_tag')->where('tag_id', 21)
 	);
-}, 'Nette\InvalidArgumentException', 'Selection argument must have defined a select column.');
+}, Nette\InvalidArgumentException::class, 'Selection argument must have defined a select column.');
 
 
 Assert::exception(function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id ?');
-}, 'Nette\InvalidArgumentException', 'Argument count does not match placeholder count.');
+}, Nette\InvalidArgumentException::class, 'Argument count does not match placeholder count.');
 
 
 Assert::exception(function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id = ?', NULL);
-}, 'Nette\InvalidArgumentException', 'Column operator does not accept NULL argument.');
+}, Nette\InvalidArgumentException::class, 'Column operator does not accept NULL argument.');
 
 
 Assert::exception(function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id = ?', [1, 2]);
-}, 'Nette\InvalidArgumentException', 'Column operator does not accept array argument.');
+}, Nette\InvalidArgumentException::class, 'Column operator does not accept array argument.');
 
 
 test(function () use ($driverName, $context, $connection, $structure) {
@@ -236,7 +236,7 @@ test(function () use ($driverName, $context, $connection, $structure) {
 			$dao->table('book_tag')->where('tag_id', 21)
 		);
 		$books->fetch();
-	}, 'Nette\InvalidArgumentException', 'Selection argument must have defined a select column.');
+	}, Nette\InvalidArgumentException::class, 'Selection argument must have defined a select column.');
 
 	Assert::exception(function () use ($e) {
 		throw $e->getPrevious();

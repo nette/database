@@ -146,37 +146,37 @@ test(function () use ($preprocessor) { // ?order
 test(function () use ($preprocessor) { // missing parameters
 	Assert::exception(function () use ($preprocessor) {
 		$preprocessor->process(['SELECT id FROM author WHERE id =? OR id = ?', 11]);
-	}, 'Nette\InvalidArgumentException', 'There are more placeholders than passed parameters.');
+	}, Nette\InvalidArgumentException::class, 'There are more placeholders than passed parameters.');
 
 	Assert::exception(function () use ($preprocessor) {
 		$preprocessor->process(['SELECT id FROM author WHERE id =', new SqlLiteral('? OR ?name = ?', [11]), 'id', 12]);
-	}, 'Nette\InvalidArgumentException', 'There are more placeholders than passed parameters.');
+	}, Nette\InvalidArgumentException::class, 'There are more placeholders than passed parameters.');
 });
 
 
 test(function () use ($preprocessor) { // extra parameters
 	Assert::exception(function () use ($preprocessor) {
 		$preprocessor->process(['SELECT id FROM author WHERE id =', 11, 12]);
-	}, 'Nette\InvalidArgumentException', 'There are more parameters than placeholders.');
+	}, Nette\InvalidArgumentException::class, 'There are more parameters than placeholders.');
 
 	Assert::exception(function () use ($preprocessor) {
 		$preprocessor->process(['SELECT id FROM author WHERE id =?', 11, 12]);
-	}, 'Nette\InvalidArgumentException', 'There are more parameters than placeholders.');
+	}, Nette\InvalidArgumentException::class, 'There are more parameters than placeholders.');
 
 	Assert::exception(function () use ($preprocessor) {
 		$preprocessor->process(['SELECT id FROM author WHERE id =', 'a', 'b']);
-	}, 'Nette\InvalidArgumentException', 'There are more parameters than placeholders.');
+	}, Nette\InvalidArgumentException::class, 'There are more parameters than placeholders.');
 
 	Assert::exception(function () use ($preprocessor) {
 		$preprocessor->process(['SELECT id FROM author WHERE id =', '?', 11, 'OR id = ?', 12]);
-	}, 'Nette\InvalidArgumentException', 'There are more parameters than placeholders.');
+	}, Nette\InvalidArgumentException::class, 'There are more parameters than placeholders.');
 });
 
 
 test(function () use ($preprocessor) { // unknown placeholder
 	Assert::exception(function () use ($preprocessor) {
 		$preprocessor->process(['SELECT ?test', 11]);
-	}, 'Nette\InvalidArgumentException', 'Unknown placeholder ?test.');
+	}, Nette\InvalidArgumentException::class, 'Unknown placeholder ?test.');
 });
 
 
@@ -397,12 +397,12 @@ test(function () use ($preprocessor) { // invalid usage of ?and, ...
 	foreach (['?and', '?or', '?set', '?values', '?order'] as $mode) {
 		Assert::exception(function () use ($preprocessor, $mode) {
 			$preprocessor->process([$mode, 'string']);
-		}, 'Nette\InvalidArgumentException', "Placeholder $mode expects array or Traversable object, string given.");
+		}, Nette\InvalidArgumentException::class, "Placeholder $mode expects array or Traversable object, string given.");
 	}
 
 	Assert::exception(function () use ($preprocessor) {
 		$preprocessor->process(['SELECT ?name', ['id', 'table.id']]);
-	}, 'Nette\InvalidArgumentException', 'Placeholder ?name expects string, array given.');
+	}, Nette\InvalidArgumentException::class, 'Placeholder ?name expects string, array given.');
 });
 
 
@@ -442,7 +442,7 @@ test(function () use ($preprocessor) { // object
 
 Assert::exception(function () use ($preprocessor) { // object
 	$preprocessor->process(['SELECT ?', new stdClass]);
-}, 'Nette\InvalidArgumentException', 'Unexpected type of parameter: stdClass');
+}, Nette\InvalidArgumentException::class, 'Unexpected type of parameter: stdClass');
 
 
 test(function () use ($preprocessor) { // resource

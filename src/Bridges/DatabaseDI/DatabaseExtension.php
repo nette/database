@@ -69,11 +69,11 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		}
 
 		$connection = $container->addDefinition($this->prefix("$name.connection"))
-			->setClass('Nette\Database\Connection', [$config['dsn'], $config['user'], $config['password'], $config['options']])
+			->setClass(Nette\Database\Connection::class, [$config['dsn'], $config['user'], $config['password'], $config['options']])
 			->setAutowired($config['autowired']);
 
 		$structure = $container->addDefinition($this->prefix("$name.structure"))
-			->setClass('Nette\Database\Structure')
+			->setClass(Nette\Database\Structure::class)
 			->setArguments([$connection])
 			->setAutowired($config['autowired']);
 
@@ -104,7 +104,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		}
 
 		$container->addDefinition($this->prefix("$name.context"))
-			->setClass('Nette\Database\Context', [$connection, $structure, $conventions])
+			->setClass(Nette\Database\Context::class, [$connection, $structure, $conventions])
 			->setAutowired($config['autowired']);
 
 		if ($config['debugger']) {

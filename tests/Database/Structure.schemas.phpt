@@ -44,9 +44,9 @@ class StructureSchemasTestCase extends TestCase
 	protected function setUp()
 	{
 		parent::setUp();
-		$this->driver = Mockery::mock('Nette\Database\ISupplementalDriver');
-		$this->connection = Mockery::mock('Nette\Database\Connection');
-		$this->storage = Mockery::mock('Nette\Caching\IStorage');
+		$this->driver = Mockery::mock(Nette\Database\ISupplementalDriver::class);
+		$this->connection = Mockery::mock(Nette\Database\Connection::class);
+		$this->storage = Mockery::mock(Nette\Caching\IStorage::class);
 
 		$this->connection->shouldReceive('getDsn')->once()->andReturn('');
 		$this->connection->shouldReceive('getSupplementalDriver')->once()->andReturn($this->driver);

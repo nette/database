@@ -13,7 +13,7 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-$cacheStorage = Mockery::mock('Nette\Caching\Istorage');
+$cacheStorage = Mockery::mock(Nette\Caching\Istorage::class);
 $cacheStorage->shouldReceive('read')->withAnyArgs()->once()->andReturn(['id' => TRUE]);
 $cacheStorage->shouldReceive('read')->withAnyArgs()->times(4)->andReturn(['id' => TRUE, 'author_id' => TRUE]);
 $cacheStorage->shouldReceive('write')->with(Mockery::any(), ['id' => TRUE, 'author_id' => TRUE, 'title' => TRUE], []);

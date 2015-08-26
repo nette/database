@@ -25,5 +25,5 @@ test(function () use ($context) {
 
 	Assert::exception(function() use ($context){
 		$context->table('not_existing_table')->get(1);
-	}, 'Nette\InvalidArgumentException', "Table 'not_existing_table' does not exist.");
+	}, Nette\InvalidArgumentException::class, "Table 'not_existing_table' does not exist.");
 });

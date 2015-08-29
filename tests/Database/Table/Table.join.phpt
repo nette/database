@@ -34,7 +34,7 @@ test(function () use ($context, $driver) {
 
 	if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
 		Assert::same(
-			reformat('SELECT [tag].* FROM [book_tag] LEFT JOIN [public].[tag] AS [tag] ON [book_tag].[tag_id] = [tag].[id] WHERE ([book_id] = ?)'),
+			reformat('SELECT [tag].* FROM [book_tag] LEFT JOIN [public].[tag] [tag] ON [book_tag].[tag_id] = [tag].[id] WHERE ([book_id] = ?)'),
 			$joinSql
 		);
 	} else {
@@ -51,12 +51,12 @@ test(function () use ($context, $driver) {
 
 	if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
 		Assert::same(
-			reformat('SELECT [Tag].[id] FROM [book_tag] LEFT JOIN [public].[tag] AS [Tag] ON [book_tag].[tag_id] = [Tag].[id] WHERE ([book_id] = ?)'),
+			reformat('SELECT [Tag].[id] FROM [book_tag] LEFT JOIN [public].[tag] [Tag] ON [book_tag].[tag_id] = [Tag].[id] WHERE ([book_id] = ?)'),
 			$joinSql
 		);
 	} else {
 		Assert::same(
-			reformat('SELECT [Tag].[id] FROM [book_tag] LEFT JOIN [tag] AS [Tag] ON [book_tag].[tag_id] = [Tag].[id] WHERE ([book_id] = ?)'),
+			reformat('SELECT [Tag].[id] FROM [book_tag] LEFT JOIN [tag] [Tag] ON [book_tag].[tag_id] = [Tag].[id] WHERE ([book_id] = ?)'),
 			$joinSql
 		);
 	}

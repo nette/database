@@ -45,4 +45,43 @@ class NotNullConstraintViolationException extends ConstraintViolationException
  */
 class UniqueConstraintViolationException extends ConstraintViolationException
 {
+	/** @var string */
+	private $entry;
+
+	/** @var string */
+	private $key;
+
+
+	/**
+	 * @returns self
+	 */
+	public static function from(\PDOException $src)
+	{
+		$e = parent::from($src);
+
+		preg_match("/Duplicate entry '([^']+)' for key '([^']+)'/", $e->errorInfo[2], $m);
+		$e->entry = $m[1];
+		$e->key = $m[2];
+
+		return $e;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getEntry()
+	{
+		return $this->entry;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getKey()
+	{
+		return $this->key;
+	}
+
 }

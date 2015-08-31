@@ -26,6 +26,8 @@ $e = Assert::exception(function () use ($context) {
 
 Assert::same(1062, $e->getDriverCode());
 Assert::same($e->getCode(), $e->getSqlState());
+Assert::same($e->getEntry(), '11');
+Assert::same($e->getKey(), 'PRIMARY');
 
 
 $e = Assert::exception(function () use ($context) {

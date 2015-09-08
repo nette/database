@@ -10,8 +10,7 @@ use Tester\Assert;
 require __DIR__ . '/connect.inc.php'; // create $connection
 
 
-test(function () use ($context) {
-	// numeric field
+test(function () use ($context) { // numeric field
 	$row = $context->fetch("SELECT 123 AS {$context->getConnection()->getSupplementalDriver()->delimite('123')}, NULL as nullcol");
 	Assert::same(123, $row->{123});
 	Assert::same(123, $row->{'123'});
@@ -29,6 +28,23 @@ test(function () use ($context) {
 	Assert::error(function () use ($row) {
 		$row->{2};
 	}, Nette\MemberAccessException::class, "Cannot read an undeclared column '2'.");
+
+	Assert::error(function () use ($row) {
+		$row[2];
+	}, Nette\MemberAccessException::class, "Cannot read an undeclared column '2'.");
+});
+
+
+test(function () use ($context) { // named field
+	$row = $context->fetch('SELECT 123 AS title');
+	Assert::same(123, $row->title);
+	Assert::same(123, $row[0]);
+	Assert::same(123, $row['title']);
+	Assert::false(isset($row[1])); // NULL value
+
+	Assert::error(function () use ($row) {
+		$row->tilte;
+	}, Nette\MemberAccessException::class, "Cannot read an undeclared column 'tilte', did you mean 'title'?");
 
 	Assert::error(function () use ($row) {
 		$row[2];

@@ -85,6 +85,10 @@ test(function () use ($connection, $structure) {
 	}, Nette\MemberAccessException::class, "Cannot read an undeclared column 'test'.");
 
 	Assert::exception(function () use ($book) {
+		$book->tilte;
+	}, Nette\MemberAccessException::class, "Cannot read an undeclared column 'tilte', did you mean 'title'?");
+
+	Assert::exception(function () use ($book) {
 		$book->ref('test');
 	}, Nette\MemberAccessException::class, 'No reference found for $book->ref(test).');
 

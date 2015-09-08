@@ -543,7 +543,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	}
 
 
-	protected function emptyResultSet($saveCache = TRUE)
+	protected function emptyResultSet($saveCache = TRUE, $deleteRererencedCache = TRUE)
 	{
 		if ($this->rows !== NULL && $saveCache) {
 			$this->saveCacheState();
@@ -558,7 +558,9 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 		$this->specificCacheKey = NULL;
 		$this->generalCacheKey = NULL;
 		$this->refCache['referencingPrototype'] = [];
-		$this->refCache['referenced'] = [];
+		if ($deleteRererencedCache) {
+			$this->refCache['referenced'] = [];
+		}
 	}
 
 

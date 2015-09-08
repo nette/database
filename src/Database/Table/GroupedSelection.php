@@ -201,6 +201,11 @@ class GroupedSelection extends Selection
 		}
 	}
 
+	protected function emptyResultSet($saveCache = TRUE, $deleteRererencedCache = TRUE)
+	{
+		parent::emptyResultSet($saveCache, false);
+	}
+
 
 	/********************* manipulation ****************d*g**/
 

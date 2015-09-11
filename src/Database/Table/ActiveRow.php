@@ -275,7 +275,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * @param string $key
-	 * @return ActiveRow|string|NULL
+	 * @return ActiveRow|mixed
 	 * @throws Nette\MemberAccessException
 	 */
 	public function &__get($key)

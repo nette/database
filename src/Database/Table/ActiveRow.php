@@ -273,7 +273,11 @@ class ActiveRow implements \IteratorAggregate, IRow
 		throw new Nette\DeprecatedException('ActiveRow is read-only; use update() method instead.');
 	}
 
-
+	/**
+	 * @param string $key
+	 * @return ActiveRow|string|NULL
+	 * @throws Nette\MemberAccessException
+	 */
 	public function &__get($key)
 	{
 		$this->accessColumn($key);

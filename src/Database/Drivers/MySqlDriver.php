@@ -76,7 +76,7 @@ class MySqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	public function delimite($name)
 	{
 		// @see http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
-		return '`' . str_replace('`', '``', $name) . '`';
+		return '`' . str_replace('.', '`.`', str_replace('`', '``', $name)) . '`';
 	}
 
 

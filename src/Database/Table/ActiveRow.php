@@ -274,6 +274,11 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
+	/**
+	 * @param  string
+	 * @return ActiveRow|mixed
+	 * @throws Nette\MemberAccessException
+	 */
 	public function &__get($key)
 	{
 		$this->accessColumn($key);

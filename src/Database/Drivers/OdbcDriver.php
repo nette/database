@@ -77,7 +77,7 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	public function applyLimit(& $sql, $limit, $offset)
 	{
 		if ($limit >= 0) {
-			$sql = preg_replace('#^\s*(SELECT|UPDATE|DELETE)#i', '$0 TOP ' . (int) $limit, $sql, 1, $count);
+			$sql = preg_replace('#^\s*(SELECT(\s+DISTINCT|\s+ALL)?|UPDATE|DELETE)#i', '$0 TOP ' . (int) $limit, $sql, 1, $count);
 			if (!$count) {
 				throw new Nette\InvalidArgumentException('SQL query must begin with SELECT, UPDATE or DELETE command.');
 			}

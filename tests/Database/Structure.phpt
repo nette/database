@@ -73,6 +73,10 @@ class StructureTestCase extends TestCase
 			['name' => 'book_id', 'primary' => TRUE, 'vendor' => []],
 			['name' => 'tag_id', 'primary' => TRUE, 'vendor' => []],
 		]);
+		$this->driver->shouldReceive('getColumns')->with('books_view')->once()->andReturn([
+			['name' => 'id', 'primary' => FALSE, 'vendor' => []],
+			['name' => 'title', 'primary' => FALSE, 'vendor' => []],
+		]);
 		$this->connection->shouldReceive('getSupplementalDriver')->times(4)->andReturn($this->driver);
 		$this->driver->shouldReceive('getForeignKeys')->with('authors')->once()->andReturn([]);
 		$this->driver->shouldReceive('getForeignKeys')->with('Books')->once()->andReturn([

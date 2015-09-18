@@ -124,6 +124,13 @@ class SqlBuilder extends Nette\Object
 	 */
 	public function buildSelectQuery($columns = NULL)
 	{
+		if (!$this->order && ($this->limit !== NULL || $this->offset)) {
+			$this->order = array_map(
+				function ($col) { return "$this->tableName.$col"; },
+				(array) $this->conventions->getPrimary($this->tableName)
+			);
+		}
+
 		$queryCondition = $this->buildConditions();
 		$queryEnd = $this->buildQueryEnd();
 

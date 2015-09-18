@@ -24,4 +24,4 @@ foreach ($books as $book) {
 	$book->title;
 }
 
-Assert::same(reformat('SELECT * FROM [book] LIMIT 1'), $books->getSql());
+Assert::same(reformat('SELECT * FROM [book] ORDER BY [book].[id] LIMIT 1'), $books->getSql());

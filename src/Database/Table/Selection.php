@@ -35,7 +35,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	/** @var string table name */
 	protected $name;
 
-	/** @var string primary key field name */
+	/** @var string|array|NULL primary key field name */
 	protected $primary;
 
 	/** @var string|bool primary column sequence name, FALSE for autodetection */
@@ -140,7 +140,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 	/**
 	 * @param  bool
-	 * @return string|array
+	 * @return string|array|NULL
 	 */
 	public function getPrimary($need = TRUE)
 	{

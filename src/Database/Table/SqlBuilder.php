@@ -80,7 +80,6 @@ class SqlBuilder extends Nette\Object
 		$this->driver = $context->getConnection()->getSupplementalDriver();
 		$this->conventions = $context->getConventions();
 		$this->structure = $context->getStructure();
-
 		$this->delimitedTable = implode('.', array_map(array($this->driver, 'delimite'), explode('.', $tableName)));
 	}
 
@@ -151,7 +150,6 @@ class SqlBuilder extends Nette\Object
 		} else {
 			$prefix = $joins ? "{$this->delimitedTable}." : '';
 			$querySelect = $this->buildSelect(array($prefix . '*'));
-
 		}
 
 		$queryJoins = $this->buildQueryJoins($joins);
@@ -510,7 +508,6 @@ class SqlBuilder extends Nette\Object
 				" LEFT JOIN {$joinTable}" . ($joinTable !== $joinAlias ? " {$joinAlias}" : '') .
 				" ON {$table}.{$tableColumn} = {$joinAlias}.{$joinColumn}";
 		}
-
 		return $return;
 	}
 

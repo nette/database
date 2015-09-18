@@ -80,7 +80,6 @@ class SqlBuilder extends Nette\Object
 		$this->driver = $context->getConnection()->getSupplementalDriver();
 		$this->conventions = $context->getConventions();
 		$this->structure = $context->getStructure();
-
 		$this->delimitedTable = implode('.', array_map([$this->driver, 'delimite'], explode('.', $tableName)));
 	}
 
@@ -151,7 +150,6 @@ class SqlBuilder extends Nette\Object
 		} else {
 			$prefix = $joins ? "{$this->delimitedTable}." : '';
 			$querySelect = $this->buildSelect([$prefix . '*']);
-
 		}
 
 		$queryJoins = $this->buildQueryJoins($joins);
@@ -405,7 +403,6 @@ class SqlBuilder extends Nette\Object
 
 	protected function parseJoins(& $joins, & $query)
 	{
-		$builder = $this;
 		$query = preg_replace_callback('~
 			(?(DEFINE)
 				(?P<word> [\w_]*[a-z][\w_]* )
@@ -413,8 +410,8 @@ class SqlBuilder extends Nette\Object
 				(?P<node> (?&del)? (?&word) (\((?&word)\))? )
 			)
 			(?P<chain> (?!\.) (?&node)*)  \. (?P<column> (?&word) | \*  )
-		~xi', function ($match) use (& $joins, $builder) {
-			return $builder->parseJoinsCb($joins, $match);
+		~xi', function ($match) use (& $joins) {
+			return $this->parseJoinsCb($joins, $match);
 		}, $query);
 	}
 
@@ -503,14 +500,11 @@ class SqlBuilder extends Nette\Object
 	protected function buildQueryJoins(array $joins)
 	{
 		$return = '';
-		foreach ($joins as $join) {
-			list($joinTable, $joinAlias, $table, $tableColumn, $joinColumn) = $join;
-
+		foreach ($joins as list($joinTable, $joinAlias, $table, $tableColumn, $joinColumn)) {
 			$return .=
 				" LEFT JOIN {$joinTable}" . ($joinTable !== $joinAlias ? " {$joinAlias}" : '') .
 				" ON {$table}.{$tableColumn} = {$joinAlias}.{$joinColumn}";
 		}
-
 		return $return;
 	}
 
@@ -539,9 +533,8 @@ class SqlBuilder extends Nette\Object
 
 	protected function tryDelimite($s)
 	{
-		$driver = $this->driver;
-		return preg_replace_callback('#(?<=[^\w`"\[?]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|\z)#i', function ($m) use ($driver) {
-			return strtoupper($m[0]) === $m[0] ? $m[0] : $driver->delimite($m[0]);
+		return preg_replace_callback('#(?<=[^\w`"\[?]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|\z)#i', function ($m) {
+			return strtoupper($m[0]) === $m[0] ? $m[0] : $this->driver->delimite($m[0]);
 		}, $s);
 	}
 

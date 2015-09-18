@@ -14,10 +14,6 @@ use PDOException;
 
 /**
  * Represents a connection between PHP and a database server.
- *
- * @property-read  ISupplementalDriver  $supplementalDriver
- * @property-read  string               $dsn
- * @property-read  PDO                  $pdo
  */
 class Connection extends Nette\Object
 {

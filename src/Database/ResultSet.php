@@ -13,8 +13,6 @@ use PDO;
 
 /**
  * Represents a result set.
- *
- * @property-read Connection $connection
  */
 class ResultSet extends Nette\Object implements \Iterator, IRowContainer
 {

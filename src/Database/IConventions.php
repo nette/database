@@ -16,7 +16,7 @@ interface IConventions
 	/**
 	 * Returns primary key for table.
 	 * @param  string
-	 * @return string
+	 * @return string|array|NULL
 	 */
 	function getPrimary($table);
 

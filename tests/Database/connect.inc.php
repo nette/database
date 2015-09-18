@@ -20,7 +20,7 @@ try {
 }
 
 if (strpos($options['dsn'], 'sqlite::memory:') === FALSE) {
-	Tester\Environment::lock($options['dsn'], dirname(TEMP_DIR));
+	Tester\Environment::lock($options['dsn'], TEMP_DIR);
 }
 
 $driverName = $connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME);

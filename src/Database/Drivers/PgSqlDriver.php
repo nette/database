@@ -106,7 +106,7 @@ class PgSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	 */
 	public function applyLimit(& $sql, $limit, $offset)
 	{
-		if ($limit >= 0) {
+		if ($limit !== NULL) {
 			$sql .= ' LIMIT ' . (int) $limit;
 		}
 		if ($offset > 0) {

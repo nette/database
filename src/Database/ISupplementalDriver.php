@@ -62,8 +62,8 @@ interface ISupplementalDriver
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @param  string  SQL query that will be modified.
-	 * @param  int
-	 * @param  int
+	 * @param  int|NULL
+	 * @param  int|NULL
 	 * @return void
 	 */
 	function applyLimit(& $sql, $limit, $offset);

@@ -1,12 +1,12 @@
 <?php
 
 /**
- * @dataProvider? databases.ini  postgresql
+ * @dataProvider? ../databases.ini  postgresql
  */
 
 use Tester\Assert;
 
-require __DIR__ . '/connect.inc.php'; // create $connection
+require __DIR__ . '/../connect.inc.php'; // create $connection
 
 
 $tests = function ($connection) {

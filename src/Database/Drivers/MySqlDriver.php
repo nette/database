@@ -122,10 +122,13 @@ class MySqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	 */
 	public function applyLimit(& $sql, $limit, $offset)
 	{
-		if ($limit !== NULL || $offset > 0) {
+		if ($limit < 0 || $offset < 0) {
+			throw new Nette\InvalidArgumentException('Negative offset or limit.');
+
+		} elseif ($limit !== NULL || $offset) {
 			// see http://dev.mysql.com/doc/refman/5.0/en/select.html
 			$sql .= ' LIMIT ' . ($limit === NULL ? '18446744073709551615' : (int) $limit)
-				. ($offset > 0 ? ' OFFSET ' . (int) $offset : '');
+				. ($offset ? ' OFFSET ' . (int) $offset : '');
 		}
 	}
 

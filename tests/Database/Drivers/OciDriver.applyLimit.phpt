@@ -27,10 +27,12 @@ $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, 10, NULL);
 Assert::same('SELECT * FROM (SELECT 1 FROM t) WHERE ROWNUM <= 10', $query);
 
-$query = 'SELECT 1 FROM t';
-$driver->applyLimit($query, -1, NULL);
-Assert::same('SELECT * FROM (SELECT 1 FROM t) WHERE ROWNUM <= -1', $query);
+Assert::exception(function () use ($driver) {
+	$query = 'SELECT 1 FROM t';
+	$driver->applyLimit($query, -1, NULL);
+}, Nette\InvalidArgumentException::class, 'Negative offset or limit.');
 
-$query = 'SELECT 1 FROM t';
-$driver->applyLimit($query, NULL, -1);
-Assert::same('SELECT 1 FROM t', $query);
+Assert::exception(function () use ($driver) {
+	$query = 'SELECT 1 FROM t';
+	$driver->applyLimit($query, NULL, -1);
+}, Nette\InvalidArgumentException::class, 'Negative offset or limit.');

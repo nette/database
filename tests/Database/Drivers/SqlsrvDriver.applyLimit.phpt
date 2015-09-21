@@ -48,14 +48,6 @@ Assert::exception(function () use ($driver) {
 	$driver->applyLimit($query, 10, NULL);
 }, Nette\InvalidArgumentException::class, 'SQL query must begin with SELECT, UPDATE or DELETE command.');
 
-$query = 'SELECT 1 FROM t';
-$driver->applyLimit($query, -1, NULL);
-Assert::same('SELECT TOP -1 1 FROM t', $query);
-
-Assert::exception(function () use ($driver) {
-	$query = 'SELECT 1 FROM t';
-	$driver->applyLimit($query, NULL, -1);
-}, Nette\NotSupportedException::class, 'Offset is not supported by this database.');
 
 
 $version = $rc->getProperty('version');
@@ -82,10 +74,14 @@ $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, 10, NULL);
 Assert::same('SELECT 1 FROM t OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY', $query);
 
-$query = 'SELECT 1 FROM t';
-$driver->applyLimit($query, -1, NULL);
-Assert::same('SELECT 1 FROM t OFFSET 0 ROWS FETCH NEXT -1 ROWS ONLY', $query);
 
-$query = 'SELECT 1 FROM t';
-$driver->applyLimit($query, NULL, -1);
-Assert::same('SELECT 1 FROM t', $query);
+
+Assert::exception(function () use ($driver) {
+	$query = 'SELECT 1 FROM t';
+	$driver->applyLimit($query, -1, NULL);
+}, Nette\InvalidArgumentException::class, 'Negative offset or limit.');
+
+Assert::exception(function () use ($driver) {
+	$query = 'SELECT 1 FROM t';
+	$driver->applyLimit($query, NULL, -1);
+}, Nette\InvalidArgumentException::class, 'Negative offset or limit.');

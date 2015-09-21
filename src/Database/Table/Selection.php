@@ -374,6 +374,9 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 		if (func_num_args() > 2) {
 			$numOfPages = (int) ceil($this->count('*') / $itemsPerPage);
 		}
+		if ($page < 1) {
+			$itemsPerPage = 0;
+		}
 		return $this->limit($itemsPerPage, ($page - 1) * $itemsPerPage);
 	}
 

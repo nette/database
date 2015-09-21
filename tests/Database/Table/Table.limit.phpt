@@ -33,9 +33,10 @@ Assert::same(
 );
 
 Assert::same(
-	reformat('SELECT * FROM [author] LIMIT 10'),
-	$context->table('author')->page(0, 10)->getSql()
+	reformat('SELECT * FROM [author] LIMIT 0'),
+	$context->table('author')->page(0, 10, $count)->getSql()
 );
+Assert::same(1, $count);
 
 Assert::same(
 	reformat('SELECT * FROM [author] LIMIT 10 OFFSET 10'),

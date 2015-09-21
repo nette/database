@@ -80,6 +80,9 @@ class MsSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 		if ($offset) {
 			throw new Nette\NotSupportedException('Offset is not supported by this database.');
 
+		} elseif ($limit < 0) {
+			throw new Nette\InvalidArgumentException('Negative offset or limit.');
+
 		} elseif ($limit !== NULL) {
 			$sql = preg_replace('#^\s*(SELECT(\s+DISTINCT|\s+ALL)?|UPDATE|DELETE)#i', '$0 TOP ' . (int) $limit, $sql, 1, $count);
 			if (!$count) {

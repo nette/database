@@ -47,9 +47,10 @@ Assert::exception(function () use ($driver) {
 	$driver->applyLimit($query, 10, NULL);
 }, 'Nette\InvalidArgumentException', 'SQL query must begin with SELECT, UPDATE or DELETE command.');
 
-$query = 'SELECT 1 FROM t';
-$driver->applyLimit($query, -1, NULL);
-Assert::same('SELECT TOP -1 1 FROM t', $query);
+Assert::exception(function () use ($driver) {
+	$query = 'SELECT 1 FROM t';
+	$driver->applyLimit($query, -1, NULL);
+}, 'Nette\InvalidArgumentException', 'Negative offset or limit.');
 
 Assert::exception(function () use ($driver) {
 	$query = 'SELECT 1 FROM t';

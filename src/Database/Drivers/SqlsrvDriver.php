@@ -92,7 +92,10 @@ class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	 */
 	public function applyLimit(& $sql, $limit, $offset)
 	{
-		if (version_compare($this->version, 11, '<')) { // 11 == SQL Server 2012
+		if ($limit < 0 || $offset < 0) {
+			throw new Nette\InvalidArgumentException('Negative offset or limit.');
+
+		} elseif (version_compare($this->version, 11, '<')) { // 11 == SQL Server 2012
 			if ($offset) {
 				throw new Nette\NotSupportedException('Offset is not supported by this database.');
 
@@ -103,7 +106,7 @@ class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalD
 				}
 			}
 
-		} elseif ($limit !== NULL || $offset > 0) {
+		} elseif ($limit !== NULL || $offset) {
 			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
 			$sql .= ' OFFSET ' . (int) $offset . ' ROWS '
 				. 'FETCH NEXT ' . (int) $limit . ' ROWS ONLY';

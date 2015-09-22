@@ -319,19 +319,18 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 */
 	public function where($condition, ...$params)
 	{
+		$this->emptyResultSet();
 		if (is_array($condition) && $params === []) { // where(array('column1' => 1, 'column2 > ?' => 2))
 			foreach ($condition as $key => $val) {
 				if (is_int($key)) {
-					$this->where($val); // where('full condition')
+					$this->sqlBuilder->addWhere($val); // where('full condition')
 				} else {
-					$this->where($key, $val); // where('column', 1)
+					$this->sqlBuilder->addWhere($key, $val); // where('column', 1)
 				}
 			}
-			return $this;
+		} else {
+			$this->sqlBuilder->addWhere($condition, ...$params);
 		}
-
-		$this->emptyResultSet();
-		$this->sqlBuilder->addWhere($condition, ...$params);
 		return $this;
 	}
 

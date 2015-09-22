@@ -71,24 +71,23 @@ class Context extends Nette\Object
 
 	/**
 	 * Generates and executes SQL query.
-	 * @param  string  statement
+	 * @param  string
 	 * @param  mixed   [parameters, ...]
 	 * @return ResultSet
 	 */
-	public function query($statement)
+	public function query($sql)
 	{
 		return $this->connection->query(func_get_args());
 	}
 
 
 	/**
-	 * @param  string  statement
-	 * @param  array
+	 * @param  string
 	 * @return ResultSet
 	 */
-	public function queryArgs($statement, array $params)
+	public function queryArgs($sql, array $params)
 	{
-		return $this->connection->queryArgs($statement, $params);
+		return $this->connection->queryArgs($sql, $params);
 	}
 
 
@@ -128,7 +127,7 @@ class Context extends Nette\Object
 
 	/**
 	 * Shortcut for query()->fetch()
-	 * @param  string  statement
+	 * @param  string
 	 * @param  mixed   [parameters, ...]
 	 * @return Row
 	 */
@@ -140,7 +139,7 @@ class Context extends Nette\Object
 
 	/**
 	 * Shortcut for query()->fetchField()
-	 * @param  string  statement
+	 * @param  string
 	 * @param  mixed   [parameters, ...]
 	 * @return mixed
 	 */
@@ -152,7 +151,7 @@ class Context extends Nette\Object
 
 	/**
 	 * Shortcut for query()->fetchPairs()
-	 * @param  string  statement
+	 * @param  string
 	 * @param  mixed   [parameters, ...]
 	 * @return array
 	 */
@@ -164,7 +163,7 @@ class Context extends Nette\Object
 
 	/**
 	 * Shortcut for query()->fetchAll()
-	 * @param  string  statement
+	 * @param  string
 	 * @param  mixed   [parameters, ...]
 	 * @return array
 	 */

@@ -166,21 +166,21 @@ class Connection extends Nette\Object
 
 	/**
 	 * Generates and executes SQL query.
-	 * @param  string  statement
+	 * @param  string
 	 * @param  mixed   [parameters, ...]
 	 * @return ResultSet
 	 */
-	public function query($statement)
+	public function query($sql)
 	{
 		$this->connect();
 
-		$args = is_array($statement) ? $statement : func_get_args(); // accepts arrays only internally
-		list($statement, $params) = count($args) > 1
+		$args = is_array($sql) ? $sql : func_get_args(); // accepts arrays only internally
+		list($sql, $params) = count($args) > 1
 			? $this->preprocessor->process($args)
 			: [$args[0], []];
 
 		try {
-			$result = new ResultSet($this, $statement, $params);
+			$result = new ResultSet($this, $sql, $params);
 		} catch (PDOException $e) {
 			$this->onQuery($this, $e);
 			throw $e;
@@ -191,13 +191,12 @@ class Connection extends Nette\Object
 
 
 	/**
-	 * @param  string  statement
-	 * @param  array
+	 * @param  string
 	 * @return ResultSet
 	 */
-	public function queryArgs($statement, array $params)
+	public function queryArgs($sql, array $params)
 	{
-		array_unshift($params, $statement);
+		array_unshift($params, $sql);
 		return $this->query($params);
 	}
 
@@ -205,12 +204,12 @@ class Connection extends Nette\Object
 	/**
 	 * @return [string, array]
 	 */
-	public function preprocess($statement)
+	public function preprocess($sql)
 	{
 		$this->connect();
 		return func_num_args() > 1
 			? $this->preprocessor->process(func_get_args())
-			: [$statement, []];
+			: [$sql, []];
 	}
 
 
@@ -219,7 +218,7 @@ class Connection extends Nette\Object
 
 	/**
 	 * Shortcut for query()->fetch()
-	 * @param  string  statement
+	 * @param  string
 	 * @param  mixed   [parameters, ...]
 	 * @return Row
 	 */
@@ -231,7 +230,7 @@ class Connection extends Nette\Object
 
 	/**
 	 * Shortcut for query()->fetchField()
-	 * @param  string  statement
+	 * @param  string
 	 * @param  mixed   [parameters, ...]
 	 * @return mixed
 	 */
@@ -243,7 +242,7 @@ class Connection extends Nette\Object
 
 	/**
 	 * Shortcut for query()->fetchPairs()
-	 * @param  string  statement
+	 * @param  string
 	 * @param  mixed   [parameters, ...]
 	 * @return array
 	 */
@@ -255,7 +254,7 @@ class Connection extends Nette\Object
 
 	/**
 	 * Shortcut for query()->fetchAll()
-	 * @param  string  statement
+	 * @param  string
 	 * @param  mixed   [parameters, ...]
 	 * @return array
 	 */

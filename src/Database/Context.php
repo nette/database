@@ -72,12 +72,11 @@ class Context extends Nette\Object
 	/**
 	 * Generates and executes SQL query.
 	 * @param  string
-	 * @param  mixed   [parameters, ...]
 	 * @return ResultSet
 	 */
-	public function query($sql)
+	public function query($sql, ...$params)
 	{
-		return $this->connection->query(func_get_args());
+		return $this->connection->query($sql, ...$params);
 	}
 
 
@@ -87,7 +86,7 @@ class Context extends Nette\Object
 	 */
 	public function queryArgs($sql, array $params)
 	{
-		return $this->connection->queryArgs($sql, $params);
+		return $this->connection->query($sql, ...$params);
 	}
 
 
@@ -128,58 +127,53 @@ class Context extends Nette\Object
 	/**
 	 * Shortcut for query()->fetch()
 	 * @param  string
-	 * @param  mixed   [parameters, ...]
 	 * @return Row
 	 */
-	public function fetch($args)
+	public function fetch($sql, ...$params)
 	{
-		return $this->connection->query(func_get_args())->fetch();
+		return $this->connection->query($sql, ...$params)->fetch();
 	}
 
 
 	/**
 	 * Shortcut for query()->fetchField()
 	 * @param  string
-	 * @param  mixed   [parameters, ...]
 	 * @return mixed
 	 */
-	public function fetchField($args)
+	public function fetchField($sql, ...$params)
 	{
-		return $this->connection->query(func_get_args())->fetchField();
+		return $this->connection->query($sql, ...$params)->fetchField();
 	}
 
 
 	/**
 	 * Shortcut for query()->fetchPairs()
 	 * @param  string
-	 * @param  mixed   [parameters, ...]
 	 * @return array
 	 */
-	public function fetchPairs($args)
+	public function fetchPairs($sql, ...$params)
 	{
-		return $this->connection->query(func_get_args())->fetchPairs();
+		return $this->connection->query($sql, ...$params)->fetchPairs();
 	}
 
 
 	/**
 	 * Shortcut for query()->fetchAll()
 	 * @param  string
-	 * @param  mixed   [parameters, ...]
 	 * @return array
 	 */
-	public function fetchAll($args)
+	public function fetchAll($sql, ...$params)
 	{
-		return $this->connection->query(func_get_args())->fetchAll();
+		return $this->connection->query($sql, ...$params)->fetchAll();
 	}
 
 
 	/**
 	 * @return SqlLiteral
 	 */
-	public static function literal($value)
+	public static function literal($value, ...$params)
 	{
-		$args = func_get_args();
-		return new SqlLiteral(array_shift($args), $args);
+		return new SqlLiteral($value, $params);
 	}
 
 }

@@ -167,18 +167,11 @@ class Connection extends Nette\Object
 	/**
 	 * Generates and executes SQL query.
 	 * @param  string
-	 * @param  mixed   [parameters, ...]
 	 * @return ResultSet
 	 */
-	public function query($sql)
+	public function query($sql, ...$params)
 	{
-		$this->connect();
-
-		$args = is_array($sql) ? $sql : func_get_args(); // accepts arrays only internally
-		list($sql, $params) = count($args) > 1
-			? $this->preprocessor->process($args)
-			: [$args[0], []];
-
+		list($sql, $params) = $this->preprocess($sql, ...$params);
 		try {
 			$result = new ResultSet($this, $sql, $params);
 		} catch (PDOException $e) {
@@ -196,18 +189,17 @@ class Connection extends Nette\Object
 	 */
 	public function queryArgs($sql, array $params)
 	{
-		array_unshift($params, $sql);
-		return $this->query($params);
+		return $this->query($sql, ...$params);
 	}
 
 
 	/**
 	 * @return [string, array]
 	 */
-	public function preprocess($sql)
+	public function preprocess($sql, ...$params)
 	{
 		$this->connect();
-		return func_num_args() > 1
+		return $params
 			? $this->preprocessor->process(func_get_args())
 			: [$sql, []];
 	}
@@ -219,57 +211,52 @@ class Connection extends Nette\Object
 	/**
 	 * Shortcut for query()->fetch()
 	 * @param  string
-	 * @param  mixed   [parameters, ...]
 	 * @return Row
 	 */
-	public function fetch($args)
+	public function fetch($sql, ...$params)
 	{
-		return $this->query(func_get_args())->fetch();
+		return $this->query($sql, ...$params)->fetch();
 	}
 
 
 	/**
 	 * Shortcut for query()->fetchField()
 	 * @param  string
-	 * @param  mixed   [parameters, ...]
 	 * @return mixed
 	 */
-	public function fetchField($args)
+	public function fetchField($sql, ...$params)
 	{
-		return $this->query(func_get_args())->fetchField();
+		return $this->query($sql, ...$params)->fetchField();
 	}
 
 
 	/**
 	 * Shortcut for query()->fetchPairs()
 	 * @param  string
-	 * @param  mixed   [parameters, ...]
 	 * @return array
 	 */
-	public function fetchPairs($args)
+	public function fetchPairs($sql, ...$params)
 	{
-		return $this->query(func_get_args())->fetchPairs();
+		return $this->query($sql, ...$params)->fetchPairs();
 	}
 
 
 	/**
 	 * Shortcut for query()->fetchAll()
 	 * @param  string
-	 * @param  mixed   [parameters, ...]
 	 * @return array
 	 */
-	public function fetchAll($args)
+	public function fetchAll($sql, ...$params)
 	{
-		return $this->query(func_get_args())->fetchAll();
+		return $this->query($sql, ...$params)->fetchAll();
 	}
 
 
 	/**
 	 * @return SqlLiteral
 	 */
-	public static function literal($value)
+	public static function literal($value, ...$params)
 	{
-		$args = func_get_args();
-		return new SqlLiteral(array_shift($args), $args);
+		return new SqlLiteral($value, $params);
 	}
 }

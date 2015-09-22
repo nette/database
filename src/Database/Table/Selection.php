@@ -277,10 +277,10 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @param  string for example "column, MD5(column) AS column_md5"
 	 * @return self
 	 */
-	public function select($columns)
+	public function select($columns, ...$params)
 	{
 		$this->emptyResultSet();
-		call_user_func_array([$this->sqlBuilder, 'addSelect'], func_get_args());
+		$this->sqlBuilder->addSelect($columns, ...$params);
 		return $this;
 	}
 
@@ -317,9 +317,9 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @param  mixed ...
 	 * @return self
 	 */
-	public function where($condition, $parameters = [])
+	public function where($condition, ...$params)
 	{
-		if (is_array($condition) && $parameters === []) { // where(array('column1' => 1, 'column2 > ?' => 2))
+		if (is_array($condition) && $params === []) { // where(array('column1' => 1, 'column2 > ?' => 2))
 			foreach ($condition as $key => $val) {
 				if (is_int($key)) {
 					$this->where($val); // where('full condition')
@@ -331,7 +331,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 		}
 
 		$this->emptyResultSet();
-		call_user_func_array([$this->sqlBuilder, 'addWhere'], func_get_args());
+		$this->sqlBuilder->addWhere($condition, ...$params);
 		return $this;
 	}
 
@@ -341,10 +341,10 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @param  string for example 'column1, column2 DESC'
 	 * @return self
 	 */
-	public function order($columns)
+	public function order($columns, ...$params)
 	{
 		$this->emptyResultSet();
-		call_user_func_array([$this->sqlBuilder, 'addOrder'], func_get_args());
+		$this->sqlBuilder->addOrder($columns, ...$params);
 		return $this;
 	}
 
@@ -386,10 +386,10 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @param  string
 	 * @return self
 	 */
-	public function group($columns)
+	public function group($columns, ...$params)
 	{
 		$this->emptyResultSet();
-		call_user_func_array([$this->sqlBuilder, 'setGroup'], func_get_args());
+		$this->sqlBuilder->setGroup($columns, ...$params);
 		return $this;
 	}
 
@@ -399,10 +399,10 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @param  string
 	 * @return self
 	 */
-	public function having($having)
+	public function having($having, ...$params)
 	{
 		$this->emptyResultSet();
-		call_user_func_array([$this->sqlBuilder, 'setHaving'], func_get_args());
+		$this->sqlBuilder->setHaving($having, ...$params);
 		return $this;
 	}
 

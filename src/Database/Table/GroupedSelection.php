@@ -61,24 +61,24 @@ class GroupedSelection extends Selection
 	}
 
 
-	public function select($columns)
+	public function select($columns, ...$params)
 	{
 		if (!$this->sqlBuilder->getSelect()) {
 			$this->sqlBuilder->addSelect("$this->name.$this->column");
 		}
 
-		return call_user_func_array('parent::select', func_get_args());
+		return parent::select($columns, ...$params);
 	}
 
 
-	public function order($columns)
+	public function order($columns, ...$params)
 	{
 		if (!$this->sqlBuilder->getOrder()) {
 			// improve index utilization
 			$this->sqlBuilder->addOrder("$this->name.$this->column" . (preg_match('~\bDESC\z~i', $columns) ? ' DESC' : ''));
 		}
 
-		return call_user_func_array('parent::order', func_get_args());
+		return parent::order($columns, ...$params);
 	}
 
 

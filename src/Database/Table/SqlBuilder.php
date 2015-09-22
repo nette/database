@@ -184,13 +184,13 @@ class SqlBuilder extends Nette\Object
 	/********************* SQL selectors ****************d*g**/
 
 
-	public function addSelect($columns)
+	public function addSelect($columns, ...$params)
 	{
 		if (is_array($columns)) {
 			throw new Nette\InvalidArgumentException('Select column must be a string.');
 		}
 		$this->select[] = $columns;
-		$this->parameters['select'] = array_merge($this->parameters['select'], array_slice(func_get_args(), 1));
+		$this->parameters['select'] = array_merge($this->parameters['select'], $params);
 	}
 
 
@@ -200,36 +200,33 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-	public function addWhere($condition, $parameters = [])
+	public function addWhere($condition, ...$params)
 	{
-		if (is_array($condition) && is_array($parameters) && !empty($parameters)) {
-			return $this->addWhereComposition($condition, $parameters);
+		if (is_array($condition) && !empty($params[0]) && is_array($params[0])) {
+			return $this->addWhereComposition($condition, $params[0]);
 		}
 
-		$args = func_get_args();
-		$hash = md5(json_encode($args));
+		$hash = md5($condition . json_encode($params));
 		if (isset($this->conditions[$hash])) {
 			return FALSE;
 		}
 
 		$this->conditions[$hash] = $condition;
 		$placeholderCount = substr_count($condition, '?');
-		if ($placeholderCount > 1 && count($args) === 2 && is_array($parameters)) {
-			$args = $parameters;
-		} else {
-			array_shift($args);
+		if ($placeholderCount > 1 && count($params) === 1 && is_array($params[0])) {
+			$params = $params[0];
 		}
 
 		$condition = trim($condition);
-		if ($placeholderCount === 0 && count($args) === 1) {
+		if ($placeholderCount === 0 && count($params) === 1) {
 			$condition .= ' ?';
-		} elseif ($placeholderCount !== count($args)) {
+		} elseif ($placeholderCount !== count($params)) {
 			throw new Nette\InvalidArgumentException('Argument count does not match placeholder count.');
 		}
 
 		$replace = NULL;
 		$placeholderNum = 0;
-		foreach ($args as $arg) {
+		foreach ($params as $arg) {
 			preg_match('#(?:.*?\?.*?){' . $placeholderNum . '}(((?:&|\||^|~|\+|-|\*|/|%|\(|,|<|>|=|(?<=\W|^)(?:REGEXP|ALL|AND|ANY|BETWEEN|EXISTS|IN|[IR]?LIKE|OR|NOT|SOME|INTERVAL))\s*)?(?:\(\?\)|\?))#s', $condition, $match, PREG_OFFSET_CAPTURE);
 			$hasOperator = ($match[1][0] === '?' && $match[1][1] === 0) ? TRUE : !empty($match[2][0]);
 
@@ -325,10 +322,10 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-	public function addOrder($columns)
+	public function addOrder($columns, ...$params)
 	{
 		$this->order[] = $columns;
-		$this->parameters['order'] = array_merge($this->parameters['order'], array_slice(func_get_args(), 1));
+		$this->parameters['order'] = array_merge($this->parameters['order'], $params);
 	}
 
 
@@ -364,10 +361,10 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-	public function setGroup($columns)
+	public function setGroup($columns, ...$params)
 	{
 		$this->group = $columns;
-		$this->parameters['group'] = array_slice(func_get_args(), 1);
+		$this->parameters['group'] = $params;
 	}
 
 
@@ -377,10 +374,10 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-	public function setHaving($having)
+	public function setHaving($having, ...$params)
 	{
 		$this->having = $having;
-		$this->parameters['having'] = array_slice(func_get_args(), 1);
+		$this->parameters['having'] = $params;
 	}
 
 

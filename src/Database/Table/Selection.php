@@ -704,7 +704,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 			// move iterator to specific key
 			if (isset($currentKey)) {
-				while (key($this->data) !== $currentKey) {
+				while (key($this->data) !== NULL && key($this->data) !== $currentKey) {
 					next($this->data);
 				}
 			}

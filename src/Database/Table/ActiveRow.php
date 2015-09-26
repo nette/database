@@ -322,6 +322,9 @@ class ActiveRow implements \IteratorAggregate, IRow
 	{
 		$this->table->accessColumn($key, $selectColumn);
 		if ($this->table->getDataRefreshed() && !$this->dataRefreshed) {
+			if (!isset($this->table[$this->getSignature()])) {
+				throw new Nette\InvalidStateException('Database refetch failed; row does not exist!');
+			}
 			$this->data = $this->table[$this->getSignature()]->data;
 			$this->dataRefreshed = TRUE;
 		}

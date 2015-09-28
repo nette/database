@@ -3,6 +3,7 @@
 /**
  * Test: Nette\Database\Table: tryDelimite.
  * @dataProvider? ../databases.ini
+ * @phpVersion 5.3.2 due to ReflectionMethod::setAccessible
  */
 
 use Tester\Assert;

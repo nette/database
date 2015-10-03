@@ -78,6 +78,9 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	/** @var array of primary key values */
 	protected $keys = [];
 
+	/** @var IInstanceFactory */
+	protected $instanceFactory;
+
 
 	/**
 	 * Creates filtered table representation.
@@ -96,6 +99,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 		$this->primary = $conventions->getPrimary($tableName);
 		$this->sqlBuilder = new SqlBuilder($tableName, $context);
 		$this->refCache = & $this->getRefTable($refPath)->globalRefCache[$refPath];
+
 	}
 
 
@@ -108,6 +112,14 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	public function __clone()
 	{
 		$this->sqlBuilder = clone $this->sqlBuilder;
+	}
+
+	/**
+	 * @param IInstanceFactory $instanceFactory
+	 */
+	public function setInstanceFactory(IInstanceFactory $instanceFactory)
+	{
+		$this->instanceFactory = $instanceFactory;
 	}
 
 
@@ -521,19 +533,25 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 	protected function createRow(array $row)
 	{
-		return new ActiveRow($row, $this);
+		return $this->instanceFactory
+			? $this->instanceFactory->createActiveRow($this->getName(), $row, $this)
+			: new ActiveRow($row, $this);
 	}
 
 
 	public function createSelectionInstance($table = NULL)
 	{
-		return new self($this->context, $this->conventions, $table ?: $this->name, $this->cache ? $this->cache->getStorage() : NULL);
+		return $this->instanceFactory
+			? $this->instanceFactory->createSelection($this->context, $this->conventions, $table ?: $this->name, $this->cache ? $this->cache->getStorage() : NULL)
+			: new self($this->context, $this->conventions, $table ?: $this->name, $this->cache ? $this->cache->getStorage() : NULL);
 	}
 
 
 	protected function createGroupedSelectionInstance($table, $column)
 	{
-		return new GroupedSelection($this->context, $this->conventions, $table, $column, $this, $this->cache ? $this->cache->getStorage() : NULL);
+		return $this->instanceFactory
+			? $this->instanceFactory->createGroupedSelection($this->context, $this->conventions, $table, $column, $this, $this->cache ? $this->cache->getStorage() : NULL)
+			: new GroupedSelection($this->context, $this->conventions, $table, $column, $this, $this->cache ? $this->cache->getStorage() : NULL);
 	}
 
 

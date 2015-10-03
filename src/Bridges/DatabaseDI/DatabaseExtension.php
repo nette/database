@@ -25,6 +25,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		'reflection' => NULL, // BC
 		'conventions' => 'discovered', // Nette\Database\Conventions\DiscoveredConventions
 		'autowired' => NULL,
+		'instanceFactory' => NULL,
 	];
 
 	/** @var bool */
@@ -103,9 +104,13 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			$conventions = reset($tmp);
 		}
 
-		$container->addDefinition($this->prefix("$name.context"))
+		$context = $container->addDefinition($this->prefix("$name.context"))
 			->setClass(Nette\Database\Context::class, [$connection, $structure, $conventions])
 			->setAutowired($config['autowired']);
+
+		if (!empty($config['instanceFactory'])) {
+			$context->addSetup('setInstanceFactory', [$config['instanceFactory']]);
+		}
 
 		if ($config['debugger']) {
 			$connection->addSetup('@Tracy\BlueScreen::addPanel', [

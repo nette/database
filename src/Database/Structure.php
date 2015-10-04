@@ -63,6 +63,33 @@ class Structure extends Nette\Object implements IStructure
 		return $this->structure['primary'][$table];
 	}
 
+	public function getPrimaryAutoincrementKey($table)
+	{
+		$primaryKey = $this->getPrimaryKey($table);
+		if (!$primaryKey) {
+			return NULL;
+		}
+
+		// Search for autoincrement key from multi primary key
+		if (is_array($primaryKey)) {
+			foreach ($this->getColumns($table) as $column) {
+				if (in_array($column['name'], $primaryKey) && $column['autoincrement']) {
+					return $column['name'];
+				}
+			}
+
+			return NULL;
+		}
+
+		// Search for autoincrement key from simple primary key
+		foreach ($this->getColumns($table) as $column) {
+			if ($column['name'] == $primaryKey) {
+				return $column['autoincrement'] ? $column['name'] : NULL;
+			}
+		}
+
+		return NULL;
+	}
 
 	public function getPrimaryKeySequence($table)
 	{
@@ -74,10 +101,22 @@ class Structure extends Nette\Object implements IStructure
 		}
 
 		$primary = $this->getPrimaryKey($table);
-		if (!$primary || is_array($primary)) {
+		if (!$primary) {
 			return NULL;
 		}
 
+		// Search for sequence from multi primary key
+		if (is_array($primary)) {
+			$result = NULL;
+			foreach ($this->structure['columns'][$table] as $columnMeta) {
+				if (in_array($columnMeta['name'], $primary) && isset($columnMeta['vendor']['sequence'])) {
+					return $columnMeta['vendor']['sequence'];
+				}
+			}
+			return NULL;
+		}
+
+		// Search for sequence from simple primary key
 		foreach ($this->structure['columns'][$table] as $columnMeta) {
 			if ($columnMeta['name'] === $primary) {
 				return isset($columnMeta['vendor']['sequence']) ? $columnMeta['vendor']['sequence'] : NULL;

@@ -18,8 +18,9 @@ $context->query('
 	)
 ');
 
-$result = $context->table('Bug10')->insert([
-	'D1' => 123,
-]);
-
-Tester\Assert::notEqual(NULL, $result);
+// Throw pdo sequence exception: relation "bug10_bug10caseproblem_seq" does not exist
+\Tester\Assert::exception(function() use ($context) {
+	$context->table('Bug10')->insert([
+		'D1' => 123,
+	]);
+}, '\PDOException', NULL, '42P01');

@@ -83,7 +83,7 @@ As we mentioned in the chapter intro, Database\Table layer maintains the table r
 
 In provided examples we will work with this database schema below. There are common OneHasMany and ManyHasMany relationships. OneHasMany relationship is doubled, a book must have an author and could have a translator (`translator_id` could be a `NULL`).
 
-![](http://files.nette.org/git/doc-2.1/db-schema-1-.png)
+![](https://files.nette.org/git/doc-2.1/db-schema-1-.png)
 
 In example below we are getting related data for fetched books. In author property (of book ActiveRow instances) is available another ActiveRow instance, which represents author of the book. Getting book_tag instances is done by `related()` method, which returns collection of this instances. In the cycle we get the tag name from another ActiveRow instance available in book_tag instance.
 

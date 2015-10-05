@@ -240,5 +240,5 @@ test(function () use ($driverName, $context, $connection, $structure) {
 
 	Assert::exception(function () use ($e) {
 		throw $e->getPrevious();
-	}, 'LogicException', "Table 'book_tag' does not have a primary key.");
+	}, LogicException::class, "Table 'book_tag' does not have a primary key.");
 });

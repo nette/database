@@ -45,7 +45,7 @@ if ($driverName !== 'sqlsrv') {
 			'name' => 'Jon Snow',
 			'web' => 'http://example.com',
 		]);
-	}, '\PDOException');
+	}, PDOException::class);
 }
 
 

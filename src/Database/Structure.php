@@ -100,25 +100,14 @@ class Structure extends Nette\Object implements IStructure
 			return NULL;
 		}
 
-		$primary = $this->getPrimaryKey($table);
-		if (!$primary) {
-			return NULL;
-		}
-
-		// Search for sequence from multi primary key
-		if (is_array($primary)) {
-			$result = NULL;
-			foreach ($this->structure['columns'][$table] as $columnMeta) {
-				if (in_array($columnMeta['name'], $primary) && isset($columnMeta['vendor']['sequence'])) {
-					return $columnMeta['vendor']['sequence'];
-				}
-			}
+		$autoincrementPrimaryKeyName = $this->getPrimaryAutoincrementKey($table);
+		if (!$autoincrementPrimaryKeyName) {
 			return NULL;
 		}
 
 		// Search for sequence from simple primary key
 		foreach ($this->structure['columns'][$table] as $columnMeta) {
-			if ($columnMeta['name'] === $primary) {
+			if ($columnMeta['name'] === $autoincrementPrimaryKeyName) {
 				return isset($columnMeta['vendor']['sequence']) ? $columnMeta['vendor']['sequence'] : NULL;
 			}
 		}

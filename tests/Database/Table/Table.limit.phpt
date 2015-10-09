@@ -13,12 +13,12 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 
 Assert::same(
-	reformat('SELECT * FROM [author] LIMIT 2'),
+	reformat('SELECT * FROM [author] ORDER BY [author].[id] LIMIT 2'),
 	$context->table('author')->limit(2)->getSql()
 );
 
 Assert::same(
-	reformat('SELECT * FROM [author] LIMIT 2 OFFSET 10'),
+	reformat('SELECT * FROM [author] ORDER BY [author].[id] LIMIT 2 OFFSET 10'),
 	$context->table('author')->limit(2, 10)->getSql()
 );
 
@@ -28,24 +28,24 @@ Assert::same(
 );
 
 Assert::same(
-	reformat('SELECT * FROM [author] LIMIT 10'),
+	reformat('SELECT * FROM [author] ORDER BY [author].[id] LIMIT 10'),
 	$context->table('author')->page(1, 10)->getSql()
 );
 
 Assert::same(
-	reformat('SELECT * FROM [author] LIMIT 0'),
+	reformat('SELECT * FROM [author] ORDER BY [author].[id] LIMIT 0'),
 	$context->table('author')->page(0, 10, $count)->getSql()
 );
 Assert::same(1, $count);
 
 Assert::same(
-	reformat('SELECT * FROM [author] LIMIT 10 OFFSET 10'),
+	reformat('SELECT * FROM [author] ORDER BY [author].[id] LIMIT 10 OFFSET 10'),
 	$context->table('author')->page(2, 10, $count)->getSql()
 );
 Assert::same(1, $count);
 
 Assert::same(
-	reformat('SELECT * FROM [author] LIMIT 2 OFFSET 2'),
+	reformat('SELECT * FROM [author] ORDER BY [author].[id] LIMIT 2 OFFSET 2'),
 	$context->table('author')->page(2, 2, $count)->getSql()
 );
 Assert::same(2, $count);

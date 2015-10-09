@@ -757,11 +757,11 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 		// First check sequence
 		if (!empty($primarySequenceName) && $primaryAutoincrementKey) {
-			$primaryKey[$primaryAutoincrementKey] = $this->context->getInsertId($primarySequenceName);
+			$primaryKey[$primaryAutoincrementKey] = $this->context->getInsertId($this->context->getConnection()->getSupplementalDriver()->delimite($primarySequenceName));
 
 		// Autoincrement primary without sequence
 		} elseif ($primaryAutoincrementKey) {
-			$primaryKey[$primaryAutoincrementKey] = $this->context->getInsertId($this->context->getConnection()->getSupplementalDriver()->delimite($primarySequenceName));
+			$primaryKey[$primaryAutoincrementKey] = $this->context->getInsertId($primarySequenceName);
 
 		// Multi column primary without autoincrement
 		} elseif (is_array($this->primary)) {

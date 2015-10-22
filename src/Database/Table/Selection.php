@@ -660,11 +660,12 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @internal
 	 * @param  string|NULL column name or NULL to reload all columns
 	 * @param  bool
+	 * @return bool if selection requeried for more columns.
 	 */
 	public function accessColumn($key, $selectColumn = TRUE)
 	{
 		if (!$this->cache) {
-			return;
+			return FALSE;
 		}
 
 		if ($key === NULL) {
@@ -674,7 +675,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 			$this->accessedColumns[$key] = $selectColumn;
 		}
 
-		if ($selectColumn && !$this->sqlBuilder->getSelect() && $this->previousAccessedColumns && ($key === NULL || !isset($this->previousAccessedColumns[$key]))) {
+		if ($selectColumn && $this->previousAccessedColumns && ($key === NULL || !isset($this->previousAccessedColumns[$key])) && !$this->sqlBuilder->getSelect()) {
 			$this->previousAccessedColumns = array();
 
 			if ($this->sqlBuilder->getLimit()) {
@@ -709,6 +710,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 				}
 			}
 		}
+		return $this->dataRefreshed;
 	}
 
 

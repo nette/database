@@ -281,8 +281,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 */
 	public function &__get($key)
 	{
-		$this->accessColumn($key);
-		if (array_key_exists($key, $this->data)) {
+		if ($this->accessColumn($key)) {
 			return $this->data[$key];
 		}
 
@@ -300,8 +299,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	public function __isset($key)
 	{
-		$this->accessColumn($key);
-		if (array_key_exists($key, $this->data)) {
+		if ($this->accessColumn($key)) {
 			return isset($this->data[$key]);
 		}
 		$this->removeAccessColumn($key);
@@ -320,15 +318,14 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 */
 	public function accessColumn($key, $selectColumn = TRUE)
 	{
-		$this->table->accessColumn($key, $selectColumn);
-		if ($this->table->getDataRefreshed() && !$this->dataRefreshed) {
+		if ($this->table->accessColumn($key, $selectColumn) && !$this->dataRefreshed) {
 			if (!isset($this->table[$this->getSignature()])) {
 				throw new Nette\InvalidStateException('Database refetch failed; row does not exist!');
 			}
 			$this->data = $this->table[$this->getSignature()]->data;
 			$this->dataRefreshed = TRUE;
 		}
-		return array_key_exists($key, $this->data);
+		return isset($this->data[$key]) || array_key_exists($key, $this->data);
 	}
 
 

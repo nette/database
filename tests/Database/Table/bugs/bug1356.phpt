@@ -2,7 +2,7 @@
 
 /**
  * Test: bug 1356
- * @dataProvider? ../../databases.ini
+ * @dataProvider? ../../databases.ini !=sqlsrv
  */
 
 use Tester\Assert;

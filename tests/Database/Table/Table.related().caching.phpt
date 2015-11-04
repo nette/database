@@ -63,12 +63,12 @@ test(function () use ($context) {
 	$context->query('UPDATE book SET translator_id = 12 WHERE id = 2');
 	$author = $context->table('author')->get(11);
 
-	foreach ($author->related('book')->limit(1) as $book) {
+	foreach ($author->related('book')->limit(1)->order('id') as $book) { // MS SQL Server requires order
 		$book->ref('author', 'translator_id')->name;
 	}
 
 	$translators = array();
-	foreach ($author->related('book')->limit(2) as $book) {
+	foreach ($author->related('book')->limit(2)->order('id') as $book) { // MS SQL Server requires order
 		$translators[] = $book->ref('author', 'translator_id')->name;
 	}
 	sort($translators);

@@ -7,11 +7,7 @@
 require __DIR__ . '/../bootstrap.php';
 
 
-try {
-	$options = Tester\Environment::loadData() + ['user' => NULL, 'password' => NULL];
-} catch (Exception $e) {
-	Tester\Environment::skip($e->getMessage());
-}
+$options = Tester\Environment::loadData() + ['user' => NULL, 'password' => NULL];
 
 try {
 	$connection = new Nette\Database\Connection($options['dsn'], $options['user'], $options['password']);

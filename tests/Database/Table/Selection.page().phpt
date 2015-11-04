@@ -9,6 +9,10 @@ use Tester\Assert;
 
 require __DIR__ . '/../connect.inc.php'; // create $connection
 
+if ($driverName === 'sqlsrv' && $connection->getPdo()->getAttribute(PDO::ATTR_SERVER_VERSION) < 11) {
+	Tester\Environment::skip('Offset is supported since SQL Server 2012');
+}
+
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 //public function page($page, $itemsPerPage, & $numOfPages = NULL)
@@ -54,7 +58,10 @@ test(function () use ($context) { //less items than $itemsPerPage
 	Assert::equal(4, count($tags)); //all four items from db
 });
 
-test(function () use ($context) { //invalid params
-	$tags = $context->table('tag')->page('foo', 'bar');
-	Assert::equal(0, count($tags)); //no items
-});
+// SQL Server throw PDOException 'The number of rows provided for a FETCH clause must be greater then zero.'
+if ($driverName !== 'sqlsrv') {
+	test(function () use ($context) { //invalid params
+		$tags = $context->table('tag')->page('foo', 'bar');
+		Assert::equal(0, count($tags)); //no items
+	});
+}

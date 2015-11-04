@@ -76,7 +76,11 @@ test(function () use ($context, $driverName) {
 });
 
 
-test(function () use ($context) { // Test placeholder for GroupedSelection
+test(function () use ($context, $driverName) { // Test placeholder for GroupedSelection
+	if ($driverName === 'sqlsrv') { // This syntax is not supported on SQL Server
+		return;
+	}
+
 	$books = $context->table('author')->get(11)->related('book')->order('title = ? DESC', 'Test');
 	foreach ($books as $book) {}
 

@@ -14,7 +14,7 @@ Nette provides a powerful layer for accessing your database easily.
 - uses efficient queries and does not transmit unnecessary data
 
 The `Nette\Database\Connection` class is a wrapper around the PDO and represents a connection to the database.
-The core functionality is provided by `Nette\Database\Context`. `Nette\Database\Table` layer orivudes an enhanced layer for table querying.
+The core functionality is provided by `Nette\Database\Context`. `Nette\Database\Table` layer provides an enhanced layer for table querying.
 
 To create a new database connection just create a new instance of [api:Nette\Database\Connection] class:
 

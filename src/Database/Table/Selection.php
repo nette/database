@@ -16,7 +16,7 @@ use Nette\Database\IConventions;
  * Filtered table representation.
  * Selection is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
  */
-class Selection extends Nette\Object implements \Iterator, IRowContainer, \ArrayAccess, \Countable
+class Selection extends Nette\Object implements \Iterator, IRowContainer, \ArrayAccess, \Countable, \JsonSerializable
 {
 	/** @var Context */
 	protected $context;
@@ -952,6 +952,15 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 		return current($this->keys) !== FALSE;
 	}
 
+	/********************* interface JsonSerializable ****************d*g**/
+
+	public function jsonSerialize()
+	{
+		return [
+				'sql' => $this->getSql(),
+				'parameters' =>$this->sqlBuilder->getParameters()
+			];
+	}
 
 	/********************* interface ArrayAccess ****************d*g**/
 

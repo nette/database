@@ -763,11 +763,10 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 			return $return->getRowCount();
 		}
 
-		$primarySequenceName = $this->getPrimarySequence();
 		$primaryKey = $this->context->getInsertId(
-			!empty($primarySequenceName)
-				? $this->context->getConnection()->getSupplementalDriver()->delimite($primarySequenceName)
-				: $primarySequenceName
+			($tmp = $this->getPrimarySequence())
+				? implode('.', array_map(array($this->context->getConnection()->getSupplementalDriver(), 'delimite'), explode('.', $tmp)))
+				: NULL
 		);
 		if ($primaryKey === FALSE) {
 			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);

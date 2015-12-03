@@ -213,7 +213,7 @@ class SqlBuilder extends Nette\Object
 			return $this->addWhereComposition($condition, $params[0]);
 		}
 
-		$hash = md5($condition . json_encode($params));
+		$hash = $this->getConditionHash($condition, $params);
 		if (isset($this->conditions[$hash])) {
 			return FALSE;
 		}
@@ -550,6 +550,21 @@ class SqlBuilder extends Nette\Object
 		} else {
 			return $this->addWhere('(' . implode(', ', $columns) . ') IN', $parameters);
 		}
+	}
+
+
+	private function getConditionHash($condition, $parameters)
+	{
+		foreach ($parameters as & $parameter) {
+			if ($parameter instanceof Selection) {
+				$parameter = $this->getConditionHash($parameter->getSql(), $parameter->sqlBuilder->getParameters());
+			} elseif ($parameter instanceof SqlLiteral) {
+				$parameter = $this->getConditionHash($parameter->__toString(), $parameter->getParameters());
+			} elseif (is_object($parameter) && method_exists($parameter, '__toString')) {
+				$parameter = $parameter->__toString();
+			}
+		}
+		return md5($condition . json_encode($parameters));
 	}
 
 

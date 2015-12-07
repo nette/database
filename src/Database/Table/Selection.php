@@ -334,6 +334,38 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 		return $this;
 	}
 
+	/**
+	 * Adds where condition using the OR operator between parameters.
+	 * More calls appends with AND.
+	 * @param  array ['column1' => 1, 'column2 > ?' => 2, 'full condition']
+	 * @return self
+	 * @throws \Nette\InvalidArgumentException
+	 */
+	public function whereOr(array $parameters)
+	{
+		if (count($parameters) < 2) {
+			return $this->where($parameters);
+		}
+		$columns = [];
+		$values = [];
+		foreach ($parameters as $key => $val) {
+			if (is_int($key)) { // whereOr(['full condition'])
+				$columns[] = $val;
+			} elseif (strpos($key, '?') === FALSE) { // whereOr(['column1' => 1])
+				$columns[] = $key . ' ?';
+				$values[] = $val;
+			} else { // whereOr(['column1 > ?' => 1])
+				$qNumber = substr_count($key, '?');
+				if ($qNumber > 1 && (!is_array($val) || $qNumber !== count($val))) {
+					throw new \Nette\InvalidArgumentException('Argument count does not match placeholder count.');
+				}
+				$columns[] = $key;
+				$values = array_merge($values, $qNumber > 1 ? $val : [$val]);
+			}
+		}
+		$columnsString = '(' . implode(') OR (', $columns) . ')';
+		return $this->where($columnsString, $values);
+	}
 
 	/**
 	 * Adds order clause, more calls appends to the end.

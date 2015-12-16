@@ -143,6 +143,19 @@ test(function () use ($preprocessor) { // ?order
 });
 
 
+test(function () use ($preprocessor) { // mix of where & order
+	list($sql, $params) = $preprocessor->process(['SELECT id FROM author WHERE ? ORDER BY ?', [
+		'id' => 1,
+		'web' => 'web',
+	], [
+		'name' => FALSE,
+	]]);
+
+	Assert::same(reformat("SELECT id FROM author WHERE ([id] = 1) AND ([web] = 'web') ORDER BY [name] DESC"), $sql);
+	Assert::same([], $params);
+});
+
+
 test(function () use ($preprocessor) { // missing parameters
 	Assert::exception(function () use ($preprocessor) {
 		$preprocessor->process(['SELECT id FROM author WHERE id =? OR id = ?', 11]);

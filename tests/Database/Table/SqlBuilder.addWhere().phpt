@@ -42,6 +42,16 @@ test(function () use ($context) { // test Selection as a parameter
 	]), $sqlBuilder->buildSelectQuery());
 });
 
+test(function () use ($context) { // test more Selection as a parameter
+	$sqlBuilder = new SqlBuilder('book', $context);
+	$sqlBuilder->addWhere('id', $context->table('book'));
+	$sqlBuilder->addWhere('id', $context->table('book_tag')->select('book_id'));
+	Assert::equal(reformat([
+		'mysql' => 'SELECT * FROM `book` WHERE (`id` IN (?)) AND (`id` IN (?))',
+		'SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book])) AND ([id] IN (SELECT [book_id] FROM [book_tag]))',
+	]), $sqlBuilder->buildSelectQuery());
+});
+
 test(function () use ($context) { // test Selection with parameters as a parameter
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id', $context->table('book')->having('COUNT(:book_tag.tag_id) >', 1));

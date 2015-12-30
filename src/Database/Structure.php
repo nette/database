@@ -62,8 +62,22 @@ class Structure extends Nette\Object implements IStructure
 
 		return $this->structure['primary'][$table];
 	}
+	
+	
+	//Get foreign keys by table and return local column name in referenced table.
+	//@TODO cache getForeignKeys($table) call
+	public function getForeignKey($table, $column)
+	{
+		foreach($this->connection->getSupplementalDriver()->getForeignKeys($table) as $row) {
+			if($row["local"] == $column) {
+				return $row["foreign"];
+			}
+		}
 
+		return NULL;
+	}
 
+	
 	public function getPrimaryKeySequence($table)
 	{
 		$this->needStructure();

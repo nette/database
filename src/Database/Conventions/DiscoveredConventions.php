@@ -32,9 +32,15 @@ class DiscoveredConventions implements IConventions
 	}
 
 
+	public function getForeign($table, $key)
+	{
+		return $this->structure->getForeignKey($table, $key);
+	}
+
+
 	public function getHasManyReference($nsTable, $key)
 	{
-		$candidates = $columnCandidates = [];
+		$candidates = $columnCandidates = array();
 		$targets = $this->structure->getHasManyReference($nsTable);
 		$table = preg_replace('#^(.*\.)?(.*)$#', '$2', $nsTable);
 
@@ -46,13 +52,13 @@ class DiscoveredConventions implements IConventions
 
 			foreach ($targetColumns as $targetColumn) {
 				if (stripos($targetColumn, $table) !== FALSE) {
-					$columnCandidates[] = $candidate = [$targetNsTable, $targetColumn];
+					$columnCandidates[] = $candidate = array($targetNsTable, $targetColumn);
 					if (strcmp($targetTable, $key) === 0 || strcmp($targetNsTable, $key) === 0) {
 						return $candidate;
 					}
 				}
 
-				$candidates[] = [$targetTable, [$targetNsTable, $targetColumn]];
+				$candidates[] = array($targetTable, array($targetNsTable, $targetColumn));
 			}
 		}
 
@@ -86,8 +92,8 @@ class DiscoveredConventions implements IConventions
 		$tableColumns = $this->structure->getBelongsToReference($table);
 
 		foreach ($tableColumns as $column => $targetTable) {
-			if (stripos($column, $key) !== FALSE) {
-				return [$targetTable, $column];
+			if (stripos($column, $key) !== FALSE || stripos($targetTable, $key) !== FALSE) {	//@TODO not official code
+				return array($targetTable, $column);
 			}
 		}
 

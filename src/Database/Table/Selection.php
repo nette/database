@@ -15,6 +15,8 @@ use Nette\Database\IConventions;
 /**
  * Filtered table representation.
  * Selection is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
+ *
+ * @property-read string $sql
  */
 class Selection extends Nette\Object implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 {
@@ -64,7 +66,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	protected $specificCacheKey;
 
 	/** @var array of [conditions => [key => IRow]]; used by GroupedSelection */
-	protected $aggregation = [];
+	protected $aggregation = array();
 
 	/** @var array of touched columns */
 	protected $accessedColumns;
@@ -76,7 +78,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	protected $observeCache = FALSE;
 
 	/** @var array of primary key values */
-	protected $keys = [];
+	protected $keys = array();
 
 
 	/**
@@ -108,6 +110,22 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	public function __clone()
 	{
 		$this->sqlBuilder = clone $this->sqlBuilder;
+	}
+
+
+	/** @deprecated */
+	public function getConnection()
+	{
+		trigger_error(__METHOD__ . '() is deprecated; use DI container to autowire Nette\Database\Connection instead.', E_USER_DEPRECATED);
+		return $this->context->getConnection();
+	}
+
+
+	/** @deprecated */
+	public function getDatabaseReflection()
+	{
+		trigger_error(__METHOD__ . '() is deprecated; use DI container to autowire Nette\Database\IConventions instead.', E_USER_DEPRECATED);
+		return $this->conventions;
 	}
 
 
@@ -176,7 +194,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 		if ($this->cache && $this->previousAccessedColumns === NULL) {
 			$this->accessedColumns = $this->previousAccessedColumns = $this->cache->load($this->getGeneralCacheKey());
 			if ($this->previousAccessedColumns === NULL) {
-				$this->previousAccessedColumns = [];
+				$this->previousAccessedColumns = array();
 			}
 		}
 
@@ -234,7 +252,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 		$row = $this->fetch();
 		if ($row) {
-			return $column ? $row[$column] : array_values($row->toArray())[0];
+			return $column ? $row[$column] : current($row->toArray());
 		}
 
 		return FALSE;
@@ -277,10 +295,10 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @param  string for example "column, MD5(column) AS column_md5"
 	 * @return self
 	 */
-	public function select($columns, ...$params)
+	public function select($columns)
 	{
 		$this->emptyResultSet();
-		$this->sqlBuilder->addSelect($columns, ...$params);
+		call_user_func_array(array($this->sqlBuilder, 'addSelect'), func_get_args());
 		return $this;
 	}
 
@@ -317,20 +335,21 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @param  mixed ...
 	 * @return self
 	 */
-	public function where($condition, ...$params)
+	public function where($condition, $parameters = array())
 	{
-		$this->emptyResultSet();
-		if (is_array($condition) && $params === []) { // where(array('column1' => 1, 'column2 > ?' => 2))
+		if (is_array($condition) && $parameters === array()) { // where(array('column1' => 1, 'column2 > ?' => 2))
 			foreach ($condition as $key => $val) {
 				if (is_int($key)) {
-					$this->sqlBuilder->addWhere($val); // where('full condition')
+					$this->where($val); // where('full condition')
 				} else {
-					$this->sqlBuilder->addWhere($key, $val); // where('column', 1)
+					$this->where($key, $val); // where('column', 1)
 				}
 			}
-		} else {
-			$this->sqlBuilder->addWhere($condition, ...$params);
+			return $this;
 		}
+
+		$this->emptyResultSet();
+		call_user_func_array(array($this->sqlBuilder, 'addWhere'), func_get_args());
 		return $this;
 	}
 
@@ -340,10 +359,10 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @param  string for example 'column1, column2 DESC'
 	 * @return self
 	 */
-	public function order($columns, ...$params)
+	public function order($columns)
 	{
 		$this->emptyResultSet();
-		$this->sqlBuilder->addOrder($columns, ...$params);
+		call_user_func_array(array($this->sqlBuilder, 'addOrder'), func_get_args());
 		return $this;
 	}
 
@@ -373,9 +392,6 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 		if (func_num_args() > 2) {
 			$numOfPages = (int) ceil($this->count('*') / $itemsPerPage);
 		}
-		if ($page < 1) {
-			$itemsPerPage = 0;
-		}
 		return $this->limit($itemsPerPage, ($page - 1) * $itemsPerPage);
 	}
 
@@ -385,10 +401,10 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @param  string
 	 * @return self
 	 */
-	public function group($columns, ...$params)
+	public function group($columns)
 	{
 		$this->emptyResultSet();
-		$this->sqlBuilder->setGroup($columns, ...$params);
+		call_user_func_array(array($this->sqlBuilder, 'setGroup'), func_get_args());
 		return $this;
 	}
 
@@ -398,10 +414,10 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @param  string
 	 * @return self
 	 */
-	public function having($having, ...$params)
+	public function having($having)
 	{
 		$this->emptyResultSet();
-		$this->sqlBuilder->setHaving($having, ...$params);
+		call_user_func_array(array($this->sqlBuilder, 'setHaving'), func_get_args());
 		return $this;
 	}
 
@@ -494,14 +510,14 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 		} catch (Nette\Database\DriverException $exception) {
 			if (!$this->sqlBuilder->getSelect() && $this->previousAccessedColumns) {
 				$this->previousAccessedColumns = FALSE;
-				$this->accessedColumns = [];
+				$this->accessedColumns = array();
 				$result = $this->query($this->getSql());
 			} else {
 				throw $exception;
 			}
 		}
 
-		$this->rows = [];
+		$this->rows = array();
 		$usedPrimary = TRUE;
 		foreach ($result->getPdoStatement() as $key => $row) {
 			$row = $this->createRow($result->normalizeRow($row));
@@ -557,9 +573,9 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 		$this->rows = NULL;
 		$this->specificCacheKey = NULL;
 		$this->generalCacheKey = NULL;
-		$this->refCache['referencingPrototype'] = [];
+		$this->refCache['referencingPrototype'] = array();
 		if ($deleteRererencedCache) {
-			$this->refCache['referenced'] = [];
+			$this->refCache['referenced'] = array();
 		}
 	}
 
@@ -584,7 +600,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 	/**
 	 * Returns Selection parent for caching.
-	 * @return self
+	 * @return Selection
 	 */
 	protected function getRefTable(& $refPath)
 	{
@@ -611,10 +627,10 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 			return $this->generalCacheKey;
 		}
 
-		$key = [__CLASS__, $this->name, $this->sqlBuilder->getConditions()];
+		$key = array(__CLASS__, $this->name, $this->sqlBuilder->getConditions());
 		if (!$this->generalCacheTraceKey) {
-			$trace = [];
-			foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $item) {
+			$trace = array();
+			foreach (debug_backtrace(PHP_VERSION_ID >= 50306 ? DEBUG_BACKTRACE_IGNORE_ARGS : FALSE) as $item) {
 				$trace[] = isset($item['file'], $item['line']) ? $item['file'] . $item['line'] : NULL;
 			};
 			$this->generalCacheTraceKey = $trace;
@@ -644,12 +660,11 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @internal
 	 * @param  string|NULL column name or NULL to reload all columns
 	 * @param  bool
-	 * @return bool if selection requeried for more columns.
 	 */
 	public function accessColumn($key, $selectColumn = TRUE)
 	{
 		if (!$this->cache) {
-			return FALSE;
+			return;
 		}
 
 		if ($key === NULL) {
@@ -659,14 +674,14 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 			$this->accessedColumns[$key] = $selectColumn;
 		}
 
-		if ($selectColumn && $this->previousAccessedColumns && ($key === NULL || !isset($this->previousAccessedColumns[$key])) && !$this->sqlBuilder->getSelect()) {
-			$this->previousAccessedColumns = [];
+		if ($selectColumn && !$this->sqlBuilder->getSelect() && $this->previousAccessedColumns && ($key === NULL || !isset($this->previousAccessedColumns[$key]))) {
+			$this->previousAccessedColumns = array();
 
 			if ($this->sqlBuilder->getLimit()) {
 				$generalCacheKey = $this->generalCacheKey;
 				$sqlBuilder = $this->sqlBuilder;
 
-				$primaryValues = [];
+				$primaryValues = array();
 				foreach ((array) $this->rows as $row) {
 					$primary = $row->getPrimary();
 					$primaryValues[] = is_array($primary) ? array_values($primary) : $primary;
@@ -694,7 +709,6 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 				}
 			}
 		}
-		return $this->dataRefreshed;
 	}
 
 
@@ -747,10 +761,11 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 			return $return->getRowCount();
 		}
 
+		$primarySequenceName = $this->getPrimarySequence();
 		$primaryKey = $this->context->getInsertId(
-			($tmp = $this->getPrimarySequence())
-				? implode('.', array_map([$this->context->getConnection()->getSupplementalDriver(), 'delimite'], explode('.', $tmp)))
-				: NULL
+			!empty($primarySequenceName)
+				? $this->context->getConnection()->getSupplementalDriver()->delimite($primarySequenceName)
+				: $primarySequenceName
 		);
 		if ($primaryKey === FALSE) {
 			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
@@ -758,7 +773,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 		}
 
 		if (is_array($this->getPrimary())) {
-			$primaryKey = [];
+			$primaryKey = array();
 
 			foreach ((array) $this->getPrimary() as $key) {
 				if (!isset($data[$key])) {
@@ -812,7 +827,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 		return $this->context->queryArgs(
 			$this->sqlBuilder->buildUpdateQuery(),
-			array_merge([$data], $this->sqlBuilder->getParameters())
+			array_merge(array($data), $this->sqlBuilder->getParameters())
 		)->getRowCount();
 	}
 
@@ -857,7 +872,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 		$cacheKeys = & $referenced['cacheKeys'];
 		if ($selection === NULL || ($checkPrimaryKey !== NULL && !isset($cacheKeys[$checkPrimaryKey]))) {
 			$this->execute();
-			$cacheKeys = [];
+			$cacheKeys = array();
 			foreach ($this->rows as $row) {
 				if ($row[$column] === NULL) {
 					continue;
@@ -869,13 +884,19 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 			if ($cacheKeys) {
 				$selection = $this->createSelectionInstance($table);
-				$selection->where($selection->getPrimary(), array_keys($cacheKeys));
+
+				//search for foreign key column name which is referenced from activeRow parent table to table from which is selection made
+				$foreign = $this->conventions->getForeign($row->getTable()->getName(), $column);
+				$primary = $foreign == NULL ? $selection->getPrimary() : $foreign;
+
+				$selection->where($primary, array_keys($cacheKeys));
 			} else {
-				$selection = [];
+				$selection = NULL; //array();
 			}
 		}
 
-		return isset($selection[$checkPrimaryKey]) ? $selection[$checkPrimaryKey] : NULL;
+		return $selection;
+		//return isset($selection[$checkPrimaryKey]) ? $selection[$checkPrimaryKey] : NULL;
 	}
 
 

@@ -32,25 +32,25 @@ class SqlBuilder extends Nette\Object
 	protected $delimitedTable;
 
 	/** @var array of column to select */
-	protected $select = array();
+	protected $select = [];
 
 	/** @var array of where conditions */
-	protected $where = array();
+	protected $where = [];
 
 	/** @var array of where conditions for caching */
-	protected $conditions = array();
+	protected $conditions = [];
 
 	/** @var array of parameters passed to where conditions */
-	protected $parameters = array(
-		'select' => array(),
-		'where' => array(),
-		'group' => array(),
-		'having' => array(),
-		'order' => array(),
-	);
+	protected $parameters = [
+		'select' => [],
+		'where' => [],
+		'group' => [],
+		'having' => [],
+		'order' => [],
+	];
 
 	/** @var array or columns to order by */
-	protected $order = array();
+	protected $order = [];
 
 	/** @var int number of rows to fetch */
 	protected $limit = NULL;
@@ -80,7 +80,7 @@ class SqlBuilder extends Nette\Object
 		$this->driver = $context->getConnection()->getSupplementalDriver();
 		$this->conventions = $context->getConventions();
 		$this->structure = $context->getStructure();
-		$this->delimitedTable = implode('.', array_map(array($this->driver, 'delimite'), explode('.', $tableName)));
+		$this->delimitedTable = implode('.', array_map([$this->driver, 'delimite'], explode('.', $tableName)));
 	}
 
 
@@ -124,10 +124,17 @@ class SqlBuilder extends Nette\Object
 	 */
 	public function buildSelectQuery($columns = NULL)
 	{
+		if (!$this->order && ($this->limit !== NULL || $this->offset)) {
+			$this->order = array_map(
+				function ($col) { return "$this->tableName.$col"; },
+				(array) $this->conventions->getPrimary($this->tableName)
+			);
+		}
+
 		$queryCondition = $this->buildConditions();
 		$queryEnd = $this->buildQueryEnd();
 
-		$joins = array();
+		$joins = [];
 		$this->parseJoins($joins, $queryCondition);
 		$this->parseJoins($joins, $queryEnd);
 
@@ -137,27 +144,25 @@ class SqlBuilder extends Nette\Object
 
 		} elseif ($columns) {
 			$prefix = $joins ? "{$this->delimitedTable}." : '';
-			$cols = array();
+			$cols = [];
 			foreach ($columns as $col) {
 				$cols[] = $prefix . $col;
 			}
 			$querySelect = $this->buildSelect($cols);
 
 		} elseif ($this->group && !$this->driver->isSupported(ISupplementalDriver::SUPPORT_SELECT_UNGROUPED_COLUMNS)) {
-			$querySelect = $this->buildSelect(array($this->group));
+			$querySelect = $this->buildSelect([$this->group]);
 			$this->parseJoins($joins, $querySelect);
 
 		} else {
 			$prefix = $joins ? "{$this->delimitedTable}." : '';
-			$querySelect = $this->buildSelect(array($prefix . '*'));
+			$querySelect = $this->buildSelect([$prefix . '*']);
 		}
 
 		$queryJoins = $this->buildQueryJoins($joins);
 		$query = "{$querySelect} FROM {$this->delimitedTable}{$queryJoins}{$queryCondition}{$queryEnd}";
 
-		if ($this->limit !== NULL || $this->offset > 0) {
-			$this->driver->applyLimit($query, $this->limit, max(0, $this->offset));
-		}
+		$this->driver->applyLimit($query, $this->limit, $this->offset);
 
 		return $this->tryDelimite($query);
 	}
@@ -186,13 +191,13 @@ class SqlBuilder extends Nette\Object
 	/********************* SQL selectors ****************d*g**/
 
 
-	public function addSelect($columns)
+	public function addSelect($columns, ...$params)
 	{
 		if (is_array($columns)) {
 			throw new Nette\InvalidArgumentException('Select column must be a string.');
 		}
 		$this->select[] = $columns;
-		$this->parameters['select'] = array_merge($this->parameters['select'], array_slice(func_get_args(), 1));
+		$this->parameters['select'] = array_merge($this->parameters['select'], $params);
 	}
 
 
@@ -202,36 +207,33 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-	public function addWhere($condition, $parameters = array())
+	public function addWhere($condition, ...$params)
 	{
-		if (is_array($condition) && is_array($parameters) && !empty($parameters)) {
-			return $this->addWhereComposition($condition, $parameters);
+		if (is_array($condition) && !empty($params[0]) && is_array($params[0])) {
+			return $this->addWhereComposition($condition, $params[0]);
 		}
 
-		$args = func_get_args();
-		$hash = md5(json_encode($args));
+		$hash = md5($condition . json_encode($params));
 		if (isset($this->conditions[$hash])) {
 			return FALSE;
 		}
 
 		$this->conditions[$hash] = $condition;
 		$placeholderCount = substr_count($condition, '?');
-		if ($placeholderCount > 1 && count($args) === 2 && is_array($parameters)) {
-			$args = $parameters;
-		} else {
-			array_shift($args);
+		if ($placeholderCount > 1 && count($params) === 1 && is_array($params[0])) {
+			$params = $params[0];
 		}
 
 		$condition = trim($condition);
-		if ($placeholderCount === 0 && count($args) === 1) {
+		if ($placeholderCount === 0 && count($params) === 1) {
 			$condition .= ' ?';
-		} elseif ($placeholderCount !== count($args)) {
+		} elseif ($placeholderCount !== count($params)) {
 			throw new Nette\InvalidArgumentException('Argument count does not match placeholder count.');
 		}
 
 		$replace = NULL;
 		$placeholderNum = 0;
-		foreach ($args as $arg) {
+		foreach ($params as $arg) {
 			preg_match('#(?:.*?\?.*?){' . $placeholderNum . '}(((?:&|\||^|~|\+|-|\*|/|%|\(|,|<|>|=|(?<=\W|^)(?:REGEXP|ALL|AND|ANY|BETWEEN|EXISTS|IN|[IR]?LIKE|OR|NOT|SOME|INTERVAL))\s*)?(?:\(\?\)|\?))#s', $condition, $match, PREG_OFFSET_CAPTURE);
 			$hasOperator = ($match[1][0] === '?' && $match[1][1] === 0) ? TRUE : !empty($match[2][0]);
 
@@ -270,7 +272,7 @@ class SqlBuilder extends Nette\Object
 						$replace = $match[2][0] . '(' . $clone->getSql() . ')';
 						$this->parameters['where'] = array_merge($this->parameters['where'], $clone->getSqlBuilder()->getParameters());
 					} else {
-						$arg = array();
+						$arg = [];
 						foreach ($clone as $row) {
 							$arg[] = array_values(iterator_to_array($row));
 						}
@@ -327,10 +329,10 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-	public function addOrder($columns)
+	public function addOrder($columns, ...$params)
 	{
 		$this->order[] = $columns;
-		$this->parameters['order'] = array_merge($this->parameters['order'], array_slice(func_get_args(), 1));
+		$this->parameters['order'] = array_merge($this->parameters['order'], $params);
 	}
 
 
@@ -366,10 +368,10 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-	public function setGroup($columns)
+	public function setGroup($columns, ...$params)
 	{
 		$this->group = $columns;
-		$this->parameters['group'] = array_slice(func_get_args(), 1);
+		$this->parameters['group'] = $params;
 	}
 
 
@@ -379,10 +381,10 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-	public function setHaving($having)
+	public function setHaving($having, ...$params)
 	{
 		$this->having = $having;
-		$this->parameters['having'] = array_slice(func_get_args(), 1);
+		$this->parameters['having'] = $params;
 	}
 
 
@@ -403,7 +405,6 @@ class SqlBuilder extends Nette\Object
 
 	protected function parseJoins(& $joins, & $query)
 	{
-		$builder = $this;
 		$query = preg_replace_callback('~
 			(?(DEFINE)
 				(?P<word> [\w_]*[a-z][\w_]* )
@@ -411,8 +412,8 @@ class SqlBuilder extends Nette\Object
 				(?P<node> (?&del)? (?&word) (\((?&word)\))? )
 			)
 			(?P<chain> (?!\.) (?&node)*)  \. (?P<column> (?&word) | \*  )
-		~xi', function ($match) use (& $joins, $builder) {
-			return $builder->parseJoinsCb($joins, $match);
+		~xi', function ($match) use (& $joins) {
+			return $this->parseJoinsCb($joins, $match);
 		}, $query);
 	}
 
@@ -479,8 +480,7 @@ class SqlBuilder extends Nette\Object
 					throw new Nette\InvalidArgumentException("No reference found for \${$parent}->{$keyMatch['key']}.");
 				}
 				list($table, $column) = $belongsTo;
-				$foreign = $this->conventions->getForeign($parent, $column);					//check for foreign key instead primary key in referenced table
-				$primary = $foreign == NULL ? $this->conventions->getPrimary($table) : $foreign;
+				$primary = $this->conventions->getPrimary($table);
 			}
 
 			$tableAlias = $keyMatch['key'] ?: preg_replace('#^(.*\.)?(.*)$#', '$2', $table);
@@ -490,7 +490,7 @@ class SqlBuilder extends Nette\Object
 				$tableAlias = $parentAlias . '_ref';
 			}
 
-			$joins[$tableAlias . $column] = array($table, $tableAlias, $parentAlias, $column, $primary);
+			$joins[$tableAlias . $column] = [$table, $tableAlias, $parentAlias, $column, $primary];
 			$parent = $table;
 			$parentAlias = $tableAlias;
 		}
@@ -502,9 +502,7 @@ class SqlBuilder extends Nette\Object
 	protected function buildQueryJoins(array $joins)
 	{
 		$return = '';
-		foreach ($joins as $join) {
-			list($joinTable, $joinAlias, $table, $tableColumn, $joinColumn) = $join;
-
+		foreach ($joins as list($joinTable, $joinAlias, $table, $tableColumn, $joinColumn)) {
 			$return .=
 				" LEFT JOIN {$joinTable}" . ($joinTable !== $joinAlias ? " {$joinAlias}" : '') .
 				" ON {$table}.{$tableColumn} = {$joinAlias}.{$joinColumn}";
@@ -537,9 +535,8 @@ class SqlBuilder extends Nette\Object
 
 	protected function tryDelimite($s)
 	{
-		$driver = $this->driver;
-		return preg_replace_callback('#(?<=[^\w`"\[?]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|\z)#i', function ($m) use ($driver) {
-			return strtoupper($m[0]) === $m[0] ? $m[0] : $driver->delimite($m[0]);
+		return preg_replace_callback('#(?<=[^\w`"\[?]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|\z)#i', function ($m) {
+			return strtoupper($m[0]) === $m[0] ? $m[0] : $this->driver->delimite($m[0]);
 		}, $s);
 	}
 

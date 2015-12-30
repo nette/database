@@ -63,19 +63,6 @@ class Structure extends Nette\Object implements IStructure
 		return $this->structure['primary'][$table];
 	}
 
-	//@NOTE not official code
-	//Get foreign keys by table and return local column name in referenced table.
-	//@TODO cache getForeignKeys($table) call
-	public function getForeignKey($table, $column)
-	{
-		foreach($this->connection->getSupplementalDriver()->getForeignKeys($table) as $row) {
-			if($row["local"] == $column) {
-				return $row["foreign"];
-			}
-		}
-
-		return NULL;
-	}
 
 	public function getPrimaryKeySequence($table)
 	{
@@ -118,7 +105,7 @@ class Structure extends Nette\Object implements IStructure
 
 		} else {
 			if (!isset($this->structure['hasMany'][$table])) {
-				return array();
+				return [];
 			}
 			return $this->structure['hasMany'][$table];
 		}
@@ -139,7 +126,7 @@ class Structure extends Nette\Object implements IStructure
 
 		} else {
 			if (!isset($this->structure['belongsTo'][$table])) {
-				return array();
+				return [];
 			}
 			return $this->structure['belongsTo'][$table];
 		}
@@ -165,7 +152,7 @@ class Structure extends Nette\Object implements IStructure
 			return;
 		}
 
-		$this->structure = $this->cache->load('structure', array($this, 'loadStructure'));
+		$this->structure = $this->cache->load('structure', [$this, 'loadStructure']);
 	}
 
 
@@ -176,7 +163,7 @@ class Structure extends Nette\Object implements IStructure
 	{
 		$driver = $this->connection->getSupplementalDriver();
 
-		$structure = array();
+		$structure = [];
 		$structure['tables'] = $driver->getTables();
 
 		foreach ($structure['tables'] as $tablePair) {
@@ -211,7 +198,7 @@ class Structure extends Nette\Object implements IStructure
 
 	protected function analyzePrimaryKey(array $columns)
 	{
-		$primary = array();
+		$primary = [];
 		foreach ($columns as $column) {
 			if ($column['primary']) {
 				$primary[] = $column['name'];

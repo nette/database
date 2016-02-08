@@ -100,7 +100,7 @@ class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
 		$name = $this->name;
 		$count = $this->count;
 		$totalTime = $this->totalTime;
-		ob_start(NULL, 0, PHP_OUTPUT_HANDLER_REMOVABLE);
+		ob_start();
 		require __DIR__ . '/templates/ConnectionPanel.tab.phtml';
 		return ob_get_clean();
 	}
@@ -131,7 +131,7 @@ class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
 			$queries[] = $query;
 		}
 
-		ob_start(NULL, 0, PHP_OUTPUT_HANDLER_REMOVABLE);
+		ob_start();
 		require __DIR__ . '/templates/ConnectionPanel.panel.phtml';
 		return ob_get_clean();
 	}

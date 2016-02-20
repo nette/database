@@ -63,7 +63,7 @@ class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	public function formatDateTime(/*\DateTimeInterface*/ $value)
 	{
 		/** @see https://msdn.microsoft.com/en-us/library/ms187819.aspx */
-		return $value->format("'Y-m-d H:i:s'");
+		return $value->format("'Y-m-d\\TH:i:s'");
 	}
 
 

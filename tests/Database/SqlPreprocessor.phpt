@@ -253,6 +253,7 @@ test(function () use ($preprocessor, $driverName) { // date time
 	list($sql, $params) = $preprocessor->process(['SELECT ?', [new DateTime('2011-11-11')]]);
 	Assert::same(reformat([
 		'sqlite' => 'SELECT 1320966000',
+		'sqlsrv' => "SELECT '2011-11-11T00:00:00'",
 		"SELECT '2011-11-11 00:00:00'",
 	]), $sql);
 	Assert::same([], $params);
@@ -270,6 +271,7 @@ test(function () use ($preprocessor, $driverName) { // date time
 	list($sql, $params) = $preprocessor->process(['SELECT ?', [new DateTimeImmutable('2011-11-11')]]);
 	Assert::same(reformat([
 		'sqlite' => 'SELECT 1320966000',
+		'sqlsrv' => "SELECT '2011-11-11T00:00:00'",
 		"SELECT '2011-11-11 00:00:00'",
 	]), $sql);
 });
@@ -282,6 +284,7 @@ test(function () use ($preprocessor) { // insert
 
 	Assert::same(reformat([
 		'sqlite' => "INSERT INTO author ([name], [born]) VALUES ('Catelyn Stark', 1320966000)",
+		'sqlsrv' => "INSERT INTO author ([name], [born]) VALUES ('Catelyn Stark', '2011-11-11T00:00:00')",
 		"INSERT INTO author ([name], [born]) VALUES ('Catelyn Stark', '2011-11-11 00:00:00')",
 	]), $sql);
 	Assert::same([], $params);
@@ -324,6 +327,7 @@ test(function () use ($preprocessor) { // multi insert
 
 	Assert::same(reformat([
 		'sqlite' => "INSERT INTO author ([name], [born]) SELECT 'Catelyn Stark', 1320966000 UNION ALL SELECT 'Sansa Stark', 1636585200",
+		'sqlsrv' => "INSERT INTO author ([name], [born]) VALUES ('Catelyn Stark', '2011-11-11T00:00:00'), ('Sansa Stark', '2021-11-11T00:00:00')",
 		"INSERT INTO author ([name], [born]) VALUES ('Catelyn Stark', '2011-11-11 00:00:00'), ('Sansa Stark', '2021-11-11 00:00:00')",
 	]), $sql);
 	Assert::same([], $params);
@@ -338,6 +342,7 @@ test(function () use ($preprocessor) { // multi insert ?values
 
 	Assert::same(reformat([
 		'sqlite' => "INSERT INTO author ([name], [born]) SELECT 'Catelyn Stark', 1320966000 UNION ALL SELECT 'Sansa Stark', 1636585200",
+		'sqlsrv' => "INSERT INTO author ([name], [born]) VALUES ('Catelyn Stark', '2011-11-11T00:00:00'), ('Sansa Stark', '2021-11-11T00:00:00')",
 		"INSERT INTO author ([name], [born]) VALUES ('Catelyn Stark', '2011-11-11 00:00:00'), ('Sansa Stark', '2021-11-11 00:00:00')",
 	]), $sql);
 	Assert::same([], $params);

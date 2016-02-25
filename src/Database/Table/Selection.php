@@ -406,6 +406,19 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	}
 
 
+	/**
+	 * Aliases table. Example ':book:book_tag.tag', 'tg'
+	 * @param  string
+	 * @param  string
+	 * @return self
+	 */
+	public function alias($tableChain, $alias)
+	{
+		$this->sqlBuilder->addAlias($tableChain, $alias);
+		return $this;
+	}
+
+
 	/********************* aggregations ****************d*g**/
 
 

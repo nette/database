@@ -552,6 +552,18 @@ class SqlBuilder extends Nette\Object
 		}
 	}
 
+	private function getConditionHash($condition, $parameters) {
+		foreach ($parameters as &$parameter) {
+			if ($parameter instanceof Selection) {
+				$parameter = $this->getConditionHash($parameter->getSql(), $parameter->sqlBuilder->getParameters());
+			} elseif ($parameter instanceof SqlLiteral) {
+				$parameter = $this->getConditionHash($parameter->__toString(), $parameter->getParameters());
+			} elseif (is_object($parameter) && method_exists($parameter, '__toString')) {
+				$parameter = (string) $parameter;
+			}
+		}
+		return md5($condition . json_encode($parameters));
+	}
 
 	private function getConditionHash($condition, $parameters)
 	{

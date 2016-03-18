@@ -33,7 +33,7 @@ before_script:
 
     # Create Postgre database
     - psql -c 'CREATE DATABASE nette_test' -U postgres
-  
+
 sudo: false
 
 cache:

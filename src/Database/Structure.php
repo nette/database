@@ -217,13 +217,14 @@ class Structure extends Nette\Object implements IStructure
 
 	protected function analyzeForeignKeys(& $structure, $table)
 	{
+		$lowerTable = strtolower($table);
 		foreach ($this->connection->getSupplementalDriver()->getForeignKeys($table) as $row) {
-			$structure['belongsTo'][strtolower($table)][$row['local']] = $row['table'];
+			$structure['belongsTo'][$lowerTable][$row['local']] = $row['table'];
 			$structure['hasMany'][strtolower($row['table'])][$table][] = $row['local'];
 		}
 
-		if (isset($structure['belongsTo'][$table])) {
-			uksort($structure['belongsTo'][$table], function ($a, $b) {
+		if (isset($structure['belongsTo'][$lowerTable])) {
+			uksort($structure['belongsTo'][$lowerTable], function ($a, $b) {
 				return strlen($a) - strlen($b);
 			});
 		}

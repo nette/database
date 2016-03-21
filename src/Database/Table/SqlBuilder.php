@@ -64,6 +64,15 @@ class SqlBuilder extends Nette\Object
 	/** @var string grouping condition */
 	protected $having = '';
 
+	/** @var array of reserved table names associated with chain */
+	protected $reservedTableNames = [];
+
+	/** @var array of table aliases */
+	protected $aliases = [];
+
+	/** @var string currently parsing alias for joins */
+	protected $currentAlias = NULL;
+
 	/** @var ISupplementalDriver */
 	private $driver;
 
@@ -80,7 +89,9 @@ class SqlBuilder extends Nette\Object
 		$this->driver = $context->getConnection()->getSupplementalDriver();
 		$this->conventions = $context->getConventions();
 		$this->structure = $context->getStructure();
-		$this->delimitedTable = implode('.', array_map([$this->driver, 'delimite'], explode('.', $tableName)));
+		$tableNameParts = explode('.', $tableName);
+		$this->delimitedTable = implode('.', array_map([$this->driver, 'delimite'], $tableNameParts));
+		$this->checkUniqueTableName(end($tableNameParts), $tableName);
 	}
 
 
@@ -329,6 +340,37 @@ class SqlBuilder extends Nette\Object
 	}
 
 
+	/**
+	 * Add alias.
+	 * @param string
+	 * @param string
+	 * @return void
+	 * @throws \Nette\InvalidArgumentException
+	 */
+	public function addAlias($chain, $alias)
+	{
+		if (!empty($chain[0]) && ($chain[0] !== '.' && $chain[0] !== ':')) {
+			$chain = '.' . $chain;  // unified chain format
+		}
+		$this->checkUniqueTableName($alias, $chain);
+		$this->aliases[$alias] = $chain;
+	}
+
+	protected function checkUniqueTableName($tableName, $chain)
+	{
+		if (isset($this->aliases[$tableName]) && ('.' . $tableName === $chain)) {
+			$chain = $this->aliases[$tableName];
+		}
+		if (isset($this->reservedTableNames[$tableName])) {
+			if ($this->reservedTableNames[$tableName] === $chain) {
+				return;
+			}
+			throw new \Nette\InvalidArgumentException("Table alias '$tableName' from chain '$chain' is already in use by chain '{$this->reservedTableNames[$tableName]}'. Please add/change alias for one of them.");
+		}
+		$this->reservedTableNames[$tableName] = $chain;
+	}
+
+
 	public function addOrder($columns, ...$params)
 	{
 		$this->order[] = $columns;
@@ -448,15 +490,33 @@ class SqlBuilder extends Nette\Object
 		// do not make a join when referencing to the current table column - inner conditions
 		// check it only when not making backjoin on itself - outer condition
 		if ($keyMatches[0]['del'] === '.') {
+			if (count($keyMatches) > 1 && ($parent === $keyMatches[0]['key'] || $parentAlias === $keyMatches[0]['key'])) {
+				throw new Nette\InvalidArgumentException("Do not prefix table chain with origin table name '{$keyMatches[0]['key']}'. If you want to make self reference, please add alias.");
+			}
 			if ($parent === $keyMatches[0]['key']) {
 				return "{$parent}.{$match['column']}";
 			} elseif ($parentAlias === $keyMatches[0]['key']) {
 				return "{$parentAlias}.{$match['column']}";
 			}
 		}
-
-		foreach ($keyMatches as $keyMatch) {
-			if ($keyMatch['del'] === ':') {
+		$tableChain = NULL;
+		foreach ($keyMatches as $index => $keyMatch) {
+			$isLast = !isset($keyMatches[$index+1]);
+			if (!$index && isset($this->aliases[$keyMatch['key']])) {
+				if ($keyMatch['del'] === ':') {
+					throw new Nette\InvalidArgumentException("You are using has many syntax with alias (':{$keyMatch['key']}'). You have to move it to alias definition.");
+				} else {
+					$previousAlias = $this->currentAlias;
+					$this->currentAlias = $keyMatch['key'];
+					$requiredJoins = [];
+					$query = $this->aliases[$keyMatch['key']] . '.foo';
+					$this->parseJoins($requiredJoins, $query);
+					$aliasJoin = array_pop($requiredJoins);
+					$joins += $requiredJoins;
+					list($table, , $parentAlias, $column, $primary) = $aliasJoin;
+					$this->currentAlias = $previousAlias;
+				}
+			} elseif ($keyMatch['del'] === ':') {
 				if (isset($keyMatch['throughColumn'])) {
 					$table = $keyMatch['key'];
 					$belongsTo = $this->conventions->getBelongsToReference($table, $keyMatch['throughColumn']);
@@ -483,14 +543,21 @@ class SqlBuilder extends Nette\Object
 				$primary = $this->conventions->getPrimary($table);
 			}
 
-			$tableAlias = $keyMatch['key'] ?: preg_replace('#^(.*\.)?(.*)$#', '$2', $table);
-
-			// if we are joining itself (parent table), we must alias joining table
-			if ($parent === $table) {
+			if ($this->currentAlias && $isLast) {
+				$tableAlias = $this->currentAlias;
+			} elseif ($parent === $table) {
 				$tableAlias = $parentAlias . '_ref';
+			} elseif ($keyMatch['key']) {
+				$tableAlias = $keyMatch['key'];
+			} else {
+				$tableAlias = preg_replace('#^(.*\.)?(.*)$#', '$2', $table);
 			}
 
-			$joins[$tableAlias . $column] = [$table, $tableAlias, $parentAlias, $column, $primary];
+			$tableChain .= $keyMatch['del'] . $tableAlias;
+			if (!$isLast || !$this->currentAlias) {
+				$this->checkUniqueTableName($tableAlias, $tableChain);
+			}
+			$joins[$tableAlias] = [$table, $tableAlias, $parentAlias, $column, $primary];
 			$parent = $table;
 			$parentAlias = $tableAlias;
 		}

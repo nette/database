@@ -29,11 +29,8 @@ $driver = $connection->getSupplementalDriver();
 
 
 test(function() use ($context, $driver) { // test duplicated table names throw exception
-	if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
-		$sqlBuilder = new SqlBuilderMock('public.author', $context);
-	} else {
-		$sqlBuilder = new SqlBuilderMock('author', $context);
-	}
+	$authorTable = ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA) ? 'public.' : '' ) . 'author';
+	$sqlBuilder = new SqlBuilderMock($authorTable, $context);
 	$sqlBuilder->addAlias(':book(translator)', 'book1');
 	$sqlBuilder->addAlias(':book:book_tag', 'book2');
 	Assert::exception(function() use ($sqlBuilder) {
@@ -42,7 +39,7 @@ test(function() use ($context, $driver) { // test duplicated table names throw e
 
 	Assert::exception(function() use ($sqlBuilder) { // reserved by base table name
 		$sqlBuilder->addAlias(':book', 'author');
-	}, Nette\InvalidArgumentException::class, "Table alias 'author' from chain ':book' is already in use by chain 'author'. Please add/change alias for one of them.");
+	}, Nette\InvalidArgumentException::class, "Table alias 'author' from chain ':book' is already in use by chain '$authorTable'. Please add/change alias for one of them.");
 
 	Assert::exception(function() use ($sqlBuilder) {
 		$sqlBuilder->addAlias(':book', 'book1');
@@ -54,6 +51,12 @@ test(function() use ($context, $driver) { // test duplicated table names throw e
 		$joins = [];
 		$sqlBuilder->parseJoins($joins, $query);
 	}, Nette\InvalidArgumentException::class, "Table alias 'tag' from chain '.book1:book_tag.tag' is already in use by chain ':book'. Please add/change alias for one of them.");
+
+	Assert::exception(function() use ($sqlBuilder) {
+		$query = 'WHERE :book(translator).id IS NULL AND :book.id IS NULL';
+		$joins = [];
+		$sqlBuilder->parseJoins($joins, $query);
+	}, Nette\InvalidArgumentException::class, "Table alias 'book' from chain ':book' is already in use by chain ':book(translator)'. Please add/change alias for one of them.");
 });
 
 

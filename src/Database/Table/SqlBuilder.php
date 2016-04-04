@@ -551,7 +551,7 @@ class SqlBuilder extends Nette\Object
 				$tableAlias = preg_replace('#^(.*\.)?(.*)$#', '$2', $table);
 			}
 
-			$tableChain .= $keyMatch['del'] . $tableAlias;
+			$tableChain .= $keyMatch[0];
 			if (!$isLast || !$this->currentAlias) {
 				$this->checkUniqueTableName($tableAlias, $tableChain);
 			}

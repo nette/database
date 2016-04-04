@@ -319,17 +319,48 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 */
 	public function where($condition, ...$params)
 	{
+		$this->condition($condition, $params);
+		return $this;
+	}
+
+
+	/**
+	 * Adds ON condition when joining specified table, more calls appends with AND.
+	 * @param  string table chain or table alias for which you need additional left join condition
+	 * @param  string condition possibly containing ?
+	 * @param  mixed
+	 * @param  mixed ...
+	 * @return self
+	 */
+	public function joinWhere($tableChain, $condition, ...$params)
+	{
+		$this->condition($condition, $params, $tableChain);
+		return $this;
+	}
+
+	/**
+	 * Adds condition, more calls appends with AND.
+	 * @param  string condition possibly containing ?
+	 * @param  mixed
+	 * @return self
+	 */
+	protected function condition($condition, array $params, $tableChain = NULL)
+	{
 		$this->emptyResultSet();
 		if (is_array($condition) && $params === []) { // where(array('column1' => 1, 'column2 > ?' => 2))
 			foreach ($condition as $key => $val) {
 				if (is_int($key)) {
-					$this->sqlBuilder->addWhere($val); // where('full condition')
+					$this->condition($val, [], $tableChain); // where('full condition')
 				} else {
-					$this->sqlBuilder->addWhere($key, $val); // where('column', 1)
+					$this->condition($key, [$val], $tableChain); // where('column', 1)
 				}
 			}
 		} else {
-			$this->sqlBuilder->addWhere($condition, ...$params);
+			if ($tableChain) {
+				$this->sqlBuilder->addJoinCondition($tableChain, $condition, ...$params);
+			} else {
+				$this->sqlBuilder->addWhere($condition, ...$params);
+			}
 		}
 		return $this;
 	}

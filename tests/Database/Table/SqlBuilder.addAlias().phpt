@@ -51,6 +51,12 @@ test(function() use ($context, $driver) { // test duplicated table names throw e
 		$joins = [];
 		$sqlBuilder->parseJoins($joins, $query);
 	}, Nette\InvalidArgumentException::class, "Table alias 'tag' from chain '.book1:book_tag.tag' is already in use by chain ':book'. Please add/change alias for one of them.");
+
+	Assert::exception(function() use ($sqlBuilder) {
+		$query = 'WHERE :book(translator).id IS NULL AND :book.id IS NULL';
+		$joins = [];
+		$sqlBuilder->parseJoins($joins, $query);
+	}, Nette\InvalidArgumentException::class, "Table alias 'book' from chain ':book' is already in use by chain ':book(translator)'. Please add/change alias for one of them.");
 });
 
 

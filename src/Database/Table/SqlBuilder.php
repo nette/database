@@ -622,7 +622,7 @@ class SqlBuilder extends Nette\Object
 	{
 		foreach ($parameters as & $parameter) {
 			if ($parameter instanceof Selection) {
-				$parameter = $this->getConditionHash($parameter->getSql(), $parameter->sqlBuilder->getParameters());
+				$parameter = $this->getConditionHash($parameter->getSql(), $parameter->getSqlBuilder()->getParameters());
 			} elseif ($parameter instanceof SqlLiteral) {
 				$parameter = $this->getConditionHash($parameter->__toString(), $parameter->getParameters());
 			} elseif (is_object($parameter) && method_exists($parameter, '__toString')) {

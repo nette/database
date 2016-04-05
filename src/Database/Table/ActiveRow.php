@@ -135,7 +135,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	{
 		$row = $this->table->getReferencedTable($this, $key, $throughColumn);
 		if ($row === FALSE) {
-			throw new Nette\MemberAccessException("No reference found for \${$this->table->name}->ref($key).");
+			throw new Nette\MemberAccessException("No reference found for \${$this->table->getName()}->ref($key).");
 		}
 
 		return $row;
@@ -152,7 +152,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	{
 		$groupedSelection = $this->table->getReferencingTable($key, $throughColumn, $this[$this->table->getPrimary()]);
 		if (!$groupedSelection) {
-			throw new Nette\MemberAccessException("No reference found for \${$this->table->name}->related($key).");
+			throw new Nette\MemberAccessException("No reference found for \${$this->table->getName()}->related($key).");
 		}
 
 		return $groupedSelection;

@@ -13,8 +13,10 @@ use Nette;
 /**
  * Cached reflection of database structure.
  */
-class Structure extends Nette\Object implements IStructure
+class Structure implements IStructure
 {
+	use Nette\SmartObject;
+
 	/** @var Connection */
 	protected $connection;
 

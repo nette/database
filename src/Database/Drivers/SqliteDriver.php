@@ -13,8 +13,10 @@ use Nette;
 /**
  * Supplemental SQLite3 database driver.
  */
-class SqliteDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
+class SqliteDriver implements Nette\Database\ISupplementalDriver
 {
+	use Nette\SmartObject;
+
 	/** @var Nette\Database\Connection */
 	private $connection;
 

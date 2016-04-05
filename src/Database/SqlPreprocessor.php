@@ -13,8 +13,10 @@ use Nette;
 /**
  * SQL preprocessor.
  */
-class SqlPreprocessor extends Nette\Object
+class SqlPreprocessor
 {
+	use Nette\SmartObject;
+
 	/** @var Connection */
 	private $connection;
 

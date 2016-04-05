@@ -13,8 +13,10 @@ use Nette;
 /**
  * Supplemental SQL Server 2005 and later database driver.
  */
-class SqlsrvDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
+class SqlsrvDriver implements Nette\Database\ISupplementalDriver
 {
+	use Nette\SmartObject;
+
 	/** @var Nette\Database\Connection */
 	private $connection;
 

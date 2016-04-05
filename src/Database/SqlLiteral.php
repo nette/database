@@ -13,8 +13,10 @@ use Nette;
 /**
  * SQL literal value.
  */
-class SqlLiteral extends Nette\Object
+class SqlLiteral
 {
+	use Nette\SmartObject;
+
 	/** @var string */
 	private $value;
 

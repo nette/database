@@ -15,8 +15,10 @@ use PDOException;
 /**
  * Represents a connection between PHP and a database server.
  */
-class Connection extends Nette\Object
+class Connection
 {
+	use Nette\SmartObject;
+
 	/** @var callable[]  function (Connection $connection); Occurs after connection is established */
 	public $onConnect;
 

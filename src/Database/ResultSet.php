@@ -14,8 +14,10 @@ use PDO;
 /**
  * Represents a result set.
  */
-class ResultSet extends Nette\Object implements \Iterator, IRowContainer
+class ResultSet implements \Iterator, IRowContainer
 {
+	use Nette\SmartObject;
+
 	/** @var Connection */
 	private $connection;
 

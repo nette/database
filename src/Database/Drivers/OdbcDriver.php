@@ -13,8 +13,9 @@ use Nette;
 /**
  * Supplemental ODBC database driver.
  */
-class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
+class OdbcDriver implements Nette\Database\ISupplementalDriver
 {
+	use Nette\SmartObject;
 
 	public function convertException(\PDOException $e)
 	{

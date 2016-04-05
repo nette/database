@@ -15,8 +15,10 @@ use Tracy;
 /**
  * Debug panel for Nette\Database.
  */
-class ConnectionPanel extends Nette\Object implements Tracy\IBarPanel
+class ConnectionPanel implements Tracy\IBarPanel
 {
+	use Nette\SmartObject;
+
 	/** @var int */
 	public $maxQueries = 100;
 

@@ -19,8 +19,9 @@ use Nette\Database\IStructure;
  * Builds SQL query.
  * SqlBuilder is based on great library NotORM http://www.notorm.com written by Jakub Vrana.
  */
-class SqlBuilder extends Nette\Object
+class SqlBuilder
 {
+	use Nette\SmartObject;
 
 	/** @var string */
 	protected $tableName;

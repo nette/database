@@ -14,8 +14,10 @@ use Nette\Database\Conventions\StaticConventions;
 /**
  * Database context.
  */
-class Context extends Nette\Object
+class Context
 {
+	use Nette\SmartObject;
+
 	/** @var Connection */
 	private $connection;
 

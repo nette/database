@@ -13,8 +13,9 @@ use Nette;
 /**
  * Supplemental MS SQL database driver.
  */
-class MsSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
+class MsSqlDriver implements Nette\Database\ISupplementalDriver
 {
+	use Nette\SmartObject;
 
 	public function convertException(\PDOException $e)
 	{

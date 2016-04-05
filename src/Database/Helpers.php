@@ -16,6 +16,8 @@ use Tracy;
  */
 class Helpers
 {
+	use Nette\StaticClass;
+
 	/** @var int maximum SQL length */
 	public static $maxLength = 100;
 

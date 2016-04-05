@@ -7,15 +7,17 @@
 
 namespace Nette\Database\Conventions;
 
+use Nette;
 use Nette\Database\IConventions;
-use Nette\Object;
 
 
 /**
  * Conventions based on static definition.
  */
-class StaticConventions extends Object implements IConventions
+class StaticConventions implements IConventions
 {
+	use Nette\SmartObject;
+
 	/** @var string */
 	protected $primary;
 

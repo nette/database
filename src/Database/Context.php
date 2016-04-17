@@ -9,6 +9,7 @@ namespace Nette\Database;
 
 use Nette;
 use Nette\Database\Conventions\StaticConventions;
+use Nette\Database\Table\IInstanceFactory;
 
 
 /**
@@ -30,6 +31,9 @@ class Context
 	/** @var Nette\Caching\IStorage */
 	private $cacheStorage;
 
+	/** @var IInstanceFactory */
+	private $instanceFactory;
+
 
 	public function __construct(Connection $connection, IStructure $structure, IConventions $conventions = NULL, Nette\Caching\IStorage $cacheStorage = NULL)
 	{
@@ -37,6 +41,14 @@ class Context
 		$this->structure = $structure;
 		$this->conventions = $conventions ?: new StaticConventions;
 		$this->cacheStorage = $cacheStorage;
+	}
+
+	/**
+	 * @param IInstanceFactory $instanceFactory
+	 */
+	public function setInstanceFactory(IInstanceFactory $instanceFactory)
+	{
+		$this->instanceFactory = $instanceFactory;
 	}
 
 
@@ -98,7 +110,9 @@ class Context
 	 */
 	public function table($table)
 	{
-		return new Table\Selection($this, $this->conventions, $table, $this->cacheStorage);
+		return $this->instanceFactory
+			? $this->instanceFactory->createSelection($this, $this->conventions, $table, $this->cacheStorage)
+			: new Table\Selection($this, $this->conventions, $table, $this->cacheStorage);
 	}
 
 

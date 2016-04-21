@@ -197,6 +197,8 @@ class SqlBuilder
 		$this->where = $builder->where;
 		$this->parameters['where'] = $builder->parameters['where'];
 		$this->conditions = $builder->conditions;
+		$this->aliases = $builder->aliases;
+		$this->reservedTableNames = $builder->reservedTableNames;
 	}
 
 

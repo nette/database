@@ -19,9 +19,9 @@ class SqlBuilderMock extends SqlBuilder
 	{
 		parent::parseJoins($joins, $query);
 	}
-	public function buildQueryJoins(array $joins, $leftConditions = [])
+	public function buildQueryJoins(array $joins, array $leftJoinConditions = [])
 	{
-		return parent::buildQueryJoins($joins, $leftConditions);
+		return parent::buildQueryJoins($joins, $leftJoinConditions);
 	}
 }
 

@@ -680,7 +680,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			return $this->specificCacheKey;
 		}
 
-		return $this->specificCacheKey = md5($this->getSql() . json_encode($this->sqlBuilder->getParameters()));
+		return $this->specificCacheKey = $this->sqlBuilder->getSelectQueryHash($this->getPreviousAccessedColumns());
 	}
 
 

@@ -137,6 +137,39 @@ class SqlBuilder
 
 
 	/**
+	 * Returns select query hash for caching.
+	 * @return string
+	 */
+	public function getSelectQueryHash($columns = NULL)
+	{
+		$parts = [
+			'delimitedTable' => $this->delimitedTable,
+			'queryCondition' => $this->buildConditions(),
+			'queryEnd' => $this->buildQueryEnd(),
+			$this->aliases,
+			$this->limit, $this->offset,
+		];
+		if ($this->select) {
+			$parts[] = $this->select;
+		} elseif ($columns) {
+			$parts[] = [$this->delimitedTable, $columns];
+		} elseif ($this->group && !$this->driver->isSupported(ISupplementalDriver::SUPPORT_SELECT_UNGROUPED_COLUMNS)) {
+			$parts[] = [$this->group];
+		} else {
+			$parts[] = "{$this->delimitedTable}.*";
+		}
+		return $this->getConditionHash(json_encode($parts), array_merge(
+			$this->parameters['select'],
+			$this->parameters['joinCondition'] ? array_merge(...$this->parameters['joinCondition']) : [],
+			$this->parameters['where'],
+			$this->parameters['group'],
+			$this->parameters['having'],
+			$this->parameters['order']
+		));
+	}
+
+
+	/**
 	 * Returns SQL query.
 	 * @param  string list of columns
 	 * @return string

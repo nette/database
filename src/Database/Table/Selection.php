@@ -342,7 +342,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Adds condition, more calls appends with AND.
 	 * @param  string condition possibly containing ?
-	 * @return self
+	 * @return void
 	 */
 	protected function condition($condition, array $params, $tableChain = NULL)
 	{
@@ -355,14 +355,11 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 					$this->condition($key, [$val], $tableChain); // where('column', 1)
 				}
 			}
+		} elseif ($tableChain) {
+			$this->sqlBuilder->addJoinCondition($tableChain, $condition, ...$params);
 		} else {
-			if ($tableChain) {
-				$this->sqlBuilder->addJoinCondition($tableChain, $condition, ...$params);
-			} else {
-				$this->sqlBuilder->addWhere($condition, ...$params);
-			}
+			$this->sqlBuilder->addWhere($condition, ...$params);
 		}
-		return $this;
 	}
 
 

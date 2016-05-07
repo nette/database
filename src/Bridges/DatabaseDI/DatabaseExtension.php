@@ -62,7 +62,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 
 	private function setupDatabase($config, $name)
 	{
-		$container = $this->getContainerBuilder();
+		$builder = $this->getContainerBuilder();
 
 		foreach ((array) $config['options'] as $key => $value) {
 			if (preg_match('#^PDO::\w+\z#', $key)) {
@@ -71,11 +71,11 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			}
 		}
 
-		$connection = $container->addDefinition($this->prefix("$name.connection"))
+		$connection = $builder->addDefinition($this->prefix("$name.connection"))
 			->setClass(Nette\Database\Connection::class, [$config['dsn'], $config['user'], $config['password'], $config['options']])
 			->setAutowired($config['autowired']);
 
-		$structure = $container->addDefinition($this->prefix("$name.structure"))
+		$structure = $builder->addDefinition($this->prefix("$name.structure"))
 			->setClass(Nette\Database\Structure::class)
 			->setArguments([$connection])
 			->setAutowired($config['autowired']);
@@ -94,7 +94,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			$conventions = NULL;
 
 		} elseif (is_string($config['conventions'])) {
-			$conventions = $container->addDefinition($this->prefix("$name.$conventionsServiceName"))
+			$conventions = $builder->addDefinition($this->prefix("$name.$conventionsServiceName"))
 				->setClass(preg_match('#^[a-z]+\z#i', $config['conventions'])
 					? 'Nette\Database\Conventions\\' . ucfirst($config['conventions']) . 'Conventions'
 					: $config['conventions'])
@@ -106,7 +106,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			$conventions = reset($tmp);
 		}
 
-		$container->addDefinition($this->prefix("$name.context"))
+		$builder->addDefinition($this->prefix("$name.context"))
 			->setClass(Nette\Database\Context::class, [$connection, $structure, $conventions])
 			->setAutowired($config['autowired']);
 
@@ -120,9 +120,9 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		}
 
 		if ($this->name === 'database') {
-			$container->addAlias($this->prefix($name), $this->prefix("$name.connection"));
-			$container->addAlias("nette.database.$name", $this->prefix($name));
-			$container->addAlias("nette.database.$name.context", $this->prefix("$name.context"));
+			$builder->addAlias($this->prefix($name), $this->prefix("$name.connection"));
+			$builder->addAlias("nette.database.$name", $this->prefix($name));
+			$builder->addAlias("nette.database.$name.context", $this->prefix("$name.context"));
 		}
 	}
 

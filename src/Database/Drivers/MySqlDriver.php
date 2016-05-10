@@ -83,6 +83,16 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 
 
 	/**
+	 * Undelimites identifier
+	 */
+	public function undelimite($name)
+	{
+		$last = substr($name, -1);
+		return str_replace($last . $last, $last, substr($name, 1, -1));
+	}
+
+
+	/**
 	 * Formats boolean for use in a SQL statement.
 	 */
 	public function formatBool($value)
@@ -210,17 +220,31 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	public function getForeignKeys($table)
 	{
 		$keys = [];
-		$query = 'SELECT CONSTRAINT_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.KEY_COLUMN_USAGE '
-			. 'WHERE TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME IS NOT NULL AND TABLE_NAME = ' . $this->connection->quote($table);
+		$query = 'SHOW CREATE TABLE ' . $this->delimite($table);
+		$tableReflection = $this->connection->query($query)->fetch();
+		$columnPattern = '`(?:[^`]|``)+`';
+		preg_match_all("~CONSTRAINT ($columnPattern) "
+				. "FOREIGN KEY ?\\(((?:$columnPattern,? ?)+)\\) "
+				. "REFERENCES ($columnPattern)(?:\\.($columnPattern))? \\(((?:$columnPattern,? ?)+)\\)"
+				. "(?: ON DELETE (RESTRICT|NO ACTION|CASCADE|SET NULL|SET DEFAULT))?"
+				. "(?: ON UPDATE (RESTRICT|NO ACTION|CASCADE|SET NULL|SET DEFAULT))?~", $tableReflection['Create Table'], $matches, PREG_SET_ORDER);
 
-		foreach ($this->connection->query($query) as $id => $row) {
-			$keys[$id]['name'] = $row['CONSTRAINT_NAME']; // foreign key name
-			$keys[$id]['local'] = $row['COLUMN_NAME']; // local columns
-			$keys[$id]['table'] = $row['REFERENCED_TABLE_NAME']; // referenced table
-			$keys[$id]['foreign'] = $row['REFERENCED_COLUMN_NAME']; // referenced columns
+		foreach ($matches as $match) {
+			preg_match_all("~$columnPattern~", $match[2], $source);
+			$locals = array_map([$this, 'undelimite'], $source[0]);
+			preg_match_all("~$columnPattern~", $match[5], $target);
+			$foreigns = array_map([$this, 'undelimite'], $target[0]);
+
+			$keys[] = [
+				"name" => $this->undelimite($match[1]),
+				"table" => $this->undelimite($match[4] != "" ? $match[4] : $match[3]),
+				"local" => reset($locals),
+				"foreign" => reset($foreigns),
+				"onDelete" => (isset($match[6]) ? $match[6] : "RESTRICT"),
+				"onUpdate" => (isset($match[7]) ? $match[7] : "RESTRICT"),
+			];
 		}
-
-		return array_values($keys);
+		return $keys;
 	}
 
 

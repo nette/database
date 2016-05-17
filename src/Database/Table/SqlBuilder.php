@@ -158,14 +158,14 @@ class SqlBuilder
 		} else {
 			$parts[] = "{$this->delimitedTable}.*";
 		}
-		return $this->getConditionHash(json_encode($parts), array_merge(
+		return $this->getConditionHash(json_encode($parts), [
 			$this->parameters['select'],
-			$this->parameters['joinCondition'] ? array_merge(...$this->parameters['joinCondition']) : [],
+			$this->parameters['joinCondition'],
 			$this->parameters['where'],
 			$this->parameters['group'],
 			$this->parameters['having'],
 			$this->parameters['order']
-		));
+		]);
 	}
 
 
@@ -771,13 +771,15 @@ class SqlBuilder
 
 	private function getConditionHash($condition, $parameters)
 	{
-		foreach ($parameters as & $parameter) {
+		foreach ($parameters as $key => & $parameter) {
 			if ($parameter instanceof Selection) {
 				$parameter = $this->getConditionHash($parameter->getSql(), $parameter->getSqlBuilder()->getParameters());
 			} elseif ($parameter instanceof SqlLiteral) {
 				$parameter = $this->getConditionHash($parameter->__toString(), $parameter->getParameters());
 			} elseif (is_object($parameter) && method_exists($parameter, '__toString')) {
 				$parameter = $parameter->__toString();
+			} elseif (is_array($parameter) || $parameter instanceof \ArrayAccess) {
+				$parameter = $this->getConditionHash($key, $parameter);
 			}
 		}
 		return md5($condition . json_encode($parameters));

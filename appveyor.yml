@@ -38,4 +38,4 @@ install:
     - copy tests\databases.appveyor.ini tests\Database\databases.ini
 
 test_script:
-    - vendor\bin\tester tests -s -p php -c tests\php-win.ini
+    - vendor\bin\tester tests -s -c tests\php-win.ini

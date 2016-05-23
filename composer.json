@@ -1,5 +1,5 @@
 {
-	"name": "nette/database",
+	"name": "WyskyNet/database",
 	"description": "Nette Database Component",
 	"homepage": "https://nette.org",
 	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],

@@ -24,14 +24,13 @@ class Helpers
 	/** @var array */
 	public static $typePatterns = [
 		'^_' => IStructure::FIELD_TEXT, // PostgreSQL arrays
-		'BYTEA|BLOB|BIN' => IStructure::FIELD_BINARY,
-		'TEXT|CHAR|POINT|INTERVAL' => IStructure::FIELD_TEXT,
-		'YEAR|BYTE|COUNTER|SERIAL|INT|LONG|SHORT|^TINY$' => IStructure::FIELD_INTEGER,
-		'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => IStructure::FIELD_FLOAT,
-		'^TIME$' => IStructure::FIELD_TIME,
-		'TIME' => IStructure::FIELD_DATETIME, // DATETIME, TIMESTAMP
+		'(TINY|SMALL|SHORT|MEDIUM|BIG|LONG)(INT)?|INT(EGER|\d+| IDENTITY)?|(SMALL|BIG|)SERIAL\d*|COUNTER|YEAR|BYTE|LONGLONG|UNSIGNED BIG INT' => IStructure::FIELD_INTEGER,
+		'(NEW)?DEC(IMAL)?(\(.*)?|NUMERIC|REAL|DOUBLE( PRECISION)?|FLOAT\d*|(SMALL)?MONEY|CURRENCY|NUMBER' => IStructure::FIELD_FLOAT,
+		'BOOL(EAN)?' => IStructure::FIELD_BOOL,
+		'TIME' => IStructure::FIELD_TIME,
 		'DATE' => IStructure::FIELD_DATE,
-		'BOOL' => IStructure::FIELD_BOOL,
+		'(SMALL)?DATETIME(OFFSET)?\d*|TIME(STAMP)?' => IStructure::FIELD_DATETIME,
+		'BYTEA|(TINY|MEDIUM|LONG|)BLOB|(LONG )?(VAR)?BINARY|IMAGE' => IStructure::FIELD_BINARY,
 	];
 
 
@@ -171,7 +170,7 @@ class Helpers
 		if (!isset($cache[$type])) {
 			$cache[$type] = 'string';
 			foreach (self::$typePatterns as $s => $val) {
-				if (preg_match("#$s#i", $type)) {
+				if (preg_match("#^($s)$#i", $type)) {
 					return $cache[$type] = $val;
 				}
 			}

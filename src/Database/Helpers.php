@@ -28,7 +28,7 @@ class Helpers
 		'CURRENCY|REAL|MONEY|FLOAT|DOUBLE|DECIMAL|NUMERIC|NUMBER' => IStructure::FIELD_FLOAT,
 		'^TIME$' => IStructure::FIELD_TIME,
 		'TIME' => IStructure::FIELD_DATETIME, // DATETIME, TIMESTAMP
-		'DATE' => IStructure::FIELD_DATE,
+		'DATE(?!RANGE)' => IStructure::FIELD_DATE,
 		'BOOL' => IStructure::FIELD_BOOL,
 	);
 

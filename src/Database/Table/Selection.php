@@ -1012,7 +1012,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	public function next()
 	{
-		next($this->keys);
+		do {
+			next($this->keys);
+		} while (($key = current($this->keys)) !== FALSE && !isset($this->data[$key]));
 	}
 
 

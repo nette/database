@@ -40,6 +40,9 @@ class Connection
 	/** @var PDO */
 	private $pdo;
 
+	/** @var IRowNormalizer */
+	private $rowNormalizer;
+
 
 	public function __construct($dsn, $user = NULL, $password = NULL, array $options = NULL)
 	{
@@ -68,6 +71,9 @@ class Connection
 		} catch (PDOException $e) {
 			throw ConnectionException::from($e);
 		}
+
+		$rowNormalizer = empty($this->options['rowNormalizer']) ? 'Nette\Database\RowNormalizer' : $this->options['rowNormalizer'];
+		$this->rowNormalizer = new $rowNormalizer;
 
 		$class = empty($this->options['driverClass'])
 			? 'Nette\Database\Drivers\\' . ucfirst(str_replace('sql', 'Sql', $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) . 'Driver'
@@ -175,7 +181,7 @@ class Connection
 	{
 		list($sql, $params) = $this->preprocess($sql, ...$params);
 		try {
-			$result = new ResultSet($this, $sql, $params);
+			$result = new ResultSet($this, $sql, $params, $this->rowNormalizer);
 		} catch (PDOException $e) {
 			$this->onQuery($this, $e);
 			throw $e;

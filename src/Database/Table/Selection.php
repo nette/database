@@ -575,11 +575,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 				throw $exception;
 			}
 		}
-
 		$this->rows = [];
 		$usedPrimary = TRUE;
-		foreach ($result->getPdoStatement() as $key => $row) {
-			$row = $this->createRow($result->normalizeRow($row));
+		foreach ($result as $key => $row) {
 			$primary = $row->getSignature(FALSE);
 			$usedPrimary = $usedPrimary && (string) $primary !== '';
 			$this->rows[$usedPrimary ? $primary : $key] = $row;
@@ -614,7 +612,11 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	protected function query($query)
 	{
-		return $this->context->queryArgs($query, $this->sqlBuilder->getParameters());
+		$result = $this->context->queryArgs($query, $this->sqlBuilder->getParameters());
+		$result->setRowFactory(function($row) {
+			return $this->createRow($row);
+		});
+		return $result;
 	}
 
 

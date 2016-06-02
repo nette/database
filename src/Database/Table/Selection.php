@@ -59,9 +59,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/** @var string */
 	protected $generalCacheKey;
 
-	/** @var array */
-	protected $generalCacheTraceKey;
-
 	/** @var string */
 	protected $specificCacheKey;
 
@@ -618,20 +615,20 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	}
 
 
-	protected function emptyResultSet($saveCache = TRUE, $deleteRererencedCache = TRUE)
+	protected function emptyResultSet($clearCache = TRUE, $deleteRererencedCache = TRUE)
 	{
-		if ($this->rows !== NULL && $saveCache) {
+		if ($this->rows !== NULL && $clearCache) {
 			$this->saveCacheState();
 		}
 
-		if ($saveCache) {
-			// null only if missing some column
-			$this->generalCacheTraceKey = NULL;
+		if ($clearCache) {
+			// not null in case of missing some column
+			$this->previousAccessedColumns = NULL;
+			$this->generalCacheKey = NULL;
 		}
 
 		$this->rows = NULL;
 		$this->specificCacheKey = NULL;
-		$this->generalCacheKey = NULL;
 		$this->refCache['referencingPrototype'] = [];
 		if ($deleteRererencedCache) {
 			$this->refCache['referenced'] = [];
@@ -687,15 +684,12 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		}
 
 		$key = [__CLASS__, $this->name, $this->sqlBuilder->getConditions()];
-		if (!$this->generalCacheTraceKey) {
-			$trace = [];
-			foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $item) {
-				$trace[] = isset($item['file'], $item['line']) ? $item['file'] . $item['line'] : NULL;
-			};
-			$this->generalCacheTraceKey = $trace;
-		}
+		$trace = [];
+		foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $item) {
+			$trace[] = isset($item['file'], $item['line']) ? $item['file'] . $item['line'] : NULL;
+		};
 
-		$key[] = $this->generalCacheTraceKey;
+		$key[] = $trace;
 		return $this->generalCacheKey = md5(serialize($key));
 	}
 
@@ -735,8 +729,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		}
 
 		if ($selectColumn && $this->previousAccessedColumns && ($key === NULL || !isset($this->previousAccessedColumns[$key])) && !$this->sqlBuilder->getSelect()) {
-			$this->previousAccessedColumns = [];
-
 			if ($this->sqlBuilder->getLimit()) {
 				$generalCacheKey = $this->generalCacheKey;
 				$sqlBuilder = $this->sqlBuilder;
@@ -753,10 +745,12 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 				$this->wherePrimary($primaryValues);
 
 				$this->generalCacheKey = $generalCacheKey;
+				$this->previousAccessedColumns = [];
 				$this->execute();
 				$this->sqlBuilder = $sqlBuilder;
 			} else {
 				$this->emptyResultSet(FALSE);
+				$this->previousAccessedColumns = [];
 				$this->execute();
 			}
 
@@ -1018,7 +1012,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	public function next()
 	{
-		next($this->keys);
+		do {
+			next($this->keys);
+		} while (($key = current($this->keys)) !== FALSE && !isset($this->data[$key]));
 	}
 
 

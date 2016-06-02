@@ -185,3 +185,35 @@ test(function () use ($context) { // Test saving the union of needed cols, the s
 		['id', 'author_id', 'translator_id', 'title'],
 	], $cols);
 });
+
+
+test(function () use ($context) { // Test multiple use of same selection
+	$sql = [];
+	$context->getConnection()->onQuery[] = function($_, $result) use (& $sql) {
+		$sql[] = $result->getQueryString();
+	};
+
+	for ($i = 0; $i < 3; $i += 1) {
+		$bookSelection = $context->table('book');
+		count($bookSelection);
+
+		foreach ($bookSelection->where('author_id = ?', 11) as $book) {
+			$book->title;
+			if ($i>=1) {
+				$book->translator_id;
+			}
+		}
+		$bookSelection->__destruct();
+	}
+
+	Assert::same([
+		reformat('SELECT * FROM [book]'), //First round
+		reformat('SELECT * FROM [book] WHERE ([author_id] = 11)'),
+		reformat('SELECT [id] FROM [book]'), //Second round
+		reformat('SELECT [id], [title] FROM [book] WHERE ([author_id] = 11)'),
+		reformat('SELECT * FROM [book] WHERE ([author_id] = 11)'), //Missing translator_id
+		reformat('SELECT [id] FROM [book]'), //Third round
+		reformat('SELECT [id], [title], [translator_id] FROM [book] WHERE ([author_id] = 11)'),
+
+	], $sql);
+});

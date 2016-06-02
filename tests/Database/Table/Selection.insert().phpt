@@ -84,3 +84,9 @@ $inserted = $context->table('note')->insert([
 	'note' => 'Good one!',
 ]);
 Assert::equal(1, $inserted);
+
+$affected = $context->table('note')->insert([
+	'book_id' => 2,
+	'note' => 'Second one!',
+], FALSE);
+Assert::equal(1, $affected);

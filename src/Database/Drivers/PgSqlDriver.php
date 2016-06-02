@@ -141,13 +141,13 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 		foreach ($this->connection->query("
 			SELECT DISTINCT ON (c.relname)
 				c.relname::varchar AS name,
-				c.relkind = 'v' AS view,
+				c.relkind IN ('v', 'm') AS view,
 				n.nspname::varchar || '.' || c.relname::varchar AS \"fullName\"
 			FROM
 				pg_catalog.pg_class AS c
 				JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace
 			WHERE
-				c.relkind IN ('r', 'v')
+				c.relkind IN ('r', 'v', 'm')
 				AND n.nspname = ANY (pg_catalog.current_schemas(FALSE))
 			ORDER BY
 				c.relname

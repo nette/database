@@ -26,6 +26,9 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @var \PDOStatement|null */
 	private $pdoStatement;
 
+	/** @var callable(array, ResultSet): array */
+	private $normalizer;
+
 	/** @var Row|false */
 	private $result;
 
@@ -48,12 +51,13 @@ class ResultSet implements \Iterator, IRowContainer
 	private $types;
 
 
-	public function __construct(Connection $connection, string $queryString, array $params)
+	public function __construct(Connection $connection, string $queryString, array $params, callable $normalizer = null)
 	{
 		$time = microtime(true);
 		$this->connection = $connection;
 		$this->queryString = $queryString;
 		$this->params = $params;
+		$this->normalizer = $normalizer;
 
 		try {
 			if (substr($queryString, 0, 2) === '::') {
@@ -118,57 +122,27 @@ class ResultSet implements \Iterator, IRowContainer
 	}
 
 
+	public function getColumnTypes(): array
+	{
+		if ($this->types === null) {
+			$this->types = $this->connection->getDriver()->getColumnTypes($this->pdoStatement);
+		}
+		return $this->types;
+	}
+
+
 	public function getTime(): float
 	{
 		return $this->time;
 	}
 
 
-	/**
-	 * Normalizes result row.
-	 */
+	/** @internal */
 	public function normalizeRow(array $row): array
 	{
-		if ($this->types === null) {
-			$this->types = $this->connection->getDriver()->getColumnTypes($this->pdoStatement);
-		}
-
-		foreach ($this->types as $key => $type) {
-			$value = $row[$key];
-			if ($value === null || $value === false || $type === IStructure::FIELD_TEXT) {
-				// do nothing
-			} elseif ($type === IStructure::FIELD_INTEGER) {
-				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
-
-			} elseif ($type === IStructure::FIELD_FLOAT) {
-				if (is_string($value) && ($pos = strpos($value, '.')) !== false) {
-					$value = rtrim(rtrim($pos === 0 ? "0$value" : $value, '0'), '.');
-				}
-				$float = (float) $value;
-				$row[$key] = (string) $float === $value ? $float : $value;
-
-			} elseif ($type === IStructure::FIELD_BOOL) {
-				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
-
-			} elseif (
-				$type === IStructure::FIELD_DATETIME
-				|| $type === IStructure::FIELD_DATE
-				|| $type === IStructure::FIELD_TIME
-			) {
-				$row[$key] = new Nette\Utils\DateTime($value);
-
-			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
-				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?$#D', $value, $m);
-				$row[$key] = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
-				$row[$key]->f = isset($m[5]) ? (float) $m[5] : 0.0;
-				$row[$key]->invert = (int) (bool) $m[1];
-
-			} elseif ($type === IStructure::FIELD_UNIX_TIMESTAMP) {
-				$row[$key] = Nette\Utils\DateTime::from($value);
-			}
-		}
-
-		return $row;
+		return $this->normalizer
+			? ($this->normalizer)($row, $this)
+			: $row;
 	}
 
 

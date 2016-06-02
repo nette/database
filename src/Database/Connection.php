@@ -43,6 +43,9 @@ class Connection
 	/** @var PDO|null */
 	private $pdo;
 
+	/** @var callable(array, ResultSet): array */
+	private $rowNormalizer = [Helpers::class, 'normalizeRow'];
+
 	/** @var string|null */
 	private $sql;
 
@@ -122,6 +125,13 @@ class Connection
 	{
 		$this->connect();
 		return $this->driver;
+	}
+
+
+	public function setRowNormalizer(?callable $normalizer): self
+	{
+		$this->rowNormalizer = $normalizer;
+		return $this;
 	}
 
 
@@ -212,7 +222,7 @@ class Connection
 	{
 		[$this->sql, $params] = $this->preprocess($sql, ...$params);
 		try {
-			$result = new ResultSet($this, $this->sql, $params);
+			$result = new ResultSet($this, $this->sql, $params, $this->rowNormalizer);
 		} catch (PDOException $e) {
 			Arrays::invoke($this->onQuery, $this, $e);
 			throw $e;

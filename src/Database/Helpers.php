@@ -266,4 +266,27 @@ class Helpers
 		return $return;
 	}
 
+
+	/**
+	 * Finds duplicate columns in select statement
+	 * @param  \PDOStatement
+	 * @return string
+	 */
+	public static function findDuplicates(\PDOStatement $statement)
+	{
+		$cols = [];
+		for ($i = 0; $i < $statement->columnCount(); $i++) {
+			$meta = $statement->getColumnMeta($i);
+			$cols[$meta['name']][] = isset($meta['table']) ? $meta['table'] : '';
+		}
+		$duplicates = [];
+		foreach ($cols as $name => $tables) {
+			if (count($tables) > 1) {
+				$tables = array_filter(array_unique($tables));
+				$duplicates[] = "'$name'" . ($tables ? ' (from ' . implode(', ', $tables) . ')' : '');
+			}
+		}
+		return implode(', ', $duplicates);
+	}
+
 }

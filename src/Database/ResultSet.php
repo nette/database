@@ -253,6 +253,10 @@ class ResultSet implements \Iterator, IRowContainer
 		if (!$data) {
 			$this->pdoStatement->closeCursor();
 			return FALSE;
+
+		} elseif ($this->result === NULL && count($data) !== $this->pdoStatement->columnCount()) {
+			$duplicates = Helpers::findDuplicates($this->pdoStatement);
+			trigger_error("Found duplicate columns in database result set: $duplicates.", E_USER_NOTICE);
 		}
 
 		$row = new Row;
@@ -260,10 +264,6 @@ class ResultSet implements \Iterator, IRowContainer
 			if ($key !== '') {
 				$row->$key = $value;
 			}
-		}
-
-		if ($this->result === NULL && count($data) !== $this->pdoStatement->columnCount()) {
-			trigger_error('Found duplicate columns in database result set.', E_USER_NOTICE);
 		}
 
 		$this->resultKey++;

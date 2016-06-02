@@ -266,7 +266,8 @@ class ResultSet implements \Iterator, IRowContainer
 		}
 
 		if ($this->result === NULL && count($data) !== $this->pdoStatement->columnCount()) {
-			trigger_error('Found duplicate columns in database result set.', E_USER_NOTICE);
+			$duplicates = Helpers::findDuplicates($this->pdoStatement);
+			trigger_error("Found duplicate columns in database result set: $duplicates.", E_USER_NOTICE);
 		}
 
 		$this->resultKey++;

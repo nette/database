@@ -82,7 +82,7 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($connection, $structure) {
+test(function () use ($connection, $structure, $driverName) {
 	$context = new Nette\Database\Context(
 		$connection,
 		$structure,
@@ -92,5 +92,5 @@ test(function () use ($connection, $structure) {
 	$books = $context->table('book')->select('book.*, author.name, translator.name');
 	Assert::error(function() use($books) {
 		iterator_to_array($books);
-	}, E_USER_NOTICE, 'Found duplicate columns in database result set.');
+	}, E_USER_NOTICE);
 });

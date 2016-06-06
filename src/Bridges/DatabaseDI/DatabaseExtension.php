@@ -83,7 +83,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		if (!empty($config['reflection'])) {
 			$conventionsServiceName = 'reflection';
 			$config['conventions'] = $config['reflection'];
-			if (strtolower($config['conventions']) === 'conventional') {
+			if (is_string($config['conventions']) && strtolower($config['conventions']) === 'conventional') {
 				$config['conventions'] = 'Static';
 			}
 		} else {

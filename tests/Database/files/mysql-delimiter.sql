@@ -1,5 +1,3 @@
-/*!40102 SET storage_engine = InnoDB */;
-
 CREATE DATABASE IF NOT EXISTS nette_test;
 USE nette_test;
 

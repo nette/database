@@ -23,9 +23,6 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @var Connection */
 	private $connection;
 
-	/** @var ISupplementalDriver */
-	private $supplementalDriver;
-
 	/** @var \PDOStatement|NULL */
 	private $pdoStatement;
 
@@ -55,7 +52,6 @@ class ResultSet implements \Iterator, IRowContainer
 	{
 		$time = microtime(TRUE);
 		$this->connection = $connection;
-		$this->supplementalDriver = $connection->getSupplementalDriver();
 		$this->queryString = $queryString;
 		$this->params = $params;
 
@@ -74,7 +70,7 @@ class ResultSet implements \Iterator, IRowContainer
 				$this->pdoStatement->execute();
 			}
 		} catch (\PDOException $e) {
-			$e = $this->supplementalDriver->convertException($e);
+			$e = $connection->getSupplementalDriver()->convertException($e);
 			$e->queryString = $queryString;
 			throw $e;
 		}
@@ -133,7 +129,7 @@ class ResultSet implements \Iterator, IRowContainer
 	public function normalizeRow(array $row): array
 	{
 		if ($this->types === NULL) {
-			$this->types = (array) $this->supplementalDriver->getColumnTypes($this->pdoStatement);
+			$this->types = (array) $this->connection->getSupplementalDriver()->getColumnTypes($this->pdoStatement);
 		}
 
 		foreach ($this->types as $key => $type) {
@@ -166,7 +162,7 @@ class ResultSet implements \Iterator, IRowContainer
 			}
 		}
 
-		return $this->supplementalDriver->normalizeRow($row);
+		return $row;
 	}
 
 

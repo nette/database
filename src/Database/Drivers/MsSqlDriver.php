@@ -91,15 +91,6 @@ class MsSqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Normalizes result row.
-	 */
-	public function normalizeRow(array $row): array
-	{
-		return $row;
-	}
-
-
 	/********************* reflection ****************d*g**/
 
 

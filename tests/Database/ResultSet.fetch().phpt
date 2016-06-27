@@ -17,7 +17,7 @@ test(function () use ($context) {
 
 	Assert::error(function () use ($res) {
 		$res->fetch();
-	}, E_USER_NOTICE, 'Found duplicate columns in database result set.');
+	}, E_USER_NOTICE);
 
 	$res->fetch();
 });
@@ -34,4 +34,13 @@ test(function () use ($context, $driverName) { // tests closeCursor()
 		$res = $context->query('SELECT * FROM book');
 		foreach ($res as $row) {}
 	}
+});
+
+test(function () use ($context, $driverName) {
+
+	$result = $context->query('SELECT book.id, author.id, author.name, translator.name FROM book JOIN author ON (author.id = book.author_id) JOIN author translator ON (translator.id = book.translator_id)');
+	//Found duplicate columns in database result set: 'id' from book, author; 'name' from author, translator.
+	Assert::error(function() use($result) {
+		iterator_to_array($result);
+	}, E_USER_NOTICE);
 });

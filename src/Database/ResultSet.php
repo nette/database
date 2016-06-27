@@ -27,6 +27,9 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @var \PDOStatement|NULL */
 	private $pdoStatement;
 
+	/** @var IRowNormalizer */
+	private $rowNormalizer;
+
 	/** @var IRow */
 	private $result;
 
@@ -48,14 +51,18 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @var array */
 	private $types;
 
+	/** @var callable|NULL */
+	private $rowFactory;
 
-	public function __construct(Connection $connection, $queryString, array $params)
+
+	public function __construct(Connection $connection, $queryString, array $params, IRowNormalizer $normalizer)
 	{
 		$time = microtime(TRUE);
 		$this->connection = $connection;
 		$this->supplementalDriver = $connection->getSupplementalDriver();
 		$this->queryString = $queryString;
 		$this->params = $params;
+		$this->rowNormalizer = $normalizer;
 
 		try {
 			if (substr($queryString, 0, 2) === '::') {
@@ -116,6 +123,16 @@ class ResultSet implements \Iterator, IRowContainer
 		return $this->params;
 	}
 
+	/**
+	 * @return array
+	 */
+	public function getColumnTypes()
+	{
+		if ($this->types === NULL) {
+			$this->types = (array) $this->supplementalDriver->getColumnTypes($this->pdoStatement);
+		}
+		return $this->types;
+	}
 
 	/**
 	 * @return int
@@ -145,47 +162,24 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * Normalizes result row.
-	 * @param  array
-	 * @return array
+	 * @param IRowNormalizer|NULL
+	 * @return static
 	 */
-	public function normalizeRow($row)
+	public function setRowNormalizer($normalizer)
 	{
-		if ($this->types === NULL) {
-			$this->types = (array) $this->supplementalDriver->getColumnTypes($this->pdoStatement);
-		}
+		$this->rowNormalizer = $normalizer;
+		return $this;
+	}
 
-		foreach ($this->types as $key => $type) {
-			$value = $row[$key];
-			if ($value === NULL || $value === FALSE || $type === IStructure::FIELD_TEXT) {
 
-			} elseif ($type === IStructure::FIELD_INTEGER) {
-				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
-
-			} elseif ($type === IStructure::FIELD_FLOAT) {
-				if (($pos = strpos($value, '.')) !== FALSE) {
-					$value = rtrim(rtrim($pos === 0 ? "0$value" : $value, '0'), '.');
-				}
-				$float = (float) $value;
-				$row[$key] = (string) $float === $value ? $float : $value;
-
-			} elseif ($type === IStructure::FIELD_BOOL) {
-				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
-
-			} elseif ($type === IStructure::FIELD_DATETIME || $type === IStructure::FIELD_DATE || $type === IStructure::FIELD_TIME) {
-				$row[$key] = new Nette\Utils\DateTime($value);
-
-			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
-				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)\z#', $value, $m);
-				$row[$key] = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
-				$row[$key]->invert = (int) (bool) $m[1];
-
-			} elseif ($type === IStructure::FIELD_UNIX_TIMESTAMP) {
-				$row[$key] = Nette\Utils\DateTime::from($value);
-			}
-		}
-
-		return $this->supplementalDriver->normalizeRow($row);
+	/**
+	 * Set a factory to create fetched object instances. These should implements the IRow interface.
+	 * @return self
+	 */
+	public function setRowFactory(callable $callback)
+	{
+		$this->rowFactory = $callback;
+		return $this;
 	}
 
 
@@ -255,15 +249,25 @@ class ResultSet implements \Iterator, IRowContainer
 			return FALSE;
 		}
 
-		$row = new Row;
-		foreach ($this->normalizeRow($data) as $key => $value) {
-			if ($key !== '') {
-				$row->$key = $value;
+		if ($this->rowNormalizer !== NULL) {
+			$data = $this->rowNormalizer->normalizeRow($data, $this);
+		}
+
+		if ($this->rowFactory) {
+			$row = call_user_func($this->rowFactory, $data);
+		}
+		else {
+			$row = new Row;
+			foreach ($data as $key => $value) {
+				if ($key !== '') {
+					$row->$key = $value;
+				}
 			}
 		}
 
 		if ($this->result === NULL && count($data) !== $this->pdoStatement->columnCount()) {
-			trigger_error('Found duplicate columns in database result set.', E_USER_NOTICE);
+			$duplicates = Helpers::findDuplicates($this->pdoStatement);
+			trigger_error("Found duplicate columns in database result set: $duplicates.", E_USER_NOTICE);
 		}
 
 		$this->resultKey++;

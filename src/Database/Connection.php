@@ -44,6 +44,7 @@ class Connection
 	public function __construct($dsn, $user = NULL, $password = NULL, array $options = NULL)
 	{
 		if (func_num_args() > 4) { // compatibility
+			trigger_error(__METHOD__ . " fifth argument is deprecated, use \$options['driverClass'].", E_USER_DEPRECATED);
 			$options['driverClass'] = func_get_arg(4);
 		}
 		$this->params = [$dsn, $user, $password];

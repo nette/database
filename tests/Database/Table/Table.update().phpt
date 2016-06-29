@@ -22,7 +22,6 @@ $book = $context->table('book');
 $book1 = $book->get(1);  // SELECT * FROM `book` WHERE (`id` = ?)
 Assert::same('Jakub Vrana', $book1->author->name);  // SELECT * FROM `author` WHERE (`author`.`id` IN (11))
 
-
 $book2 = $book->insert([
 	'author_id' => $author->getPrimary(),
 	'title' => 'Game of Thrones',
@@ -91,3 +90,17 @@ $book_tag->update(new ArrayIterator([
 	'tag_id' => 21,
 ]));  // UPDATE `book_tag` SET `tag_id`=21 WHERE (`book_id` = (?) AND `tag_id` = (?))
 Assert::same(21, $book_tag->tag_id);
+
+if($driverName === 'mysql') {
+	$context->table('book')->where(':book_tag.tag.name = ?', 'PHP')->update([
+		'translator_id' => NULL
+	]); // UPDATE `book` LEFT JOIN `book_tag` ON `book`.`id` = `book_tag`.`book_id` LEFT JOIN `tag` ON `tag`.`id` = `book_tag`.`tag_id` SET `translator_id` = NULL WHERE `tag`.`name` = ?
+	foreach($context->table('book') as $book) {
+		foreach($book->related('book_tag') AS $bookTag) {
+			$tag = $bookTag->ref('tag');
+			if($tag->name === 'PHP') {
+				Assert::null($book->translator_id);
+			}
+		}
+	}
+}

@@ -31,3 +31,14 @@ test(function () use ($context) {
 	$book->delete();  // DELETE FROM `book` WHERE (`id` = ?)
 	Assert::count(0, $context->table('book')->wherePrimary(3));  // SELECT * FROM `book` WHERE (`id` = ?)
 });
+
+if($driverName === 'mysql') {
+	test(function() use ($context) {
+		$context->table('book')->where(':book_tag.tag.name = ?', 'PHP')->delete(); // DELETE FROM `book` LEFT JOIN `book_tag` ON `book`.`id` = `book_tag`.`book_id` LEFT JOIN `tag` ON `tag`.`id` = `book_tag`.`tag_id` WHERE `tag`.`name` = ?
+		foreach($context->table('book') as $book) {
+			foreach($book->related('book_tag') as $bookTag) {
+				Assert::notEqual('PHP', $bookTag->ref('tag')->name);
+			}
+		}
+	});
+}

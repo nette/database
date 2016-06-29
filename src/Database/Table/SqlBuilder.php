@@ -123,6 +123,17 @@ class SqlBuilder
 		if ($this->limit !== NULL || $this->offset) {
 			throw new Nette\NotSupportedException('LIMIT clause is not supported in UPDATE query.');
 		}
+		if($this->driver instanceof Nette\Database\Drivers\MySqlDriver) {
+			$queryJoinConditions = $this->buildJoinConditions();
+			$queryCondition = $this->buildConditions();
+			$queryEnd = $this->buildQueryEnd();
+			$joins = [];
+			$finalJoinConditions = $this->parseJoinConditions($joins, $queryJoinConditions);
+			$this->parseJoins($joins, $queryCondition);
+			$this->parseJoins($joins, $queryEnd);
+			$queryJoins = $this->buildQueryJoins($joins, $finalJoinConditions);
+			return "UPDATE {$this->delimitedTable} {$queryJoins} SET ?set {$queryCondition}";
+		}
 		return "UPDATE {$this->delimitedTable} SET ?set" . $this->tryDelimite($this->buildConditions());
 	}
 
@@ -131,6 +142,17 @@ class SqlBuilder
 	{
 		if ($this->limit !== NULL || $this->offset) {
 			throw new Nette\NotSupportedException('LIMIT clause is not supported in DELETE query.');
+		}
+		if($this->driver instanceof Nette\Database\Drivers\MySqlDriver) {
+			$queryJoinConditions = $this->buildJoinConditions();
+			$queryCondition = $this->buildConditions();
+			$queryEnd = $this->buildQueryEnd();
+			$joins = [];
+			$finalJoinConditions = $this->parseJoinConditions($joins, $queryJoinConditions);
+			$this->parseJoins($joins, $queryCondition);
+			$this->parseJoins($joins, $queryEnd);
+			$queryJoins = $this->buildQueryJoins($joins, $finalJoinConditions);
+			return "DELETE " . ($queryJoins ? $this->delimitedTable : '') . " FROM {$this->delimitedTable} {$queryJoins} {$queryCondition}";
 		}
 		return "DELETE FROM {$this->delimitedTable}" . $this->tryDelimite($this->buildConditions());
 	}

@@ -416,13 +416,15 @@ class SqlBuilder
 		if (isset($chain[0]) && $chain[0] !== '.' && $chain[0] !== ':') {
 			$chain = '.' . $chain; // unified chain format
 		}
-		$this->checkUniqueTableName($alias, ltrim($chain, '.'));
+		$this->checkUniqueTableName($alias, $chain);
 		$this->aliases[$alias] = $chain;
 	}
 
 
 	protected function checkUniqueTableName($tableName, $chain)
 	{
+	    $chain = ltrim($chain, '.');
+
 		if (isset($this->aliases[$tableName]) && ($tableName === $chain)) {
 			$chain = $this->aliases[$tableName];
 		}

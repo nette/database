@@ -423,7 +423,7 @@ class SqlBuilder
 
 	protected function checkUniqueTableName($tableName, $chain)
 	{
-	    $chain = ltrim($chain, '.');
+		$chain = ltrim($chain, '.');
 
 		if (isset($this->aliases[$tableName]) && ($tableName === $chain)) {
 			$chain = $this->aliases[$tableName];
@@ -571,15 +571,15 @@ class SqlBuilder
 			}
 			$finalJoins += $tableJoins[$table];
 
-            if (array_key_exists($table, $this->aliases)) {
-                $this->parameters['joinConditionSorted'] += isset($this->parameters['joinCondition'][$table])
-                    ? [$table => $this->parameters['joinCondition'][$table]]
-                    : [];
-            } else {
-                $this->parameters['joinConditionSorted'] += isset($this->parameters['joinCondition'][$this->reservedTableNames[$table]])
-                    ? [$table => $this->parameters['joinCondition'][$this->reservedTableNames[$table]]]
-                    : [];
-            }
+			if (array_key_exists($table, $this->aliases)) {
+				$this->parameters['joinConditionSorted'] += isset($this->parameters['joinCondition'][$table])
+					? [$table => $this->parameters['joinCondition'][$table]]
+					: [];
+			} else {
+				$this->parameters['joinConditionSorted'] += isset($this->parameters['joinCondition'][$this->reservedTableNames[$table]])
+					? [$table => $this->parameters['joinCondition'][$this->reservedTableNames[$table]]]
+					: [];
+			}
 
 			unset($tableJoins[$table]);
 			unset($this->expandingJoins[$table]);

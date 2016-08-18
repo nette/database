@@ -120,19 +120,23 @@ class SqlBuilder
 
 	public function buildUpdateQuery()
 	{
+		$query = "UPDATE {$this->delimitedTable} SET ?set" . $this->tryDelimite($this->buildConditions());
 		if ($this->limit !== NULL || $this->offset) {
-			throw new Nette\NotSupportedException('LIMIT clause is not supported in UPDATE query.');
+			$this->driver->applyLimit($query, $this->limit, $this->offset);
 		}
-		return "UPDATE {$this->delimitedTable} SET ?set" . $this->tryDelimite($this->buildConditions());
+
+		return $query;
 	}
 
 
 	public function buildDeleteQuery()
 	{
+		$query = "DELETE FROM {$this->delimitedTable}" . $this->tryDelimite($this->buildConditions());
 		if ($this->limit !== NULL || $this->offset) {
-			throw new Nette\NotSupportedException('LIMIT clause is not supported in DELETE query.');
+			$this->driver->applyLimit($query, $this->limit, $this->offset);
 		}
-		return "DELETE FROM {$this->delimitedTable}" . $this->tryDelimite($this->buildConditions());
+
+		return $query;
 	}
 
 

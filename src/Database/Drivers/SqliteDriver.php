@@ -277,7 +277,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 		for ($col = 0; $col < $count; $col++) {
 			$meta = $statement->getColumnMeta($col);
 			if (isset($meta['sqlite:decl_type'])) {
-				if ($meta['sqlite:decl_type'] === 'DATE') {
+				if (in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], TRUE)) {
 					$types[$meta['name']] = Nette\Database\IStructure::FIELD_UNIX_TIMESTAMP;
 				} else {
 					$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['sqlite:decl_type']);

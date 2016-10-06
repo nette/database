@@ -211,7 +211,7 @@ class GroupedSelection extends Selection
 	/********************* manipulation ****************d*g**/
 
 
-	public function insert($data)
+	public function insert($data, $returnRow = TRUE)
 	{
 		if ($data instanceof \Traversable && !$data instanceof Selection) {
 			$data = iterator_to_array($data);

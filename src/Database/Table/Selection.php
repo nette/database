@@ -38,7 +38,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/** @var string|array|NULL primary key field name */
 	protected $primary;
 
-	/** @var string|bool primary column sequence name, FALSE for autodetection */
+	/** @var array|bool|NULL primary column sequence name, FALSE for autodetection */
 	protected $primarySequence = FALSE;
 
 	/** @var IRow[] data read from database in [primary key => IRow] format */
@@ -133,7 +133,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * @return string
+	 * @return array|NULL
 	 */
 	public function getPrimarySequence()
 	{
@@ -146,10 +146,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * @param  string
+	 * @param  array
 	 * @return self
 	 */
-	public function setPrimarySequence($sequence)
+	public function setPrimarySequence(array $sequence)
 	{
 		$this->primarySequence = $sequence;
 		return $this;
@@ -795,9 +795,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Inserts row in a table.
 	 * @param  array|\Traversable|Selection array($column => $value)|\Traversable|Selection for INSERT ... SELECT
-	 * @return IRow|int|bool Returns IRow or number of affected rows for Selection or table without primary key
+	 * @param  bool
+	 * @return IRow|int|bool Returns IRow or number of affected rows for Selection, multi insert or table without primary key
 	 */
-	public function insert($data)
+	public function insert($data, $returnRow = TRUE)
 	{
 		if ($data instanceof self) {
 			$return = $this->context->queryArgs($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), $data->getSqlBuilder()->getParameters());
@@ -811,34 +812,32 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 		$this->loadRefCache();
 
-		if ($data instanceof self || $this->primary === NULL) {
+		if ($data instanceof self || $this->primary === NULL || Nette\Utils\Arrays::isList($data) || !$returnRow) {
 			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
 			return $return->getRowCount();
 		}
 
-		$primaryKey = $this->context->getInsertId(
-			($tmp = $this->getPrimarySequence())
-				? implode('.', array_map([$this->context->getConnection()->getSupplementalDriver(), 'delimite'], explode('.', $tmp)))
-				: NULL
-		);
-		if ($primaryKey === FALSE) {
-			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
-			return $return->getRowCount();
-		}
-
-		if (is_array($this->getPrimary())) {
-			$primaryKey = [];
-
-			foreach ((array) $this->getPrimary() as $key) {
-				if (!isset($data[$key])) {
-					return $data;
-				}
-
+		$primaryKey = [];
+		foreach ((array) $this->getPrimary() as $key) {
+			if (isset($data[$key])) {
 				$primaryKey[$key] = $data[$key];
 			}
-			if (count($primaryKey) === 1) {
-				$primaryKey = reset($primaryKey);
+		}
+
+		if ($sequenceColumn = $this->getPrimarySequence()) {
+			$primaryKey[$sequenceColumn['name']] = $this->context->getInsertId(
+				($sequenceColumn['sequence'])
+					? implode('.', array_map([$this->context->getConnection()->getSupplementalDriver(), 'delimite'], explode('.', $sequenceColumn['sequence'])))
+					: NULL
+			);
+			if ($primaryKey[$sequenceColumn['name']] === FALSE) {
+				unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
+				return $return->getRowCount();
 			}
+		}
+
+		if (count($primaryKey) === 1) {
+			$primaryKey = reset($primaryKey);
 		}
 
 		$row = $this->createSelectionInstance()

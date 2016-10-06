@@ -71,18 +71,21 @@ class Structure implements IStructure
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
 
-		if (!$this->connection->getSupplementalDriver()->isSupported(ISupplementalDriver::SUPPORT_SEQUENCE)) {
-			return NULL;
-		}
-
 		$primary = $this->getPrimaryKey($table);
-		if (!$primary || is_array($primary)) {
+		if (!$primary) {
 			return NULL;
 		}
 
-		foreach ($this->structure['columns'][$table] as $columnMeta) {
-			if ($columnMeta['name'] === $primary) {
-				return isset($columnMeta['vendor']['sequence']) ? $columnMeta['vendor']['sequence'] : NULL;
+		$isSupported = $this->connection->getSupplementalDriver()->isSupported(ISupplementalDriver::SUPPORT_SEQUENCE);
+
+		foreach ((array) $primary as $key) {
+			foreach ($this->structure['columns'][$table] as $columnMeta) {
+				if ($columnMeta['name'] === $key && $columnMeta['autoincrement']) {
+					return [
+						'name' => $key,
+						'sequence' => ($isSupported && isset($columnMeta['vendor']['sequence'])) ? $columnMeta['vendor']['sequence'] : NULL
+					];
+				}
 			}
 		}
 

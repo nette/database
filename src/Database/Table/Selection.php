@@ -768,7 +768,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 				? implode('.', array_map(array($this->context->getConnection()->getSupplementalDriver(), 'delimite'), explode('.', $tmp)))
 				: NULL
 		);
-		if ($primaryKey === FALSE) {
+		if (!$primaryKey) {
 			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
 			return $return->getRowCount();
 		}

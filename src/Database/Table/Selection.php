@@ -821,7 +821,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 				? implode('.', array_map([$this->context->getConnection()->getSupplementalDriver(), 'delimite'], explode('.', $tmp)))
 				: NULL
 		);
-		if ($primaryKey === FALSE || $primaryKey === "0") {
+		if ($primaryKey === FALSE || $primaryKey === '0') {
 			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
 			return $return->getRowCount();
 		}

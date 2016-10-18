@@ -133,7 +133,7 @@ class SqlPreprocessor extends Nette\Object
 				return 'NULL';
 
 			} elseif ($value instanceof Table\IRow) {
-				return $value->getPrimary();
+				return $this->formatValue($value->getPrimary());
 
 			} elseif ($value instanceof SqlLiteral) {
 				$prep = clone $this;

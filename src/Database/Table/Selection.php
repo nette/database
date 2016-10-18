@@ -821,12 +821,12 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 				? implode('.', array_map([$this->context->getConnection()->getSupplementalDriver(), 'delimite'], explode('.', $tmp)))
 				: NULL
 		);
-		if ($primaryKey === FALSE) {
+		if ($primaryKey === FALSE || $primaryKey === '0') {
 			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
 			return $return->getRowCount();
 		}
 
-		if (!$primaryKey && is_array($this->getPrimary())) {
+		if (is_array($this->getPrimary())) {
 			$primaryKey = [];
 
 			foreach ((array) $this->getPrimary() as $key) {
@@ -839,13 +839,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			if (count($primaryKey) === 1) {
 				$primaryKey = reset($primaryKey);
 			}
-		} elseif (!$primaryKey && is_string($this->getPrimary())) {
-            $key = $this->getPrimary();
-            if (!isset($data[$key])) {
-                return $data;
-            }
-            $primaryKey = $data[$key];
-        }
+		}
 
 		$row = $this->createSelectionInstance()
 			->select('*')

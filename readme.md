@@ -25,7 +25,7 @@ All connections are created as "lazy" by default. This means the connection is e
 Queries
 --------
 
-The core functionality is provided by `Nette\Database\Context`. Database\Context allows you to easily query your database by calling `query` method:
+The core functionality is provided by `Nette\Database\Connection`. Connection allows you to easily query your database by calling `query` method:
 
 ```php
 $database = new Nette\Database\Context($connection);

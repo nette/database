@@ -24,7 +24,7 @@ before_script:
     # Install Nette Tester & Code Checker
     - travis_retry composer update --no-interaction --prefer-dist $dependencies
     - travis_retry composer create-project nette/code-checker temp/code-checker ~2.5 --no-interaction
-    - if [ $TRAVIS_PHP_VERSION == "7.0" ]; then coverage="-p phpdbg --coverage ./coverage.xml --coverage-src ./src"; fi
+#    - if [ $TRAVIS_PHP_VERSION == "7.0" ]; then coverage="-p phpdbg --coverage ./coverage.xml --coverage-src ./src"; fi
 
     # Create databases.ini
     - cp ./tests/databases.travis.ini ./tests/Database/databases.ini

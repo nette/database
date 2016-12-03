@@ -112,7 +112,8 @@ class MySqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	 */
 	public function formatLike($value, $pos)
 	{
-		$value = addcslashes(str_replace('\\', '\\\\', $value), "\x00\n\r\\'%_");
+		$value = str_replace('\\', '\\\\', $value);
+		$value = addcslashes(substr($this->connection->quote($value), 1, -1), '%_');
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 

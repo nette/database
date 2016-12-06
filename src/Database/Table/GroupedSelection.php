@@ -173,6 +173,14 @@ class GroupedSelection extends Selection
 	}
 
 
+	protected function emptyResultSet($saveCache = TRUE)
+	{
+		parent::emptyResultSet($saveCache);
+
+		$this->refCacheCurrent['data'] = NULL;
+	}
+
+
 	protected function getRefTable(& $refPath)
 	{
 		$refObj = $this->refTable;

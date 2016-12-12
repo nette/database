@@ -166,7 +166,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 
 	/**
 	 * @param  string
-	 * @return self
+	 * @return static
 	 */
 	public function setPrimarySequence($sequence)
 	{
@@ -293,7 +293,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	/**
 	 * Adds select clause, more calls appends to the end.
 	 * @param  string for example "column, MD5(column) AS column_md5"
-	 * @return self
+	 * @return static
 	 */
 	public function select($columns)
 	{
@@ -306,7 +306,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	/**
 	 * Adds condition for primary key.
 	 * @param  mixed
-	 * @return self
+	 * @return static
 	 */
 	public function wherePrimary($key)
 	{
@@ -333,7 +333,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * @param  string condition possibly containing ?
 	 * @param  mixed
 	 * @param  mixed ...
-	 * @return self
+	 * @return static
 	 */
 	public function where($condition, $parameters = array())
 	{
@@ -357,7 +357,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	/**
 	 * Adds order clause, more calls appends to the end.
 	 * @param  string for example 'column1, column2 DESC'
-	 * @return self
+	 * @return static
 	 */
 	public function order($columns)
 	{
@@ -371,7 +371,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * Sets limit clause, more calls rewrite old values.
 	 * @param  int
 	 * @param  int
-	 * @return self
+	 * @return static
 	 */
 	public function limit($limit, $offset = NULL)
 	{
@@ -385,7 +385,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	 * Sets offset using page number, more calls rewrite old values.
 	 * @param  int
 	 * @param  int
-	 * @return self
+	 * @return static
 	 */
 	public function page($page, $itemsPerPage, & $numOfPages = NULL)
 	{
@@ -399,7 +399,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	/**
 	 * Sets group clause, more calls rewrite old value.
 	 * @param  string
-	 * @return self
+	 * @return static
 	 */
 	public function group($columns)
 	{
@@ -412,7 +412,7 @@ class Selection extends Nette\Object implements \Iterator, IRowContainer, \Array
 	/**
 	 * Sets having clause, more calls rewrite old value.
 	 * @param  string
-	 * @return self
+	 * @return static
 	 */
 	public function having($having)
 	{

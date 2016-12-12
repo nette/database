@@ -52,7 +52,7 @@ class GroupedSelection extends Selection
 	 * Sets active group.
 	 * @internal
 	 * @param  int  primary key of grouped rows
-	 * @return self
+	 * @return static
 	 */
 	public function setActive($active)
 	{

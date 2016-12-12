@@ -147,7 +147,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * @param  string
-	 * @return self
+	 * @return static
 	 */
 	public function setPrimarySequence($sequence)
 	{
@@ -274,7 +274,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Adds select clause, more calls appends to the end.
 	 * @param  string for example "column, MD5(column) AS column_md5"
-	 * @return self
+	 * @return static
 	 */
 	public function select($columns, ...$params)
 	{
@@ -287,7 +287,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Adds condition for primary key.
 	 * @param  mixed
-	 * @return self
+	 * @return static
 	 */
 	public function wherePrimary($key)
 	{
@@ -313,7 +313,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Adds where condition, more calls appends with AND.
 	 * @param  string condition possibly containing ?
 	 * @param  mixed
-	 * @return self
+	 * @return static
 	 */
 	public function where($condition, ...$params)
 	{
@@ -327,7 +327,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * @param  string table chain or table alias for which you need additional left join condition
 	 * @param  string condition possibly containing ?
 	 * @param  mixed
-	 * @return self
+	 * @return static
 	 */
 	public function joinWhere($tableChain, $condition, ...$params)
 	{
@@ -364,7 +364,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Adds where condition using the OR operator between parameters.
 	 * More calls appends with AND.
 	 * @param  array ['column1' => 1, 'column2 > ?' => 2, 'full condition']
-	 * @return self
+	 * @return static
 	 * @throws \Nette\InvalidArgumentException
 	 */
 	public function whereOr(array $parameters)
@@ -397,7 +397,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Adds order clause, more calls appends to the end.
 	 * @param  string for example 'column1, column2 DESC'
-	 * @return self
+	 * @return static
 	 */
 	public function order($columns, ...$params)
 	{
@@ -411,7 +411,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Sets limit clause, more calls rewrite old values.
 	 * @param  int
 	 * @param  int
-	 * @return self
+	 * @return static
 	 */
 	public function limit($limit, $offset = NULL)
 	{
@@ -425,7 +425,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Sets offset using page number, more calls rewrite old values.
 	 * @param  int
 	 * @param  int
-	 * @return self
+	 * @return static
 	 */
 	public function page($page, $itemsPerPage, & $numOfPages = NULL)
 	{
@@ -442,7 +442,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Sets group clause, more calls rewrite old value.
 	 * @param  string
-	 * @return self
+	 * @return static
 	 */
 	public function group($columns, ...$params)
 	{
@@ -455,7 +455,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Sets having clause, more calls rewrite old value.
 	 * @param  string
-	 * @return self
+	 * @return static
 	 */
 	public function having($having, ...$params)
 	{
@@ -469,7 +469,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Aliases table. Example ':book:book_tag.tag', 'tg'
 	 * @param  string
 	 * @param  string
-	 * @return self
+	 * @return static
 	 */
 	public function alias($tableChain, $alias)
 	{
@@ -656,7 +656,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns Selection parent for caching.
-	 * @return self
+	 * @return static
 	 */
 	protected function getRefTable(& $refPath)
 	{

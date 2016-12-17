@@ -67,15 +67,6 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 
 
 	/**
-	 * Formats boolean for use in a SQL statement.
-	 */
-	public function formatBool(bool $value): string
-	{
-		return $value ? 'TRUE' : 'FALSE';
-	}
-
-
-	/**
 	 * Formats date-time for use in a SQL statement.
 	 */
 	public function formatDateTime(\DateTimeInterface $value): string

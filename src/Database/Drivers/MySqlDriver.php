@@ -81,15 +81,6 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 
 
 	/**
-	 * Formats boolean for use in a SQL statement.
-	 */
-	public function formatBool(bool $value): string
-	{
-		return $value ? '1' : '0';
-	}
-
-
-	/**
 	 * Formats date-time for use in a SQL statement.
 	 */
 	public function formatDateTime(\DateTimeInterface $value): string

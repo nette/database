@@ -572,8 +572,9 @@ class SqlBuilder
 				}
 			}
 			$finalJoins += $tableJoins[$table];
-			$this->parameters['joinConditionSorted'] += isset($this->parameters['joinCondition'][$this->reservedTableNames[$table]])
-				? [$table => $this->parameters['joinCondition'][$this->reservedTableNames[$table]]]
+			$key = isset($this->aliases[$table]) ? $table : $this->reservedTableNames[$table];
+			$this->parameters['joinConditionSorted'] += isset($this->parameters['joinCondition'][$key])
+				? [$table => $this->parameters['joinCondition'][$key]]
 				: [];
 			unset($tableJoins[$table]);
 			unset($this->expandingJoins[$table]);

@@ -189,7 +189,7 @@ test(function () use ($context) { // Test saving the union of needed cols, the s
 
 test(function () use ($context) { // Test multiple use of same selection
 	$sql = [];
-	$context->getConnection()->onQuery[] = function($_, $result) use (& $sql) {
+	$context->getConnection()->onQuery[] = function($_, $result) use (&$sql) {
 		$sql[] = $result->getQueryString();
 	};
 

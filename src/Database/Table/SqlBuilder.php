@@ -289,7 +289,7 @@ class SqlBuilder
 	}
 
 
-	protected function addCondition($condition, array $params, array & $conditions, array & $conditionsParameters)
+	protected function addCondition($condition, array $params, array &$conditions, array &$conditionsParameters)
 	{
 		if (is_array($condition) && !empty($params[0]) && is_array($params[0])) {
 			return $this->addConditionComposition($condition, $params[0], $conditions, $conditionsParameters);
@@ -514,17 +514,17 @@ class SqlBuilder
 	}
 
 
-	protected function parseJoinConditions(& $joins, $joinConditions)
+	protected function parseJoinConditions(&$joins, $joinConditions)
 	{
 		$tableJoins = $leftJoinDependency = $finalJoinConditions = [];
-		foreach ($joinConditions as $tableChain => & $joinCondition) {
+		foreach ($joinConditions as $tableChain => &$joinCondition) {
 			$fooQuery = $tableChain . '.foo';
 			$requiredJoins = [];
 			$this->parseJoins($requiredJoins, $fooQuery);
 			$tableAlias = substr($fooQuery, 0, -4);
 			$tableJoins[$tableAlias] = $requiredJoins;
 			$leftJoinDependency[$tableAlias] = [];
-			$finalJoinConditions[$tableAlias] = preg_replace_callback($this->getColumnChainsRegxp(), function ($match) use ($tableAlias, & $tableJoins, & $leftJoinDependency) {
+			$finalJoinConditions[$tableAlias] = preg_replace_callback($this->getColumnChainsRegxp(), function ($match) use ($tableAlias, &$tableJoins, &$leftJoinDependency) {
 				$requiredJoins = [];
 				$query = $this->parseJoinsCb($requiredJoins, $match);
 				$queryParts = explode('.', $query);
@@ -547,7 +547,7 @@ class SqlBuilder
 	}
 
 
-	protected function getSortedJoins($table, & $leftJoinDependency, & $tableJoins, & $finalJoins)
+	protected function getSortedJoins($table, &$leftJoinDependency, &$tableJoins, &$finalJoins)
 	{
 		if (isset($this->expandingJoins[$table])) {
 			$path = implode("' => '", array_map(function($value) { return $this->reservedTableNames[$value]; }, array_merge(array_keys($this->expandingJoins), [$table])));
@@ -582,9 +582,9 @@ class SqlBuilder
 	}
 
 
-	protected function parseJoins(& $joins, & $query)
+	protected function parseJoins(&$joins, &$query)
 	{
-		$query = preg_replace_callback($this->getColumnChainsRegxp(), function ($match) use (& $joins) {
+		$query = preg_replace_callback($this->getColumnChainsRegxp(), function ($match) use (&$joins) {
 			return $this->parseJoinsCb($joins, $match);
 		}, $query);
 	}
@@ -603,7 +603,7 @@ class SqlBuilder
 	}
 
 
-	public function parseJoinsCb(& $joins, $match)
+	public function parseJoinsCb(&$joins, $match)
 	{
 		$chain = $match['chain'];
 		if (!empty($chain[0]) && ($chain[0] !== '.' && $chain[0] !== ':')) {
@@ -762,7 +762,7 @@ class SqlBuilder
 	}
 
 
-	protected function addConditionComposition(array $columns, array $parameters, array & $conditions, array & $conditionsParameters)
+	protected function addConditionComposition(array $columns, array $parameters, array &$conditions, array &$conditionsParameters)
 	{
 		if ($this->driver->isSupported(ISupplementalDriver::SUPPORT_MULTI_COLUMN_AS_OR_COND)) {
 			$conditionFragment = '(' . implode(' = ? AND ', $columns) . ' = ?) OR ';
@@ -776,7 +776,7 @@ class SqlBuilder
 
 	private function getConditionHash($condition, $parameters)
 	{
-		foreach ($parameters as $key => & $parameter) {
+		foreach ($parameters as $key => &$parameter) {
 			if ($parameter instanceof Selection) {
 				$parameter = $this->getConditionHash($parameter->getSql(), $parameter->getSqlBuilder()->getParameters());
 			} elseif ($parameter instanceof SqlLiteral) {

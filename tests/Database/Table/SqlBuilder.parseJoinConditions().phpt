@@ -15,7 +15,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 class SqlBuilderMock extends SqlBuilder
 {
-	public function parseJoinConditions(& $joins, $joinConditions)
+	public function parseJoinConditions(&$joins, $joinConditions)
 	{
 		return parent::parseJoinConditions($joins, $joinConditions);
 	}
@@ -23,7 +23,7 @@ class SqlBuilderMock extends SqlBuilder
 	{
 		return parent::buildJoinConditions();
 	}
-	public function parseJoins(& $joins, & $query)
+	public function parseJoins(&$joins, &$query)
 	{
 		parent::parseJoins($joins, $query);
 	}

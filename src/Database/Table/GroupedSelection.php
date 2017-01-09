@@ -87,7 +87,7 @@ class GroupedSelection extends Selection
 
 	public function aggregation($function)
 	{
-		$aggregation = & $this->getRefTable($refPath)->aggregation[$refPath . $function . $this->sqlBuilder->getSelectQueryHash($this->getPreviousAccessedColumns())];
+		$aggregation = &$this->getRefTable($refPath)->aggregation[$refPath . $function . $this->sqlBuilder->getSelectQueryHash($this->getPreviousAccessedColumns())];
 
 		if ($aggregation === NULL) {
 			$aggregation = [];
@@ -146,8 +146,8 @@ class GroupedSelection extends Selection
 			$offset = [];
 			$this->accessColumn($this->column);
 			foreach ((array) $this->rows as $key => $row) {
-				$ref = & $data[$row[$this->column]];
-				$skip = & $offset[$row[$this->column]];
+				$ref = &$data[$row[$this->column]];
+				$skip = &$offset[$row[$this->column]];
 				if ($limit === NULL || $rows <= 1 || (count($ref) < $limit && $skip >= $this->sqlBuilder->getOffset())) {
 					$ref[$key] = $row;
 				} else {
@@ -158,7 +158,7 @@ class GroupedSelection extends Selection
 			}
 
 			$this->refCacheCurrent['data'] = $data;
-			$this->data = & $this->refCacheCurrent['data'][$this->active];
+			$this->data = &$this->refCacheCurrent['data'][$this->active];
 		}
 
 		$this->observeCache = $this;
@@ -173,7 +173,7 @@ class GroupedSelection extends Selection
 	}
 
 
-	protected function getRefTable(& $refPath)
+	protected function getRefTable(&$refPath)
 	{
 		$refObj = $this->refTable;
 		$refPath = $this->name . '.';
@@ -189,15 +189,15 @@ class GroupedSelection extends Selection
 	protected function loadRefCache()
 	{
 		$hash = $this->getSpecificCacheKey();
-		$referencing = & $this->refCache['referencing'][$this->getGeneralCacheKey()];
-		$this->observeCache = & $referencing['observeCache'];
-		$this->refCacheCurrent = & $referencing[$hash];
-		$this->accessedColumns = & $referencing[$hash]['accessed'];
-		$this->specificCacheKey = & $referencing[$hash]['specificCacheKey'];
-		$this->rows = & $referencing[$hash]['rows'];
+		$referencing = &$this->refCache['referencing'][$this->getGeneralCacheKey()];
+		$this->observeCache = &$referencing['observeCache'];
+		$this->refCacheCurrent = &$referencing[$hash];
+		$this->accessedColumns = &$referencing[$hash]['accessed'];
+		$this->specificCacheKey = &$referencing[$hash]['specificCacheKey'];
+		$this->rows = &$referencing[$hash]['rows'];
 
 		if (isset($referencing[$hash]['data'][$this->active])) {
-			$this->data = & $referencing[$hash]['data'][$this->active];
+			$this->data = &$referencing[$hash]['data'][$this->active];
 		}
 	}
 

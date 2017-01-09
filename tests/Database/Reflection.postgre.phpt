@@ -31,7 +31,7 @@ Nette\Database\Helpers::loadFromFile($connection, Tester\FileMock::create('
 $driver = $connection->getSupplementalDriver();
 
 function filter($columns) {
-	array_walk($columns, function (& $item) { $item = $item['name']; });
+	array_walk($columns, function (&$item) { $item = $item['name']; });
 	sort($columns);
 	return $columns;
 }

@@ -15,7 +15,7 @@ if ($driverName === 'sqlsrv' && $connection->getPdo()->getAttribute(PDO::ATTR_SE
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
-//public function page($page, $itemsPerPage, & $numOfPages = NULL)
+//public function page($page, $itemsPerPage, &$numOfPages = NULL)
 
 test(function () use ($context) { //first page, one item per page
 	$numberOfPages = 0;

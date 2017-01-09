@@ -185,7 +185,7 @@ class Structure implements IStructure
 		}
 
 		if (isset($structure['hasMany'])) {
-			foreach ($structure['hasMany'] as & $table) {
+			foreach ($structure['hasMany'] as &$table) {
 				uksort($table, function ($a, $b) {
 					return strlen($a) - strlen($b);
 				});
@@ -217,7 +217,7 @@ class Structure implements IStructure
 	}
 
 
-	protected function analyzeForeignKeys(& $structure, $table)
+	protected function analyzeForeignKeys(&$structure, $table)
 	{
 		$lowerTable = strtolower($table);
 		foreach ($this->connection->getSupplementalDriver()->getForeignKeys($table) as $row) {

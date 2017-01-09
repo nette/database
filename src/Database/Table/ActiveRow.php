@@ -161,7 +161,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Updates row.
-	 * @param  array|\Traversable (column => value)
+	 * @param  iterable (column => value)
 	 * @return bool
 	 */
 	public function update($data)

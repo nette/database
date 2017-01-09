@@ -863,7 +863,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Updates all rows in result set.
 	 * Joins in UPDATE are supported only in MySQL
-	 * @param  array|\Traversable ($column => $value)
+	 * @param  iterable ($column => $value)
 	 * @return int number of affected rows
 	 */
 	public function update($data)

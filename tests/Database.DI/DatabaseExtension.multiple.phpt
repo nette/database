@@ -4,6 +4,8 @@
  * Test: DatabaseExtension.
  */
 
+declare(strict_types=1);
+
 use Nette\DI;
 use Nette\Bridges\DatabaseDI\DatabaseExtension;
 use Tester\Assert;

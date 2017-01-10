@@ -5,6 +5,8 @@
  * @dataProvider? databases.ini  sqlite
  */
 
+declare(strict_types=1);
+
 use Tester\Assert;
 use Nette\Utils\DateTime;
 

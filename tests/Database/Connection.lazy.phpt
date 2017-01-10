@@ -5,6 +5,8 @@
  * @dataProvider? databases.ini
  */
 
+declare(strict_types=1);
+
 use Nette\Caching\Storages\DevNullStorage;
 use Nette\Database\Structure;
 use Tester\Assert;

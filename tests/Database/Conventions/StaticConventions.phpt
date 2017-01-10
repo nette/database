@@ -4,6 +4,8 @@
  * Test: Nette\Database\Conventions\StaticConventions.
  */
 
+declare(strict_types=1);
+
 use Nette\Database\Conventions\StaticConventions;
 use Tester\Assert;
 

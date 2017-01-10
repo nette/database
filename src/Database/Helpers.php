@@ -108,31 +108,36 @@ class Helpers
 		}, $sql);
 
 		// parameters
-		$sql = preg_replace_callback('#\?#', function () use ($params, $connection) {
-			static $i = 0;
-			if (!isset($params[$i])) {
+		$sql = preg_replace_callback('#\?|\s?(?<meta>&lt;&gt;|&lt;|&gt;|=)\s?(?<param>\:[^\s\)]+)#', function ($matches) use ($params, $connection) {
+			static $i = 0;$meta = null;
+			if (isset($matches['param']) && isset($params[$matches['param']])) {
+				$param = $params[$matches['param']];
+				$meta  = ' ' . $matches['meta'] . ' ';
+			} elseif (isset($params[$i])) {
+				$param = $params[$i++];
+			} else {
 				return '?';
 			}
-			$param = $params[$i++];
+
 			if (is_string($param) && (preg_match('#[^\x09\x0A\x0D\x20-\x7E\xA0-\x{10FFFF}]#u', $param) || preg_last_error())) {
-				return '<i title="Length ' . strlen($param) . ' bytes">&lt;binary&gt;</i>';
+				return $meta . '<i title="Length ' . strlen($param) . ' bytes">&lt;binary&gt;</i>';
 
 			} elseif (is_string($param)) {
 				$length = Nette\Utils\Strings::length($param);
 				$truncated = Nette\Utils\Strings::truncate($param, self::$maxLength);
 				$text = htmlspecialchars($connection ? $connection->quote($truncated) : '\'' . $truncated . '\'', ENT_NOQUOTES, 'UTF-8');
-				return '<span title="Length ' . $length . ' characters">' . $text . '</span>';
+				return $meta . '<span title="Length ' . $length . ' characters">' . $text . '</span>';
 
 			} elseif (is_resource($param)) {
 				$type = get_resource_type($param);
 				if ($type === 'stream') {
 					$info = stream_get_meta_data($param);
 				}
-				return '<i' . (isset($info['uri']) ? ' title="' . htmlspecialchars($info['uri'], ENT_NOQUOTES, 'UTF-8') . '"' : NULL)
+				return $meta . '<i' . (isset($info['uri']) ? ' title="' . htmlspecialchars($info['uri'], ENT_NOQUOTES, 'UTF-8') . '"' : NULL)
 					. '>&lt;' . htmlSpecialChars($type, ENT_NOQUOTES, 'UTF-8') . ' resource&gt;</i> ';
 
 			} else {
-				return htmlspecialchars($param, ENT_NOQUOTES, 'UTF-8');
+				return $meta . htmlspecialchars($param, ENT_NOQUOTES, 'UTF-8');
 			}
 		}, $sql);
 

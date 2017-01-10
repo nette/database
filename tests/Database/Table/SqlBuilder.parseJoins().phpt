@@ -5,6 +5,8 @@
  * @dataProvider? ../databases.ini
  */
 
+declare(strict_types=1);
+
 use Nette\Database\ISupplementalDriver;
 use Tester\Assert;
 use Nette\Database\Conventions\DiscoveredConventions;

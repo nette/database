@@ -4,6 +4,8 @@
  * Test: Nette\Database\Structure
  */
 
+declare(strict_types=1);
+
 use Mockery\MockInterface;
 use Nette\Database\Structure;
 use Tester\Assert;

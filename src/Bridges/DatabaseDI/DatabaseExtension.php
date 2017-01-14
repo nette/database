@@ -102,8 +102,8 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				->setAutowired($config['autowired']);
 
 		} else {
-			$tmp = Nette\DI\Compiler::filterArguments([$config['conventions']]);
-			$conventions = reset($tmp);
+			$class = method_exists(Nette\DI\Helpers::class, 'filterArguments') ? Nette\DI\Helpers::class : Nette\DI\Compiler::class;
+			$conventions = $class::filterArguments([$config['conventions']])[0];
 		}
 
 		$builder->addDefinition($this->prefix("$name.context"))

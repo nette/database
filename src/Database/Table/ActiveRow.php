@@ -56,9 +56,6 @@ class ActiveRow implements \IteratorAggregate, IRow
 		try {
 			return (string) $this->getPrimary();
 		} catch (\Throwable $e) {
-		} catch (\Exception $e) {
-		}
-		if (isset($e)) {
 			if (func_num_args()) {
 				throw $e;
 			}

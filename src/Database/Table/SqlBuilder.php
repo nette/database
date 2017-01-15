@@ -685,7 +685,8 @@ class SqlBuilder
 					throw new Nette\InvalidArgumentException("No reference found for \${$parent}->{$keyMatch['key']}.");
 				}
 				list($table, $column) = $belongsTo;
-				$primary = $this->conventions->getPrimary($table);
+				$foreign = $this->conventions->getForeign($parent, $column);					//check for foreign key instead primary key in referenced table
+				$primary = $foreign == NULL ? $this->conventions->getPrimary($table) : $foreign;
 			}
 
 			if ($this->currentAlias && $isLast) {

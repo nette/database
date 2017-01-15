@@ -32,6 +32,11 @@ class DiscoveredConventions implements IConventions
 	{
 		return $this->structure->getPrimaryKey($table);
 	}
+	
+	public function getForeign($table, $key)
+	{
+		return $this->structure->getForeignKey($table, $key);
+	}
 
 
 	public function getHasManyReference($nsTable, $key)
@@ -88,7 +93,7 @@ class DiscoveredConventions implements IConventions
 		$tableColumns = $this->structure->getBelongsToReference($table);
 
 		foreach ($tableColumns as $column => $targetTable) {
-			if (stripos($column, $key) !== FALSE) {
+			if (stripos($column, $key) !== FALSE || stripos($targetTable, $key) !== FALSE) {	//also check if any reference exists
 				return [$targetTable, $column];
 			}
 		}

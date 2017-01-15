@@ -940,13 +940,19 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 			if ($cacheKeys) {
 				$selection = $this->createSelectionInstance($table);
-				$selection->where($selection->getPrimary(), array_keys($cacheKeys));
+				
+				//search for foreign key column name which is referenced from activeRow parent table to table from which is selection made
+				$foreign = $this->conventions->getForeign($row->getTable()->getName(), $column);
+				$primary = $foreign == NULL ? $selection->getPrimary() : $foreign;
+
+				$selection->where($primary, array_keys($cacheKeys));
 			} else {
-				$selection = [];
+				$selection = NULL;
 			}
 		}
-
-		return isset($selection[$checkPrimaryKey]) ? $selection[$checkPrimaryKey] : NULL;
+			
+		return $selection;
+		//return isset($selection[$checkPrimaryKey]) ? $selection[$checkPrimaryKey] : NULL;
 	}
 
 

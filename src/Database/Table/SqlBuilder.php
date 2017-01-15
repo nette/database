@@ -722,7 +722,7 @@ class SqlBuilder
 					$this->parseJoins($requiredJoins, $query);
 					$aliasJoin = array_pop($requiredJoins);
 					$joins += $requiredJoins;
-					list($table, , $parentAlias, $column, $primary) = $aliasJoin;
+					[$table, , $parentAlias, $column, $primary] = $aliasJoin;
 					$this->currentAlias = $previousAlias;
 				}
 			} elseif ($keyMatch['del'] === ':') {
@@ -732,14 +732,14 @@ class SqlBuilder
 					if (!$belongsTo) {
 						throw new Nette\InvalidArgumentException("No reference found for \${$parent}->{$keyMatch['key']}.");
 					}
-					list(, $primary) = $belongsTo;
+					[, $primary] = $belongsTo;
 
 				} else {
 					$hasMany = $this->conventions->getHasManyReference($parent, $keyMatch['key']);
 					if (!$hasMany) {
 						throw new Nette\InvalidArgumentException("No reference found for \${$parent}->related({$keyMatch['key']}).");
 					}
-					list($table, $primary) = $hasMany;
+					[$table, $primary] = $hasMany;
 				}
 				$column = $this->conventions->getPrimary($parent);
 
@@ -748,7 +748,7 @@ class SqlBuilder
 				if (!$belongsTo) {
 					throw new Nette\InvalidArgumentException("No reference found for \${$parent}->{$keyMatch['key']}.");
 				}
-				list($table, $column) = $belongsTo;
+				[$table, $column] = $belongsTo;
 				$primary = $this->conventions->getPrimary($table);
 			}
 
@@ -781,7 +781,7 @@ class SqlBuilder
 	protected function buildQueryJoins(array $joins, array $leftJoinConditions = [])
 	{
 		$return = '';
-		foreach ($joins as list($joinTable, $joinAlias, $table, $tableColumn, $joinColumn)) {
+		foreach ($joins as [$joinTable, $joinAlias, $table, $tableColumn, $joinColumn]) {
 			$return .=
 				" LEFT JOIN {$joinTable}" . ($joinTable !== $joinAlias ? " {$joinAlias}" : '') .
 				" ON {$table}.{$tableColumn} = {$joinAlias}.{$joinColumn}" .
@@ -885,7 +885,7 @@ class SqlBuilder
 	{
 		if (!$this->cacheTableList) {
 			$this->cacheTableList = array_flip(array_map(function ($pair) {
-				return isset($pair['fullName']) ? $pair['fullName'] : $pair['name'];
+				return $pair['fullName'] ?? $pair['name'];
 			}, $this->structure->getTables()));
 		}
 

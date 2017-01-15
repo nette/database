@@ -58,8 +58,8 @@ class ConnectionPanel implements Tracy\IBarPanel
 		$trace = $result instanceof \PDOException ? $result->getTrace() : debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		foreach ($trace as $row) {
 			if (isset($row['file']) && is_file($row['file']) && !Tracy\Debugger::getBluescreen()->isCollapsed($row['file'])) {
-				if ((isset($row['function']) && strpos($row['function'], 'call_user_func') === 0)
-					|| (isset($row['class']) && is_subclass_of($row['class'], '\\Nette\\Database\\Connection'))
+				if ((strpos($row['function'] ?? '', 'call_user_func') === 0)
+					|| (is_subclass_of($row['class'] ?? '', '\\Nette\\Database\\Connection'))
 				) {
 					continue;
 				}
@@ -120,7 +120,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 		$totalTime = $this->totalTime;
 		$queries = [];
 		foreach ($this->queries as $query) {
-			list($connection, $sql, $params, $source, $time, $rows, $error) = $query;
+			[$connection, $sql, $params, $source, $time, $rows, $error] = $query;
 			$explain = NULL;
 			if (!$error && $this->explain && preg_match('#\s*\(?\s*SELECT\s#iA', $sql)) {
 				try {

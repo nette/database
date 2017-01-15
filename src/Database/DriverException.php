@@ -40,7 +40,7 @@ class DriverException extends \PDOException
 	 */
 	public function getDriverCode()
 	{
-		return isset($this->errorInfo[1]) ? $this->errorInfo[1] : NULL;
+		return $this->errorInfo[1] ?? NULL;
 	}
 
 
@@ -49,7 +49,7 @@ class DriverException extends \PDOException
 	 */
 	public function getSqlState()
 	{
-		return isset($this->errorInfo[0]) ? $this->errorInfo[0] : NULL;
+		return $this->errorInfo[0] ?? NULL;
 	}
 
 

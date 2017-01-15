@@ -936,7 +936,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			if (!$belongsTo) {
 				return FALSE;
 			}
-			list($table, $column) = $belongsTo;
+			[$table, $column] = $belongsTo;
 		}
 		if (!$row->accessColumn($column)) {
 			return FALSE;
@@ -967,7 +967,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			}
 		}
 
-		return isset($selection[$checkPrimaryKey]) ? $selection[$checkPrimaryKey] : NULL;
+		return $selection[$checkPrimaryKey] ?? NULL;
 	}
 
 
@@ -981,13 +981,13 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	public function getReferencingTable($table, $column, $active = NULL)
 	{
 		if (strpos($table, '.') !== FALSE) {
-			list($table, $column) = explode('.', $table);
+			[$table, $column] = explode('.', $table);
 		} elseif (!$column) {
 			$hasMany = $this->conventions->getHasManyReference($this->name, $table);
 			if (!$hasMany) {
 				return NULL;
 			}
-			list($table, $column) = $hasMany;
+			[$table, $column] = $hasMany;
 		}
 
 		$prototype = &$this->refCache['referencingPrototype'][$this->getSpecificCacheKey()]["$table.$column"];

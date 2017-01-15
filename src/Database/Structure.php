@@ -57,12 +57,7 @@ class Structure implements IStructure
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
-
-		if (!isset($this->structure['primary'][$table])) {
-			return NULL;
-		}
-
-		return $this->structure['primary'][$table];
+		return $this->structure['primary'][$table] ?? NULL;
 	}
 
 
@@ -112,7 +107,7 @@ class Structure implements IStructure
 		// Search for sequence from simple primary key
 		foreach ($this->structure['columns'][$table] as $columnMeta) {
 			if ($columnMeta['name'] === $autoincrementPrimaryKeyName) {
-				return isset($columnMeta['vendor']['sequence']) ? $columnMeta['vendor']['sequence'] : NULL;
+				return $columnMeta['vendor']['sequence'] ?? NULL;
 			}
 		}
 
@@ -136,10 +131,7 @@ class Structure implements IStructure
 			return NULL;
 
 		} else {
-			if (!isset($this->structure['hasMany'][$table])) {
-				return [];
-			}
-			return $this->structure['hasMany'][$table];
+			return $this->structure['hasMany'][$table] ?? [];
 		}
 	}
 
@@ -151,16 +143,10 @@ class Structure implements IStructure
 
 		if ($column) {
 			$column = strtolower($column);
-			if (!isset($this->structure['belongsTo'][$table][$column])) {
-				return NULL;
-			}
-			return $this->structure['belongsTo'][$table][$column];
+			return $this->structure['belongsTo'][$table][$column] ?? NULL;
 
 		} else {
-			if (!isset($this->structure['belongsTo'][$table])) {
-				return [];
-			}
-			return $this->structure['belongsTo'][$table];
+			return $this->structure['belongsTo'][$table] ?? [];
 		}
 	}
 
@@ -217,7 +203,7 @@ class Structure implements IStructure
 		if (isset($structure['hasMany'])) {
 			foreach ($structure['hasMany'] as &$table) {
 				uksort($table, function ($a, $b) {
-					return strlen($a) - strlen($b);
+					return strlen($a) <=> strlen($b);
 				});
 			}
 		}
@@ -257,7 +243,7 @@ class Structure implements IStructure
 
 		if (isset($structure['belongsTo'][$lowerTable])) {
 			uksort($structure['belongsTo'][$lowerTable], function ($a, $b) {
-				return strlen($a) - strlen($b);
+				return strlen($a) <=> strlen($b);
 			});
 		}
 	}

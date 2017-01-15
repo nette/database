@@ -171,7 +171,7 @@ class Connection
 	 */
 	public function query($sql, ...$params)
 	{
-		list($sql, $params) = $this->preprocess($sql, ...$params);
+		[$sql, $params] = $this->preprocess($sql, ...$params);
 		try {
 			$result = new ResultSet($this, $sql, $params);
 		} catch (PDOException $e) {

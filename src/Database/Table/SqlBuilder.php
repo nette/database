@@ -233,7 +233,7 @@ class SqlBuilder
 		}
 		return array_merge(
 			$this->parameters['select'],
-			$this->parameters['joinConditionSorted'] ? call_user_func_array('array_merge', $this->parameters['joinConditionSorted']) : [],
+			$this->parameters['joinConditionSorted'] ? array_merge(...$this->parameters['joinConditionSorted']) : [],
 			$this->parameters['where'],
 			$this->parameters['group'],
 			$this->parameters['having'],

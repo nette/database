@@ -97,7 +97,7 @@ class SqlsrvDriver implements Nette\Database\ISupplementalDriver
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
 
-		} elseif (version_compare($this->version, 11, '<')) { // 11 == SQL Server 2012
+		} elseif (version_compare($this->version, '11', '<')) { // 11 == SQL Server 2012
 			if ($offset) {
 				throw new Nette\NotSupportedException('Offset is not supported by this database.');
 

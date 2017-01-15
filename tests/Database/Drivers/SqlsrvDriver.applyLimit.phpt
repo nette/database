@@ -7,6 +7,9 @@ require __DIR__ . '/../../bootstrap.php';
 
 $rc = new ReflectionClass(Nette\Database\Drivers\SqlsrvDriver::class);
 $driver = $rc->newInstanceWithoutConstructor();
+$version = $rc->getProperty('version');
+$version->setAccessible(TRUE);
+$version->setValue($driver, '10');
 
 Assert::exception(function () use ($driver) {
 	$query = 'SELECT 1 FROM t';
@@ -50,9 +53,7 @@ Assert::exception(function () use ($driver) {
 
 
 
-$version = $rc->getProperty('version');
-$version->setAccessible(TRUE);
-$version->setValue($driver, 12);
+$version->setValue($driver, '11');
 
 $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, 10, 20);

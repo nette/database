@@ -944,7 +944,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			}
 		}
 
-		return isset($selection[$checkPrimaryKey]) ? $selection[$checkPrimaryKey] : NULL;
+		return $selection[$checkPrimaryKey] ?? NULL;
 	}
 
 

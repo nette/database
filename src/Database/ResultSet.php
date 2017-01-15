@@ -66,7 +66,7 @@ class ResultSet implements \Iterator, IRowContainer
 				$this->pdoStatement = $connection->getPdo()->prepare($queryString);
 				foreach ($params as $key => $value) {
 					$type = gettype($value);
-					$this->pdoStatement->bindValue(is_int($key) ? $key + 1 : $key, $value, isset($types[$type]) ? $types[$type] : PDO::PARAM_STR);
+					$this->pdoStatement->bindValue(is_int($key) ? $key + 1 : $key, $value, $types[$type] ?? PDO::PARAM_STR);
 				}
 				$this->pdoStatement->setFetchMode(PDO::FETCH_ASSOC);
 				$this->pdoStatement->execute();

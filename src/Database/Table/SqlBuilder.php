@@ -795,7 +795,7 @@ class SqlBuilder
 	{
 		if (!$this->cacheTableList) {
 			$this->cacheTableList = array_flip(array_map(function ($pair) {
-				return isset($pair['fullName']) ? $pair['fullName'] : $pair['name'];
+				return $pair['fullName'] ?? $pair['name'];
 			}, $this->structure->getTables()));
 		}
 

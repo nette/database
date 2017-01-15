@@ -27,13 +27,13 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	public function __construct(Nette\Database\Connection $connection, array $options)
 	{
 		$this->connection = $connection;
-		$this->fmtDateTime = isset($options['formatDateTime']) ? $options['formatDateTime'] : 'U';
+		$this->fmtDateTime = $options['formatDateTime'] ?? 'U';
 	}
 
 
 	public function convertException(\PDOException $e)
 	{
-		$code = isset($e->errorInfo[1]) ? $e->errorInfo[1] : NULL;
+		$code = $e->errorInfo[1] ?? NULL;
 		if (in_array($code, [1, 2299, 38911], TRUE)) {
 			return Nette\Database\UniqueConstraintViolationException::from($e);
 

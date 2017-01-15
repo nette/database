@@ -33,9 +33,8 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	public function __construct(Nette\Database\Connection $connection, array $options)
 	{
 		$this->connection = $connection;
-		$charset = isset($options['charset'])
-			? $options['charset']
-			: (version_compare($connection->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION), '5.5.3', '>=') ? 'utf8mb4' : 'utf8');
+		$charset = $options['charset']
+			?? (version_compare($connection->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION), '5.5.3', '>=') ? 'utf8mb4' : 'utf8');
 		if ($charset) {
 			$connection->query("SET NAMES '$charset'");
 		}
@@ -50,7 +49,7 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	 */
 	public function convertException(\PDOException $e)
 	{
-		$code = isset($e->errorInfo[1]) ? $e->errorInfo[1] : NULL;
+		$code = $e->errorInfo[1] ?? NULL;
 		if (in_array($code, [1216, 1217, 1451, 1452, 1701], TRUE)) {
 			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
 
@@ -157,7 +156,7 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 		foreach ($this->connection->query('SHOW FULL TABLES') as $row) {
 			$tables[] = [
 				'name' => $row[0],
-				'view' => isset($row[1]) && $row[1] === 'VIEW',
+				'view' => ($row[1] ?? NULL) === 'VIEW',
 			];
 		}
 		return $tables;

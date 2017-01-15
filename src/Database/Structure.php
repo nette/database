@@ -82,7 +82,7 @@ class Structure implements IStructure
 
 		foreach ($this->structure['columns'][$table] as $columnMeta) {
 			if ($columnMeta['name'] === $primary) {
-				return isset($columnMeta['vendor']['sequence']) ? $columnMeta['vendor']['sequence'] : NULL;
+				return $columnMeta['vendor']['sequence'] ?? NULL;
 			}
 		}
 

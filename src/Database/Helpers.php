@@ -246,9 +246,9 @@ class Helpers
 
 		} elseif ($key === NULL && $value === NULL) {
 			if (count($keys) === 1) {
-				list($value) = $keys;
+				[$value] = $keys;
 			} else {
-				list($key, $value) = $keys;
+				[$key, $value] = $keys;
 			}
 		}
 
@@ -277,7 +277,7 @@ class Helpers
 		$cols = [];
 		for ($i = 0; $i < $statement->columnCount(); $i++) {
 			$meta = $statement->getColumnMeta($i);
-			$cols[$meta['name']][] = isset($meta['table']) ? $meta['table'] : '';
+			$cols[$meta['name']][] = $meta['table'] ?? '';
 		}
 		$duplicates = [];
 		foreach ($cols as $name => $tables) {

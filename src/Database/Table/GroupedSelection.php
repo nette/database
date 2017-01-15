@@ -114,7 +114,7 @@ class GroupedSelection extends Selection
 	public function count($column = NULL)
 	{
 		$return = parent::count($column);
-		return isset($return) ? $return : 0;
+		return $return ?? 0;
 	}
 
 

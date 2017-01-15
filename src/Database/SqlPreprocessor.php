@@ -139,7 +139,7 @@ class SqlPreprocessor
 
 			} elseif ($value instanceof SqlLiteral) {
 				$prep = clone $this;
-				list($res, $params) = $prep->process(array_merge([$value->__toString()], $value->getParameters()));
+				[$res, $params] = $prep->process(array_merge([$value->__toString()], $value->getParameters()));
 				$this->remaining = array_merge($this->remaining, $params);
 				return $res;
 
@@ -217,7 +217,7 @@ class SqlPreprocessor
 						$vx[] = $this->formatValue($v);
 						continue;
 					}
-					list($k, $operator) = explode(' ', $k . ' ');
+					[$k, $operator] = explode(' ', $k . ' ');
 					$k = $this->delimite($k);
 					if (is_array($v)) {
 						if ($v) {

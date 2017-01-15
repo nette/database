@@ -132,7 +132,7 @@ class Helpers
 					. '>&lt;' . htmlSpecialChars($type, ENT_NOQUOTES, 'UTF-8') . ' resource&gt;</i> ';
 
 			} else {
-				return htmlspecialchars($param, ENT_NOQUOTES, 'UTF-8');
+				return htmlspecialchars((string) $param, ENT_NOQUOTES, 'UTF-8');
 			}
 		}, $sql);
 
@@ -197,7 +197,7 @@ class Helpers
 		$sql = '';
 		$pdo = $connection->getPdo(); // native query without logging
 		while (!feof($handle)) {
-			$s = rtrim(fgets($handle));
+			$s = rtrim((string) fgets($handle));
 			if (!strncasecmp($s, 'DELIMITER ', 10)) {
 				$delimiter = substr($s, 10);
 

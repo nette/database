@@ -33,7 +33,7 @@ before_script:
     - cp ./tests/databases.travis.ini ./tests/Database/databases.ini
 
     # Create Postgre database
-    - psql -c 'CREATE DATABASE nette_test' -U postgres
+    - psql -c "CREATE DATABASE nette_test WITH ENCODING 'UTF8' LC_COLLATE='POSIX' TEMPLATE=template0" -U postgres
 
 after_script:
     # Report Code Coverage

@@ -274,9 +274,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * Fetches single field.
-	 * @param  int
-	 * @return mixed
+	 * @inheritDoc
 	 */
 	public function fetchField($column = 0)
 	{

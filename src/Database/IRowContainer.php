@@ -23,6 +23,13 @@ interface IRowContainer extends \Traversable
 	function fetch();
 
 	/**
+	 * Fetches single field.
+	 * @param  int|string
+	 * @return mixed
+	 */
+	function fetchField($column = 0);
+
+	/**
 	 * Fetches all rows as associative array.
 	 * @param  string|int column name used for an array key or NULL for numeric index
 	 * @param  string|int column name used for an array value or NULL for the whole row

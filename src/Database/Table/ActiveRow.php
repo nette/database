@@ -183,7 +183,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 					->wherePrimary($tmp + $primary);
 			}
 			$selection->select('*');
-			if (($row = $selection->fetch()) === FALSE) {
+			if (($row = $selection->fetch()) === NULL) {
 				throw new Nette\InvalidStateException('Database refetch failed; row does not exist!');
 			}
 			$this->data = $row->data;

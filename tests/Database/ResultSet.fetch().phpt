@@ -76,3 +76,10 @@ test(function () use ($context, $driverName) {
 		$res->fetch();
 	}, E_USER_NOTICE, $message);
 });
+
+
+test(function () use ($context, $driverName) {
+	$res = $context->query('SELECT id FROM author WHERE id = ?', 666);
+
+	Assert::null($res->fetch());
+});

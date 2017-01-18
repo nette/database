@@ -22,4 +22,5 @@ test(function () use ($context) {
 	}
 
 	Assert::same(['PHP'], $tags);
+	Assert::null($context->table('book')->where('title', 'Nonexistent')->fetch());
 });

@@ -213,7 +213,7 @@ class Connection
 	/**
 	 * Shortcut for query()->fetch()
 	 * @param  string
-	 * @return Row
+	 * @return Row|NULL
 	 */
 	public function fetch($sql, ...$params)
 	{

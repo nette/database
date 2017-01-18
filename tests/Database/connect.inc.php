@@ -43,7 +43,7 @@ function reformat($s)
 		return strtr($s, '[]', '``');
 	} elseif ($driverName === 'pgsql') {
 		return strtr($s, '[]', '""');
-	} elseif ($driverName === 'sqlsrv' || $driverName === 'sqlite' || $driverName === 'sqlite2') {
+	} elseif ($driverName === 'sqlsrv' || $driverName === 'sqlite') {
 		return $s;
 	} else {
 		trigger_error("Unsupported driver $driverName", E_USER_WARNING);

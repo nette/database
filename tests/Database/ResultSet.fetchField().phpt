@@ -21,3 +21,10 @@ test(function () use ($context) {
 	Assert::same(12, $res->fetchField(1));
 	Assert::same('Geek', $res->fetchField('name'));
 });
+
+
+test(function () use ($context) {
+	$res = $context->query('SELECT id FROM author WHERE id = ?', 666);
+
+	Assert::null($res->fetchField());
+});

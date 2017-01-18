@@ -212,7 +212,7 @@ class Connection
 	/**
 	 * Shortcut for query()->fetch()
 	 * @param  string
-	 * @return Row
+	 * @return Row|NULL
 	 */
 	public function fetch($sql, ...$params)
 	{
@@ -223,7 +223,7 @@ class Connection
 	/**
 	 * Shortcut for query()->fetchField()
 	 * @param  string
-	 * @return mixed
+	 * @return mixed|NULL
 	 */
 	public function fetchField($sql, ...$params)
 	{

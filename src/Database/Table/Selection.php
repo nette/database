@@ -170,7 +170,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Loads cache of previous accessed columns and returns it.
 	 * @internal
-	 * @return array|false
+	 * @return array|FALSE
 	 */
 	public function getPreviousAccessedColumns()
 	{
@@ -201,7 +201,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Returns row specified by primary key.
 	 * @param  mixed primary key
-	 * @return IRow or FALSE if there is no such row
+	 * @return IRow or NULL if there is no such row
 	 */
 	public function get($key)
 	{
@@ -218,14 +218,14 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		$this->execute();
 		$return = current($this->data);
 		next($this->data);
-		return $return;
+		return $return === FALSE ? NULL : $return;
 	}
 
 
 	/**
 	 * Fetches single field.
 	 * @param  string|NULL
-	 * @return mixed|FALSE
+	 * @return mixed|NULL
 	 */
 	public function fetchField($column = NULL)
 	{
@@ -238,7 +238,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			return $column ? $row[$column] : array_values($row->toArray())[0];
 		}
 
-		return FALSE;
+		return NULL;
 	}
 
 
@@ -992,7 +992,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	}
 
 
-	/** @return IRow */
+	/** @return IRow|bool */
 	public function current()
 	{
 		if (($key = current($this->keys)) !== FALSE) {

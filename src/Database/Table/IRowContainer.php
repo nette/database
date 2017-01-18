@@ -15,7 +15,7 @@ use Nette\Database;
 /**
  * Container of database result fetched into IRow objects.
  *
- * @method     IRow|bool  fetch() Fetches single row object.
+ * @method     IRow|NULL  fetch() Fetches single row object.
  * @method     IRow[]     fetchAll() Fetches all rows.
  */
 interface IRowContainer extends Database\IRowContainer

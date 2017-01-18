@@ -239,7 +239,7 @@ class ResultSet implements \Iterator, IRowContainer
 			return TRUE;
 		}
 
-		return $this->fetch() !== FALSE;
+		return $this->fetch() !== NULL;
 	}
 
 
@@ -254,7 +254,7 @@ class ResultSet implements \Iterator, IRowContainer
 		$data = $this->pdoStatement ? $this->pdoStatement->fetch() : NULL;
 		if (!$data) {
 			$this->pdoStatement->closeCursor();
-			return FALSE;
+			return NULL;
 
 		} elseif ($this->result === NULL && count($data) !== $this->pdoStatement->columnCount()) {
 			$duplicates = Helpers::findDuplicates($this->pdoStatement);
@@ -276,12 +276,12 @@ class ResultSet implements \Iterator, IRowContainer
 	/**
 	 * Fetches single field.
 	 * @param  int
-	 * @return mixed|FALSE
+	 * @return mixed
 	 */
 	public function fetchField($column = 0)
 	{
 		$row = $this->fetch();
-		return $row ? $row[$column] : FALSE;
+		return $row ? $row[$column] : NULL;
 	}
 
 

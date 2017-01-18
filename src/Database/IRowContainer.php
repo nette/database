@@ -18,7 +18,7 @@ interface IRowContainer extends \Traversable
 
 	/**
 	 * Fetches single row object.
-	 * @return IRow|bool if there is no row
+	 * @return IRow|NULL if there is no row
 	 */
 	function fetch();
 

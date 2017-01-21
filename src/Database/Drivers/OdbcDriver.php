@@ -19,6 +19,11 @@ class OdbcDriver implements Nette\Database\ISupplementalDriver
 {
 	use Nette\SmartObject;
 
+	public function initialize(Nette\Database\Connection $connection, array $options)
+	{
+	}
+
+
 	public function convertException(\PDOException $e)
 	{
 		return Nette\Database\DriverException::from($e);

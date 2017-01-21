@@ -23,6 +23,12 @@ interface ISupplementalDriver
 		SUPPORT_SCHEMA = 'schema';
 
 	/**
+	 * Initializes connection.
+	 * @return void
+	 */
+	function initialize(Connection $connection, array $options);
+
+	/**
 	 * @return DriverException
 	 */
 	function convertException(\PDOException $e);

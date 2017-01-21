@@ -32,7 +32,7 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	 *   - charset => character encoding to set (default is utf8 or utf8mb4 since MySQL 5.5.3)
 	 *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
 	 */
-	public function __construct(Nette\Database\Connection $connection, array $options)
+	public function initialize(Nette\Database\Connection $connection, array $options)
 	{
 		$this->connection = $connection;
 		$charset = $options['charset']

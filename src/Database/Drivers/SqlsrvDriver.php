@@ -26,7 +26,7 @@ class SqlsrvDriver implements Nette\Database\ISupplementalDriver
 	private $version;
 
 
-	public function __construct(Nette\Database\Connection $connection, array $options)
+	public function initialize(Nette\Database\Connection $connection, array $options)
 	{
 		$this->connection = $connection;
 		$this->version = $connection->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION);

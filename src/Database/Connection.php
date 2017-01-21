@@ -71,7 +71,8 @@ class Connection
 		$class = empty($this->options['driverClass'])
 			? 'Nette\Database\Drivers\\' . ucfirst(str_replace('sql', 'Sql', $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) . 'Driver'
 			: $this->options['driverClass'];
-		$this->driver = new $class($this, $this->options);
+		$this->driver = new $class;
+		$this->driver->initialize($this, $this->options);
 		$this->preprocessor = new SqlPreprocessor($this);
 		$this->onConnect($this);
 	}

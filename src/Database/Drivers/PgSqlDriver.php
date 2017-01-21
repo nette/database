@@ -23,7 +23,7 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 	private $connection;
 
 
-	public function __construct(Nette\Database\Connection $connection, array $options)
+	public function initialize(Nette\Database\Connection $connection, array $options)
 	{
 		$this->connection = $connection;
 	}

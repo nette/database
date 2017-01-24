@@ -33,7 +33,7 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	public function convertException(\PDOException $e)
+	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		$code = $e->errorInfo[1] ?? NULL;
 		if (in_array($code, [1, 2299, 38911], TRUE)) {
@@ -57,7 +57,7 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Delimites identifier for use in a SQL statement.
 	 */
-	public function delimite($name)
+	public function delimite(string $name): string
 	{
 		// @see http://download.oracle.com/docs/cd/B10500_01/server.920/a96540/sql_elements9a.htm
 		return '"' . str_replace('"', '""', $name) . '"';
@@ -67,7 +67,7 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Formats boolean for use in a SQL statement.
 	 */
-	public function formatBool($value)
+	public function formatBool(bool $value): string
 	{
 		return $value ? '1' : '0';
 	}
@@ -76,7 +76,7 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Formats date-time for use in a SQL statement.
 	 */
-	public function formatDateTime(/*\DateTimeInterface*/ $value)
+	public function formatDateTime(\DateTimeInterface $value): string
 	{
 		return $value->format($this->fmtDateTime);
 	}
@@ -85,7 +85,7 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Formats date-time interval for use in a SQL statement.
 	 */
-	public function formatDateInterval(\DateInterval $value)
+	public function formatDateInterval(\DateInterval $value): string
 	{
 		throw new Nette\NotSupportedException;
 	}
@@ -94,7 +94,7 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Encodes string for use in a LIKE statement.
 	 */
-	public function formatLike($value, $pos)
+	public function formatLike(string $value, int $pos): string
 	{
 		throw new Nette\NotImplementedException;
 	}
@@ -103,7 +103,7 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 */
-	public function applyLimit(&$sql, $limit, $offset)
+	public function applyLimit(string &$sql, ?int $limit, ?int $offset)
 	{
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
@@ -123,7 +123,7 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Normalizes result row.
 	 */
-	public function normalizeRow($row)
+	public function normalizeRow(array $row): array
 	{
 		return $row;
 	}
@@ -135,7 +135,7 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Returns list of tables.
 	 */
-	public function getTables()
+	public function getTables(): array
 	{
 		$tables = [];
 		foreach ($this->connection->query('SELECT * FROM cat') as $row) {
@@ -153,7 +153,7 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Returns metadata for all columns in a table.
 	 */
-	public function getColumns($table)
+	public function getColumns(string $table): array
 	{
 		throw new Nette\NotImplementedException;
 	}
@@ -162,7 +162,7 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Returns metadata for all indexes in a table.
 	 */
-	public function getIndexes($table)
+	public function getIndexes(string $table): array
 	{
 		throw new Nette\NotImplementedException;
 	}
@@ -171,7 +171,7 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Returns metadata for all foreign keys in a table.
 	 */
-	public function getForeignKeys($table)
+	public function getForeignKeys(string $table): array
 	{
 		throw new Nette\NotImplementedException;
 	}
@@ -180,17 +180,13 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Returns associative array of detected types (IReflection::FIELD_*) in result set.
 	 */
-	public function getColumnTypes(\PDOStatement $statement)
+	public function getColumnTypes(\PDOStatement $statement): array
 	{
 		return Nette\Database\Helpers::detectTypes($statement);
 	}
 
 
-	/**
-	 * @param  string
-	 * @return bool
-	 */
-	public function isSupported($item)
+	public function isSupported(string $item): bool
 	{
 		return $item === self::SUPPORT_SEQUENCE || $item === self::SUPPORT_SUBSELECT;
 	}

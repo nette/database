@@ -105,10 +105,7 @@ class SqlBuilder
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getTableName()
+	public function getTableName(): string
 	{
 		return $this->tableName;
 	}
@@ -144,9 +141,8 @@ class SqlBuilder
 
 	/**
 	 * Returns select query hash for caching.
-	 * @return string
 	 */
-	public function getSelectQueryHash($columns = NULL)
+	public function getSelectQueryHash($columns = NULL): string
 	{
 		$parts = [
 			'delimitedTable' => $this->delimitedTable,
@@ -178,9 +174,8 @@ class SqlBuilder
 	/**
 	 * Returns SQL query.
 	 * @param  string[] list of columns
-	 * @return string
 	 */
-	public function buildSelectQuery($columns = NULL)
+	public function buildSelectQuery(array $columns = NULL): string
 	{
 		if (!$this->order && ($this->limit !== NULL || $this->offset)) {
 			$this->order = array_map(
@@ -415,9 +410,8 @@ class SqlBuilder
 
 	/**
 	 * Adds alias.
-	 * @return void
 	 */
-	public function addAlias($chain, $alias)
+	public function addAlias($chain, $alias): void
 	{
 		if (isset($chain[0]) && $chain[0] !== '.' && $chain[0] !== ':') {
 			$chain = '.' . $chain; // unified chain format

@@ -46,10 +46,9 @@ class SqlPreprocessor
 
 
 	/**
-	 * @param  array
 	 * @return array of [sql, params]
 	 */
-	public function process($params)
+	public function process(array $params): array
 	{
 		$this->params = $params;
 		$this->counter = 0;
@@ -258,7 +257,7 @@ class SqlPreprocessor
 	}
 
 
-	private function delimite($name)
+	private function delimite(string $name): string
 	{
 		return implode('.', array_map([$this->driver, 'delimite'], explode('.', $name)));
 	}

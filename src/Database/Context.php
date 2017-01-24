@@ -65,9 +65,8 @@ class Context
 
 	/**
 	 * @param  string  sequence object
-	 * @return string
 	 */
-	public function getInsertId($name = NULL)
+	public function getInsertId(string $name = NULL): string
 	{
 		return $this->connection->getInsertId($name);
 	}
@@ -75,30 +74,20 @@ class Context
 
 	/**
 	 * Generates and executes SQL query.
-	 * @param  string
-	 * @return ResultSet
 	 */
-	public function query($sql, ...$params)
+	public function query(string $sql, ...$params): ResultSet
 	{
 		return $this->connection->query($sql, ...$params);
 	}
 
 
-	/**
-	 * @param  string
-	 * @return ResultSet
-	 */
-	public function queryArgs($sql, array $params)
+	public function queryArgs(string $sql, array $params): ResultSet
 	{
 		return $this->connection->query($sql, ...$params);
 	}
 
 
-	/**
-	 * @param  string
-	 * @return Table\Selection
-	 */
-	public function table($table)
+	public function table(string $table): Table\Selection
 	{
 		return new Table\Selection($this, $this->conventions, $table, $this->cacheStorage);
 	}
@@ -130,10 +119,8 @@ class Context
 
 	/**
 	 * Shortcut for query()->fetch()
-	 * @param  string
-	 * @return Row|NULL
 	 */
-	public function fetch($sql, ...$params)
+	public function fetch(string $sql, ...$params): ?Row
 	{
 		return $this->connection->query($sql, ...$params)->fetch();
 	}
@@ -141,10 +128,9 @@ class Context
 
 	/**
 	 * Shortcut for query()->fetchField()
-	 * @param  string
 	 * @return mixed
 	 */
-	public function fetchField($sql, ...$params)
+	public function fetchField(string $sql, ...$params)
 	{
 		return $this->connection->query($sql, ...$params)->fetchField();
 	}
@@ -152,10 +138,8 @@ class Context
 
 	/**
 	 * Shortcut for query()->fetchPairs()
-	 * @param  string
-	 * @return array
 	 */
-	public function fetchPairs($sql, ...$params)
+	public function fetchPairs(string $sql, ...$params): array
 	{
 		return $this->connection->query($sql, ...$params)->fetchPairs();
 	}
@@ -163,19 +147,14 @@ class Context
 
 	/**
 	 * Shortcut for query()->fetchAll()
-	 * @param  string
-	 * @return array
 	 */
-	public function fetchAll($sql, ...$params)
+	public function fetchAll(string $sql, ...$params): array
 	{
 		return $this->connection->query($sql, ...$params)->fetchAll();
 	}
 
 
-	/**
-	 * @return SqlLiteral
-	 */
-	public static function literal($value, ...$params)
+	public static function literal($value, ...$params): SqlLiteral
 	{
 		return new SqlLiteral($value, $params);
 	}

@@ -26,26 +26,20 @@ class SqlLiteral
 	private $parameters;
 
 
-	public function __construct($value, array $parameters = [])
+	public function __construct(string $value, array $parameters = [])
 	{
 		$this->value = (string) $value;
 		$this->parameters = $parameters;
 	}
 
 
-	/**
-	 * @return array
-	 */
-	public function getParameters()
+	public function getParameters(): array
 	{
 		return $this->parameters;
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function __toString()
+	public function __toString(): string
 	{
 		return $this->value;
 	}

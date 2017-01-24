@@ -47,7 +47,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	/**
 	 * @internal
 	 */
-	public function getTable()
+	public function getTable(): Selection
 	{
 		return $this->table;
 	}
@@ -66,10 +66,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
-	/**
-	 * @return array
-	 */
-	public function toArray()
+	public function toArray(): array
 	{
 		$this->accessColumn(NULL);
 		return $this->data;
@@ -78,10 +75,9 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Returns primary key value.
-	 * @param  bool
 	 * @return mixed possible int, string, array, object (Nette\Utils\DateTime)
 	 */
-	public function getPrimary($need = TRUE)
+	public function getPrimary(bool $need = TRUE)
 	{
 		$primary = $this->table->getPrimary($need);
 		if ($primary === NULL) {
@@ -115,10 +111,8 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Returns row signature (composition of primary keys)
-	 * @param  bool
-	 * @return string
 	 */
-	public function getSignature($need = TRUE)
+	public function getSignature(bool $need = TRUE): string
 	{
 		return implode('|', (array) $this->getPrimary($need));
 	}
@@ -126,11 +120,9 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Returns referenced row.
-	 * @param  string
-	 * @param  string
 	 * @return IRow|NULL if the row does not exist
 	 */
-	public function ref($key, $throughColumn = NULL)
+	public function ref(string $key, string $throughColumn = NULL): ?IRow
 	{
 		$row = $this->table->getReferencedTable($this, $key, $throughColumn);
 		if ($row === FALSE) {
@@ -143,11 +135,8 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Returns referencing rows.
-	 * @param  string
-	 * @param  string
-	 * @return GroupedSelection
 	 */
-	public function related($key, $throughColumn = NULL)
+	public function related(string $key, string $throughColumn = NULL): GroupedSelection
 	{
 		$groupedSelection = $this->table->getReferencingTable($key, $throughColumn, $this[$this->table->getPrimary()]);
 		if (!$groupedSelection) {
@@ -160,10 +149,8 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Updates row.
-	 * @param  iterable (column => value)
-	 * @return bool
 	 */
-	public function update($data)
+	public function update(iterable $data): bool
 	{
 		if ($data instanceof \Traversable) {
 			$data = iterator_to_array($data);
@@ -198,7 +185,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 * Deletes row.
 	 * @return int number of affected rows
 	 */
-	public function delete()
+	public function delete(): int
 	{
 		$res = $this->table->createSelectionInstance()
 			->wherePrimary($this->getPrimary())
@@ -229,9 +216,8 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 * Stores value in column.
 	 * @param  string
 	 * @param  mixed
-	 * @return void
 	 */
-	public function offsetSet($column, $value)
+	public function offsetSet($column, $value): void
 	{
 		$this->__set($column, $value);
 	}
@@ -251,9 +237,8 @@ class ActiveRow implements \IteratorAggregate, IRow
 	/**
 	 * Tests if column exists.
 	 * @param  string
-	 * @return bool
 	 */
-	public function offsetExists($column)
+	public function offsetExists($column): bool
 	{
 		return $this->__isset($column);
 	}
@@ -262,9 +247,8 @@ class ActiveRow implements \IteratorAggregate, IRow
 	/**
 	 * Removes column from data.
 	 * @param  string
-	 * @return void
 	 */
-	public function offsetUnset($column)
+	public function offsetUnset($column): void
 	{
 		$this->__unset($column);
 	}
@@ -277,11 +261,10 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 
 	/**
-	 * @param  string
 	 * @return ActiveRow|mixed
 	 * @throws Nette\MemberAccessException
 	 */
-	public function &__get($key)
+	public function &__get(string $key)
 	{
 		if ($this->accessColumn($key)) {
 			return $this->data[$key];
@@ -318,7 +301,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	/**
 	 * @internal
 	 */
-	public function accessColumn($key, $selectColumn = TRUE)
+	public function accessColumn($key, bool $selectColumn = TRUE)
 	{
 		if ($this->table->accessColumn($key, $selectColumn) && !$this->dataRefreshed) {
 			if (!isset($this->table[$this->getSignature()])) {

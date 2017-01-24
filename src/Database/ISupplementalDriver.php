@@ -24,64 +24,46 @@ interface ISupplementalDriver
 
 	/**
 	 * Initializes connection.
-	 * @return void
 	 */
 	function initialize(Connection $connection, array $options);
 
-	/**
-	 * @return DriverException
-	 */
-	function convertException(\PDOException $e);
+	function convertException(\PDOException $e): DriverException;
 
 	/**
 	 * Delimites identifier for use in a SQL statement.
-	 * @param  string
-	 * @return string
 	 */
-	function delimite($name);
+	function delimite(string $name): string;
 
 	/**
 	 * Formats boolean for use in a SQL statement.
-	 * @param  bool
-	 * @return string
 	 */
-	function formatBool($value);
+	function formatBool(bool $value): string;
 
 	/**
 	 * Formats date-time for use in a SQL statement.
-	 * @return string
 	 */
-	function formatDateTime(/*\DateTimeInterface*/ $value);
+	function formatDateTime(\DateTimeInterface $value): string;
 
 	/**
 	 * Formats date-time interval for use in a SQL statement.
-	 * @return string
 	 */
-	function formatDateInterval(\DateInterval $value);
+	function formatDateInterval(\DateInterval $value): string;
 
 	/**
 	 * Encodes string for use in a LIKE statement.
-	 * @param  string
-	 * @param  int
-	 * @return string
 	 */
-	function formatLike($value, $pos);
+	function formatLike(string $value, int $pos): string;
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @param  string  SQL query that will be modified.
-	 * @param  int|NULL
-	 * @param  int|NULL
-	 * @return void
 	 */
-	function applyLimit(&$sql, $limit, $offset);
+	function applyLimit(string &$sql, ?int $limit, ?int $offset);
 
 	/**
 	 * Normalizes result row.
-	 * @param  array
-	 * @return array
 	 */
-	function normalizeRow($row);
+	function normalizeRow(array $row): array;
 
 
 	/********************* reflection ****************d*g**/
@@ -91,41 +73,34 @@ interface ISupplementalDriver
 	 * Returns list of tables.
 	 * @return array of [name [, (bool) view]]
 	 */
-	function getTables();
+	function getTables(): array;
 
 	/**
 	 * Returns metadata for all columns in a table.
-	 * @param  string
 	 * @return array of [name, nativetype, primary [, table, fullname, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (array) vendor]]
 	 */
-	function getColumns($table);
+	function getColumns(string $table): array;
 
 	/**
 	 * Returns metadata for all indexes in a table.
-	 * @param  string
 	 * @return array of [name, (array of names) columns [, (bool) unique, (bool) primary]]
 	 */
-	function getIndexes($table);
+	function getIndexes(string $table): array;
 
 	/**
 	 * Returns metadata for all foreign keys in a table.
-	 * @param  string
-	 * @return array
 	 */
-	function getForeignKeys($table);
+	function getForeignKeys(string $table): array;
 
 	/**
 	 * Returns associative array of detected types (IStructure::FIELD_*) in result set.
-	 * @param  \PDOStatement
-	 * @return array
 	 */
-	function getColumnTypes(\PDOStatement $statement);
+	function getColumnTypes(\PDOStatement $statement): array;
 
 	/**
 	 * Cheks if driver supports specific property
 	 * @param  string self::SUPPORT_* property
-	 * @return bool
 	 */
-	function isSupported($item);
+	function isSupported(string $item): bool;
 
 }

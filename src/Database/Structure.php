@@ -39,14 +39,14 @@ class Structure implements IStructure
 	}
 
 
-	public function getTables()
+	public function getTables(): array
 	{
 		$this->needStructure();
 		return $this->structure['tables'];
 	}
 
 
-	public function getColumns($table)
+	public function getColumns(string $table): array
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
@@ -55,7 +55,7 @@ class Structure implements IStructure
 	}
 
 
-	public function getPrimaryKey($table)
+	public function getPrimaryKey(string $table)
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
@@ -68,7 +68,7 @@ class Structure implements IStructure
 	}
 
 
-	public function getPrimaryKeySequence($table)
+	public function getPrimaryKeySequence(string $table): ?string
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
@@ -92,7 +92,7 @@ class Structure implements IStructure
 	}
 
 
-	public function getHasManyReference($table, $targetTable = NULL)
+	public function getHasManyReference(string $table, string $targetTable = NULL): ?array
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
@@ -116,7 +116,7 @@ class Structure implements IStructure
 	}
 
 
-	public function getBelongsToReference($table, $column = NULL)
+	public function getBelongsToReference(string $table, string $column = NULL): ?array
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
@@ -144,7 +144,7 @@ class Structure implements IStructure
 	}
 
 
-	public function isRebuilt()
+	public function isRebuilt(): bool
 	{
 		return $this->isRebuilt;
 	}
@@ -219,7 +219,7 @@ class Structure implements IStructure
 	}
 
 
-	protected function analyzeForeignKeys(&$structure, $table)
+	protected function analyzeForeignKeys(&$structure, string $table)
 	{
 		$lowerTable = strtolower($table);
 		foreach ($this->connection->getSupplementalDriver()->getForeignKeys($table) as $row) {
@@ -235,7 +235,7 @@ class Structure implements IStructure
 	}
 
 
-	protected function resolveFQTableName($table)
+	protected function resolveFQTableName(string $table)
 	{
 		$name = strtolower($table);
 		if (isset($this->structure['columns'][$name])) {

@@ -82,10 +82,7 @@ class ResultSet implements \Iterator, IRowContainer
 	}
 
 
-	/**
-	 * @return Connection
-	 */
-	public function getConnection()
+	public function getConnection(): Connection
 	{
 		return $this->connection;
 	}
@@ -93,54 +90,38 @@ class ResultSet implements \Iterator, IRowContainer
 
 	/**
 	 * @internal
-	 * @return \PDOStatement
 	 */
-	public function getPdoStatement()
+	public function getPdoStatement(): \PDOStatement
 	{
 		return $this->pdoStatement;
 	}
 
 
-	/**
-	 * @return string
-	 */
-	public function getQueryString()
+	public function getQueryString(): string
 	{
 		return $this->queryString;
 	}
 
 
-	/**
-	 * @return array
-	 */
-	public function getParameters()
+	public function getParameters(): array
 	{
 		return $this->params;
 	}
 
 
-	/**
-	 * @return int
-	 */
-	public function getColumnCount()
+	public function getColumnCount(): int
 	{
 		return $this->pdoStatement ? $this->pdoStatement->columnCount() : NULL;
 	}
 
 
-	/**
-	 * @return int
-	 */
-	public function getRowCount()
+	public function getRowCount(): int
 	{
 		return $this->pdoStatement ? $this->pdoStatement->rowCount() : NULL;
 	}
 
 
-	/**
-	 * @return float
-	 */
-	public function getTime()
+	public function getTime(): float
 	{
 		return $this->time;
 	}
@@ -148,10 +129,8 @@ class ResultSet implements \Iterator, IRowContainer
 
 	/**
 	 * Normalizes result row.
-	 * @param  array
-	 * @return array
 	 */
-	public function normalizeRow($row)
+	public function normalizeRow(array $row): array
 	{
 		if ($this->types === NULL) {
 			$this->types = (array) $this->supplementalDriver->getColumnTypes($this->pdoStatement);
@@ -196,9 +175,8 @@ class ResultSet implements \Iterator, IRowContainer
 
 	/**
 	 * Displays complete result set as HTML table for debug purposes.
-	 * @return void
 	 */
-	public function dump()
+	public function dump(): void
 	{
 		Helpers::dumpResult($this);
 	}
@@ -249,7 +227,7 @@ class ResultSet implements \Iterator, IRowContainer
 	/**
 	 * @inheritDoc
 	 */
-	public function fetch()
+	public function fetch(): ?IRow
 	{
 		$data = $this->pdoStatement ? $this->pdoStatement->fetch() : NULL;
 		if (!$data) {
@@ -286,7 +264,7 @@ class ResultSet implements \Iterator, IRowContainer
 	/**
 	 * @inheritDoc
 	 */
-	public function fetchPairs($key = NULL, $value = NULL)
+	public function fetchPairs($key = NULL, $value = NULL): array
 	{
 		return Helpers::toPairs($this->fetchAll(), $key, $value);
 	}
@@ -295,7 +273,7 @@ class ResultSet implements \Iterator, IRowContainer
 	/**
 	 * @inheritDoc
 	 */
-	public function fetchAll()
+	public function fetchAll(): array
 	{
 		if ($this->results === NULL) {
 			$this->results = iterator_to_array($this);
@@ -307,7 +285,7 @@ class ResultSet implements \Iterator, IRowContainer
 	/**
 	 * @inheritDoc
 	 */
-	public function fetchAssoc($path)
+	public function fetchAssoc(string $path): array
 	{
 		return Nette\Utils\Arrays::associate($this->fetchAll(), $path);
 	}

@@ -17,10 +17,9 @@ interface IConventions
 
 	/**
 	 * Returns primary key for table.
-	 * @param  string
 	 * @return string|array|NULL
 	 */
-	function getPrimary($table);
+	function getPrimary(string $table);
 
 	/**
 	 * Returns referenced table & referenced column.
@@ -32,7 +31,7 @@ interface IConventions
 	 * @return array|NULL   array(referenced table, referenced column)
 	 * @throws AmbiguousReferenceKeyException
 	 */
-	function getHasManyReference($table, $key);
+	function getHasManyReference(string $table, string $key): ?array;
 
 	/**
 	 * Returns referenced table & referencing column.
@@ -44,6 +43,6 @@ interface IConventions
 	 * @param  string  referencing key
 	 * @return array|NULL   array(referenced table, referencing column)
 	 */
-	function getBelongsToReference($table, $key);
+	function getBelongsToReference(string $table, string $key): ?array;
 
 }

@@ -38,9 +38,8 @@ class Helpers
 
 	/**
 	 * Displays complete result set as HTML table for debug purposes.
-	 * @return void
 	 */
-	public static function dumpResult(ResultSet $result)
+	public static function dumpResult(ResultSet $result): void
 	{
 		echo "\n<table class=\"dump\">\n<caption>" . htmlSpecialChars($result->getQueryString(), ENT_IGNORE, 'UTF-8') . "</caption>\n";
 		if (!$result->getColumnCount()) {
@@ -74,10 +73,8 @@ class Helpers
 
 	/**
 	 * Returns syntax highlighted SQL command.
-	 * @param  string
-	 * @return string
 	 */
-	public static function dumpSql($sql, array $params = NULL, Connection $connection = NULL)
+	public static function dumpSql(string $sql, array $params = NULL, Connection $connection = NULL): string
 	{
 		static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
 		static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|[RI]?LIKE|REGEXP|TRUE|FALSE';
@@ -144,9 +141,8 @@ class Helpers
 
 	/**
 	 * Common column type detection.
-	 * @return array
 	 */
-	public static function detectTypes(\PDOStatement $statement)
+	public static function detectTypes(\PDOStatement $statement): array
 	{
 		$types = [];
 		$count = $statement->columnCount(); // driver must be meta-aware, see PHP bugs #53782, #54695
@@ -162,11 +158,9 @@ class Helpers
 
 	/**
 	 * Heuristic column type detection.
-	 * @param  string
-	 * @return string
 	 * @internal
 	 */
-	public static function detectType($type)
+	public static function detectType(string $type): string
 	{
 		static $cache;
 		if (!isset($cache[$type])) {
@@ -185,7 +179,7 @@ class Helpers
 	 * Import SQL dump from file - extremely fast.
 	 * @return int  count of commands
 	 */
-	public static function loadFromFile(Connection $connection, $file)
+	public static function loadFromFile(Connection $connection, $file): int
 	{
 		@set_time_limit(0); // @ function may be disabled
 
@@ -222,7 +216,7 @@ class Helpers
 	}
 
 
-	public static function createDebugPanel($connection, $explain = TRUE, $name = NULL)
+	public static function createDebugPanel($connection, bool $explain = TRUE, $name = NULL)
 	{
 		$panel = new Nette\Bridges\DatabaseTracy\ConnectionPanel($connection);
 		$panel->explain = $explain;
@@ -234,9 +228,8 @@ class Helpers
 
 	/**
 	 * Reformat source to key -> value pairs.
-	 * @return array
 	 */
-	public static function toPairs(array $rows, $key = NULL, $value = NULL)
+	public static function toPairs(array $rows, $key = NULL, $value = NULL): array
 	{
 		if (!$rows) {
 			return [];
@@ -271,10 +264,8 @@ class Helpers
 
 	/**
 	 * Finds duplicate columns in select statement
-	 * @param  \PDOStatement
-	 * @return string
 	 */
-	public static function findDuplicates(\PDOStatement $statement)
+	public static function findDuplicates(\PDOStatement $statement): string
 	{
 		$cols = [];
 		for ($i = 0; $i < $statement->columnCount(); $i++) {

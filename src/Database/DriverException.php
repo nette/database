@@ -49,7 +49,7 @@ class DriverException extends \PDOException
 	/**
 	 * @return string|NULL  SQLSTATE error code
 	 */
-	public function getSqlState()
+	public function getSqlState(): ?string
 	{
 		return $this->errorInfo[0] ?? NULL;
 	}
@@ -58,7 +58,7 @@ class DriverException extends \PDOException
 	/**
 	 * @return string|NULL  SQL command
 	 */
-	public function getQueryString()
+	public function getQueryString(): ?string
 	{
 		return $this->queryString;
 	}

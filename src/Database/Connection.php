@@ -124,7 +124,8 @@ class Connection
 	public function getInsertId($name = NULL)
 	{
 		try {
-			return $this->getPdo()->lastInsertId($name);
+			$res = $this->getPdo()->lastInsertId($name);
+			return $res === FALSE ? '0' : $res;
 		} catch (PDOException $e) {
 			throw $this->driver->convertException($e);
 		}

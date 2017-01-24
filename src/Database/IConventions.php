@@ -27,7 +27,7 @@ interface IConventions
 	 *
 	 * @param  string  source table
 	 * @param  string  referencing key
-	 * @return array   array(referenced table, referenced column)
+	 * @return array|NULL   array(referenced table, referenced column)
 	 * @throws AmbiguousReferenceKeyException
 	 */
 	function getHasManyReference($table, $key);
@@ -40,7 +40,7 @@ interface IConventions
 	 *
 	 * @param  string  source table
 	 * @param  string  referencing key
-	 * @return array   array(referenced table, referencing column)
+	 * @return array|NULL   array(referenced table, referencing column)
 	 */
 	function getBelongsToReference($table, $key);
 

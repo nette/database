@@ -133,7 +133,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * @return string
+	 * @return string|NULL
 	 */
 	public function getPrimarySequence()
 	{
@@ -273,7 +273,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Adds select clause, more calls appends to the end.
-	 * @param  string for example "column, MD5(column) AS column_md5"
+	 * @param  string|string[] for example "column, MD5(column) AS column_md5"
 	 * @return static
 	 */
 	public function select($columns, ...$params)
@@ -311,7 +311,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Adds where condition, more calls appends with AND.
-	 * @param  string condition possibly containing ?
+	 * @param  string|string[] condition possibly containing ?
 	 * @param  mixed
 	 * @return static
 	 */
@@ -338,7 +338,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Adds condition, more calls appends with AND.
-	 * @param  string condition possibly containing ?
+	 * @param  string|string[] condition possibly containing ?
 	 * @return void
 	 */
 	protected function condition($condition, array $params, $tableChain = NULL)
@@ -484,7 +484,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Executes aggregation function.
 	 * @param  string select call in "FUNCTION(column)" format
-	 * @return string
+	 * @return int
 	 */
 	public function aggregation($function)
 	{
@@ -902,7 +902,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Returns referenced row.
 	 * @param  ActiveRow
-	 * @param  string
+	 * @param  string|NULL
 	 * @param  string|NULL
 	 * @return ActiveRow|NULL|FALSE NULL if the row does not exist, FALSE if the relationship does not exist
 	 */
@@ -953,7 +953,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * @param  string
 	 * @param  string
 	 * @param  int primary key
-	 * @return GroupedSelection
+	 * @return GroupedSelection|NULL
 	 */
 	public function getReferencingTable($table, $column, $active = NULL)
 	{
@@ -962,7 +962,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		} elseif (!$column) {
 			$hasMany = $this->conventions->getHasManyReference($this->name, $table);
 			if (!$hasMany) {
-				return FALSE;
+				return NULL;
 			}
 			list($table, $column) = $hasMany;
 		}
@@ -1002,7 +1002,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * @return string row ID
+	 * @return string|int row ID
 	 */
 	public function key()
 	{
@@ -1031,7 +1031,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Mimic row.
 	 * @param  string row ID
 	 * @param  IRow
-	 * @return NULL
+	 * @return void
 	 */
 	public function offsetSet($key, $value)
 	{
@@ -1043,7 +1043,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Returns specified row.
 	 * @param  string row ID
-	 * @return IRow or NULL if there is no such row
+	 * @return IRow|NULL if there is no such row
 	 */
 	public function offsetGet($key)
 	{
@@ -1067,7 +1067,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Removes row from result set.
 	 * @param  string row ID
-	 * @return NULL
+	 * @return void
 	 */
 	public function offsetUnset($key)
 	{

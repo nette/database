@@ -35,7 +35,7 @@ interface ISupplementalDriver
 	/**
 	 * Formats boolean for use in a SQL statement.
 	 * @param  bool
-	 * @return mixed
+	 * @return string
 	 */
 	function formatBool($value);
 

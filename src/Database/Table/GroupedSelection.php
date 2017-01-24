@@ -61,6 +61,9 @@ class GroupedSelection extends Selection
 	}
 
 
+	/**
+	 * @return static
+	 */
 	public function select($columns, ...$params)
 	{
 		if (!$this->sqlBuilder->getSelect()) {
@@ -71,6 +74,9 @@ class GroupedSelection extends Selection
 	}
 
 
+	/**
+	 * @return static
+	 */
 	public function order($columns, ...$params)
 	{
 		if (!$this->sqlBuilder->getOrder()) {
@@ -111,6 +117,9 @@ class GroupedSelection extends Selection
 	}
 
 
+	/**
+	 * @return int
+	 */
 	public function count($column = NULL)
 	{
 		$return = parent::count($column);
@@ -173,6 +182,9 @@ class GroupedSelection extends Selection
 	}
 
 
+	/**
+	 * @return Selection
+	 */
 	protected function getRefTable(&$refPath)
 	{
 		$refObj = $this->refTable;

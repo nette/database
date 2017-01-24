@@ -57,7 +57,7 @@ interface ISupplementalDriver
 	 * Formats date-time interval for use in a SQL statement.
 	 * @return string
 	 */
-	//function formatDateInterval(\DateInterval $value);
+	function formatDateInterval(\DateInterval $value);
 
 	/**
 	 * Encodes string for use in a LIKE statement.

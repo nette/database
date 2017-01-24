@@ -52,7 +52,7 @@ interface IStructure
 	 * @param  string
 	 * @return string|NULL
 	 */
-	//function getPrimaryAutoincrementKey($table);
+	function getPrimaryAutoincrementKey($table);
 
 	/**
 	 * Returns table primary key sequence.

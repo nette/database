@@ -128,8 +128,8 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 
 		} elseif ($limit !== NULL || $offset) {
 			// see http://dev.mysql.com/doc/refman/5.0/en/select.html
-			$sql .= ' LIMIT ' . ($limit === NULL ? '18446744073709551615' : (int) $limit)
-				. ($offset ? ' OFFSET ' . (int) $offset : '');
+			$sql .= ' LIMIT ' . ($limit === NULL ? '18446744073709551615' : $limit)
+				. ($offset ? ' OFFSET ' . $offset : '');
 		}
 	}
 

@@ -114,10 +114,10 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
 		}
 		if ($limit !== NULL) {
-			$sql .= ' LIMIT ' . (int) $limit;
+			$sql .= ' LIMIT ' . $limit;
 		}
 		if ($offset) {
-			$sql .= ' OFFSET ' . (int) $offset;
+			$sql .= ' OFFSET ' . $offset;
 		}
 	}
 

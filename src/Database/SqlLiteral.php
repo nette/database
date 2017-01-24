@@ -28,7 +28,7 @@ class SqlLiteral
 
 	public function __construct(string $value, array $parameters = [])
 	{
-		$this->value = (string) $value;
+		$this->value = $value;
 		$this->parameters = $parameters;
 	}
 

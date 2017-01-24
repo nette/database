@@ -120,8 +120,8 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
 
 		} elseif ($limit !== NULL || $offset) {
-			$sql .= ' LIMIT ' . ($limit === NULL ? '-1' : (int) $limit)
-				. ($offset ? ' OFFSET ' . (int) $offset : '');
+			$sql .= ' LIMIT ' . ($limit === NULL ? '-1' : $limit)
+				. ($offset ? ' OFFSET ' . $offset : '');
 		}
 	}
 

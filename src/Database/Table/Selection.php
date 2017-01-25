@@ -123,9 +123,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * @param  bool
 	 * @return string|array|NULL
 	 */
-	public function getPrimary($need = TRUE)
+	public function getPrimary($throw = TRUE)
 	{
-		if ($this->primary === NULL && $need) {
+		if ($this->primary === NULL && $throw) {
 			throw new \LogicException("Table '{$this->name}' does not have a primary key.");
 		}
 		return $this->primary;

@@ -468,7 +468,7 @@ class SqlBuilder
 			if ($this->reservedTableNames[$tableName] === $chain) {
 				return;
 			}
-			throw new \Nette\InvalidArgumentException("Table alias '$tableName' from chain '$chain' is already in use by chain '{$this->reservedTableNames[$tableName]}'. Please add/change alias for one of them.");
+			throw new Nette\InvalidArgumentException("Table alias '$tableName' from chain '$chain' is already in use by chain '{$this->reservedTableNames[$tableName]}'. Please add/change alias for one of them.");
 		}
 		$this->reservedTableNames[$tableName] = $chain;
 	}

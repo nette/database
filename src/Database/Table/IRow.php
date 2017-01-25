@@ -28,14 +28,14 @@ interface IRow extends Database\IRow
 	 * @param  bool
 	 * @return mixed
 	 */
-	function getPrimary($need = TRUE);
+	function getPrimary($throw = TRUE);
 
 	/**
 	 * Returns row signature (composition of primary keys)
 	 * @param  bool
 	 * @return string
 	 */
-	function getSignature($need = TRUE);
+	function getSignature($throw = TRUE);
 
 	/**
 	 * Returns referencing rows.

@@ -82,16 +82,16 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 * @param  bool
 	 * @return mixed possible int, string, array, object (Nette\Utils\DateTime)
 	 */
-	public function getPrimary($need = TRUE)
+	public function getPrimary($throw = TRUE)
 	{
-		$primary = $this->table->getPrimary($need);
+		$primary = $this->table->getPrimary($throw);
 		if ($primary === NULL) {
 			return NULL;
 
 		} elseif (!is_array($primary)) {
 			if (isset($this->data[$primary])) {
 				return $this->data[$primary];
-			} elseif ($need) {
+			} elseif ($throw) {
 				throw new Nette\InvalidStateException("Row does not contain primary $primary column data.");
 			} else {
 				return NULL;
@@ -101,7 +101,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 			$primaryVal = [];
 			foreach ($primary as $key) {
 				if (!isset($this->data[$key])) {
-					if ($need) {
+					if ($throw) {
 						throw new Nette\InvalidStateException("Row does not contain primary $key column data.");
 					} else {
 						return NULL;
@@ -119,9 +119,9 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 * @param  bool
 	 * @return string
 	 */
-	public function getSignature($need = TRUE)
+	public function getSignature($throw = TRUE)
 	{
-		return implode('|', (array) $this->getPrimary($need));
+		return implode('|', (array) $this->getPrimary($throw));
 	}
 
 

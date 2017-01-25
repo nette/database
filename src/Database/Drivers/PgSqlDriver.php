@@ -241,12 +241,14 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 	public function getForeignKeys(string $table): array
 	{
 		/* Does't work with multicolumn foreign keys */
-		return $this->connection->query("
+		$query = "
 			SELECT
 				co.conname::varchar AS name,
 				al.attname::varchar AS local,
 				nf.nspname || '.' || cf.relname::varchar AS table,
-				af.attname::varchar AS foreign
+				af.attname::varchar AS foreign,
+				co.confdeltype,
+				co.confupdtype
 			FROM
 				pg_catalog.pg_constraint AS co
 				JOIN pg_catalog.pg_class AS cl ON co.conrelid = cl.oid
@@ -258,7 +260,18 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 				co.contype = 'f'
 				AND cl.oid = {$this->connection->quote($this->delimiteFQN($table))}::regclass
 				AND nf.nspname = ANY (pg_catalog.current_schemas(FALSE))
-		")->fetchAll();
+		";
+
+		$keys = [];
+		foreach ($this->connection->query($query) as $row) {
+			$actionMapper = ['a' => 'NO ACTION', 'r' => 'RESTRICT', 'c' => 'CASCADE', 'n' => 'SET NULL', 'd' => 'SET DEFAULT'];
+			$row['onDelete'] = $actionMapper[$row['confdeltype']];
+			unset($row['confdeltype']);
+			$row['onUpdate'] = $actionMapper[$row['confupdtype']];
+			unset($row['confupdtype']);
+			$keys[] = $row;
+		}
+		return $keys;
 	}
 
 

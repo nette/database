@@ -62,6 +62,8 @@ Assert::same([
 	'local' => 'one_id',
 	'table' => 'one.master',
 	'foreign' => 'one_id',
+	'onDelete' => 'NO ACTION',
+	'onUpdate' => 'NO ACTION',
 ], (array) $foreign[0]);
 
 

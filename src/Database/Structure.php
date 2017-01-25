@@ -39,14 +39,14 @@ class Structure implements IStructure
 	}
 
 
-	public function getTables()
+	public function getTables(): array
 	{
 		$this->needStructure();
 		return $this->structure['tables'];
 	}
 
 
-	public function getColumns($table)
+	public function getColumns(string $table): array
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
@@ -55,7 +55,10 @@ class Structure implements IStructure
 	}
 
 
-	public function getPrimaryKey($table)
+	/**
+	 * @return string|array|NULL
+	 */
+	public function getPrimaryKey(string $table)
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
@@ -63,7 +66,7 @@ class Structure implements IStructure
 	}
 
 
-	public function getPrimaryAutoincrementKey($table)
+	public function getPrimaryAutoincrementKey(string $table): ?string
 	{
 		$primaryKey = $this->getPrimaryKey($table);
 		if (!$primaryKey) {
@@ -92,7 +95,7 @@ class Structure implements IStructure
 	}
 
 
-	public function getPrimaryKeySequence($table)
+	public function getPrimaryKeySequence(string $table): ?string
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
@@ -117,7 +120,7 @@ class Structure implements IStructure
 	}
 
 
-	public function getHasManyReference($table, $targetTable = NULL)
+	public function getHasManyReference(string $table, string $targetTable = NULL): ?array
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
@@ -138,7 +141,7 @@ class Structure implements IStructure
 	}
 
 
-	public function getBelongsToReference($table, $column = NULL)
+	public function getBelongsToReference(string $table, string $column = NULL): ?array
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
@@ -153,20 +156,20 @@ class Structure implements IStructure
 	}
 
 
-	public function rebuild()
+	public function rebuild(): void
 	{
 		$this->structure = $this->loadStructure();
 		$this->cache->save('structure', $this->structure);
 	}
 
 
-	public function isRebuilt()
+	public function isRebuilt(): bool
 	{
 		return $this->isRebuilt;
 	}
 
 
-	protected function needStructure()
+	protected function needStructure(): void
 	{
 		if ($this->structure !== NULL) {
 			return;
@@ -179,7 +182,7 @@ class Structure implements IStructure
 	/**
 	 * @internal
 	 */
-	public function loadStructure()
+	public function loadStructure(): array
 	{
 		$driver = $this->connection->getSupplementalDriver();
 
@@ -235,7 +238,7 @@ class Structure implements IStructure
 	}
 
 
-	protected function analyzeForeignKeys(&$structure, $table)
+	protected function analyzeForeignKeys(&$structure, $table): void
 	{
 		$lowerTable = strtolower($table);
 		foreach ($this->connection->getSupplementalDriver()->getForeignKeys($table) as $row) {
@@ -251,7 +254,7 @@ class Structure implements IStructure
 	}
 
 
-	protected function resolveFQTableName($table)
+	protected function resolveFQTableName(string $table): string
 	{
 		$name = strtolower($table);
 		if (isset($this->structure['columns'][$name])) {

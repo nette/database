@@ -26,14 +26,14 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	private $fmtDateTime;
 
 
-	public function initialize(Nette\Database\Connection $connection, array $options)
+	public function initialize(Nette\Database\Connection $connection, array $options): void
 	{
 		$this->connection = $connection;
 		$this->fmtDateTime = $options['formatDateTime'] ?? 'U';
 	}
 
 
-	public function convertException(\PDOException $e)
+	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		$code = $e->errorInfo[1] ?? NULL;
 		$msg = $e->getMessage();
@@ -68,7 +68,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Delimites identifier for use in a SQL statement.
 	 */
-	public function delimite($name)
+	public function delimite(string $name): string
 	{
 		return '[' . strtr($name, '[]', '  ') . ']';
 	}
@@ -77,7 +77,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Formats boolean for use in a SQL statement.
 	 */
-	public function formatBool($value)
+	public function formatBool(bool $value): string
 	{
 		return $value ? '1' : '0';
 	}
@@ -86,7 +86,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Formats date-time for use in a SQL statement.
 	 */
-	public function formatDateTime(/*\DateTimeInterface*/ $value)
+	public function formatDateTime(\DateTimeInterface $value): string
 	{
 		return $value->format($this->fmtDateTime);
 	}
@@ -95,7 +95,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Formats date-time interval for use in a SQL statement.
 	 */
-	public function formatDateInterval(\DateInterval $value)
+	public function formatDateInterval(\DateInterval $value): string
 	{
 		throw new Nette\NotSupportedException;
 	}
@@ -104,7 +104,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Encodes string for use in a LIKE statement.
 	 */
-	public function formatLike($value, $pos)
+	public function formatLike(string $value, int $pos): string
 	{
 		$value = addcslashes(substr($this->connection->quote($value), 1, -1), '%_\\');
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'") . " ESCAPE '\\'";
@@ -114,7 +114,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 */
-	public function applyLimit(&$sql, $limit, $offset)
+	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
 	{
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
@@ -129,7 +129,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Normalizes result row.
 	 */
-	public function normalizeRow($row)
+	public function normalizeRow(array $row): array
 	{
 		return $row;
 	}
@@ -141,7 +141,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Returns list of tables.
 	 */
-	public function getTables()
+	public function getTables(): array
 	{
 		$tables = [];
 		foreach ($this->connection->query("
@@ -163,7 +163,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Returns metadata for all columns in a table.
 	 */
-	public function getColumns($table)
+	public function getColumns(string $table): array
 	{
 		$meta = $this->connection->query("
 			SELECT sql FROM sqlite_master WHERE type = 'table' AND name = {$this->connection->quote($table)}
@@ -196,7 +196,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Returns metadata for all indexes in a table.
 	 */
-	public function getIndexes($table)
+	public function getIndexes(string $table): array
 	{
 		$indexes = [];
 		foreach ($this->connection->query("PRAGMA index_list({$this->delimite($table)})") as $row) {
@@ -243,7 +243,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Returns metadata for all foreign keys in a table.
 	 */
-	public function getForeignKeys($table)
+	public function getForeignKeys(string $table): array
 	{
 		$keys = [];
 		foreach ($this->connection->query("PRAGMA foreign_key_list({$this->delimite($table)})") as $row) {
@@ -265,7 +265,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	/**
 	 * Returns associative array of detected types (IReflection::FIELD_*) in result set.
 	 */
-	public function getColumnTypes(\PDOStatement $statement)
+	public function getColumnTypes(\PDOStatement $statement): array
 	{
 		$types = [];
 		$count = $statement->columnCount();
@@ -285,11 +285,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * @param  string
-	 * @return bool
-	 */
-	public function isSupported($item)
+	public function isSupported(string $item): bool
 	{
 		return $item === self::SUPPORT_MULTI_INSERT_AS_SELECT || $item === self::SUPPORT_SUBSELECT || $item === self::SUPPORT_MULTI_COLUMN_AS_OR_COND;
 	}

@@ -29,66 +29,50 @@ interface IStructure
 
 	/**
 	 * Returns tables list.
-	 * @return array
 	 */
-	function getTables();
+	function getTables(): array;
 
 	/**
 	 * Returns table columns list.
-	 * @param  string
-	 * @return array
 	 */
-	function getColumns($table);
+	function getColumns(string $table): array;
 
 	/**
 	 * Returns table primary key.
-	 * @param  string
 	 * @return string|array|NULL
 	 */
-	function getPrimaryKey($table);
+	function getPrimaryKey(string $table);
 
 	/**
 	 * Returns autoincrement primary key name.
-	 * @param  string
-	 * @return string|NULL
 	 */
-	function getPrimaryAutoincrementKey($table);
+	function getPrimaryAutoincrementKey(string $table): ?string;
 
 	/**
 	 * Returns table primary key sequence.
-	 * @param  string
-	 * @return string|NULL
 	 */
-	function getPrimaryKeySequence($table);
+	function getPrimaryKeySequence(string $table): ?string;
 
 	/**
 	 * Returns hasMany reference.
 	 * If a targetTable is not provided, returns references for all tables.
-	 * @param  string
-	 * @param  string|NULL
-	 * @return array|NULL
 	 */
-	function getHasManyReference($table, $targetTable = NULL);
+	function getHasManyReference(string $table, string $targetTable = NULL): ?array;
 
 	/**
 	 * Returns belongsTo reference.
 	 * If a column is not provided, returns references for all columns.
-	 * @param  string
-	 * @param  string|NULL
-	 * @return array|NULL
 	 */
-	function getBelongsToReference($table, $column = NULL);
+	function getBelongsToReference(string $table, string $column = NULL): ?array;
 
 	/**
 	 * Rebuilds database structure cache.
-	 * @return void
 	 */
-	function rebuild();
+	function rebuild(): void;
 
 	/**
 	 * Returns true if database cached structure has been rebuilt.
-	 * @return bool
 	 */
-	function isRebuilt();
+	function isRebuilt(): bool;
 
 }

@@ -20,39 +20,28 @@ interface IRow extends Database\IRow
 
 	function setTable(Selection $name);
 
-	/**
-	 * @return Selection
-	 */
-	function getTable();
+	function getTable(): Selection;
 
 	/**
 	 * Returns primary key value.
-	 * @param  bool
 	 * @return mixed
 	 */
-	function getPrimary($throw = TRUE);
+	function getPrimary(bool $throw = TRUE);
 
 	/**
 	 * Returns row signature (composition of primary keys)
-	 * @param  bool
-	 * @return string
 	 */
-	function getSignature($throw = TRUE);
+	function getSignature(bool $throw = TRUE): string;
 
 	/**
 	 * Returns referencing rows.
-	 * @param  string
-	 * @param  string
-	 * @return GroupedSelection
 	 */
-	function related($key, $throughColumn = NULL);
+	function related(string $key, string $throughColumn = NULL): GroupedSelection;
 
 	/**
 	 * Returns referenced row.
-	 * @param  string
-	 * @param  string
 	 * @return IRow|NULL if the row does not exist
 	 */
-	function ref($key, $throughColumn = NULL);
+	function ref(string $key, string $throughColumn = NULL): ?IRow;
 
 }

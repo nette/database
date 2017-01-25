@@ -35,14 +35,10 @@ class GroupedSelection extends Selection
 
 	/**
 	 * Creates filtered and grouped table representation.
-	 * @param  Context
-	 * @param  IConventions
-	 * @param  string  database table name
-	 * @param  string  joining column
-	 * @param  Selection
-	 * @param  Nette\Caching\IStorage|NULL
+	 * @param  string $tableName  database table name
+	 * @param  string $column  joining column
 	 */
-	public function __construct(Context $context, IConventions $conventions, $tableName, $column, Selection $refTable, Nette\Caching\IStorage $cacheStorage = NULL)
+	public function __construct(Context $context, IConventions $conventions, string $tableName, string $column, Selection $refTable, Nette\Caching\IStorage $cacheStorage = NULL)
 	{
 		$this->refTable = $refTable;
 		$this->column = $column;
@@ -56,7 +52,7 @@ class GroupedSelection extends Selection
 	 * @param  int  primary key of grouped rows
 	 * @return static
 	 */
-	public function setActive($active)
+	public function setActive(int $active)
 	{
 		$this->active = $active;
 		return $this;
@@ -79,7 +75,7 @@ class GroupedSelection extends Selection
 	/**
 	 * @return static
 	 */
-	public function order($columns, ...$params)
+	public function order(string $columns, ...$params)
 	{
 		if (!$this->sqlBuilder->getOrder()) {
 			// improve index utilization
@@ -93,7 +89,7 @@ class GroupedSelection extends Selection
 	/********************* aggregations ****************d*g**/
 
 
-	public function aggregation($function)
+	public function aggregation(string $function): int
 	{
 		$aggregation = &$this->getRefTable($refPath)->aggregation[$refPath . $function . $this->sqlBuilder->getSelectQueryHash($this->getPreviousAccessedColumns())];
 
@@ -116,13 +112,11 @@ class GroupedSelection extends Selection
 				return $val;
 			}
 		}
+		return 0;
 	}
 
 
-	/**
-	 * @return int
-	 */
-	public function count($column = NULL)
+	public function count(string $column = NULL): int
 	{
 		$return = parent::count($column);
 		return $return ?? 0;
@@ -132,7 +126,7 @@ class GroupedSelection extends Selection
 	/********************* internal ****************d*g**/
 
 
-	protected function execute()
+	protected function execute(): void
 	{
 		if ($this->rows !== NULL) {
 			$this->observeCache = $this;
@@ -184,10 +178,7 @@ class GroupedSelection extends Selection
 	}
 
 
-	/**
-	 * @return Selection
-	 */
-	protected function getRefTable(&$refPath)
+	protected function getRefTable(&$refPath): Selection
 	{
 		$refObj = $this->refTable;
 		$refPath = $this->name . '.';
@@ -200,7 +191,7 @@ class GroupedSelection extends Selection
 	}
 
 
-	protected function loadRefCache()
+	protected function loadRefCache(): void
 	{
 		$hash = $this->getSpecificCacheKey();
 		$referencing = &$this->refCache['referencing'][$this->getGeneralCacheKey()];
@@ -216,7 +207,7 @@ class GroupedSelection extends Selection
 	}
 
 
-	protected function emptyResultSet($saveCache = TRUE, $deleteRererencedCache = TRUE)
+	protected function emptyResultSet(bool $saveCache = TRUE, bool $deleteRererencedCache = TRUE): void
 	{
 		parent::emptyResultSet($saveCache, FALSE);
 	}
@@ -243,7 +234,7 @@ class GroupedSelection extends Selection
 	}
 
 
-	public function update($data)
+	public function update(iterable $data): int
 	{
 		$builder = $this->sqlBuilder;
 
@@ -256,7 +247,7 @@ class GroupedSelection extends Selection
 	}
 
 
-	public function delete()
+	public function delete(): int
 	{
 		$builder = $this->sqlBuilder;
 

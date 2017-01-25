@@ -18,9 +18,8 @@ interface IRowContainer extends \Traversable
 
 	/**
 	 * Fetches single row object.
-	 * @return IRow|NULL if there is no row
 	 */
-	function fetch();
+	function fetch(): ?IRow;
 
 	/**
 	 * Fetches single field.
@@ -33,21 +32,19 @@ interface IRowContainer extends \Traversable
 	 * Fetches all rows as associative array.
 	 * @param  string|int column name used for an array key or NULL for numeric index
 	 * @param  string|int column name used for an array value or NULL for the whole row
-	 * @return array
 	 */
-	function fetchPairs($key = NULL, $value = NULL);
+	function fetchPairs($key = NULL, $value = NULL): array;
 
 	/**
 	 * Fetches all rows.
 	 * @return IRow[]
 	 */
-	function fetchAll();
+	function fetchAll(): array;
 
 	/**
 	 * Fetches all rows and returns associative tree.
 	 * @param  string  associative descriptor
-	 * @return array
 	 */
-	function fetchAssoc($path);
+	function fetchAssoc(string $path): array;
 
 }

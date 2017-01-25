@@ -16,7 +16,7 @@ require __DIR__ . '/../bootstrap.php';
 
 class StructureMock extends Structure
 {
-	protected function needStructure()
+	protected function needStructure(): void
 	{
 		if (!$this->structure) {
 			$this->structure = $this->loadStructure();

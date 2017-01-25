@@ -33,7 +33,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 	private $debugMode;
 
 
-	public function __construct($debugMode = FALSE)
+	public function __construct(bool $debugMode = FALSE)
 	{
 		$this->debugMode = $debugMode;
 	}
@@ -62,7 +62,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 	}
 
 
-	private function setupDatabase($config, $name)
+	private function setupDatabase($config, $name): void
 	{
 		$builder = $this->getContainerBuilder();
 

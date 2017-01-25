@@ -54,8 +54,7 @@ class Connection
 	}
 
 
-	/** @return void */
-	public function connect()
+	public function connect(): void
 	{
 		if ($this->pdo) {
 			return;
@@ -78,38 +77,33 @@ class Connection
 	}
 
 
-	/** @return void */
-	public function reconnect()
+	public function reconnect(): void
 	{
 		$this->disconnect();
 		$this->connect();
 	}
 
 
-	/** @return void */
-	public function disconnect()
+	public function disconnect(): void
 	{
 		$this->pdo = NULL;
 	}
 
 
-	/** @return string */
-	public function getDsn()
+	public function getDsn(): string
 	{
 		return $this->params[0];
 	}
 
 
-	/** @return PDO */
-	public function getPdo()
+	public function getPdo(): PDO
 	{
 		$this->connect();
 		return $this->pdo;
 	}
 
 
-	/** @return ISupplementalDriver */
-	public function getSupplementalDriver()
+	public function getSupplementalDriver(): ISupplementalDriver
 	{
 		$this->connect();
 		return $this->driver;
@@ -118,9 +112,8 @@ class Connection
 
 	/**
 	 * @param  string  sequence object
-	 * @return string
 	 */
-	public function getInsertId($name = NULL)
+	public function getInsertId(string $name = NULL): string
 	{
 		try {
 			$res = $this->getPdo()->lastInsertId($name);
@@ -134,9 +127,8 @@ class Connection
 	/**
 	 * @param  string  string to be quoted
 	 * @param  int     data type hint
-	 * @return string
 	 */
-	public function quote($string, $type = PDO::PARAM_STR)
+	public function quote(string $string, int $type = PDO::PARAM_STR): string
 	{
 		try {
 			return $this->getPdo()->quote($string, $type);
@@ -146,22 +138,19 @@ class Connection
 	}
 
 
-	/** @return void */
-	function beginTransaction()
+	function beginTransaction(): void
 	{
 		$this->query('::beginTransaction');
 	}
 
 
-	/** @return void */
-	function commit()
+	function commit(): void
 	{
 		$this->query('::commit');
 	}
 
 
-	/** @return void */
-	public function rollBack()
+	public function rollBack(): void
 	{
 		$this->query('::rollBack');
 	}
@@ -169,10 +158,8 @@ class Connection
 
 	/**
 	 * Generates and executes SQL query.
-	 * @param  string
-	 * @return ResultSet
 	 */
-	public function query($sql, ...$params)
+	public function query(string $sql, ...$params): ResultSet
 	{
 		[$sql, $params] = $this->preprocess($sql, ...$params);
 		try {
@@ -186,11 +173,7 @@ class Connection
 	}
 
 
-	/**
-	 * @param  string
-	 * @return ResultSet
-	 */
-	public function queryArgs($sql, array $params)
+	public function queryArgs(string $sql, array $params): ResultSet
 	{
 		return $this->query($sql, ...$params);
 	}
@@ -199,7 +182,7 @@ class Connection
 	/**
 	 * @return [string, array]
 	 */
-	public function preprocess($sql, ...$params)
+	public function preprocess($sql, ...$params): array
 	{
 		$this->connect();
 		return $params
@@ -213,10 +196,8 @@ class Connection
 
 	/**
 	 * Shortcut for query()->fetch()
-	 * @param  string
-	 * @return Row|NULL
 	 */
-	public function fetch($sql, ...$params)
+	public function fetch(string $sql, ...$params): ?Row
 	{
 		return $this->query($sql, ...$params)->fetch();
 	}
@@ -224,10 +205,9 @@ class Connection
 
 	/**
 	 * Shortcut for query()->fetchField()
-	 * @param  string
 	 * @return mixed
 	 */
-	public function fetchField($sql, ...$params)
+	public function fetchField(string $sql, ...$params)
 	{
 		return $this->query($sql, ...$params)->fetchField();
 	}
@@ -235,10 +215,8 @@ class Connection
 
 	/**
 	 * Shortcut for query()->fetchPairs()
-	 * @param  string
-	 * @return array
 	 */
-	public function fetchPairs($sql, ...$params)
+	public function fetchPairs(string $sql, ...$params): array
 	{
 		return $this->query($sql, ...$params)->fetchPairs();
 	}
@@ -246,19 +224,14 @@ class Connection
 
 	/**
 	 * Shortcut for query()->fetchAll()
-	 * @param  string
-	 * @return array
 	 */
-	public function fetchAll($sql, ...$params)
+	public function fetchAll(string $sql, ...$params): array
 	{
 		return $this->query($sql, ...$params)->fetchAll();
 	}
 
 
-	/**
-	 * @return SqlLiteral
-	 */
-	public static function literal($value, ...$params)
+	public static function literal($value, ...$params): SqlLiteral
 	{
 		return new SqlLiteral($value, $params);
 	}

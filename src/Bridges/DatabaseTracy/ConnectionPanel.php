@@ -49,7 +49,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 	}
 
 
-	public function logQuery(Nette\Database\Connection $connection, $result)
+	public function logQuery(Nette\Database\Connection $connection, $result): void
 	{
 		if ($this->disabled) {
 			return;
@@ -81,10 +81,10 @@ class ConnectionPanel implements Tracy\IBarPanel
 	}
 
 
-	public static function renderException($e)
+	public static function renderException($e): ?array
 	{
 		if (!$e instanceof \PDOException) {
-			return;
+			return NULL;
 		}
 		if (isset($e->queryString)) {
 			$sql = $e->queryString;
@@ -99,7 +99,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 	}
 
 
-	public function getTab()
+	public function getTab(): string
 	{
 		$name = $this->name;
 		$count = $this->count;
@@ -110,11 +110,11 @@ class ConnectionPanel implements Tracy\IBarPanel
 	}
 
 
-	public function getPanel()
+	public function getPanel(): ?string
 	{
 		$this->disabled = TRUE;
 		if (!$this->count) {
-			return;
+			return NULL;
 		}
 
 		$name = $this->name;

@@ -46,9 +46,8 @@ class Row extends Nette\Utils\ArrayHash implements IRow
 	/**
 	 * Checks if $key exists.
 	 * @param  mixed  key or index
-	 * @return bool
 	 */
-	public function offsetExists($key)
+	public function offsetExists($key): bool
 	{
 		if (is_int($key)) {
 			return (bool) current(array_slice((array) $this, $key, 1));

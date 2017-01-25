@@ -28,13 +28,13 @@ class DiscoveredConventions implements IConventions
 	}
 
 
-	public function getPrimary($table)
+	public function getPrimary(string $table)
 	{
 		return $this->structure->getPrimaryKey($table);
 	}
 
 
-	public function getHasManyReference($nsTable, $key)
+	public function getHasManyReference(string $nsTable, string $key): ?array
 	{
 		$candidates = $columnCandidates = [];
 		$targets = $this->structure->getHasManyReference($nsTable);
@@ -83,7 +83,7 @@ class DiscoveredConventions implements IConventions
 	}
 
 
-	public function getBelongsToReference($table, $key)
+	public function getBelongsToReference(string $table, string $key): ?array
 	{
 		$tableColumns = $this->structure->getBelongsToReference($table);
 

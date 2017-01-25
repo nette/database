@@ -212,7 +212,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 
 		foreach ($indexes as $index => $values) {
 			$res = $this->connection->query("PRAGMA index_info({$this->delimite($index)})");
-			while ($row = $res->fetch(TRUE)) {
+			while ($row = $res->fetch()) {
 				$indexes[$index]['columns'][$row['seqno']] = $row['name'];
 			}
 		}

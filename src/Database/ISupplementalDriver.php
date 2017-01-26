@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This file is part of the Nette Framework (http://nette.org)
- * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
+ * This file is part of the Nette Framework (https://nette.org)
+ * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 namespace Nette\Database;
@@ -35,7 +35,7 @@ interface ISupplementalDriver
 	/**
 	 * Formats boolean for use in a SQL statement.
 	 * @param  bool
-	 * @return mixed
+	 * @return string
 	 */
 	function formatBool($value);
 
@@ -66,7 +66,7 @@ interface ISupplementalDriver
 	 * @param  int|NULL
 	 * @return void
 	 */
-	function applyLimit(& $sql, $limit, $offset);
+	function applyLimit(&$sql, $limit, $offset);
 
 	/**
 	 * Normalizes result row.

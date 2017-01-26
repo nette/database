@@ -74,10 +74,13 @@ $tag2 = $context->table('tag')->insert([
 	'name' => 'PS4 Game',
 ]);  // INSERT INTO `tag` (`name`) VALUES ('PS4 Game')
 
-$tag2->update([
-	'id' => 1,
-]);  // UPDATE `tag` SET `id`=1 WHERE (`id` = (?))
-Assert::same(1, $tag2->id);
+// SQL Server throw PDOException because does not allow to update identity column
+if ($driverName !== 'sqlsrv') {
+	$tag2->update([
+		'id' => 1,
+	]);  // UPDATE `tag` SET `id`=1 WHERE (`id` = (?))
+	Assert::same(1, $tag2->id);
+}
 
 
 $book_tag = $context->table('book_tag')->get([

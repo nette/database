@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This file is part of the Nette Framework (http://nette.org)
- * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
+ * This file is part of the Nette Framework (https://nette.org)
+ * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 namespace Nette\Bridges\DatabaseDI;
@@ -40,8 +40,11 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 	public function loadConfiguration()
 	{
 		$configs = $this->getConfig();
-		if (isset($configs['dsn'])) {
-			$configs = ['default' => $configs];
+		foreach ($configs as $k => $v) {
+			if (is_scalar($v)) {
+				$configs = ['default' => $configs];
+				break;
+			}
 		}
 
 		$defaults = $this->databaseDefaults;
@@ -59,7 +62,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 
 	private function setupDatabase($config, $name)
 	{
-		$container = $this->getContainerBuilder();
+		$builder = $this->getContainerBuilder();
 
 		foreach ((array) $config['options'] as $key => $value) {
 			if (preg_match('#^PDO::\w+\z#', $key)) {
@@ -68,11 +71,11 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			}
 		}
 
-		$connection = $container->addDefinition($this->prefix("$name.connection"))
+		$connection = $builder->addDefinition($this->prefix("$name.connection"))
 			->setClass(Nette\Database\Connection::class, [$config['dsn'], $config['user'], $config['password'], $config['options']])
 			->setAutowired($config['autowired']);
 
-		$structure = $container->addDefinition($this->prefix("$name.structure"))
+		$structure = $builder->addDefinition($this->prefix("$name.structure"))
 			->setClass(Nette\Database\Structure::class)
 			->setArguments([$connection])
 			->setAutowired($config['autowired']);
@@ -80,7 +83,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		if (!empty($config['reflection'])) {
 			$conventionsServiceName = 'reflection';
 			$config['conventions'] = $config['reflection'];
-			if (strtolower($config['conventions']) === 'conventional') {
+			if (is_string($config['conventions']) && strtolower($config['conventions']) === 'conventional') {
 				$config['conventions'] = 'Static';
 			}
 		} else {
@@ -91,7 +94,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			$conventions = NULL;
 
 		} elseif (is_string($config['conventions'])) {
-			$conventions = $container->addDefinition($this->prefix("$name.$conventionsServiceName"))
+			$conventions = $builder->addDefinition($this->prefix("$name.$conventionsServiceName"))
 				->setClass(preg_match('#^[a-z]+\z#i', $config['conventions'])
 					? 'Nette\Database\Conventions\\' . ucfirst($config['conventions']) . 'Conventions'
 					: $config['conventions'])
@@ -99,11 +102,11 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				->setAutowired($config['autowired']);
 
 		} else {
-			$tmp = Nette\DI\Compiler::filterArguments([$config['conventions']]);
-			$conventions = reset($tmp);
+			$class = method_exists(Nette\DI\Helpers::class, 'filterArguments') ? Nette\DI\Helpers::class : Nette\DI\Compiler::class;
+			$conventions = $class::filterArguments([$config['conventions']])[0];
 		}
 
-		$container->addDefinition($this->prefix("$name.context"))
+		$builder->addDefinition($this->prefix("$name.context"))
 			->setClass(Nette\Database\Context::class, [$connection, $structure, $conventions])
 			->setAutowired($config['autowired']);
 
@@ -117,9 +120,9 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		}
 
 		if ($this->name === 'database') {
-			$container->addAlias($this->prefix($name), $this->prefix("$name.connection"));
-			$container->addAlias("nette.database.$name", $this->prefix($name));
-			$container->addAlias("nette.database.$name.context", $this->prefix("$name.context"));
+			$builder->addAlias($this->prefix($name), $this->prefix("$name.connection"));
+			$builder->addAlias("nette.database.$name", $this->prefix($name));
+			$builder->addAlias("nette.database.$name.context", $this->prefix("$name.context"));
 		}
 	}
 

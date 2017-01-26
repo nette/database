@@ -17,13 +17,13 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 class SqlBuilderMock extends SqlBuilder
 {
-	public function parseJoins(& $joins, & $query, $inner = FALSE)
+	public function parseJoins(&$joins, &$query, $inner = FALSE)
 	{
 		parent::parseJoins($joins, $query);
 	}
-	public function buildQueryJoins(array $joins)
+	public function buildQueryJoins(array $joins, array $leftJoinConditions = [])
 	{
-		return parent::buildQueryJoins($joins);
+		return parent::buildQueryJoins($joins, $leftJoinConditions);
 	}
 }
 

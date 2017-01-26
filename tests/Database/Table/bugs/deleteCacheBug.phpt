@@ -21,7 +21,7 @@ test(function () use ($context) {
 			$book->delete();
 			Assert::exception(function () use ($book) {
 				$book->toArray();
-			}, Nette\InvalidStateException::class, 'Database refetch failed; row does not exist!');
+			}, Nette\InvalidStateException::class, "Database refetch failed; row with signature '1' does not exist!");
 		}
 
 		$booksSelection->__destruct();
@@ -42,11 +42,33 @@ test(function () use ($context) {
 
 			Assert::exception(function () use ($book) {
 				$book->toArray();
-			}, Nette\InvalidStateException::class, 'Database refetch failed; row does not exist!');
+			}, Nette\InvalidStateException::class, "Database refetch failed; row with signature '2' does not exist!");
 		}
 
 		$booksSelection->__destruct();
 	}
+});
+
+test(function () use ($context) {
+	$books = [];
+	for ($i=0; $i<2; $i++) {
+		$booksSelection = $context->table('book')->where('id IN ?', [3,4]);
+		foreach ($booksSelection as $book) {
+			$books[] = $book->id;
+
+			if ($i === 1) {
+				$context->query('DELETE FROM book WHERE id = 4'); //After refetch second row is skipped
+				$book->title; // cause refetch
+			}
+
+			$booksSelection->__destruct();
+		}
+	}
+	Assert::same([
+		3,
+		4,
+		3,
+	], $books);
 });
 
 test(function () use ($context) {
@@ -60,7 +82,7 @@ test(function () use ($context) {
 			$context->query('DELETE FROM book WHERE id = 3');
 			Assert::exception(function () use ($book) {
 				$book->title;
-			}, Nette\InvalidStateException::class, 'Database refetch failed; row does not exist!');
+			}, Nette\InvalidStateException::class, "Database refetch failed; row with signature '3' does not exist!");
 		}
 
 		$booksSelection->__destruct();

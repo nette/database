@@ -24,4 +24,9 @@ foreach ($books as $book) {
 	$book->title;
 }
 
-Assert::same(reformat('SELECT * FROM [book] LIMIT 1'), $books->getSql());
+Assert::same(reformat([
+	'sqlsrv' => $connection->getPdo()->getAttribute(PDO::ATTR_SERVER_VERSION) < 11
+		? 'SELECT TOP 1 * FROM [book] ORDER BY [book].[id]'
+		: 'SELECT * FROM [book] ORDER BY [book].[id] OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY',
+	'SELECT * FROM [book] ORDER BY [book].[id] LIMIT 1',
+]), $books->getSql());

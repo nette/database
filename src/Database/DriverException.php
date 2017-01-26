@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This file is part of the Nette Framework (http://nette.org)
- * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
+ * This file is part of the Nette Framework (https://nette.org)
+ * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 namespace Nette\Database;
@@ -18,7 +18,7 @@ class DriverException extends \PDOException
 
 
 	/**
-	 * @returns self
+	 * @return static
 	 */
 	public static function from(\PDOException $src)
 	{
@@ -36,7 +36,7 @@ class DriverException extends \PDOException
 
 
 	/**
-	 * @returns int|string|NULL  Driver-specific error code
+	 * @return int|string|NULL  Driver-specific error code
 	 */
 	public function getDriverCode()
 	{
@@ -45,7 +45,7 @@ class DriverException extends \PDOException
 
 
 	/**
-	 * @returns string|NULL  SQLSTATE error code
+	 * @return string|NULL  SQLSTATE error code
 	 */
 	public function getSqlState()
 	{
@@ -54,7 +54,7 @@ class DriverException extends \PDOException
 
 
 	/**
-	 * @returns string|NULL  SQL command
+	 * @return string|NULL  SQL command
 	 */
 	public function getQueryString()
 	{

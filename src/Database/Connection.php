@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This file is part of the Nette Framework (http://nette.org)
- * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
+ * This file is part of the Nette Framework (https://nette.org)
+ * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 namespace Nette\Database;
@@ -15,8 +15,10 @@ use PDOException;
 /**
  * Represents a connection between PHP and a database server.
  */
-class Connection extends Nette\Object
+class Connection
 {
+	use Nette\SmartObject;
+
 	/** @var callable[]  function (Connection $connection); Occurs after connection is established */
 	public $onConnect;
 
@@ -42,6 +44,7 @@ class Connection extends Nette\Object
 	public function __construct($dsn, $user = NULL, $password = NULL, array $options = NULL)
 	{
 		if (func_num_args() > 4) { // compatibility
+			trigger_error(__METHOD__ . " fifth argument is deprecated, use \$options['driverClass'].", E_USER_DEPRECATED);
 			$options['driverClass'] = func_get_arg(4);
 		}
 		$this->params = [$dsn, $user, $password];
@@ -121,7 +124,8 @@ class Connection extends Nette\Object
 	public function getInsertId($name = NULL)
 	{
 		try {
-			return $this->getPdo()->lastInsertId($name);
+			$res = $this->getPdo()->lastInsertId($name);
+			return $res === FALSE ? '0' : $res;
 		} catch (PDOException $e) {
 			throw $this->driver->convertException($e);
 		}

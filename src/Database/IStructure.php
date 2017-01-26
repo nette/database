@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This file is part of the Nette Framework (http://nette.org)
- * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
+ * This file is part of the Nette Framework (https://nette.org)
+ * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 namespace Nette\Database;
@@ -64,7 +64,7 @@ interface IStructure
 	 * If a targetTable is not provided, returns references for all tables.
 	 * @param  string
 	 * @param  string|NULL
-	 * @return mixed
+	 * @return array|NULL
 	 */
 	function getHasManyReference($table, $targetTable = NULL);
 
@@ -73,7 +73,7 @@ interface IStructure
 	 * If a column is not provided, returns references for all columns.
 	 * @param  string
 	 * @param  string|NULL
-	 * @return mixed
+	 * @return array|NULL
 	 */
 	function getBelongsToReference($table, $column = NULL);
 

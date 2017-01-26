@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This file is part of the Nette Framework (http://nette.org)
- * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
+ * This file is part of the Nette Framework (https://nette.org)
+ * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 namespace Nette\Database\Table;
@@ -19,8 +19,9 @@ use Nette\Database\IStructure;
  * Builds SQL query.
  * SqlBuilder is based on great library NotORM http://www.notorm.com written by Jakub Vrana.
  */
-class SqlBuilder extends Nette\Object
+class SqlBuilder
 {
+	use Nette\SmartObject;
 
 	/** @var string */
 	protected $tableName;
@@ -37,12 +38,16 @@ class SqlBuilder extends Nette\Object
 	/** @var array of where conditions */
 	protected $where = [];
 
+	/** @var array of array of join conditions */
+	protected $joinCondition = [];
+
 	/** @var array of where conditions for caching */
 	protected $conditions = [];
 
 	/** @var array of parameters passed to where conditions */
 	protected $parameters = [
 		'select' => [],
+		'joinCondition' => [],
 		'where' => [],
 		'group' => [],
 		'having' => [],
@@ -64,6 +69,15 @@ class SqlBuilder extends Nette\Object
 	/** @var string grouping condition */
 	protected $having = '';
 
+	/** @var array of reserved table names associated with chain */
+	protected $reservedTableNames = [];
+
+	/** @var array of table aliases */
+	protected $aliases = [];
+
+	/** @var string currently parsing alias for joins */
+	protected $currentAlias = NULL;
+
 	/** @var ISupplementalDriver */
 	private $driver;
 
@@ -73,6 +87,9 @@ class SqlBuilder extends Nette\Object
 	/** @var array */
 	private $cacheTableList;
 
+	/** @var array of expanding joins */
+	private $expandingJoins = [];
+
 
 	public function __construct($tableName, Context $context)
 	{
@@ -80,7 +97,9 @@ class SqlBuilder extends Nette\Object
 		$this->driver = $context->getConnection()->getSupplementalDriver();
 		$this->conventions = $context->getConventions();
 		$this->structure = $context->getStructure();
-		$this->delimitedTable = implode('.', array_map([$this->driver, 'delimite'], explode('.', $tableName)));
+		$tableNameParts = explode('.', $tableName);
+		$this->delimitedTable = implode('.', array_map([$this->driver, 'delimite'], $tableNameParts));
+		$this->checkUniqueTableName(end($tableNameParts), $tableName);
 	}
 
 
@@ -93,41 +112,96 @@ class SqlBuilder extends Nette\Object
 	}
 
 
+	/**
+	 * @param  string
+	 */
 	public function buildInsertQuery()
 	{
 		return "INSERT INTO {$this->delimitedTable}";
 	}
 
 
+	/**
+	 * @param  string
+	 */
 	public function buildUpdateQuery()
 	{
+		$query = "UPDATE {$this->delimitedTable} SET ?set" . $this->tryDelimite($this->buildConditions());
 		if ($this->limit !== NULL || $this->offset) {
-			throw new Nette\NotSupportedException('LIMIT clause is not supported in UPDATE query.');
+			$this->driver->applyLimit($query, $this->limit, $this->offset);
 		}
-		return "UPDATE {$this->delimitedTable} SET ?set" . $this->tryDelimite($this->buildConditions());
+
+		return $query;
 	}
 
 
+	/**
+	 * @param  string
+	 */
 	public function buildDeleteQuery()
 	{
+		$query = "DELETE FROM {$this->delimitedTable}" . $this->tryDelimite($this->buildConditions());
 		if ($this->limit !== NULL || $this->offset) {
-			throw new Nette\NotSupportedException('LIMIT clause is not supported in DELETE query.');
+			$this->driver->applyLimit($query, $this->limit, $this->offset);
 		}
-		return "DELETE FROM {$this->delimitedTable}" . $this->tryDelimite($this->buildConditions());
+
+		return $query;
+	}
+
+
+	/**
+	 * Returns select query hash for caching.
+	 * @return string
+	 */
+	public function getSelectQueryHash(array $columns = NULL)
+	{
+		$parts = [
+			'delimitedTable' => $this->delimitedTable,
+			'queryCondition' => $this->buildConditions(),
+			'queryEnd' => $this->buildQueryEnd(),
+			$this->aliases,
+			$this->limit, $this->offset,
+		];
+		if ($this->select) {
+			$parts[] = $this->select;
+		} elseif ($columns) {
+			$parts[] = [$this->delimitedTable, $columns];
+		} elseif ($this->group && !$this->driver->isSupported(ISupplementalDriver::SUPPORT_SELECT_UNGROUPED_COLUMNS)) {
+			$parts[] = [$this->group];
+		} else {
+			$parts[] = "{$this->delimitedTable}.*";
+		}
+		return $this->getConditionHash(json_encode($parts), [
+			$this->parameters['select'],
+			$this->parameters['joinCondition'],
+			$this->parameters['where'],
+			$this->parameters['group'],
+			$this->parameters['having'],
+			$this->parameters['order']
+		]);
 	}
 
 
 	/**
 	 * Returns SQL query.
-	 * @param  string list of columns
+	 * @param  string[] list of columns
 	 * @return string
 	 */
-	public function buildSelectQuery($columns = NULL)
+	public function buildSelectQuery(array $columns = NULL)
 	{
+		if (!$this->order && ($this->limit !== NULL || $this->offset)) {
+			$this->order = array_map(
+				function ($col) { return "$this->tableName.$col"; },
+				(array) $this->conventions->getPrimary($this->tableName)
+			);
+		}
+
+		$queryJoinConditions = $this->buildJoinConditions();
 		$queryCondition = $this->buildConditions();
 		$queryEnd = $this->buildQueryEnd();
 
 		$joins = [];
+		$finalJoinConditions = $this->parseJoinConditions($joins, $queryJoinConditions);
 		$this->parseJoins($joins, $queryCondition);
 		$this->parseJoins($joins, $queryEnd);
 
@@ -152,7 +226,7 @@ class SqlBuilder extends Nette\Object
 			$querySelect = $this->buildSelect([$prefix . '*']);
 		}
 
-		$queryJoins = $this->buildQueryJoins($joins);
+		$queryJoins = $this->buildQueryJoins($joins, $finalJoinConditions);
 		$query = "{$querySelect} FROM {$this->delimitedTable}{$queryJoins}{$queryCondition}{$queryEnd}";
 
 		$this->driver->applyLimit($query, $this->limit, $this->offset);
@@ -161,10 +235,17 @@ class SqlBuilder extends Nette\Object
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function getParameters()
 	{
+		if (!isset($this->parameters['joinConditionSorted'])) {
+			$this->buildSelectQuery();
+		}
 		return array_merge(
 			$this->parameters['select'],
+			$this->parameters['joinConditionSorted'] ? call_user_func_array('array_merge', $this->parameters['joinConditionSorted']) : [],
 			$this->parameters['where'],
 			$this->parameters['group'],
 			$this->parameters['having'],
@@ -176,8 +257,12 @@ class SqlBuilder extends Nette\Object
 	public function importConditions(SqlBuilder $builder)
 	{
 		$this->where = $builder->where;
+		$this->joinCondition = $builder->joinCondition;
 		$this->parameters['where'] = $builder->parameters['where'];
+		$this->parameters['joinCondition'] = $builder->parameters['joinCondition'];
 		$this->conditions = $builder->conditions;
+		$this->aliases = $builder->aliases;
+		$this->reservedTableNames = $builder->reservedTableNames;
 	}
 
 
@@ -194,19 +279,47 @@ class SqlBuilder extends Nette\Object
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function getSelect()
 	{
 		return $this->select;
 	}
 
 
+	/**
+	 * @return bool
+	 */
 	public function addWhere($condition, ...$params)
 	{
+		return $this->addCondition($condition, $params, $this->where, $this->parameters['where']);
+	}
+
+
+	/**
+	 * @return array
+	 */
+	public function addJoinCondition($tableChain, $condition, ...$params)
+	{
+		$this->parameters['joinConditionSorted'] = NULL;
+		if (!isset($this->joinCondition[$tableChain])) {
+			$this->joinCondition[$tableChain] = $this->parameters['joinCondition'][$tableChain] = [];
+		}
+		return $this->addCondition($condition, $params, $this->joinCondition[$tableChain], $this->parameters['joinCondition'][$tableChain]);
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	protected function addCondition($condition, array $params, array &$conditions, array &$conditionsParameters)
+	{
 		if (is_array($condition) && !empty($params[0]) && is_array($params[0])) {
-			return $this->addWhereComposition($condition, $params[0]);
+			return $this->addConditionComposition($condition, $params[0], $conditions, $conditionsParameters);
 		}
 
-		$hash = md5($condition . json_encode($params));
+		$hash = $this->getConditionHash($condition, $params);
 		if (isset($this->conditions[$hash])) {
 			return FALSE;
 		}
@@ -263,7 +376,7 @@ class SqlBuilder extends Nette\Object
 					if ($this->driver->isSupported(ISupplementalDriver::SUPPORT_SUBSELECT)) {
 						$arg = NULL;
 						$replace = $match[2][0] . '(' . $clone->getSql() . ')';
-						$this->parameters['where'] = array_merge($this->parameters['where'], $clone->getSqlBuilder()->getParameters());
+						$conditionsParameters = array_merge($conditionsParameters, $clone->getSqlBuilder()->getParameters());
 					} else {
 						$arg = [];
 						foreach ($clone as $row) {
@@ -289,16 +402,16 @@ class SqlBuilder extends Nette\Object
 						$arg = NULL;
 					} else {
 						$replace = $match[2][0] . '(?)';
-						$this->parameters['where'][] = $arg;
+						$conditionsParameters[] = $arg;
 					}
 				}
 			} elseif ($arg instanceof SqlLiteral) {
-				$this->parameters['where'][] = $arg;
+				$conditionsParameters[] = $arg;
 			} else {
 				if (!$hasOperator) {
 					$replace = '= ?';
 				}
-				$this->parameters['where'][] = $arg;
+				$conditionsParameters[] = $arg;
 			}
 
 			if ($replace) {
@@ -311,14 +424,53 @@ class SqlBuilder extends Nette\Object
 			}
 		}
 
-		$this->where[] = $condition;
+		$conditions[] = $condition;
 		return TRUE;
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function getConditions()
 	{
 		return array_values($this->conditions);
+	}
+
+
+	/**
+	 * Adds alias.
+	 * @param  string
+	 * @param  string
+	 * @return void
+	 */
+	public function addAlias($chain, $alias)
+	{
+		if (isset($chain[0]) && $chain[0] !== '.' && $chain[0] !== ':') {
+			$chain = '.' . $chain; // unified chain format
+		}
+		$this->checkUniqueTableName($alias, $chain);
+		$this->aliases[$alias] = $chain;
+	}
+
+
+	/**
+	 * @param  string
+	 * @param  string
+	 * @return void
+	 */
+	protected function checkUniqueTableName($tableName, $chain)
+	{
+		if (isset($this->aliases[$tableName]) && ('.' . $tableName === $chain)) {
+			$chain = $this->aliases[$tableName];
+		}
+		if (isset($this->reservedTableNames[$tableName])) {
+			if ($this->reservedTableNames[$tableName] === $chain) {
+				return;
+			}
+			throw new Nette\InvalidArgumentException("Table alias '$tableName' from chain '$chain' is already in use by chain '{$this->reservedTableNames[$tableName]}'. Please add/change alias for one of them.");
+		}
+		$this->reservedTableNames[$tableName] = $chain;
 	}
 
 
@@ -336,12 +488,20 @@ class SqlBuilder extends Nette\Object
 	}
 
 
+	/**
+	 * @return array
+	 */
 	public function getOrder()
 	{
 		return $this->order;
 	}
 
 
+	/**
+	 * @param  int|NULL
+	 * @param  int|NULL
+	 * @return void
+	 */
 	public function setLimit($limit, $offset)
 	{
 		$this->limit = $limit;
@@ -349,12 +509,18 @@ class SqlBuilder extends Nette\Object
 	}
 
 
+	/**
+	 * @return int|NULL
+	 */
 	public function getLimit()
 	{
 		return $this->limit;
 	}
 
 
+	/**
+	 * @return int|NULL
+	 */
 	public function getOffset()
 	{
 		return $this->offset;
@@ -368,6 +534,9 @@ class SqlBuilder extends Nette\Object
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getGroup()
 	{
 		return $this->group;
@@ -381,6 +550,9 @@ class SqlBuilder extends Nette\Object
 	}
 
 
+	/**
+	 * @return string
+	 */
 	public function getHaving()
 	{
 		return $this->having;
@@ -390,28 +562,114 @@ class SqlBuilder extends Nette\Object
 	/********************* SQL building ****************d*g**/
 
 
+	/**
+	 * @return string
+	 */
 	protected function buildSelect(array $columns)
 	{
 		return 'SELECT ' . implode(', ', $columns);
 	}
 
 
-	protected function parseJoins(& $joins, & $query)
+	/**
+	 * @return array
+	 */
+	protected function parseJoinConditions(&$joins, $joinConditions)
 	{
-		$query = preg_replace_callback('~
+		$tableJoins = $leftJoinDependency = $finalJoinConditions = [];
+		foreach ($joinConditions as $tableChain => &$joinCondition) {
+			$fooQuery = $tableChain . '.foo';
+			$requiredJoins = [];
+			$this->parseJoins($requiredJoins, $fooQuery);
+			$tableAlias = substr($fooQuery, 0, -4);
+			$tableJoins[$tableAlias] = $requiredJoins;
+			$leftJoinDependency[$tableAlias] = [];
+			$finalJoinConditions[$tableAlias] = preg_replace_callback($this->getColumnChainsRegxp(), function ($match) use ($tableAlias, &$tableJoins, &$leftJoinDependency) {
+				$requiredJoins = [];
+				$query = $this->parseJoinsCb($requiredJoins, $match);
+				$queryParts = explode('.', $query);
+				$tableJoins[$queryParts[0]] = $requiredJoins;
+				if ($queryParts[0] !== $tableAlias) {
+					foreach (array_keys($requiredJoins) as $requiredTable) {
+						$leftJoinDependency[$tableAlias][$requiredTable] = $requiredTable;
+					}
+				}
+				return $query;
+			}, $joinCondition);
+		}
+		$this->parameters['joinConditionSorted'] = [];
+		if (count($joinConditions)) {
+			while (reset($tableJoins)) {
+				$this->getSortedJoins(key($tableJoins), $leftJoinDependency, $tableJoins, $joins);
+			}
+		}
+		return $finalJoinConditions;
+	}
+
+
+	protected function getSortedJoins($table, &$leftJoinDependency, &$tableJoins, &$finalJoins)
+	{
+		if (isset($this->expandingJoins[$table])) {
+			$path = implode("' => '", array_map(function($value) { return $this->reservedTableNames[$value]; }, array_merge(array_keys($this->expandingJoins), [$table])));
+			throw new Nette\InvalidArgumentException("Circular reference detected at left join conditions (tables '$path').");
+		}
+		if (isset($tableJoins[$table])) {
+			$this->expandingJoins[$table] = TRUE;
+			if (isset($leftJoinDependency[$table])) {
+				foreach ($leftJoinDependency[$table] as $requiredTable) {
+					if ($requiredTable === $table) {
+						continue;
+					}
+					$this->getSortedJoins($requiredTable, $leftJoinDependency, $tableJoins, $finalJoins);
+				}
+			}
+			if ($tableJoins[$table]) {
+				foreach ($tableJoins[$table] as $requiredTable => $tmp) {
+					if ($requiredTable === $table) {
+						continue;
+					}
+					$this->getSortedJoins($requiredTable, $leftJoinDependency, $tableJoins, $finalJoins);
+				}
+			}
+			$finalJoins += $tableJoins[$table];
+			$key = isset($this->aliases[$table]) ? $table : $this->reservedTableNames[$table];
+			$this->parameters['joinConditionSorted'] += isset($this->parameters['joinCondition'][$key])
+				? [$table => $this->parameters['joinCondition'][$key]]
+				: [];
+			unset($tableJoins[$table]);
+			unset($this->expandingJoins[$table]);
+		}
+	}
+
+
+	protected function parseJoins(&$joins, &$query)
+	{
+		$query = preg_replace_callback($this->getColumnChainsRegxp(), function ($match) use (&$joins) {
+			return $this->parseJoinsCb($joins, $match);
+		}, $query);
+	}
+
+
+	/**
+	 * @return string
+	 */
+	private function getColumnChainsRegxp()
+	{
+		return '~
 			(?(DEFINE)
 				(?P<word> [\w_]*[a-z][\w_]* )
 				(?P<del> [.:] )
 				(?P<node> (?&del)? (?&word) (\((?&word)\))? )
 			)
 			(?P<chain> (?!\.) (?&node)*)  \. (?P<column> (?&word) | \*  )
-		~xi', function ($match) use (& $joins) {
-			return $this->parseJoinsCb($joins, $match);
-		}, $query);
+		~xi';
 	}
 
 
-	public function parseJoinsCb(& $joins, $match)
+	/**
+	 * @return string
+	 */
+	public function parseJoinsCb(&$joins, $match)
 	{
 		$chain = $match['chain'];
 		if (!empty($chain[0]) && ($chain[0] !== '.' && $chain[0] !== ':')) {
@@ -441,15 +699,33 @@ class SqlBuilder extends Nette\Object
 		// do not make a join when referencing to the current table column - inner conditions
 		// check it only when not making backjoin on itself - outer condition
 		if ($keyMatches[0]['del'] === '.') {
+			if (count($keyMatches) > 1 && ($parent === $keyMatches[0]['key'] || $parentAlias === $keyMatches[0]['key'])) {
+				throw new Nette\InvalidArgumentException("Do not prefix table chain with origin table name '{$keyMatches[0]['key']}'. If you want to make self reference, please add alias.");
+			}
 			if ($parent === $keyMatches[0]['key']) {
 				return "{$parent}.{$match['column']}";
 			} elseif ($parentAlias === $keyMatches[0]['key']) {
 				return "{$parentAlias}.{$match['column']}";
 			}
 		}
-
-		foreach ($keyMatches as $keyMatch) {
-			if ($keyMatch['del'] === ':') {
+		$tableChain = NULL;
+		foreach ($keyMatches as $index => $keyMatch) {
+			$isLast = !isset($keyMatches[$index + 1]);
+			if (!$index && isset($this->aliases[$keyMatch['key']])) {
+				if ($keyMatch['del'] === ':') {
+					throw new Nette\InvalidArgumentException("You are using has many syntax with alias (':{$keyMatch['key']}'). You have to move it to alias definition.");
+				} else {
+					$previousAlias = $this->currentAlias;
+					$this->currentAlias = $keyMatch['key'];
+					$requiredJoins = [];
+					$query = $this->aliases[$keyMatch['key']] . '.foo';
+					$this->parseJoins($requiredJoins, $query);
+					$aliasJoin = array_pop($requiredJoins);
+					$joins += $requiredJoins;
+					list($table, , $parentAlias, $column, $primary) = $aliasJoin;
+					$this->currentAlias = $previousAlias;
+				}
+			} elseif ($keyMatch['del'] === ':') {
 				if (isset($keyMatch['throughColumn'])) {
 					$table = $keyMatch['key'];
 					$belongsTo = $this->conventions->getBelongsToReference($table, $keyMatch['throughColumn']);
@@ -476,14 +752,21 @@ class SqlBuilder extends Nette\Object
 				$primary = $this->conventions->getPrimary($table);
 			}
 
-			$tableAlias = $keyMatch['key'] ?: preg_replace('#^(.*\.)?(.*)$#', '$2', $table);
-
-			// if we are joining itself (parent table), we must alias joining table
-			if ($parent === $table) {
+			if ($this->currentAlias && $isLast) {
+				$tableAlias = $this->currentAlias;
+			} elseif ($parent === $table) {
 				$tableAlias = $parentAlias . '_ref';
+			} elseif ($keyMatch['key']) {
+				$tableAlias = $keyMatch['key'];
+			} else {
+				$tableAlias = preg_replace('#^(.*\.)?(.*)$#', '$2', $table);
 			}
 
-			$joins[$tableAlias . $column] = [$table, $tableAlias, $parentAlias, $column, $primary];
+			$tableChain .= $keyMatch[0];
+			if (!$isLast || !$this->currentAlias) {
+				$this->checkUniqueTableName($tableAlias, $tableChain);
+			}
+			$joins[$tableAlias] = [$table, $tableAlias, $parentAlias, $column, $primary];
 			$parent = $table;
 			$parentAlias = $tableAlias;
 		}
@@ -492,24 +775,47 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-	protected function buildQueryJoins(array $joins)
+	/**
+	 * @return string
+	 */
+	protected function buildQueryJoins(array $joins, array $leftJoinConditions = [])
 	{
 		$return = '';
 		foreach ($joins as list($joinTable, $joinAlias, $table, $tableColumn, $joinColumn)) {
 			$return .=
 				" LEFT JOIN {$joinTable}" . ($joinTable !== $joinAlias ? " {$joinAlias}" : '') .
-				" ON {$table}.{$tableColumn} = {$joinAlias}.{$joinColumn}";
+				" ON {$table}.{$tableColumn} = {$joinAlias}.{$joinColumn}" .
+				(isset($leftJoinConditions[$joinAlias]) ? " {$leftJoinConditions[$joinAlias]}" : '');
 		}
 		return $return;
 	}
 
 
+	/**
+	 * @return array
+	 */
+	protected function buildJoinConditions()
+	{
+		$conditions = [];
+		foreach ($this->joinCondition as $tableChain => $joinConditions) {
+			$conditions[$tableChain] = 'AND (' . implode(') AND (', $joinConditions) . ')';
+		}
+		return $conditions;
+	}
+
+
+	/**
+	 * @return string
+	 */
 	protected function buildConditions()
 	{
 		return $this->where ? ' WHERE (' . implode(') AND (', $this->where) . ')' : '';
 	}
 
 
+	/**
+	 * @return string
+	 */
 	protected function buildQueryEnd()
 	{
 		$return = '';
@@ -526,6 +832,9 @@ class SqlBuilder extends Nette\Object
 	}
 
 
+	/**
+	 * @return string
+	 */
 	protected function tryDelimite($s)
 	{
 		return preg_replace_callback('#(?<=[^\w`"\[?]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|\z)#i', function ($m) {
@@ -534,18 +843,44 @@ class SqlBuilder extends Nette\Object
 	}
 
 
-	protected function addWhereComposition(array $columns, array $parameters)
+	/**
+	 * @return bool
+	 */
+	protected function addConditionComposition(array $columns, array $parameters, array &$conditions, array &$conditionsParameters)
 	{
 		if ($this->driver->isSupported(ISupplementalDriver::SUPPORT_MULTI_COLUMN_AS_OR_COND)) {
 			$conditionFragment = '(' . implode(' = ? AND ', $columns) . ' = ?) OR ';
 			$condition = substr(str_repeat($conditionFragment, count($parameters)), 0, -4);
-			return $this->addWhere($condition, Nette\Utils\Arrays::flatten($parameters));
+			return $this->addCondition($condition, [Nette\Utils\Arrays::flatten($parameters)], $conditions, $conditionsParameters);
 		} else {
-			return $this->addWhere('(' . implode(', ', $columns) . ') IN', $parameters);
+			return $this->addCondition('(' . implode(', ', $columns) . ') IN', [$parameters], $conditions, $conditionsParameters);
 		}
 	}
 
 
+	/**
+	 * @return string
+	 */
+	private function getConditionHash($condition, array $parameters)
+	{
+		foreach ($parameters as $key => &$parameter) {
+			if ($parameter instanceof Selection) {
+				$parameter = $this->getConditionHash($parameter->getSql(), $parameter->getSqlBuilder()->getParameters());
+			} elseif ($parameter instanceof SqlLiteral) {
+				$parameter = $this->getConditionHash($parameter->__toString(), $parameter->getParameters());
+			} elseif (is_object($parameter) && method_exists($parameter, '__toString')) {
+				$parameter = $parameter->__toString();
+			} elseif (is_array($parameter) || $parameter instanceof \ArrayAccess) {
+				$parameter = $this->getConditionHash($key, $parameter);
+			}
+		}
+		return md5($condition . json_encode($parameters));
+	}
+
+
+	/**
+	 * @return array
+	 */
 	private function getCachedTableList()
 	{
 		if (!$this->cacheTableList) {

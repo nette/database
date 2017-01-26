@@ -37,7 +37,7 @@ if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
 
 
 $columns = $driver->getColumns('author');
-array_walk($columns, function (& $item) {
+array_walk($columns, function (&$item) {
 	Assert::type('array', $item['vendor']);
 	unset($item['vendor']);
 });

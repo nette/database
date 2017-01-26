@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This file is part of the Nette Framework (http://nette.org)
- * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
+ * This file is part of the Nette Framework (https://nette.org)
+ * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 namespace Nette\Database;
@@ -13,8 +13,10 @@ use Nette;
 /**
  * SQL preprocessor.
  */
-class SqlPreprocessor extends Nette\Object
+class SqlPreprocessor
 {
+	use Nette\SmartObject;
+
 	/** @var Connection */
 	private $connection;
 
@@ -66,7 +68,7 @@ class SqlPreprocessor extends Nette\Object
 				$this->arrayMode = NULL;
 				$res[] = Nette\Utils\Strings::replace(
 					$param,
-					'~\'[^\']*+\'|"[^"]*+"|\?[a-z]*|^\s*+(?:INSERT|REPLACE)\b|\b(?:SET|WHERE|HAVING|ORDER BY|GROUP BY|KEY UPDATE)(?=[\s?]*+\z)|/\*.*?\*/|--[^\n]*~si',
+					'~\'[^\']*+\'|"[^"]*+"|\?[a-z]*|^\s*+(?:INSERT|REPLACE)\b|\b(?:SET|WHERE|HAVING|ORDER BY|GROUP BY|KEY UPDATE)(?=\s*\z|\s*\?)|/\*.*?\*/|--[^\n]*~si',
 					[$this, 'callback']
 				);
 			} else {
@@ -133,7 +135,7 @@ class SqlPreprocessor extends Nette\Object
 				return 'NULL';
 
 			} elseif ($value instanceof Table\IRow) {
-				return $value->getPrimary();
+				return $this->formatValue($value->getPrimary());
 
 			} elseif ($value instanceof SqlLiteral) {
 				$prep = clone $this;

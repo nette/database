@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This file is part of the Nette Framework (http://nette.org)
- * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
+ * This file is part of the Nette Framework (https://nette.org)
+ * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 namespace Nette\Database;
@@ -14,8 +14,10 @@ use PDO;
 /**
  * Represents a result set.
  */
-class ResultSet extends Nette\Object implements \Iterator, IRowContainer
+class ResultSet implements \Iterator, IRowContainer
 {
+	use Nette\SmartObject;
+
 	/** @var Connection */
 	private $connection;
 
@@ -251,6 +253,10 @@ class ResultSet extends Nette\Object implements \Iterator, IRowContainer
 		if (!$data) {
 			$this->pdoStatement->closeCursor();
 			return FALSE;
+
+		} elseif ($this->result === NULL && count($data) !== $this->pdoStatement->columnCount()) {
+			$duplicates = Helpers::findDuplicates($this->pdoStatement);
+			trigger_error("Found duplicate columns in database result set: $duplicates.", E_USER_NOTICE);
 		}
 
 		$row = new Row;
@@ -258,10 +264,6 @@ class ResultSet extends Nette\Object implements \Iterator, IRowContainer
 			if ($key !== '') {
 				$row->$key = $value;
 			}
-		}
-
-		if ($this->result === NULL && count($data) !== $this->pdoStatement->columnCount()) {
-			trigger_error('Found duplicate columns in database result set.', E_USER_NOTICE);
 		}
 
 		$this->resultKey++;

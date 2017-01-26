@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This file is part of the Nette Framework (http://nette.org)
- * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
+ * This file is part of the Nette Framework (https://nette.org)
+ * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 namespace Nette\Database\Drivers;
@@ -13,8 +13,9 @@ use Nette;
 /**
  * Supplemental ODBC database driver.
  */
-class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
+class OdbcDriver implements Nette\Database\ISupplementalDriver
 {
+	use Nette\SmartObject;
 
 	public function convertException(\PDOException $e)
 	{
@@ -74,7 +75,7 @@ class OdbcDriver extends Nette\Object implements Nette\Database\ISupplementalDri
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 */
-	public function applyLimit(& $sql, $limit, $offset)
+	public function applyLimit(&$sql, $limit, $offset)
 	{
 		if ($offset) {
 			throw new Nette\NotSupportedException('Offset is not supported by this database.');

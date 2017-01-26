@@ -45,28 +45,31 @@ if ($driverName !== 'sqlsrv') {
 			'name' => 'Jon Snow',
 			'web' => 'http://example.com',
 		]);
-	}, '\PDOException');
+	}, PDOException::class);
 }
 
 
-switch ($driverName) {
-	case 'mysql':
-		$selection = $context->table('author')->select('NULL, id, NULL, CONCAT(?, name), NULL',  'Biography: ');
-		break;
-	case 'pgsql':
-		$selection = $context->table('author')->select('nextval(?), id, NULL, ? || name, NULL', 'book_id_seq', 'Biography: ');
-		break;
-	case 'sqlite':
-		$selection = $context->table('author')->select('NULL, id, NULL, ? || name, NULL', 'Biography: ');
-		break;
-	case 'sqlsrv':
-		$selection = $context->table('author')->select('id, NULL, CONCAT(?, name), NULL', 'Biography: ');
-		break;
-	default:
-		Assert::fail("Unsupported driver $driverName");
+// SQL Server 2008 doesn't know CONCAT()
+if ($driverName !== 'sqlsrv') {
+	switch ($driverName) {
+		case 'mysql':
+			$selection = $context->table('author')->select('NULL, id, NULL, CONCAT(?, name), NULL',  'Biography: ');
+			break;
+		case 'pgsql':
+			$selection = $context->table('author')->select('nextval(?), id, NULL, ? || name, NULL', 'book_id_seq', 'Biography: ');
+			break;
+		case 'sqlite':
+			$selection = $context->table('author')->select('NULL, id, NULL, ? || name, NULL', 'Biography: ');
+			break;
+		case 'sqlsrv':
+			$selection = $context->table('author')->select('id, NULL, CONCAT(?, name), NULL', 'Biography: ');
+			break;
+		default:
+			Assert::fail("Unsupported driver $driverName");
+	}
+	$context->table('book')->insert($selection);
+	Assert::equal(4, $context->table('book')->where('title LIKE', 'Biography%')->count('*'));
 }
-$context->table('book')->insert($selection);
-Assert::equal(4, $context->table('book')->where('title LIKE', 'Biography%')->count('*'));
 
 
 // Insert into table without primary key

@@ -29,7 +29,7 @@ test(function () {
 
 	$compiler = new DI\Compiler;
 	$compiler->addExtension('database', new DatabaseExtension(FALSE));
-	eval($compiler->compile($config, 'Container1'));
+	eval($compiler->addConfig($config)->setClassName('Container1')->compile());
 
 	$container = new Container1;
 	$container->initialize();

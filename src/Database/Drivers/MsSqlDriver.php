@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This file is part of the Nette Framework (http://nette.org)
- * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
+ * This file is part of the Nette Framework (https://nette.org)
+ * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 namespace Nette\Database\Drivers;
@@ -13,8 +13,9 @@ use Nette;
 /**
  * Supplemental MS SQL database driver.
  */
-class MsSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
+class MsSqlDriver implements Nette\Database\ISupplementalDriver
 {
+	use Nette\SmartObject;
 
 	public function convertException(\PDOException $e)
 	{
@@ -30,7 +31,7 @@ class MsSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	 */
 	public function delimite($name)
 	{
-		// @see http://msdn.microsoft.com/en-us/library/ms176027.aspx
+		// @see https://msdn.microsoft.com/en-us/library/ms176027.aspx
 		return '[' . str_replace(['[', ']'], ['[[', ']]'], $name) . ']';
 	}
 
@@ -75,7 +76,7 @@ class MsSqlDriver extends Nette\Object implements Nette\Database\ISupplementalDr
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 */
-	public function applyLimit(& $sql, $limit, $offset)
+	public function applyLimit(&$sql, $limit, $offset)
 	{
 		if ($offset) {
 			throw new Nette\NotSupportedException('Offset is not supported by this database.');

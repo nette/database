@@ -115,7 +115,7 @@ test(function () use ($context) {
 	}
 
 	foreach ($relatedStack as $related) {
-		$property = $related->getReflection()->getProperty('accessedColumns');
+		$property = (new ReflectionClass($related))->getProperty('accessedColumns');
 		$property->setAccessible(TRUE);
 		// checks if instances have shared data of accessed columns
 		Assert::same(['id', 'author_id'], array_keys((array) $property->getValue($related)));
@@ -184,4 +184,36 @@ test(function () use ($context) { // Test saving the union of needed cols, the s
 		['id', 'author_id', 'translator_id'],
 		['id', 'author_id', 'translator_id', 'title'],
 	], $cols);
+});
+
+
+test(function () use ($context) { // Test multiple use of same selection
+	$sql = [];
+	$context->getConnection()->onQuery[] = function($_, $result) use (&$sql) {
+		$sql[] = $result->getQueryString();
+	};
+
+	for ($i = 0; $i < 3; $i += 1) {
+		$bookSelection = $context->table('book');
+		count($bookSelection);
+
+		foreach ($bookSelection->where('author_id = ?', 11) as $book) {
+			$book->title;
+			if ($i>=1) {
+				$book->translator_id;
+			}
+		}
+		$bookSelection->__destruct();
+	}
+
+	Assert::same([
+		reformat('SELECT * FROM [book]'), //First round
+		reformat('SELECT * FROM [book] WHERE ([author_id] = 11)'),
+		reformat('SELECT [id] FROM [book]'), //Second round
+		reformat('SELECT [id], [title] FROM [book] WHERE ([author_id] = 11)'),
+		reformat('SELECT * FROM [book] WHERE ([author_id] = 11)'), //Missing translator_id
+		reformat('SELECT [id] FROM [book]'), //Third round
+		reformat('SELECT [id], [title], [translator_id] FROM [book] WHERE ([author_id] = 11)'),
+
+	], $sql);
 });

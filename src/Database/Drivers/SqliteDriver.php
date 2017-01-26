@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This file is part of the Nette Framework (http://nette.org)
- * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
+ * This file is part of the Nette Framework (https://nette.org)
+ * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 namespace Nette\Database\Drivers;
@@ -13,8 +13,10 @@ use Nette;
 /**
  * Supplemental SQLite3 database driver.
  */
-class SqliteDriver extends Nette\Object implements Nette\Database\ISupplementalDriver
+class SqliteDriver implements Nette\Database\ISupplementalDriver
 {
+	use Nette\SmartObject;
+
 	/** @var Nette\Database\Connection */
 	private $connection;
 
@@ -110,7 +112,7 @@ class SqliteDriver extends Nette\Object implements Nette\Database\ISupplementalD
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 */
-	public function applyLimit(& $sql, $limit, $offset)
+	public function applyLimit(&$sql, $limit, $offset)
 	{
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
@@ -210,7 +212,7 @@ class SqliteDriver extends Nette\Object implements Nette\Database\ISupplementalD
 
 		foreach ($indexes as $index => $values) {
 			$res = $this->connection->query("PRAGMA index_info({$this->delimite($index)})");
-			while ($row = $res->fetch(TRUE)) {
+			while ($row = $res->fetch()) {
 				$indexes[$index]['columns'][$row['seqno']] = $row['name'];
 			}
 		}
@@ -275,7 +277,7 @@ class SqliteDriver extends Nette\Object implements Nette\Database\ISupplementalD
 		for ($col = 0; $col < $count; $col++) {
 			$meta = $statement->getColumnMeta($col);
 			if (isset($meta['sqlite:decl_type'])) {
-				if ($meta['sqlite:decl_type'] === 'DATE') {
+				if (in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], TRUE)) {
 					$types[$meta['name']] = Nette\Database\IStructure::FIELD_UNIX_TIMESTAMP;
 				} else {
 					$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['sqlite:decl_type']);

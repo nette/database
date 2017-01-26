@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This file is part of the Nette Framework (http://nette.org)
- * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
+ * This file is part of the Nette Framework (https://nette.org)
+ * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 namespace Nette\Database;
@@ -13,8 +13,10 @@ use Nette;
 /**
  * Cached reflection of database structure.
  */
-class Structure extends Nette\Object implements IStructure
+class Structure implements IStructure
 {
+	use Nette\SmartObject;
+
 	/** @var Connection */
 	protected $connection;
 
@@ -211,7 +213,7 @@ class Structure extends Nette\Object implements IStructure
 		}
 
 		if (isset($structure['hasMany'])) {
-			foreach ($structure['hasMany'] as & $table) {
+			foreach ($structure['hasMany'] as &$table) {
 				uksort($table, function ($a, $b) {
 					return strlen($a) - strlen($b);
 				});
@@ -243,15 +245,16 @@ class Structure extends Nette\Object implements IStructure
 	}
 
 
-	protected function analyzeForeignKeys(& $structure, $table)
+	protected function analyzeForeignKeys(&$structure, $table)
 	{
+		$lowerTable = strtolower($table);
 		foreach ($this->connection->getSupplementalDriver()->getForeignKeys($table) as $row) {
-			$structure['belongsTo'][strtolower($table)][$row['local']] = $row['table'];
+			$structure['belongsTo'][$lowerTable][$row['local']] = $row['table'];
 			$structure['hasMany'][strtolower($row['table'])][$table][] = $row['local'];
 		}
 
-		if (isset($structure['belongsTo'][$table])) {
-			uksort($structure['belongsTo'][$table], function ($a, $b) {
+		if (isset($structure['belongsTo'][$lowerTable])) {
+			uksort($structure['belongsTo'][$lowerTable], function ($a, $b) {
 				return strlen($a) - strlen($b);
 			});
 		}

@@ -1,8 +1,8 @@
 <?php
 
 /**
- * This file is part of the Nette Framework (http://nette.org)
- * Copyright (c) 2004 David Grudl (http://davidgrudl.com)
+ * This file is part of the Nette Framework (https://nette.org)
+ * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
 namespace Nette\Database;
@@ -27,7 +27,7 @@ interface IConventions
 	 *
 	 * @param  string  source table
 	 * @param  string  referencing key
-	 * @return array   array(referenced table, referenced column)
+	 * @return array|NULL   array(referenced table, referenced column)
 	 * @throws AmbiguousReferenceKeyException
 	 */
 	function getHasManyReference($table, $key);
@@ -40,7 +40,7 @@ interface IConventions
 	 *
 	 * @param  string  source table
 	 * @param  string  referencing key
-	 * @return array   array(referenced table, referencing column)
+	 * @return array|NULL   array(referenced table, referencing column)
 	 */
 	function getBelongsToReference($table, $key);
 

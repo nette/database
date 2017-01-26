@@ -42,6 +42,29 @@ test(function () use ($context) { // test Selection as a parameter
 	]), $sqlBuilder->buildSelectQuery());
 });
 
+
+test(function () use ($context) { // test more Selection as a parameter
+	$sqlBuilder = new SqlBuilder('book', $context);
+	$sqlBuilder->addWhere('id', $context->table('book'));
+	$sqlBuilder->addWhere('id', $context->table('book_tag')->select('book_id'));
+	Assert::equal(reformat([
+		'mysql' => 'SELECT * FROM `book` WHERE (`id` IN (?)) AND (`id` IN (?))',
+		'SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book])) AND ([id] IN (SELECT [book_id] FROM [book_tag]))',
+	]), $sqlBuilder->buildSelectQuery());
+});
+
+
+test(function () use ($context) { // test more ActiveRow as a parameter
+	$sqlBuilder = new SqlBuilder('book', $context);
+	$books = $context->table('book')->where('id', [1,2])->fetchPairs('id');
+	$sqlBuilder->addWhere('id ?', $books[1]);
+	$sqlBuilder->addWhere('id ?', $books[2]);
+	Assert::equal(reformat([
+		'SELECT * FROM [book] WHERE ([id] = ?) AND ([id] = ?)',
+	]), $sqlBuilder->buildSelectQuery());
+});
+
+
 test(function () use ($context) { // test Selection with parameters as a parameter
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id', $context->table('book')->having('COUNT(:book_tag.tag_id) >', 1));
@@ -52,6 +75,7 @@ test(function () use ($context) { // test Selection with parameters as a paramet
 	]), $sqlBuilder->buildSelectQuery());
 	Assert::count(1, $sqlBuilder->getParameters());
 });
+
 
 test(function () use ($context) { // test Selection with column as a parameter
 	$sqlBuilder = new SqlBuilder('book', $context);
@@ -240,5 +264,5 @@ test(function () use ($driverName, $context, $connection, $structure) {
 
 	Assert::exception(function () use ($e) {
 		throw $e->getPrevious();
-	}, 'LogicException', "Table 'book_tag' does not have a primary key.");
+	}, LogicException::class, "Table 'book_tag' does not have a primary key.");
 });

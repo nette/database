@@ -74,12 +74,12 @@ class Structure implements IStructure
 
 		// Search for autoincrement key from multi primary key
 		if (is_array($primaryKey)) {
+			$keys = array_flip($primaryKey);
 			foreach ($this->getColumns($table) as $column) {
-				if (in_array($column['name'], $primaryKey) && $column['autoincrement']) {
+				if (isset($keys[$column['name']]) && $column['autoincrement']) {
 					return $column['name'];
 				}
 			}
-
 			return NULL;
 		}
 

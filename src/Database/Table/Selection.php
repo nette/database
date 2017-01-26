@@ -828,29 +828,40 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			return $return->getRowCount();
 		}
 
-		$primaryKey = $this->context->getInsertId(
-			($tmp = $this->getPrimarySequence())
-				? implode('.', array_map([$this->context->getConnection()->getSupplementalDriver(), 'delimite'], explode('.', $tmp)))
-				: NULL
-		);
-		if (!$primaryKey) {
-			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
-			return $return->getRowCount();
+		$primarySequenceName = $this->getPrimarySequence();
+		$primaryAutoincrementKey = $this->context->getStructure()->getPrimaryAutoincrementKey($this->name);
+
+		$primaryKey = [];
+		foreach ((array) $this->primary as $key) {
+			if (isset($data[$key])) {
+				$primaryKey[$key] = $data[$key];
+			}
 		}
 
-		if (is_array($this->getPrimary())) {
-			$primaryKey = [];
+		// First check sequence
+		if (!empty($primarySequenceName) && $primaryAutoincrementKey) {
+			$primaryKey[$primaryAutoincrementKey] = $this->context->getInsertId($this->context->getConnection()->getSupplementalDriver()->delimite($primarySequenceName));
 
-			foreach ((array) $this->getPrimary() as $key) {
+		// Autoincrement primary without sequence
+		} elseif ($primaryAutoincrementKey) {
+			$primaryKey[$primaryAutoincrementKey] = $this->context->getInsertId($primarySequenceName);
+
+		// Multi column primary without autoincrement
+		} elseif (is_array($this->primary)) {
+			foreach ($this->primary as $key) {
 				if (!isset($data[$key])) {
 					return $data;
 				}
+			}
 
-				$primaryKey[$key] = $data[$key];
-			}
-			if (count($primaryKey) === 1) {
-				$primaryKey = reset($primaryKey);
-			}
+		// Primary without autoincrement, try get primary from inserting data
+		} elseif ($this->primary && isset($data[$this->primary])) {
+			$primaryKey = $data[$this->primary];
+
+		// If primaryKey cannot be prepared, return inserted rows count
+		} else {
+			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
+			return $return->getRowCount();
 		}
 
 		$row = $this->createSelectionInstance()

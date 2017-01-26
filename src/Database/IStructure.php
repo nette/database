@@ -46,6 +46,13 @@ interface IStructure
 	function getPrimaryKey($table);
 
 	/**
+	 * Returns autoincrement primary key name.
+	 * @param  string
+	 * @return string|NULL
+	 */
+	//function getPrimaryAutoincrementKey($table);
+
+	/**
 	 * Returns table primary key sequence.
 	 * @param  string
 	 * @return string|NULL

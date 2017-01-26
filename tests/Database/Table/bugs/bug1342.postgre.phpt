@@ -25,4 +25,13 @@ $insertedRows = $context->table('bug1342')->insert([
 	'a2' => 2,
 ]);
 
-Assert::same(1, $insertedRows);
+Assert::same($insertedRows->a1, 1);
+Assert::same($insertedRows->a2, 2);
+
+$insertedRows = $context->table('bug1342')->insert([
+	'a1' => 24,
+	'a2' => 48,
+]);
+
+Assert::same($insertedRows->a1, 24);
+Assert::same($insertedRows->a2, 48);

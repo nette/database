@@ -66,6 +66,35 @@ class Structure implements IStructure
 	}
 
 
+	public function getPrimaryAutoincrementKey($table)
+	{
+		$primaryKey = $this->getPrimaryKey($table);
+		if (!$primaryKey) {
+			return NULL;
+		}
+
+		// Search for autoincrement key from multi primary key
+		if (is_array($primaryKey)) {
+			$keys = array_flip($primaryKey);
+			foreach ($this->getColumns($table) as $column) {
+				if (isset($keys[$column['name']]) && $column['autoincrement']) {
+					return $column['name'];
+				}
+			}
+			return NULL;
+		}
+
+		// Search for autoincrement key from simple primary key
+		foreach ($this->getColumns($table) as $column) {
+			if ($column['name'] == $primaryKey) {
+				return $column['autoincrement'] ? $column['name'] : NULL;
+			}
+		}
+
+		return NULL;
+	}
+
+
 	public function getPrimaryKeySequence($table)
 	{
 		$this->needStructure();
@@ -75,13 +104,14 @@ class Structure implements IStructure
 			return NULL;
 		}
 
-		$primary = $this->getPrimaryKey($table);
-		if (!$primary || is_array($primary)) {
+		$autoincrementPrimaryKeyName = $this->getPrimaryAutoincrementKey($table);
+		if (!$autoincrementPrimaryKeyName) {
 			return NULL;
 		}
 
+		// Search for sequence from simple primary key
 		foreach ($this->structure['columns'][$table] as $columnMeta) {
-			if ($columnMeta['name'] === $primary) {
+			if ($columnMeta['name'] === $autoincrementPrimaryKeyName) {
 				return isset($columnMeta['vendor']['sequence']) ? $columnMeta['vendor']['sequence'] : NULL;
 			}
 		}

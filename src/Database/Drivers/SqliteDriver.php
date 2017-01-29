@@ -131,13 +131,6 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	 */
 	public function normalizeRow($row)
 	{
-		foreach ($row as $key => $value) {
-			unset($row[$key]);
-			if ($key[0] === '[' || $key[0] === '"') {
-				$key = substr($key, 1, -1);
-			}
-			$row[$key] = $value;
-		}
 		return $row;
 	}
 

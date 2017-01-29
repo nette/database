@@ -752,7 +752,7 @@ class SqlBuilder
 
 	protected function tryDelimite(string $s): string
 	{
-		return preg_replace_callback('#(?<=[^\w`"\[?]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|\z)#i', function ($m) {
+		return preg_replace_callback('#(?<=[^\w`"\[?:]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|\z)#i', function ($m) {
 			return strtoupper($m[0]) === $m[0] ? $m[0] : $this->driver->delimite($m[0]);
 		}, $s);
 	}

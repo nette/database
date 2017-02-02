@@ -156,9 +156,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Loads cache of previous accessed columns and returns it.
 	 * @internal
-	 * @return array|bool
+	 * @return array|NULL
 	 */
-	public function getPreviousAccessedColumns()
+	public function getPreviousAccessedColumns(): ?array
 	{
 		if ($this->cache && $this->previousAccessedColumns === NULL) {
 			$this->accessedColumns = $this->previousAccessedColumns = $this->cache->load($this->getGeneralCacheKey());
@@ -167,7 +167,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			}
 		}
 
-		return array_keys(array_filter((array) $this->previousAccessedColumns));
+		return array_keys(array_filter((array) $this->previousAccessedColumns)) ?: NULL;
 	}
 
 

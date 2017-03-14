@@ -15,7 +15,7 @@ namespace Nette\Database;
  */
 interface IStructure
 {
-	const
+	public const
 		FIELD_TEXT = 'string',
 		FIELD_BINARY = 'bin',
 		FIELD_BOOL = 'bool',

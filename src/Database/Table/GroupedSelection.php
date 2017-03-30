@@ -89,7 +89,10 @@ class GroupedSelection extends Selection
 	/********************* aggregations ****************d*g**/
 
 
-	public function aggregation(string $function): int
+	/**
+	 * @return mixed
+	 */
+	public function aggregation(string $function)
 	{
 		$aggregation = &$this->getRefTable($refPath)->aggregation[$refPath . $function . $this->sqlBuilder->getSelectQueryHash($this->getPreviousAccessedColumns())];
 

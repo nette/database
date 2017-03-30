@@ -462,8 +462,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Executes aggregation function.
 	 * @param  string select call in "FUNCTION(column)" format
+	 * @return mixed
 	 */
-	public function aggregation(string $function): int
+	public function aggregation(string $function)
 	{
 		$selection = $this->createSelectionInstance();
 		$selection->getSqlBuilder()->importConditions($this->getSqlBuilder());
@@ -490,8 +491,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns minimum value from a column.
+	 * @return mixed
 	 */
-	public function min(string $column): int
+	public function min(string $column)
 	{
 		return $this->aggregation("MIN($column)");
 	}
@@ -499,8 +501,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns maximum value from a column.
+	 * @return mixed
 	 */
-	public function max(string $column): int
+	public function max(string $column)
 	{
 		return $this->aggregation("MAX($column)");
 	}
@@ -508,8 +511,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns sum of values in a column.
+	 * @return mixed
 	 */
-	public function sum(string $column): int
+	public function sum(string $column)
 	{
 		return $this->aggregation("SUM($column)");
 	}

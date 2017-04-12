@@ -164,7 +164,7 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	 */
 	public function getColumnTypes(\PDOStatement $statement): array
 	{
-		return Nette\Database\Helpers::detectTypes($statement);
+		return [];
 	}
 
 

@@ -67,6 +67,9 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 
 		foreach ((array) $config['options'] as $key => $value) {
+			if (is_string($value) && preg_match('#^PDO::\w+\z#', $value)) {
+				$config['options'][$key] = $value = constant($value);
+			}
 			if (preg_match('#^PDO::\w+\z#', $key)) {
 				unset($config['options'][$key]);
 				$config['options'][constant($key)] = $value;

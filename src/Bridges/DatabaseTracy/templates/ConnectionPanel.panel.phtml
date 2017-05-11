@@ -42,7 +42,7 @@ use Nette\Database\Helpers;
 			<?php foreach ($explain as $row): ?>
 			<tr>
 			<?php foreach ($row as $col): ?>
-				<td><?= htmlSpecialChars($col, ENT_NOQUOTES, 'UTF-8') ?></td>
+				<td><?= str_replace(' ', '&nbsp;', htmlSpecialChars($col, ENT_NOQUOTES, 'UTF-8')) ?></td>
 			<?php endforeach ?>
 			</tr>
 			<?php endforeach ?>

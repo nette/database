@@ -179,7 +179,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 		$columns = [];
 		foreach ($this->connection->query("PRAGMA table_info({$this->delimite($table)})") as $row) {
 			$column = $row['name'];
-			$pattern = "/(\"$column\"|\[$column\]|$column)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";
+			$pattern = "/(\"$column\"|`$column`|\[$column\]|$column)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";
 			$type = explode('(', $row['type']);
 			$columns[] = [
 				'name' => $column,

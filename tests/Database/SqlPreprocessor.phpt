@@ -324,6 +324,13 @@ test(function () use ($preprocessor) { // ?values
 });
 
 
+test(function () use ($preprocessor) { // automatic detection faild
+	Assert::exception(function () use ($preprocessor) {
+		$preprocessor->process(['INSERT INTO author (name) SELECT name FROM user WHERE id IN (?)', [11, 12]]);
+	}, Nette\InvalidArgumentException::class, 'Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?[and|or|set|values|order]". Mode "values" was used.');
+});
+
+
 test(function () use ($preprocessor) { // multi insert
 	[$sql, $params] = $preprocessor->process(['INSERT INTO author', [
 		['name' => 'Catelyn Stark', 'born' => new DateTime('2011-11-11')],

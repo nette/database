@@ -19,6 +19,9 @@ class SqlPreprocessor
 {
 	use Nette\SmartObject;
 
+	/** @var array */
+	private const MODE_LIST = ['and', 'or', 'set', 'values', 'order'];
+
 	/** @var Connection */
 	private $connection;
 
@@ -162,6 +165,9 @@ class SqlPreprocessor
 
 			if ($mode === 'values') { // (key, key, ...) VALUES (value, value, ...)
 				if (array_key_exists(0, $value)) { // multi-insert
+					if (!is_array($value[0])) {
+						throw new Nette\InvalidArgumentException('Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?[' . implode('|', self::MODE_LIST) . ']". Mode "' . $mode . '" was used.');
+					}
 					foreach ($value[0] as $k => $v) {
 						$kx[] = $this->delimite($k);
 					}
@@ -228,7 +234,7 @@ class SqlPreprocessor
 				throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
 			}
 
-		} elseif (in_array($mode, ['and', 'or', 'set', 'values', 'order'], TRUE)) {
+		} elseif (in_array($mode, self::MODE_LIST, TRUE)) {
 			$type = gettype($value);
 			throw new Nette\InvalidArgumentException("Placeholder ?$mode expects array or Traversable object, $type given.");
 

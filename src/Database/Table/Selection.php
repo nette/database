@@ -909,12 +909,12 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 				}
 
 				$key = $row[$column];
-				$cacheKeys[$key] = TRUE;
+				$cacheKeys[] = $key;
 			}
 
 			if ($cacheKeys) {
 				$selection = $this->createSelectionInstance($table);
-				$selection->where($selection->getPrimary(), array_keys($cacheKeys));
+				$selection->where($selection->getPrimary(), $cacheKeys);
 			} else {
 				$selection = [];
 			}

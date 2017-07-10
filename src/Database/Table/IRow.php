@@ -17,7 +17,6 @@ use Nette\Database;
  */
 interface IRow extends Database\IRow
 {
-
 	function setTable(Selection $name);
 
 	function getTable(): Selection;
@@ -43,5 +42,4 @@ interface IRow extends Database\IRow
 	 * @return IRow|NULL if the row does not exist
 	 */
 	function ref(string $key, string $throughColumn = NULL): ?IRow;
-
 }

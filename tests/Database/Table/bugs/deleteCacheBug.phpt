@@ -13,7 +13,6 @@ require __DIR__ . '/../../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-nette_test1.sql");
 
 test(function () use ($context) {
-
 	for ($i=0; $i<2; $i++) {
 		$booksSelection = $context->table('book')->wherePrimary(1);
 		$book = $booksSelection->fetch();
@@ -31,7 +30,6 @@ test(function () use ($context) {
 });
 
 test(function () use ($context) {
-
 	for ($i=0; $i<2; $i++) {
 		$booksSelection = $context->table('book')->wherePrimary(2);
 		$book = $booksSelection->fetch();
@@ -74,7 +72,6 @@ test(function () use ($context) {
 });
 
 test(function () use ($context) {
-
 	for ($i=0; $i<2; $i++) {
 		$booksSelection = $context->table('book')->wherePrimary(3);
 		$book = $booksSelection->fetch();

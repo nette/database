@@ -78,5 +78,4 @@ class StaticConventions implements IConventions
 
 		return $name;
 	}
-
 }

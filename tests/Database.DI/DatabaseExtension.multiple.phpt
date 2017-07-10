@@ -6,8 +6,8 @@
 
 declare(strict_types=1);
 
-use Nette\DI;
 use Nette\Bridges\DatabaseDI\DatabaseExtension;
+use Nette\DI;
 use Tester\Assert;
 
 

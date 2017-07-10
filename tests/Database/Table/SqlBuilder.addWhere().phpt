@@ -7,11 +7,11 @@
 
 declare(strict_types=1);
 
-use Tester\Assert;
-use Nette\Database\SqlLiteral;
 use Nette\Database\Conventions\DiscoveredConventions;
-use Nette\Database\Table\SqlBuilder;
 use Nette\Database\ISupplementalDriver;
+use Nette\Database\SqlLiteral;
+use Nette\Database\Table\SqlBuilder;
+use Tester\Assert;
 
 require __DIR__ . '/../connect.inc.php'; // create $connection
 

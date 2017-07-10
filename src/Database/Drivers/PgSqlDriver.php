@@ -266,5 +266,4 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 	{
 		return implode('.', array_map([$this, 'delimite'], explode('.', $name)));
 	}
-
 }

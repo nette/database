@@ -100,5 +100,4 @@ class DiscoveredConventions implements IConventions
 		$this->structure->rebuild();
 		return $this->getBelongsToReference($table, $key);
 	}
-
 }

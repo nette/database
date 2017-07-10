@@ -7,10 +7,10 @@
 
 declare(strict_types=1);
 
-use Nette\Database\ISupplementalDriver;
-use Tester\Assert;
 use Nette\Database\Conventions\DiscoveredConventions;
+use Nette\Database\ISupplementalDriver;
 use Nette\Database\Table\SqlBuilder;
+use Tester\Assert;
 
 require __DIR__ . '/../connect.inc.php'; // create $connection
 
@@ -23,6 +23,8 @@ class SqlBuilderMock extends SqlBuilder
 	{
 		parent::parseJoins($joins, $query);
 	}
+
+
 	public function buildQueryJoins(array $joins, array $leftJoinConditions = []): string
 	{
 		return parent::buildQueryJoins($joins, $leftJoinConditions);

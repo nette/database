@@ -25,7 +25,7 @@ test(function () use ($context) {
 		'next_volume' => NULL,
 	], $book->toArray());
 
-	Assert::exception(function() use ($context){
+	Assert::exception(function() use ($context) {
 		$context->table('not_existing_table')->get(1);
 	}, Nette\InvalidArgumentException::class, "Table 'not_existing_table' does not exist.");
 });

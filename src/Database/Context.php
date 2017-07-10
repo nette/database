@@ -152,5 +152,4 @@ class Context
 	{
 		return new SqlLiteral($value, $params);
 	}
-
 }

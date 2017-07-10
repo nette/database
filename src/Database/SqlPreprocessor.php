@@ -251,5 +251,4 @@ class SqlPreprocessor
 	{
 		return implode('.', array_map([$this->driver, 'delimite'], explode('.', $name)));
 	}
-
 }

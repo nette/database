@@ -44,5 +44,4 @@ interface IConventions
 	 * @return array|NULL   array(referenced table, referencing column)
 	 */
 	function getBelongsToReference(string $table, string $key): ?array;
-
 }

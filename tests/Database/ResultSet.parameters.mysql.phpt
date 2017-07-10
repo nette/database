@@ -8,7 +8,6 @@
 declare(strict_types=1);
 
 use Tester\Assert;
-use Nette\Utils\DateTime;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
 

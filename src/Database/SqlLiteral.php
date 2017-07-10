@@ -43,5 +43,4 @@ class SqlLiteral
 	{
 		return $this->value;
 	}
-
 }

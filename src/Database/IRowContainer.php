@@ -46,5 +46,4 @@ interface IRowContainer extends \Traversable
 	 * @param  string  associative descriptor
 	 */
 	function fetchAssoc(string $path): array;
-
 }

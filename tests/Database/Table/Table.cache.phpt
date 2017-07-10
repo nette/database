@@ -131,7 +131,8 @@ test(function () use ($context) { // Test saving joining keys even with 0 rows
 		$author = $context->table('author')->get(11);
 		$books = $author->related('book')->where('translator_id', 99); // 0 rows
 		$cols[] = $books->getPreviousAccessedColumns();
-		foreach ($books as $book) {}
+		foreach ($books as $book) {
+		}
 		$books->__destruct();
 	}
 

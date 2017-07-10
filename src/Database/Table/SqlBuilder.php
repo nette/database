@@ -10,11 +10,11 @@ declare(strict_types=1);
 namespace Nette\Database\Table;
 
 use Nette;
+use Nette\Database\Context;
+use Nette\Database\IConventions;
+use Nette\Database\IStructure;
 use Nette\Database\ISupplementalDriver;
 use Nette\Database\SqlLiteral;
-use Nette\Database\IConventions;
-use Nette\Database\Context;
-use Nette\Database\IStructure;
 
 
 /**
@@ -797,5 +797,4 @@ class SqlBuilder
 
 		return $this->cacheTableList;
 	}
-
 }

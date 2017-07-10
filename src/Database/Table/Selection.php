@@ -1044,5 +1044,4 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		$this->execute();
 		unset($this->rows[$key], $this->data[$key]);
 	}
-
 }

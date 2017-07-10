@@ -142,5 +142,4 @@ class OdbcDriver implements Nette\Database\ISupplementalDriver
 	{
 		return $item === self::SUPPORT_SUBSELECT;
 	}
-
 }

@@ -272,5 +272,4 @@ class Structure implements IStructure
 
 		throw new Nette\InvalidArgumentException("Table '$name' does not exist.");
 	}
-
 }

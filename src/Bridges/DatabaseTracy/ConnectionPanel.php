@@ -139,5 +139,4 @@ class ConnectionPanel implements Tracy\IBarPanel
 		require __DIR__ . '/templates/ConnectionPanel.panel.phtml';
 		return ob_get_clean();
 	}
-
 }

@@ -74,5 +74,4 @@ interface IStructure
 	 * Returns true if database cached structure has been rebuilt.
 	 */
 	function isRebuilt(): bool;
-
 }

@@ -56,9 +56,7 @@ interface ISupplementalDriver
 	 */
 	function applyLimit(string &$sql, ?int $limit, ?int $offset): void;
 
-
 	/********************* reflection ****************d*g**/
-
 
 	/**
 	 * Returns list of tables.
@@ -93,5 +91,4 @@ interface ISupplementalDriver
 	 * @param  string self::SUPPORT_* property
 	 */
 	function isSupported(string $item): bool;
-
 }

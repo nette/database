@@ -234,5 +234,4 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 		// and more.
 		return $item === self::SUPPORT_SELECT_UNGROUPED_COLUMNS || $item === self::SUPPORT_MULTI_COLUMN_AS_OR_COND;
 	}
-
 }

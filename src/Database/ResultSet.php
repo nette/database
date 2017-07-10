@@ -135,7 +135,7 @@ class ResultSet implements \Iterator, IRowContainer
 		foreach ($this->types as $key => $type) {
 			$value = $row[$key];
 			if ($value === NULL || $value === FALSE || $type === IStructure::FIELD_TEXT) {
-
+				// do nothing
 			} elseif ($type === IStructure::FIELD_INTEGER) {
 				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
 
@@ -285,5 +285,4 @@ class ResultSet implements \Iterator, IRowContainer
 	{
 		return Nette\Utils\Arrays::associate($this->fetchAll(), $path);
 	}
-
 }

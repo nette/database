@@ -62,5 +62,4 @@ class DriverException extends \PDOException
 	{
 		return $this->queryString;
 	}
-
 }

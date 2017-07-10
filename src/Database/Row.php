@@ -17,7 +17,6 @@ use Nette;
  */
 class Row extends Nette\Utils\ArrayHash implements IRow
 {
-
 	public function __get($key)
 	{
 		$hint = Nette\Utils\ObjectMixin::getSuggestion(array_keys((array) $this), $key);
@@ -54,5 +53,4 @@ class Row extends Nette\Utils\ArrayHash implements IRow
 		}
 		return parent::offsetExists($key);
 	}
-
 }

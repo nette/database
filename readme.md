@@ -17,6 +17,17 @@ The [Nette Database Core](https://doc.nette.org/database-core) is a wrapper arou
 
 The [Nette Database Explorer](https://doc.nette.org/database-explorer) layer helps you to fetch database data more easily and in a more optimized way.
 
+Installation
+------------
+
+Install it using Composer:
+
+```
+composer require nette/database
+```
+
+The last stable release requires PHP version 5.6 or newer (is compatible with PHP 7.0 and 7.1). The dev-master version requires PHP 7.1.
+
 
 Documentation
 -------------

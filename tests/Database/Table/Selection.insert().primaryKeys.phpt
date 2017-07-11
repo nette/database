@@ -12,9 +12,9 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test4.sql");
 
 // Insert into table with simple primary index (autoincrement)
-test(function() use ($context) {
+test(function () use ($context) {
 	$simplePkAutoincrementResult = $context->table('simple_pk_autoincrement')->insert([
-		'note' => 'Some note here'
+		'note' => 'Some note here',
 	]);
 
 	Assert::type(Nette\Database\Table\ActiveRow::class, $simplePkAutoincrementResult);
@@ -22,7 +22,7 @@ test(function() use ($context) {
 	Assert::equal('Some note here', $simplePkAutoincrementResult->note);
 
 	$simplePkAutoincrementResult2 = $context->table('simple_pk_autoincrement')->insert([
-		'note' => 'Some note here 2'
+		'note' => 'Some note here 2',
 	]);
 
 	Assert::type(Nette\Database\Table\ActiveRow::class, $simplePkAutoincrementResult2);
@@ -31,10 +31,10 @@ test(function() use ($context) {
 });
 
 // Insert into table with simple primary index (no autoincrement)
-test(function() use ($context) {
+test(function () use ($context) {
 	$simplePkNoAutoincrementResult = $context->table('simple_pk_no_autoincrement')->insert([
 		'identifier1' => 100,
-		'note' => 'Some note here'
+		'note' => 'Some note here',
 	]);
 
 	Assert::type(Nette\Database\Table\ActiveRow::class, $simplePkNoAutoincrementResult);
@@ -43,7 +43,7 @@ test(function() use ($context) {
 
 	$simplePkNoAutoincrementResult2 = $context->table('simple_pk_no_autoincrement')->insert([
 		'identifier1' => 200,
-		'note' => 'Some note here 2'
+		'note' => 'Some note here 2',
 	]);
 
 	Assert::type(Nette\Database\Table\ActiveRow::class, $simplePkNoAutoincrementResult2);
@@ -52,11 +52,11 @@ test(function() use ($context) {
 });
 
 // Insert into table with multi column primary index (no autoincrement)
-test(function() use ($context) {
+test(function () use ($context) {
 	$multiPkNoAutoincrementResult = $context->table('multi_pk_no_autoincrement')->insert([
 		'identifier1' => 5,
 		'identifier2' => 10,
-		'note' => 'Some note here'
+		'note' => 'Some note here',
 	]);
 
 	Assert::type(Nette\Database\Table\ActiveRow::class, $multiPkNoAutoincrementResult);
@@ -67,7 +67,7 @@ test(function() use ($context) {
 	$multiPkNoAutoincrementResult2 = $context->table('multi_pk_no_autoincrement')->insert([
 		'identifier1' => 5,
 		'identifier2' => 100,
-		'note' => 'Some note here 2'
+		'note' => 'Some note here 2',
 	]);
 
 	Assert::type(Nette\Database\Table\ActiveRow::class, $multiPkNoAutoincrementResult2);
@@ -77,11 +77,11 @@ test(function() use ($context) {
 });
 
 // Insert into table with multi column primary index (autoincrement)
-test(function() use ($driverName, $context) {
-	if (in_array($driverName, ['mysql', 'pgsql'])) {
+test(function () use ($driverName, $context) {
+	if (in_array($driverName, ['mysql', 'pgsql'], true)) {
 		$multiPkAutoincrementResult = $context->table('multi_pk_autoincrement')->insert([
 			'identifier2' => 999,
-			'note' => 'Some note here'
+			'note' => 'Some note here',
 		]);
 
 		Assert::type(Nette\Database\Table\ActiveRow::class, $multiPkAutoincrementResult);
@@ -91,7 +91,7 @@ test(function() use ($driverName, $context) {
 
 		$multiPkAutoincrementResult2 = $context->table('multi_pk_autoincrement')->insert([
 			'identifier2' => 999,
-			'note' => 'Some note here 2'
+			'note' => 'Some note here 2',
 		]);
 
 		Assert::type(Nette\Database\Table\ActiveRow::class, $multiPkAutoincrementResult2);
@@ -102,7 +102,7 @@ test(function() use ($driverName, $context) {
 });
 
 // Insert into table without primary key
-test(function() use ($context) {
+test(function () use ($context) {
 	$noPkResult1 = $context->table('no_pk')->insert([
 		'note' => 'Some note here',
 	]);

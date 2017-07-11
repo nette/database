@@ -58,10 +58,10 @@ class SqlBuilder
 	protected $order = [];
 
 	/** @var int number of rows to fetch */
-	protected $limit = null;
+	protected $limit;
 
 	/** @var int first row to fetch */
-	protected $offset = null;
+	protected $offset;
 
 	/** @var string columns to grouping */
 	protected $group = '';
@@ -76,7 +76,7 @@ class SqlBuilder
 	protected $aliases = [];
 
 	/** @var string currently parsing alias for joins */
-	protected $currentAlias = null;
+	protected $currentAlias;
 
 	/** @var ISupplementalDriver */
 	private $driver;
@@ -177,7 +177,7 @@ class SqlBuilder
 			$this->parameters['where'],
 			$this->parameters['group'],
 			$this->parameters['having'],
-			$this->parameters['order']
+			$this->parameters['order'],
 		]);
 	}
 
@@ -461,7 +461,7 @@ class SqlBuilder
 	 */
 	protected function checkUniqueTableName($tableName, $chain)
 	{
-		if (isset($this->aliases[$tableName]) && ('.' . $tableName === $chain)) {
+		if (isset($this->aliases[$tableName]) && ($chain === '.' . $tableName)) {
 			$chain = $this->aliases[$tableName];
 		}
 		if (isset($this->reservedTableNames[$tableName])) {
@@ -610,7 +610,7 @@ class SqlBuilder
 	protected function getSortedJoins($table, &$leftJoinDependency, &$tableJoins, &$finalJoins)
 	{
 		if (isset($this->expandingJoins[$table])) {
-			$path = implode("' => '", array_map(function($value) { return $this->reservedTableNames[$value]; }, array_merge(array_keys($this->expandingJoins), [$table])));
+			$path = implode("' => '", array_map(function ($value) { return $this->reservedTableNames[$value]; }, array_merge(array_keys($this->expandingJoins), [$table])));
 			throw new Nette\InvalidArgumentException("Circular reference detected at left join conditions (tables '$path').");
 		}
 		if (isset($tableJoins[$table])) {
@@ -636,8 +636,7 @@ class SqlBuilder
 			$this->parameters['joinConditionSorted'] += isset($this->parameters['joinCondition'][$key])
 				? [$table => $this->parameters['joinCondition'][$key]]
 				: [];
-			unset($tableJoins[$table]);
-			unset($this->expandingJoins[$table]);
+			unset($tableJoins[$table], $this->expandingJoins[$table]);
 		}
 	}
 
@@ -820,10 +819,10 @@ class SqlBuilder
 	{
 		$return = '';
 		if ($this->group) {
-			$return .= ' GROUP BY '. $this->group;
+			$return .= ' GROUP BY ' . $this->group;
 		}
 		if ($this->having) {
-			$return .= ' HAVING '. $this->having;
+			$return .= ' HAVING ' . $this->having;
 		}
 		if ($this->order) {
 			$return .= ' ORDER BY ' . implode(', ', $this->order);

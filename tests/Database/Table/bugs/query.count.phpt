@@ -19,7 +19,7 @@ test(function () use ($connection, $context) {
 	$context->table('author')->get(11); // have to build cache first
 
 	$count = 0;
-	$connection->onQuery[] = function() use (&$count) {
+	$connection->onQuery[] = function () use (&$count) {
 		$count++;
 	};
 

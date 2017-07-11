@@ -86,7 +86,7 @@ test(function () use ($context) {
 
 test(function () use ($context) {
 	$author = $context->table('author')->get(11);
-	$books  = $author->related('book')->where('translator_id', 11);
+	$books = $author->related('book')->where('translator_id', 11);
 	Assert::same('1001 tipu a triku pro PHP', $books->fetch()->title);
 	Assert::false($books->fetch());
 

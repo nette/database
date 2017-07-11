@@ -72,7 +72,7 @@ test(function () use ($context, $driverName) {
 		default:
 			Assert::fail("Unsupported driver $driverName");
 	}
-	Assert::error(function() use ($res) {
+	Assert::error(function () use ($res) {
 		$res->fetch();
 	}, E_USER_NOTICE, $message);
 });

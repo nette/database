@@ -194,7 +194,7 @@ test(function () use ($preprocessor) { // unknown placeholder
 
 
 test(function () use ($preprocessor) { // SqlLiteral
-	list($sql, $params) = $preprocessor->process(['SELECT id FROM author WHERE id =', new SqlLiteral('? OR ?name = ?', [11, 'id', 12]) ]);
+	list($sql, $params) = $preprocessor->process(['SELECT id FROM author WHERE id =', new SqlLiteral('? OR ?name = ?', [11, 'id', 12])]);
 	Assert::same(reformat('SELECT id FROM author WHERE id = 11 OR [id] = 12'), $sql);
 	Assert::same([], $params);
 });
@@ -443,7 +443,7 @@ test(function () use ($preprocessor) {
 
 class ToString
 {
-	function __toString()
+	public function __toString()
 	{
 		return 'hello';
 	}

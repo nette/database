@@ -148,14 +148,14 @@ class Connection
 
 
 	/** @return void */
-	function beginTransaction()
+	public function beginTransaction()
 	{
 		$this->query('::beginTransaction');
 	}
 
 
 	/** @return void */
-	function commit()
+	public function commit()
 	{
 		$this->query('::commit');
 	}

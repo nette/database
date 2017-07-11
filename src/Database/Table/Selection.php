@@ -699,7 +699,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		$trace = [];
 		foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $item) {
 			$trace[] = isset($item['file'], $item['line']) ? $item['file'] . $item['line'] : null;
-		};
+		}
 
 		$key[] = $trace;
 		return $this->generalCacheKey = md5(serialize($key));

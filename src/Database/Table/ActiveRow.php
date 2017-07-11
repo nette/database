@@ -55,14 +55,14 @@ class ActiveRow implements \IteratorAggregate, IRow
 	{
 		try {
 			return (string) $this->getPrimary();
-		} catch (\Throwable $e) {
 		} catch (\Exception $e) {
+		} catch (\Throwable $e) {
 		}
 		if (isset($e)) {
 			if (func_num_args()) {
 				throw $e;
 			}
-			trigger_error("Exception in " . __METHOD__ . "(): {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}", E_USER_ERROR);
+			trigger_error('Exception in ' . __METHOD__ . "(): {$e->getMessage()} in {$e->getFile()}:{$e->getLine()}", E_USER_ERROR);
 		}
 	}
 

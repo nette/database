@@ -57,7 +57,7 @@ class SqlPreprocessor
 		$this->counter = 0;
 		$prev = -1;
 		$this->remaining = [];
-		$this->arrayMode = NULL;
+		$this->arrayMode = null;
 		$res = [];
 
 		while ($this->counter < count($params)) {
@@ -65,11 +65,11 @@ class SqlPreprocessor
 
 			if (($this->counter === 2 && count($params) === 2) || !is_scalar($param)) {
 				$res[] = $this->formatValue($param, 'auto');
-				$this->arrayMode = NULL;
+				$this->arrayMode = null;
 
 			} elseif (is_string($param) && $this->counter > $prev + 1) {
 				$prev = $this->counter;
-				$this->arrayMode = NULL;
+				$this->arrayMode = null;
 				$res[] = Nette\Utils\Strings::replace(
 					$param,
 					'~\'[^\']*+\'|"[^"]*+"|\?[a-z]*|^\s*+(?:INSERT|REPLACE)\b|\b(?:SET|WHERE|HAVING|ORDER BY|GROUP BY|KEY UPDATE)(?=\s*\z|\s*\?)|/\*.*?\*/|--[^\n]*~si',
@@ -114,14 +114,14 @@ class SqlPreprocessor
 	}
 
 
-	private function formatValue($value, $mode = NULL)
+	private function formatValue($value, $mode = null)
 	{
 		if (!$mode || $mode === 'auto') {
 			if (is_scalar($value) || is_resource($value)) {
 				$this->remaining[] = $value;
 				return '?';
 
-			} elseif ($value === NULL) {
+			} elseif ($value === null) {
 				return 'NULL';
 
 			} elseif ($value instanceof Table\IRow) {
@@ -234,7 +234,7 @@ class SqlPreprocessor
 				throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
 			}
 
-		} elseif (in_array($mode, self::MODE_LIST, TRUE)) {
+		} elseif (in_array($mode, self::MODE_LIST, true)) {
 			$type = gettype($value);
 			throw new Nette\InvalidArgumentException("Placeholder ?$mode expects array or Traversable object, $type given.");
 

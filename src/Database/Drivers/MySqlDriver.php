@@ -49,17 +49,17 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
-		$code = $e->errorInfo[1] ?? NULL;
-		if (in_array($code, [1216, 1217, 1451, 1452, 1701], TRUE)) {
+		$code = $e->errorInfo[1] ?? null;
+		if (in_array($code, [1216, 1217, 1451, 1452, 1701], true)) {
 			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
 
-		} elseif (in_array($code, [1062, 1557, 1569, 1586], TRUE)) {
+		} elseif (in_array($code, [1062, 1557, 1569, 1586], true)) {
 			return Nette\Database\UniqueConstraintViolationException::from($e);
 
 		} elseif ($code >= 2001 && $code <= 2028) {
 			return Nette\Database\ConnectionException::from($e);
 
-		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], TRUE)) {
+		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], true)) {
 			return Nette\Database\NotNullConstraintViolationException::from($e);
 
 		} else {
@@ -118,9 +118,9 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
 
-		} elseif ($limit !== NULL || $offset) {
+		} elseif ($limit !== null || $offset) {
 			// see http://dev.mysql.com/doc/refman/5.0/en/select.html
-			$sql .= ' LIMIT ' . ($limit === NULL ? '18446744073709551615' : $limit)
+			$sql .= ' LIMIT ' . ($limit === null ? '18446744073709551615' : $limit)
 				. ($offset ? ' OFFSET ' . $offset : '');
 		}
 	}
@@ -138,7 +138,7 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 		foreach ($this->connection->query('SHOW FULL TABLES') as $row) {
 			$tables[] = [
 				'name' => $row[0],
-				'view' => ($row[1] ?? NULL) === 'VIEW',
+				'view' => ($row[1] ?? null) === 'VIEW',
 			];
 		}
 		return $tables;
@@ -157,7 +157,7 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 				'name' => $row['Field'],
 				'table' => $table,
 				'nativetype' => strtoupper($type[0]),
-				'size' => isset($type[1]) ? (int) $type[1] : NULL,
+				'size' => isset($type[1]) ? (int) $type[1] : null,
 				'unsigned' => (bool) strstr($row['Type'], 'unsigned'),
 				'nullable' => $row['Null'] === 'YES',
 				'default' => $row['Default'],

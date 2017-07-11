@@ -81,7 +81,7 @@ test(function () use ($context) { // Testing GroupedSelection reinvalidation cac
 
 
 before(function () use ($cacheMemoryStorage) {
-	$cacheMemoryStorage->clean([Nette\Caching\Cache::ALL => TRUE]);
+	$cacheMemoryStorage->clean([Nette\Caching\Cache::ALL => true]);
 });
 
 
@@ -118,7 +118,7 @@ test(function () use ($context) {
 
 	foreach ($relatedStack as $related) {
 		$property = (new ReflectionClass($related))->getProperty('accessedColumns');
-		$property->setAccessible(TRUE);
+		$property->setAccessible(true);
 		// checks if instances have shared data of accessed columns
 		Assert::same(['id', 'author_id'], array_keys((array) $property->getValue($related)));
 	}

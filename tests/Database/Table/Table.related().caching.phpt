@@ -42,7 +42,7 @@ test(function () use ($context) {
 	$authors = $context->table('author')->where('id', 11);
 	$books = [];
 	foreach ($authors as $author) {
-		foreach ($author->related('book')->where('translator_id', NULL) as $book) {
+		foreach ($author->related('book')->where('translator_id', null) as $book) {
 			foreach ($book->related('book_tag') as $bookTag) {
 				$books[] = $bookTag->tag->name;
 			}
@@ -51,7 +51,7 @@ test(function () use ($context) {
 	Assert::same(['JavaScript'], $books);
 
 	foreach ($authors as $author) {
-		foreach ($author->related('book')->where('NOT translator_id', NULL) as $book) {
+		foreach ($author->related('book')->where('NOT translator_id', null) as $book) {
 			foreach ($book->related('book_tag')->order('tag_id') as $bookTag) {
 				$books[] = $bookTag->tag->name;
 			}
@@ -85,7 +85,7 @@ test(function () use ($context) {
 
 test(function () use ($context) { // cache can't be affected by inner query!
 	$author = $context->table('author')->get(11);
-	$secondBookTagRels = NULL;
+	$secondBookTagRels = null;
 	foreach ($author->related('book')->order('id') as $book) {
 		if (!isset($secondBookTagRels)) {
 			$bookFromAnotherSelection = $author->related('book')->where('id', $book->id)->fetch();

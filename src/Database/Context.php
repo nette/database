@@ -33,7 +33,7 @@ class Context
 	private $cacheStorage;
 
 
-	public function __construct(Connection $connection, IStructure $structure, IConventions $conventions = NULL, Nette\Caching\IStorage $cacheStorage = NULL)
+	public function __construct(Connection $connection, IStructure $structure, IConventions $conventions = null, Nette\Caching\IStorage $cacheStorage = null)
 	{
 		$this->connection = $connection;
 		$this->structure = $structure;
@@ -63,7 +63,7 @@ class Context
 	/**
 	 * @param  string  sequence object
 	 */
-	public function getInsertId(string $name = NULL): string
+	public function getInsertId(string $name = null): string
 	{
 		return $this->connection->getInsertId($name);
 	}

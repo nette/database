@@ -35,24 +35,24 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
-		$code = $e->errorInfo[1] ?? NULL;
+		$code = $e->errorInfo[1] ?? null;
 		$msg = $e->getMessage();
 		if ($code !== 19) {
 			return Nette\Database\DriverException::from($e);
 
-		} elseif (strpos($msg, 'must be unique') !== FALSE
-			|| strpos($msg, 'is not unique') !== FALSE
-			|| strpos($msg, 'UNIQUE constraint failed') !== FALSE
+		} elseif (strpos($msg, 'must be unique') !== false
+			|| strpos($msg, 'is not unique') !== false
+			|| strpos($msg, 'UNIQUE constraint failed') !== false
 		) {
 			return Nette\Database\UniqueConstraintViolationException::from($e);
 
-		} elseif (strpos($msg, 'may not be NULL') !== FALSE
-			|| strpos($msg, 'NOT NULL constraint failed') !== FALSE
+		} elseif (strpos($msg, 'may not be null') !== false
+			|| strpos($msg, 'NOT NULL constraint failed') !== false
 		) {
 			return Nette\Database\NotNullConstraintViolationException::from($e);
 
-		} elseif (strpos($msg, 'foreign key constraint failed') !== FALSE
-			|| strpos($msg, 'FOREIGN KEY constraint failed') !== FALSE
+		} elseif (strpos($msg, 'foreign key constraint failed') !== false
+			|| strpos($msg, 'FOREIGN KEY constraint failed') !== false
 		) {
 			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
 
@@ -110,8 +110,8 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
 
-		} elseif ($limit !== NULL || $offset) {
-			$sql .= ' LIMIT ' . ($limit === NULL ? '-1' : $limit)
+		} elseif ($limit !== null || $offset) {
+			$sql .= ' LIMIT ' . ($limit === null ? '-1' : $limit)
 				. ($offset ? ' OFFSET ' . $offset : '');
 		}
 	}
@@ -162,8 +162,8 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 				'name' => $column,
 				'table' => $table,
 				'nativetype' => strtoupper($type[0]),
-				'size' => isset($type[1]) ? (int) $type[1] : NULL,
-				'unsigned' => FALSE,
+				'size' => isset($type[1]) ? (int) $type[1] : null,
+				'unsigned' => false,
 				'nullable' => $row['notnull'] == '0',
 				'default' => $row['dflt_value'],
 				'autoincrement' => (bool) preg_match($pattern, (string) $meta['sql']),
@@ -184,7 +184,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 		foreach ($this->connection->query("PRAGMA index_list({$this->delimite($table)})") as $row) {
 			$indexes[$row['name']]['name'] = $row['name'];
 			$indexes[$row['name']]['unique'] = (bool) $row['unique'];
-			$indexes[$row['name']]['primary'] = FALSE;
+			$indexes[$row['name']]['primary'] = false;
 		}
 
 		foreach ($indexes as $index => $values) {
@@ -209,8 +209,8 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 				if ($column['vendor']['pk']) {
 					$indexes[] = [
 						'name' => 'ROWID',
-						'unique' => TRUE,
-						'primary' => TRUE,
+						'unique' => true,
+						'primary' => true,
 						'columns' => [$column['name']],
 					];
 					break;
@@ -236,8 +236,8 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 			$keys[$row['id']]['onDelete'] = $row['on_delete'];
 			$keys[$row['id']]['onUpdate'] = $row['on_update'];
 
-			if ($keys[$row['id']]['foreign'][0] == NULL) {
-				$keys[$row['id']]['foreign'] = NULL;
+			if ($keys[$row['id']]['foreign'][0] == null) {
+				$keys[$row['id']]['foreign'] = null;
 			}
 		}
 		return array_values($keys);
@@ -254,7 +254,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 		for ($col = 0; $col < $count; $col++) {
 			$meta = $statement->getColumnMeta($col);
 			if (isset($meta['sqlite:decl_type'])) {
-				if (in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], TRUE)) {
+				if (in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], true)) {
 					$types[$meta['name']] = Nette\Database\IStructure::FIELD_UNIX_TIMESTAMP;
 				} else {
 					$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['sqlite:decl_type']);

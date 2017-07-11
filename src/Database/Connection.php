@@ -43,7 +43,7 @@ class Connection
 	private $pdo;
 
 
-	public function __construct($dsn, $user = NULL, $password = NULL, array $options = NULL)
+	public function __construct($dsn, $user = null, $password = null, array $options = null)
 	{
 		$this->params = [$dsn, $user, $password];
 		$this->options = (array) $options;
@@ -86,7 +86,7 @@ class Connection
 
 	public function disconnect(): void
 	{
-		$this->pdo = NULL;
+		$this->pdo = null;
 	}
 
 
@@ -113,11 +113,11 @@ class Connection
 	/**
 	 * @param  string  sequence object
 	 */
-	public function getInsertId(string $name = NULL): string
+	public function getInsertId(string $name = null): string
 	{
 		try {
 			$res = $this->getPdo()->lastInsertId($name);
-			return $res === FALSE ? '0' : $res;
+			return $res === false ? '0' : $res;
 		} catch (PDOException $e) {
 			throw $this->driver->convertException($e);
 		}

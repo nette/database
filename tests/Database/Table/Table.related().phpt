@@ -78,7 +78,7 @@ test(function () use ($context) {
 	$counts1 = $counts2 = [];
 	foreach ($context->table('author')->order('id') as $author) {
 		$counts1[] = $author->related('book.author_id')->count('id');
-		$counts2[] = $author->related('book.author_id')->where('translator_id', NULL)->count('id');
+		$counts2[] = $author->related('book.author_id')->where('translator_id', null)->count('id');
 	}
 
 	Assert::same([2, 2, 0], $counts1);
@@ -94,5 +94,5 @@ test(function () use ($context) {
 
 	Assert::same('1001 tipu a triku pro PHP', $author->related('book')->fetch()->title);
 
-	Assert::same('JUSH', $author->related('book', NULL, TRUE)->where('translator_id', NULL)->fetch()->title);
+	Assert::same('JUSH', $author->related('book', null, true)->where('translator_id', null)->fetch()->title);
 });

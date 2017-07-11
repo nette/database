@@ -25,21 +25,21 @@ interface IRow extends Database\IRow
 	 * Returns primary key value.
 	 * @return mixed
 	 */
-	function getPrimary(bool $throw = TRUE);
+	function getPrimary(bool $throw = true);
 
 	/**
 	 * Returns row signature (composition of primary keys)
 	 */
-	function getSignature(bool $throw = TRUE): string;
+	function getSignature(bool $throw = true): string;
 
 	/**
 	 * Returns referencing rows.
 	 */
-	function related(string $key, string $throughColumn = NULL): GroupedSelection;
+	function related(string $key, string $throughColumn = null): GroupedSelection;
 
 	/**
 	 * Returns referenced row.
-	 * @return IRow|NULL if the row does not exist
+	 * @return IRow|null if the row does not exist
 	 */
-	function ref(string $key, string $throughColumn = NULL): ?IRow;
+	function ref(string $key, string $throughColumn = null): ?IRow;
 }

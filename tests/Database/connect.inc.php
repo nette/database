@@ -9,7 +9,7 @@ declare(strict_types=1);
 require __DIR__ . '/../bootstrap.php';
 
 
-$options = Tester\Environment::loadData() + ['user' => NULL, 'password' => NULL];
+$options = Tester\Environment::loadData() + ['user' => null, 'password' => null];
 
 try {
 	$connection = new Nette\Database\Connection($options['dsn'], $options['user'], $options['password']);
@@ -17,7 +17,7 @@ try {
 	Tester\Environment::skip("Connection to '$options[dsn]' failed. Reason: " . $e->getMessage());
 }
 
-if (strpos($options['dsn'], 'sqlite::memory:') === FALSE) {
+if (strpos($options['dsn'], 'sqlite::memory:') === false) {
 	Tester\Environment::lock($options['dsn'], TEMP_DIR);
 }
 

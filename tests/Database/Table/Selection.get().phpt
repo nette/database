@@ -22,7 +22,7 @@ test(function () use ($context) {
 		'author_id' => 11,
 		'translator_id' => 11,
 		'title' => '1001 tipu a triku pro PHP',
-		'next_volume' => NULL,
+		'next_volume' => null,
 	], $book->toArray());
 
 	Assert::exception(function() use ($context) {

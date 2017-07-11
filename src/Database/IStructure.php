@@ -39,7 +39,7 @@ interface IStructure
 
 	/**
 	 * Returns table primary key.
-	 * @return string|array|NULL
+	 * @return string|array|null
 	 */
 	function getPrimaryKey(string $table);
 
@@ -57,13 +57,13 @@ interface IStructure
 	 * Returns hasMany reference.
 	 * If a targetTable is not provided, returns references for all tables.
 	 */
-	function getHasManyReference(string $table, string $targetTable = NULL): ?array;
+	function getHasManyReference(string $table, string $targetTable = null): ?array;
 
 	/**
 	 * Returns belongsTo reference.
 	 * If a column is not provided, returns references for all columns.
 	 */
-	function getBelongsToReference(string $table, string $column = NULL): ?array;
+	function getBelongsToReference(string $table, string $column = null): ?array;
 
 	/**
 	 * Rebuilds database structure cache.

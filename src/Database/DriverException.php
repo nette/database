@@ -38,25 +38,25 @@ class DriverException extends \PDOException
 
 
 	/**
-	 * @return int|string|NULL  Driver-specific error code
+	 * @return int|string|null  Driver-specific error code
 	 */
 	public function getDriverCode()
 	{
-		return $this->errorInfo[1] ?? NULL;
+		return $this->errorInfo[1] ?? null;
 	}
 
 
 	/**
-	 * @return string|NULL  SQLSTATE error code
+	 * @return string|null  SQLSTATE error code
 	 */
 	public function getSqlState(): ?string
 	{
-		return $this->errorInfo[0] ?? NULL;
+		return $this->errorInfo[0] ?? null;
 	}
 
 
 	/**
-	 * @return string|NULL  SQL command
+	 * @return string|null  SQL command
 	 */
 	public function getQueryString(): ?string
 	{

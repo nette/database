@@ -23,7 +23,7 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @var Connection */
 	private $connection;
 
-	/** @var \PDOStatement|NULL */
+	/** @var \PDOStatement|null */
 	private $pdoStatement;
 
 	/** @var IRow */
@@ -50,7 +50,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 	public function __construct(Connection $connection, $queryString, array $params)
 	{
-		$time = microtime(TRUE);
+		$time = microtime(true);
 		$this->connection = $connection;
 		$this->queryString = $queryString;
 		$this->params = $params;
@@ -58,7 +58,7 @@ class ResultSet implements \Iterator, IRowContainer
 		try {
 			if (substr($queryString, 0, 2) === '::') {
 				$connection->getPdo()->{substr($queryString, 2)}();
-			} elseif ($queryString !== NULL) {
+			} elseif ($queryString !== null) {
 				static $types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT,
 					'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 				$this->pdoStatement = $connection->getPdo()->prepare($queryString);
@@ -74,7 +74,7 @@ class ResultSet implements \Iterator, IRowContainer
 			$e->queryString = $queryString;
 			throw $e;
 		}
-		$this->time = microtime(TRUE) - $time;
+		$this->time = microtime(true) - $time;
 	}
 
 
@@ -107,13 +107,13 @@ class ResultSet implements \Iterator, IRowContainer
 
 	public function getColumnCount(): ?int
 	{
-		return $this->pdoStatement ? $this->pdoStatement->columnCount() : NULL;
+		return $this->pdoStatement ? $this->pdoStatement->columnCount() : null;
 	}
 
 
 	public function getRowCount(): ?int
 	{
-		return $this->pdoStatement ? $this->pdoStatement->rowCount() : NULL;
+		return $this->pdoStatement ? $this->pdoStatement->rowCount() : null;
 	}
 
 
@@ -128,19 +128,19 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function normalizeRow(array $row): array
 	{
-		if ($this->types === NULL) {
+		if ($this->types === null) {
 			$this->types = (array) $this->connection->getSupplementalDriver()->getColumnTypes($this->pdoStatement);
 		}
 
 		foreach ($this->types as $key => $type) {
 			$value = $row[$key];
-			if ($value === NULL || $value === FALSE || $type === IStructure::FIELD_TEXT) {
+			if ($value === null || $value === false || $type === IStructure::FIELD_TEXT) {
 				// do nothing
 			} elseif ($type === IStructure::FIELD_INTEGER) {
 				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
 
 			} elseif ($type === IStructure::FIELD_FLOAT) {
-				if (($pos = strpos($value, '.')) !== FALSE) {
+				if (($pos = strpos($value, '.')) !== false) {
 					$value = rtrim(rtrim($pos === 0 ? "0$value" : $value, '0'), '.');
 				}
 				$float = (float) $value;
@@ -183,7 +183,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 	public function rewind(): void
 	{
-		if ($this->result === FALSE) {
+		if ($this->result === false) {
 			throw new Nette\InvalidStateException('Nette\\Database\\ResultSet implements only one way iterator.');
 		}
 	}
@@ -203,17 +203,17 @@ class ResultSet implements \Iterator, IRowContainer
 
 	public function next(): void
 	{
-		$this->result = FALSE;
+		$this->result = false;
 	}
 
 
 	public function valid(): bool
 	{
 		if ($this->result) {
-			return TRUE;
+			return true;
 		}
 
-		return $this->fetch() !== NULL;
+		return $this->fetch() !== null;
 	}
 
 
@@ -225,12 +225,12 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function fetch(): ?IRow
 	{
-		$data = $this->pdoStatement ? $this->pdoStatement->fetch() : NULL;
+		$data = $this->pdoStatement ? $this->pdoStatement->fetch() : null;
 		if (!$data) {
 			$this->pdoStatement->closeCursor();
-			return NULL;
+			return null;
 
-		} elseif ($this->result === NULL && count($data) !== $this->pdoStatement->columnCount()) {
+		} elseif ($this->result === null && count($data) !== $this->pdoStatement->columnCount()) {
 			$duplicates = Helpers::findDuplicates($this->pdoStatement);
 			trigger_error("Found duplicate columns in database result set: $duplicates.", E_USER_NOTICE);
 		}
@@ -253,14 +253,14 @@ class ResultSet implements \Iterator, IRowContainer
 	public function fetchField($column = 0)
 	{
 		$row = $this->fetch();
-		return $row ? $row[$column] : NULL;
+		return $row ? $row[$column] : null;
 	}
 
 
 	/**
 	 * @inheritDoc
 	 */
-	public function fetchPairs($key = NULL, $value = NULL): array
+	public function fetchPairs($key = null, $value = null): array
 	{
 		return Helpers::toPairs($this->fetchAll(), $key, $value);
 	}
@@ -271,7 +271,7 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function fetchAll(): array
 	{
-		if ($this->results === NULL) {
+		if ($this->results === null) {
 			$this->results = iterator_to_array($this);
 		}
 		return $this->results;

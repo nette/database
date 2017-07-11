@@ -18,22 +18,22 @@ use Nette;
 class DatabaseExtension extends Nette\DI\CompilerExtension
 {
 	public $databaseDefaults = [
-		'dsn' => NULL,
-		'user' => NULL,
-		'password' => NULL,
-		'options' => NULL,
-		'debugger' => TRUE,
-		'explain' => TRUE,
-		'reflection' => NULL, // BC
+		'dsn' => null,
+		'user' => null,
+		'password' => null,
+		'options' => null,
+		'debugger' => true,
+		'explain' => true,
+		'reflection' => null, // BC
 		'conventions' => 'discovered', // Nette\Database\Conventions\DiscoveredConventions
-		'autowired' => NULL,
+		'autowired' => null,
 	];
 
 	/** @var bool */
 	private $debugMode;
 
 
-	public function __construct(bool $debugMode = FALSE)
+	public function __construct(bool $debugMode = false)
 	{
 		$this->debugMode = $debugMode;
 	}
@@ -50,13 +50,13 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		}
 
 		$defaults = $this->databaseDefaults;
-		$defaults['autowired'] = TRUE;
+		$defaults['autowired'] = true;
 		foreach ((array) $configs as $name => $config) {
 			if (!is_array($config)) {
 				continue;
 			}
 			$config = $this->validateConfig($defaults, $config, $this->prefix($name));
-			$defaults['autowired'] = FALSE;
+			$defaults['autowired'] = false;
 			$this->setupDatabase($config, $name);
 		}
 	}
@@ -96,7 +96,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		}
 
 		if (!$config['conventions']) {
-			$conventions = NULL;
+			$conventions = null;
 
 		} elseif (is_string($config['conventions'])) {
 			$conventions = $builder->addDefinition($this->prefix("$name.$conventionsServiceName"))

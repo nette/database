@@ -43,7 +43,7 @@ test(function () use ($context, $driverName) {
 test(function () use ($context, $driverName) { // tests closeCursor()
 	if ($driverName === 'mysql') {
 		$context->query('CREATE DEFINER = CURRENT_USER PROCEDURE `testProc`(IN param int(10) unsigned) BEGIN SELECT * FROM book WHERE id != param; END;;');
-		$context->getConnection()->getPdo()->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, FALSE);
+		$context->getConnection()->getPdo()->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
 
 		$res = $context->query('CALL testProc(1)');
 		foreach ($res as $row) {

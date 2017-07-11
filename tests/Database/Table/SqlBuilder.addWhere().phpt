@@ -18,10 +18,10 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test(function () use ($context) { // test paramateres with NULL
+test(function () use ($context) { // test paramateres with null
 	$sqlBuilder = new SqlBuilder('book', $context);
-	$sqlBuilder->addWhere('id ? OR id ?', [1, NULL]);
-	$sqlBuilder->addWhere('id ? OR id ?', [1, NULL]); // duplicit condition
+	$sqlBuilder->addWhere('id ? OR id ?', [1, null]);
+	$sqlBuilder->addWhere('id ? OR id ?', [1, null]); // duplicit condition
 	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] = ? OR [id] IS NULL)'), $sqlBuilder->buildSelectQuery());
 });
 
@@ -30,7 +30,7 @@ test(function () use ($context) { // ?name
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('?name ?', 'id', 3);
 	$sqlBuilder->addWhere('?name = ?', 'number', 4);
-	$sqlBuilder->addWhere('?name ?', 'number', NULL);
+	$sqlBuilder->addWhere('?name ?', 'number', null);
 	Assert::same(reformat('SELECT * FROM [book] WHERE (?name = ?) AND (?name = ?) AND (?name IS NULL)'), $sqlBuilder->buildSelectQuery());
 });
 
@@ -91,7 +91,7 @@ test(function () use ($context) { // test Selection with column as a parameter
 
 test(function () use ($context) { // test multiple placeholder parameter
 	$sqlBuilder = new SqlBuilder('book', $context);
-	$sqlBuilder->addWhere('id ? OR id ?', NULL, $context->table('book'));
+	$sqlBuilder->addWhere('id ? OR id ?', null, $context->table('book'));
 	Assert::equal(reformat([
 		'mysql' => 'SELECT * FROM `book` WHERE (`id` IS NULL OR `id` IN (?))',
 		'SELECT * FROM [book] WHERE ([id] IS NULL OR [id] IN (SELECT [id] FROM [book]))',
@@ -163,7 +163,7 @@ test(function () use ($context) { // tests multiline condition
 test(function () use ($context) { // tests NOT
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id NOT', [1, 2]);
-	$sqlBuilder->addWhere('id NOT', NULL);
+	$sqlBuilder->addWhere('id NOT', null);
 	$sqlBuilder->addWhere('id NOT', $context->table('book')->select('id'));
 	Assert::equal(reformat([
 		'mysql' => 'SELECT * FROM `book` WHERE (`id` NOT IN (?)) AND (`id` IS NOT NULL) AND (`id` NOT IN (?))',
@@ -213,8 +213,8 @@ Assert::exception(function () use ($context) {
 
 Assert::exception(function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
-	$sqlBuilder->addWhere('id = ?', NULL);
-}, Nette\InvalidArgumentException::class, 'Column operator does not accept NULL argument.');
+	$sqlBuilder->addWhere('id = ?', null);
+}, Nette\InvalidArgumentException::class, 'Column operator does not accept null argument.');
 
 
 Assert::exception(function () use ($context) {

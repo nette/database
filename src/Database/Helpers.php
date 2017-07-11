@@ -74,7 +74,7 @@ class Helpers
 	/**
 	 * Returns syntax highlighted SQL command.
 	 */
-	public static function dumpSql(string $sql, array $params = NULL, Connection $connection = NULL): string
+	public static function dumpSql(string $sql, array $params = null, Connection $connection = null): string
 	{
 		static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
 		static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|[RI]?LIKE|REGEXP|TRUE|FALSE';
@@ -127,7 +127,7 @@ class Helpers
 				if ($type === 'stream') {
 					$info = stream_get_meta_data($param);
 				}
-				return '<i' . (isset($info['uri']) ? ' title="' . htmlspecialchars($info['uri'], ENT_NOQUOTES, 'UTF-8') . '"' : NULL)
+				return '<i' . (isset($info['uri']) ? ' title="' . htmlspecialchars($info['uri'], ENT_NOQUOTES, 'UTF-8') . '"' : null)
 					. '>&lt;' . htmlSpecialChars($type, ENT_NOQUOTES, 'UTF-8') . ' resource&gt;</i> ';
 
 			} else {
@@ -180,7 +180,7 @@ class Helpers
 	 * @param  $onProgress  function (int $count, ?float $percent): void
 	 * @return int  count of commands
 	 */
-	public static function loadFromFile(Connection $connection, string $file, callable $onProgress = NULL): int
+	public static function loadFromFile(Connection $connection, string $file, callable $onProgress = null): int
 	{
 		@set_time_limit(0); // @ function may be disabled
 
@@ -194,7 +194,7 @@ class Helpers
 		$delimiter = ';';
 		$sql = '';
 		$pdo = $connection->getPdo(); // native query without logging
-		while (($s = fgets($handle)) !== FALSE) {
+		while (($s = fgets($handle)) !== false) {
 			$size += strlen($s);
 			if (!strncasecmp($s, 'DELIMITER ', 10)) {
 				$delimiter = trim(substr($s, 10));
@@ -205,7 +205,7 @@ class Helpers
 				$sql = '';
 				$count++;
 				if ($onProgress) {
-					$onProgress($count, isset($stat['size']) ? $size * 100 / $stat['size'] : NULL);
+					$onProgress($count, isset($stat['size']) ? $size * 100 / $stat['size'] : null);
 				}
 
 			} else {
@@ -216,7 +216,7 @@ class Helpers
 			$pdo->exec($sql);
 			$count++;
 			if ($onProgress) {
-				$onProgress($count, isset($stat['size']) ? 100 : NULL);
+				$onProgress($count, isset($stat['size']) ? 100 : null);
 			}
 		}
 		fclose($handle);
@@ -224,7 +224,7 @@ class Helpers
 	}
 
 
-	public static function createDebugPanel($connection, bool $explain = TRUE, $name = NULL): Nette\Bridges\DatabaseTracy\ConnectionPanel
+	public static function createDebugPanel($connection, bool $explain = true, $name = null): Nette\Bridges\DatabaseTracy\ConnectionPanel
 	{
 		$panel = new Nette\Bridges\DatabaseTracy\ConnectionPanel($connection);
 		$panel->explain = $explain;
@@ -237,7 +237,7 @@ class Helpers
 	/**
 	 * Reformat source to key -> value pairs.
 	 */
-	public static function toPairs(array $rows, $key = NULL, $value = NULL): array
+	public static function toPairs(array $rows, $key = null, $value = null): array
 	{
 		if (!$rows) {
 			return [];
@@ -247,7 +247,7 @@ class Helpers
 		if (!count($keys)) {
 			throw new \LogicException('Result set does not contain any column.');
 
-		} elseif ($key === NULL && $value === NULL) {
+		} elseif ($key === null && $value === null) {
 			if (count($keys) === 1) {
 				[$value] = $keys;
 			} else {
@@ -256,13 +256,13 @@ class Helpers
 		}
 
 		$return = [];
-		if ($key === NULL) {
+		if ($key === null) {
 			foreach ($rows as $row) {
-				$return[] = ($value === NULL ? $row : $row[$value]);
+				$return[] = ($value === null ? $row : $row[$value]);
 			}
 		} else {
 			foreach ($rows as $row) {
-				$return[is_object($row[$key]) ? (string) $row[$key] : $row[$key]] = ($value === NULL ? $row : $row[$value]);
+				$return[is_object($row[$key]) ? (string) $row[$key] : $row[$key]] = ($value === null ? $row : $row[$value]);
 			}
 		}
 

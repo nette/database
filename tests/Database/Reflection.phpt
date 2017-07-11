@@ -22,18 +22,18 @@ usort($tables, function ($a, $b) { return strcmp($a['name'], $b['name']); });
 
 if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
 	Assert::same([
-		['name' => 'author', 'view' => FALSE, 'fullName' => 'public.author'],
-		['name' => 'book', 'view' => FALSE, 'fullName' => 'public.book'],
-		['name' => 'book_tag', 'view' => FALSE, 'fullName' => 'public.book_tag'],
-		['name' => 'tag', 'view' => FALSE, 'fullName' => 'public.tag'],
+		['name' => 'author', 'view' => false, 'fullName' => 'public.author'],
+		['name' => 'book', 'view' => false, 'fullName' => 'public.book'],
+		['name' => 'book_tag', 'view' => false, 'fullName' => 'public.book_tag'],
+		['name' => 'tag', 'view' => false, 'fullName' => 'public.tag'],
 	],
 	$tables);
 } else {
 	Assert::same([
-		['name' => 'author', 'view' => FALSE],
-		['name' => 'book', 'view' => FALSE],
-		['name' => 'book_tag', 'view' => FALSE],
-		['name' => 'tag', 'view' => FALSE],
+		['name' => 'author', 'view' => false],
+		['name' => 'book', 'view' => false],
+		['name' => 'book_tag', 'view' => false],
+		['name' => 'tag', 'view' => false],
 	], $tables);
 }
 
@@ -50,44 +50,44 @@ $expectedColumns = [
 		'table' => 'author',
 		'nativetype' => 'INT',
 		'size' => 11,
-		'unsigned' => FALSE,
-		'nullable' => FALSE,
-		'default' => NULL,
-		'autoincrement' => TRUE,
-		'primary' => TRUE,
+		'unsigned' => false,
+		'nullable' => false,
+		'default' => null,
+		'autoincrement' => true,
+		'primary' => true,
 	],
 	[
 		'name' => 'name',
 		'table' => 'author',
 		'nativetype' => 'VARCHAR',
 		'size' => 30,
-		'unsigned' => FALSE,
-		'nullable' => FALSE,
-		'default' => NULL,
-		'autoincrement' => FALSE,
-		'primary' => FALSE,
+		'unsigned' => false,
+		'nullable' => false,
+		'default' => null,
+		'autoincrement' => false,
+		'primary' => false,
 	],
 	[
 		'name' => 'web',
 		'table' => 'author',
 		'nativetype' => 'VARCHAR',
 		'size' => 100,
-		'unsigned' => FALSE,
-		'nullable' => FALSE,
-		'default' => NULL,
-		'autoincrement' => FALSE,
-		'primary' => FALSE,
+		'unsigned' => false,
+		'nullable' => false,
+		'default' => null,
+		'autoincrement' => false,
+		'primary' => false,
 	],
 	[
 		'name' => 'born',
 		'table' => 'author',
 		'nativetype' => 'DATE',
-		'size' => NULL,
-		'unsigned' => FALSE,
-		'nullable' => TRUE,
-		'default' => NULL,
-		'autoincrement' => FALSE,
-		'primary' => FALSE,
+		'size' => null,
+		'unsigned' => false,
+		'nullable' => true,
+		'default' => null,
+		'autoincrement' => false,
+		'primary' => false,
 	],
 ];
 
@@ -97,20 +97,20 @@ switch ($driverName) {
 	case 'pgsql':
 		$expectedColumns[0]['nativetype'] = 'INT4';
 		$expectedColumns[0]['default'] = "nextval('author_id_seq'::regclass)";
-		$expectedColumns[0]['size'] = NULL;
+		$expectedColumns[0]['size'] = null;
 		break;
 	case 'sqlite':
 		$expectedColumns[0]['nativetype'] = 'INTEGER';
-		$expectedColumns[0]['size'] = NULL;
+		$expectedColumns[0]['size'] = null;
 		$expectedColumns[1]['nativetype'] = 'TEXT';
-		$expectedColumns[1]['size'] = NULL;
+		$expectedColumns[1]['size'] = null;
 		$expectedColumns[2]['nativetype'] = 'TEXT';
-		$expectedColumns[2]['size'] = NULL;
+		$expectedColumns[2]['size'] = null;
 		break;
 	case 'sqlsrv':
-		$expectedColumns[0]['size'] = NULL;
-		$expectedColumns[1]['size'] = NULL;
-		$expectedColumns[2]['size'] = NULL;
+		$expectedColumns[0]['size'] = null;
+		$expectedColumns[1]['size'] = null;
+		$expectedColumns[2]['size'] = null;
 		break;
 	default:
 		Assert::fail("Unsupported driver $driverName");
@@ -125,8 +125,8 @@ switch ($driverName) {
 		Assert::same([
 			[
 				'name' => 'book_tag_pkey',
-				'unique' => TRUE,
-				'primary' => TRUE,
+				'unique' => true,
+				'primary' => true,
 				'columns' => [
 					'book_id',
 					'tag_id',
@@ -138,8 +138,8 @@ switch ($driverName) {
 		Assert::same([
 			[
 				'name' => 'sqlite_autoindex_book_tag_1',
-				'unique' => TRUE,
-				'primary' => TRUE,
+				'unique' => true,
+				'primary' => true,
 				'columns' => [
 					'book_id',
 					'tag_id',
@@ -151,8 +151,8 @@ switch ($driverName) {
 		Assert::same([
 			[
 				'name' => 'PK_book_tag',
-				'unique' => TRUE,
-				'primary' => TRUE,
+				'unique' => true,
+				'primary' => true,
 				'columns' => [
 					'book_id',
 					'tag_id',
@@ -164,8 +164,8 @@ switch ($driverName) {
 		Assert::same([
 			[
 				'name' => 'PRIMARY',
-				'unique' => TRUE,
-				'primary' => TRUE,
+				'unique' => true,
+				'primary' => true,
 				'columns' => [
 					'book_id',
 					'tag_id',
@@ -173,8 +173,8 @@ switch ($driverName) {
 			],
 			[
 				'name' => 'book_tag_tag',
-				'unique' => FALSE,
-				'primary' => FALSE,
+				'unique' => false,
+				'primary' => false,
 				'columns' => [
 					'tag_id',
 				],

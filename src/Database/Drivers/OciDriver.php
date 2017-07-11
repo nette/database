@@ -35,14 +35,14 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
-		$code = $e->errorInfo[1] ?? NULL;
-		if (in_array($code, [1, 2299, 38911], TRUE)) {
+		$code = $e->errorInfo[1] ?? null;
+		if (in_array($code, [1, 2299, 38911], true)) {
 			return Nette\Database\UniqueConstraintViolationException::from($e);
 
-		} elseif (in_array($code, [1400], TRUE)) {
+		} elseif (in_array($code, [1400], true)) {
 			return Nette\Database\NotNullConstraintViolationException::from($e);
 
-		} elseif (in_array($code, [2266, 2291, 2292], TRUE)) {
+		} elseif (in_array($code, [2266, 2291, 2292], true)) {
 			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
 
 		} else {
@@ -102,10 +102,10 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 		} elseif ($offset) {
 			// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
 			$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t '
-				. ($limit !== NULL ? 'WHERE ROWNUM <= ' . ($offset + $limit) : '')
+				. ($limit !== null ? 'WHERE ROWNUM <= ' . ($offset + $limit) : '')
 				. ') WHERE "__rnum" > ' . $offset;
 
-		} elseif ($limit !== NULL) {
+		} elseif ($limit !== null) {
 			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . $limit;
 		}
 	}

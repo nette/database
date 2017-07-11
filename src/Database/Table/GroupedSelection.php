@@ -38,7 +38,7 @@ class GroupedSelection extends Selection
 	 * @param  string $tableName  database table name
 	 * @param  string $column  joining column
 	 */
-	public function __construct(Context $context, IConventions $conventions, string $tableName, string $column, Selection $refTable, Nette\Caching\IStorage $cacheStorage = NULL)
+	public function __construct(Context $context, IConventions $conventions, string $tableName, string $column, Selection $refTable, Nette\Caching\IStorage $cacheStorage = null)
 	{
 		$this->refTable = $refTable;
 		$this->column = $column;
@@ -96,7 +96,7 @@ class GroupedSelection extends Selection
 	{
 		$aggregation = &$this->getRefTable($refPath)->aggregation[$refPath . $function . $this->sqlBuilder->getSelectQueryHash($this->getPreviousAccessedColumns())];
 
-		if ($aggregation === NULL) {
+		if ($aggregation === null) {
 			$aggregation = [];
 
 			$selection = $this->createSelectionInstance();
@@ -119,7 +119,7 @@ class GroupedSelection extends Selection
 	}
 
 
-	public function count(string $column = NULL): int
+	public function count(string $column = null): int
 	{
 		$return = parent::count($column);
 		return $return ?? 0;
@@ -131,7 +131,7 @@ class GroupedSelection extends Selection
 
 	protected function execute(): void
 	{
-		if ($this->rows !== NULL) {
+		if ($this->rows !== null) {
 			$this->observeCache = $this;
 			return;
 		}
@@ -146,17 +146,17 @@ class GroupedSelection extends Selection
 			$limit = $this->sqlBuilder->getLimit();
 			$rows = count($this->refTable->rows);
 			if ($limit && $rows > 1) {
-				$this->sqlBuilder->setLimit(NULL, NULL);
+				$this->sqlBuilder->setLimit(null, null);
 			}
 			parent::execute();
-			$this->sqlBuilder->setLimit($limit, NULL);
+			$this->sqlBuilder->setLimit($limit, null);
 			$data = [];
 			$offset = [];
 			$this->accessColumn($this->column);
 			foreach ((array) $this->rows as $key => $row) {
 				$ref = &$data[$row[$this->column]];
 				$skip = &$offset[$row[$this->column]];
-				if ($limit === NULL || $rows <= 1 || (count($ref) < $limit && $skip >= $this->sqlBuilder->getOffset())) {
+				if ($limit === null || $rows <= 1 || (count($ref) < $limit && $skip >= $this->sqlBuilder->getOffset())) {
 					$ref[$key] = $row;
 				} else {
 					unset($this->rows[$key]);
@@ -170,7 +170,7 @@ class GroupedSelection extends Selection
 		}
 
 		$this->observeCache = $this;
-		if ($this->data === NULL) {
+		if ($this->data === null) {
 			$this->data = [];
 		} else {
 			foreach ($this->data as $row) {
@@ -210,9 +210,9 @@ class GroupedSelection extends Selection
 	}
 
 
-	protected function emptyResultSet(bool $saveCache = TRUE, bool $deleteRererencedCache = TRUE): void
+	protected function emptyResultSet(bool $saveCache = true, bool $deleteRererencedCache = true): void
 	{
-		parent::emptyResultSet($saveCache, FALSE);
+		parent::emptyResultSet($saveCache, false);
 	}
 
 

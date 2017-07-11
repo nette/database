@@ -17,7 +17,7 @@ interface IConventions
 
 	/**
 	 * Returns primary key for table.
-	 * @return string|array|NULL
+	 * @return string|array|null
 	 */
 	function getPrimary(string $table);
 
@@ -28,7 +28,7 @@ interface IConventions
 	 *
 	 * @param  string  source table
 	 * @param  string  referencing key
-	 * @return array|NULL   array(referenced table, referenced column)
+	 * @return array|null   array(referenced table, referenced column)
 	 * @throws AmbiguousReferenceKeyException
 	 */
 	function getHasManyReference(string $table, string $key): ?array;
@@ -41,7 +41,7 @@ interface IConventions
 	 *
 	 * @param  string  source table
 	 * @param  string  referencing key
-	 * @return array|NULL   array(referenced table, referencing column)
+	 * @return array|null   array(referenced table, referencing column)
 	 */
 	function getBelongsToReference(string $table, string $key): ?array;
 }

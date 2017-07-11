@@ -85,7 +85,7 @@ Assert::equal([
 ], $pairs);
 
 
-$pairs = $context->query('SELECT id FROM book ORDER BY id')->fetchPairs(NULL, 'id');
+$pairs = $context->query('SELECT id FROM book ORDER BY id')->fetchPairs(null, 'id');
 Assert::equal([
 	0 => 1,
 	1 => 2,

@@ -27,14 +27,14 @@ interface IRow extends Database\IRow
 	 * @param  bool
 	 * @return mixed
 	 */
-	function getPrimary($throw = TRUE);
+	function getPrimary($throw = true);
 
 	/**
 	 * Returns row signature (composition of primary keys)
 	 * @param  bool
 	 * @return string
 	 */
-	function getSignature($throw = TRUE);
+	function getSignature($throw = true);
 
 	/**
 	 * Returns referencing rows.
@@ -42,13 +42,13 @@ interface IRow extends Database\IRow
 	 * @param  string
 	 * @return GroupedSelection
 	 */
-	function related($key, $throughColumn = NULL);
+	function related($key, $throughColumn = null);
 
 	/**
 	 * Returns referenced row.
 	 * @param  string
 	 * @param  string
-	 * @return IRow|NULL if the row does not exist
+	 * @return IRow|null if the row does not exist
 	 */
-	function ref($key, $throughColumn = NULL);
+	function ref($key, $throughColumn = null);
 }

@@ -29,8 +29,8 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 
 	public function convertException(\PDOException $e)
 	{
-		$code = isset($e->errorInfo[0]) ? $e->errorInfo[0] : NULL;
-		if ($code === '0A000' && strpos($e->getMessage(), 'truncate') !== FALSE) {
+		$code = isset($e->errorInfo[0]) ? $e->errorInfo[0] : null;
+		if ($code === '0A000' && strpos($e->getMessage(), 'truncate') !== false) {
 			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
 
 		} elseif ($code === '23502') {
@@ -111,7 +111,7 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
 		}
-		if ($limit !== NULL) {
+		if ($limit !== null) {
 			$sql .= ' LIMIT ' . (int) $limit;
 		}
 		if ($offset) {

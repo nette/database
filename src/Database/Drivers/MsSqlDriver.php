@@ -84,7 +84,7 @@ class MsSqlDriver implements Nette\Database\ISupplementalDriver
 		} elseif ($limit < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
 
-		} elseif ($limit !== NULL) {
+		} elseif ($limit !== null) {
 			$sql = preg_replace('#^\s*(SELECT(\s+DISTINCT|\s+ALL)?|UPDATE|DELETE)#i', '$0 TOP ' . (int) $limit, $sql, 1, $count);
 			if (!$count) {
 				throw new Nette\InvalidArgumentException('SQL query must begin with SELECT, UPDATE or DELETE command.');

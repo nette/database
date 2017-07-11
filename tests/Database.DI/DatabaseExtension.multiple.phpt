@@ -37,7 +37,7 @@ test(function () {
 	', 'neon'));
 
 	$compiler = new DI\Compiler;
-	$compiler->addExtension('database', new DatabaseExtension(FALSE));
+	$compiler->addExtension('database', new DatabaseExtension(false));
 	eval($compiler->addConfig($config)->setClassName('Container1')->compile());
 
 	$container = new Container1;

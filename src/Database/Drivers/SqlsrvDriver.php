@@ -101,14 +101,14 @@ class SqlsrvDriver implements Nette\Database\ISupplementalDriver
 			if ($offset) {
 				throw new Nette\NotSupportedException('Offset is not supported by this database.');
 
-			} elseif ($limit !== NULL) {
+			} elseif ($limit !== null) {
 				$sql = preg_replace('#^\s*(SELECT(\s+DISTINCT|\s+ALL)?|UPDATE|DELETE)#i', '$0 TOP ' . (int) $limit, $sql, 1, $count);
 				if (!$count) {
 					throw new Nette\InvalidArgumentException('SQL query must begin with SELECT, UPDATE or DELETE command.');
 				}
 			}
 
-		} elseif ($limit !== NULL || $offset) {
+		} elseif ($limit !== null || $offset) {
 			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
 			$sql .= ' OFFSET ' . (int) $offset . ' ROWS '
 				. 'FETCH NEXT ' . (int) $limit . ' ROWS ONLY';

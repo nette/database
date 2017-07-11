@@ -35,10 +35,10 @@ class ConnectionPanel implements Tracy\IBarPanel
 	public $name;
 
 	/** @var bool|string explain queries? */
-	public $explain = TRUE;
+	public $explain = true;
 
 	/** @var bool */
-	public $disabled = FALSE;
+	public $disabled = false;
 
 
 	public function __construct(Nette\Database\Connection $connection)
@@ -54,7 +54,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 		}
 		$this->count++;
 
-		$source = NULL;
+		$source = null;
 		$trace = $result instanceof \PDOException ? $result->getTrace() : debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		foreach ($trace as $row) {
 			if (isset($row['file']) && is_file($row['file']) && !Tracy\Debugger::getBluescreen()->isCollapsed($row['file'])) {
@@ -70,11 +70,11 @@ class ConnectionPanel implements Tracy\IBarPanel
 		if ($result instanceof Nette\Database\ResultSet) {
 			$this->totalTime += $result->getTime();
 			if ($this->count < $this->maxQueries) {
-				$this->queries[] = [$connection, $result->getQueryString(), $result->getParameters(), $source, $result->getTime(), $result->getRowCount(), NULL];
+				$this->queries[] = [$connection, $result->getQueryString(), $result->getParameters(), $source, $result->getTime(), $result->getRowCount(), null];
 			}
 
 		} elseif ($result instanceof \PDOException && $this->count < $this->maxQueries) {
-			$this->queries[] = [$connection, $result->queryString, NULL, $source, NULL, NULL, $result->getMessage()];
+			$this->queries[] = [$connection, $result->queryString, null, $source, null, null, $result->getMessage()];
 		}
 	}
 
@@ -93,7 +93,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 		return isset($sql) ? [
 			'tab' => 'SQL',
 			'panel' => Helpers::dumpSql($sql),
-		] : NULL;
+		] : null;
 	}
 
 
@@ -110,7 +110,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 
 	public function getPanel()
 	{
-		$this->disabled = TRUE;
+		$this->disabled = true;
 		if (!$this->count) {
 			return;
 		}
@@ -121,7 +121,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 		$queries = [];
 		foreach ($this->queries as $query) {
 			list($connection, $sql, $params, $source, $time, $rows, $error) = $query;
-			$explain = NULL;
+			$explain = null;
 			if (!$error && $this->explain && preg_match('#\s*\(?\s*SELECT\s#iA', $sql)) {
 				try {
 					$cmd = is_string($this->explain) ? $this->explain : 'EXPLAIN';

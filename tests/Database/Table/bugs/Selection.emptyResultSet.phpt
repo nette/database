@@ -18,7 +18,7 @@ test(function () use ($context) {
 	$context->table('book')->get(2)->author->update(['name' => 'New name']);
 	$context->table('book')->get(2)->update(['title' => 'New book title']);
 
-	$selection->limit(NULL); //should invalidate cache of data and references
+	$selection->limit(null); //should invalidate cache of data and references
 	$book = $selection->get(2);
 
 	Assert::same('New book title', $book->title); //data cache invalidated

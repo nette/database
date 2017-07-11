@@ -21,7 +21,7 @@ test(function () use ($context) { // numeric field
 	Assert::true(isset($row[0]));
 	Assert::false(isset($row[123]));
 	//Assert::false(isset($row['0'])); // this is buggy since PHP 5.4 (bug #63217)
-	Assert::false(isset($row[1])); // NULL value
+	Assert::false(isset($row[1])); // null value
 	Assert::false(isset($row[2])); // is not set
 
 
@@ -40,7 +40,7 @@ test(function () use ($context) { // named field
 	Assert::same(123, $row->title);
 	Assert::same(123, $row[0]);
 	Assert::same(123, $row['title']);
-	Assert::false(isset($row[1])); // NULL value
+	Assert::false(isset($row[1])); // null value
 
 	Assert::error(function () use ($row) {
 		$row->tilte;

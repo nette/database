@@ -14,9 +14,9 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 
 $cacheStorage = Mockery::mock(Nette\Caching\Istorage::class);
-$cacheStorage->shouldReceive('read')->withAnyArgs()->once()->andReturn(['id' => TRUE]);
-$cacheStorage->shouldReceive('read')->withAnyArgs()->times(4)->andReturn(['id' => TRUE, 'author_id' => TRUE]);
-$cacheStorage->shouldReceive('write')->with(Mockery::any(), ['id' => TRUE, 'author_id' => TRUE, 'title' => TRUE], []);
+$cacheStorage->shouldReceive('read')->withAnyArgs()->once()->andReturn(['id' => true]);
+$cacheStorage->shouldReceive('read')->withAnyArgs()->times(4)->andReturn(['id' => true, 'author_id' => true]);
+$cacheStorage->shouldReceive('write')->with(Mockery::any(), ['id' => true, 'author_id' => true, 'title' => true], []);
 
 $context = new Nette\Database\Context($connection, $structure, $conventions, $cacheStorage);
 

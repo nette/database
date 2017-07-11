@@ -56,9 +56,9 @@ test(function () use ($preprocessor) { // IN
 
 
 	list($sql, $params) = $preprocessor->process(['SELECT id FROM author WHERE', [
-		'a' => [NULL, 1, 2, 3],
+		'a' => [null, 1, 2, 3],
 		'b' => [],
-		'c NOT IN' => [NULL, 1, 2, 3],
+		'c NOT IN' => [null, 1, 2, 3],
 		'd NOT IN' => [],
 	]]);
 
@@ -98,9 +98,9 @@ test(function () use ($preprocessor) { // strings
 
 test(function () use ($preprocessor) { // where
 	list($sql, $params) = $preprocessor->process(['SELECT id FROM author WHERE', [
-		'id' => NULL,
+		'id' => null,
 		'x.name <>' => 'a',
-		'born' => [NULL, 1, 2, 3],
+		'born' => [null, 1, 2, 3],
 		'web' => [],
 	]]);
 
@@ -123,8 +123,8 @@ test(function () use ($preprocessor) { // tuples
 
 test(function () use ($preprocessor) { // order
 	list($sql, $params) = $preprocessor->process(['SELECT id FROM author ORDER BY', [
-		'id' => TRUE,
-		'name' => FALSE,
+		'id' => true,
+		'name' => false,
 	]]);
 
 	Assert::same(reformat('SELECT id FROM author ORDER BY [id], [name] DESC'), $sql);
@@ -134,8 +134,8 @@ test(function () use ($preprocessor) { // order
 
 test(function () use ($preprocessor) { // ?order
 	list($sql, $params) = $preprocessor->process(['SELECT id FROM author ORDER BY ?order', [
-		'id' => TRUE,
-		'name' => FALSE,
+		'id' => true,
+		'name' => false,
 	]]);
 
 	Assert::same(reformat('SELECT id FROM author ORDER BY [id], [name] DESC'), $sql);
@@ -148,7 +148,7 @@ test(function () use ($preprocessor) { // mix of where & order
 		'id' => 1,
 		'web' => 'web',
 	], [
-		'name' => FALSE,
+		'name' => false,
 	]]);
 
 	Assert::same(reformat("SELECT id FROM author WHERE ([id] = 1) AND ([web] = 'web') ORDER BY [name] DESC"), $sql);
@@ -229,7 +229,7 @@ test(function () use ($preprocessor) { // empty and
 
 test(function () use ($preprocessor) { // ?and
 	list($sql, $params) = $preprocessor->process(['SELECT id FROM author WHERE ?and', [
-		'id' => NULL,
+		'id' => null,
 		'born' => [1, 2],
 	]]);
 
@@ -240,7 +240,7 @@ test(function () use ($preprocessor) { // ?and
 
 test(function () use ($preprocessor) { // ?or
 	list($sql, $params) = $preprocessor->process(['SELECT id FROM author WHERE ?or', [
-		'id' => NULL,
+		'id' => null,
 		'born' => [1, 2],
 	]]);
 
@@ -261,7 +261,7 @@ test(function () use ($preprocessor, $driverName) { // date time
 
 	if ($driverName === 'mysql') {
 		$interval = new DateInterval('PT26H8M10S');
-		$interval->invert = TRUE;
+		$interval->invert = true;
 		list($sql, $params) = $preprocessor->process(['SELECT ?', [$interval]]);
 		Assert::same(reformat("SELECT '-26:08:10'"), $sql);
 	}

@@ -111,7 +111,7 @@ class StructureTestCase extends TestCase
 	{
 		$columns = [
 			['name' => 'id', 'primary' => true, 'autoincrement' => false, 'vendor' => []],
-			['name' => 'name', 'primary' => false,'autoincrement' => false, 'vendor' => []],
+			['name' => 'name', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
 		];
 
 		Assert::same($columns, $this->structure->getColumns('tags'));
@@ -128,7 +128,7 @@ class StructureTestCase extends TestCase
 	{
 		Assert::same('id', $this->structure->getPrimaryKey('books'));
 		Assert::same(['book_id', 'tag_id'], $this->structure->getPrimaryKey('Books_x_tags'));
-		Assert::exception(function() {
+		Assert::exception(function () {
 			$this->structure->getPrimaryKey('invalid');
 		}, Nette\InvalidArgumentException::class, "Table 'invalid' does not exist.");
 	}

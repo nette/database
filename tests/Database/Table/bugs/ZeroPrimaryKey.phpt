@@ -33,6 +33,6 @@ Assert::same(2, $context->table('ships')->order('id DESC')->count());
 
 $result = $context->table('ships')->order('id DESC')->fetchAll(); // SELECT * FROM `ships` ORDER BY id DESC
 
-Assert::same("Enterprise", $result[2]->name);
+Assert::same('Enterprise', $result[2]->name);
 
-Assert::same("Endeavour", $result[0]->name);
+Assert::same('Endeavour', $result[0]->name);

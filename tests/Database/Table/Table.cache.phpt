@@ -192,7 +192,7 @@ test(function () use ($context) { // Test saving the union of needed cols, the s
 
 test(function () use ($context) { // Test multiple use of same selection
 	$sql = [];
-	$context->getConnection()->onQuery[] = function($_, $result) use (&$sql) {
+	$context->getConnection()->onQuery[] = function ($_, $result) use (&$sql) {
 		$sql[] = $result->getQueryString();
 	};
 
@@ -202,7 +202,7 @@ test(function () use ($context) { // Test multiple use of same selection
 
 		foreach ($bookSelection->where('author_id = ?', 11) as $book) {
 			$book->title;
-			if ($i>=1) {
+			if ($i >= 1) {
 				$book->translator_id;
 			}
 		}

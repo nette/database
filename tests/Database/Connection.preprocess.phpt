@@ -14,4 +14,4 @@ require __DIR__ . '/connect.inc.php'; // create $connection
 
 Assert::same(['SELECT name FROM author', []], $connection->preprocess('SELECT name FROM author'));
 
-Assert::same(["SELECT ?", ['string']], $connection->preprocess('SELECT ?', 'string'));
+Assert::same(['SELECT ?', ['string']], $connection->preprocess('SELECT ?', 'string'));

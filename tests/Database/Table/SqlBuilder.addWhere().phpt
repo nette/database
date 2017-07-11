@@ -58,7 +58,7 @@ test(function () use ($context) { // test more Selection as a parameter
 
 test(function () use ($context) { // test more ActiveRow as a parameter
 	$sqlBuilder = new SqlBuilder('book', $context);
-	$books = $context->table('book')->where('id', [1,2])->fetchPairs('id');
+	$books = $context->table('book')->where('id', [1, 2])->fetchPairs('id');
 	$sqlBuilder->addWhere('id ?', $books[1]);
 	$sqlBuilder->addWhere('id ?', $books[2]);
 	Assert::equal(reformat([

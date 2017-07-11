@@ -24,15 +24,6 @@ class ConnectionPanel implements Tracy\IBarPanel
 	/** @var int */
 	public $maxQueries = 100;
 
-	/** @var int logged time */
-	private $totalTime = 0;
-
-	/** @var int */
-	private $count = 0;
-
-	/** @var array */
-	private $queries = [];
-
 	/** @var string */
 	public $name;
 
@@ -41,6 +32,15 @@ class ConnectionPanel implements Tracy\IBarPanel
 
 	/** @var bool */
 	public $disabled = false;
+
+	/** @var int logged time */
+	private $totalTime = 0;
+
+	/** @var int */
+	private $count = 0;
+
+	/** @var array */
+	private $queries = [];
 
 
 	public function __construct(Nette\Database\Connection $connection)

@@ -138,13 +138,13 @@ class Connection
 	}
 
 
-	function beginTransaction(): void
+	public function beginTransaction(): void
 	{
 		$this->query('::beginTransaction');
 	}
 
 
-	function commit(): void
+	public function commit(): void
 	{
 		$this->query('::commit');
 	}

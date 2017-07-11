@@ -153,7 +153,7 @@ test(function () use ($preprocessor) { // mix of where & order
 		'name' => false,
 	]]);
 
-	Assert::same(reformat("SELECT id FROM author WHERE ([id] = ?) AND ([web] = ?) ORDER BY [name] DESC"), $sql);
+	Assert::same(reformat('SELECT id FROM author WHERE ([id] = ?) AND ([web] = ?) ORDER BY [name] DESC'), $sql);
 	Assert::same([1, 'web'], $params);
 });
 
@@ -196,7 +196,7 @@ test(function () use ($preprocessor) { // unknown placeholder
 
 
 test(function () use ($preprocessor) { // SqlLiteral
-	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id =', new SqlLiteral('? OR ?name = ?', [11, 'id', 12]) ]);
+	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id =', new SqlLiteral('? OR ?name = ?', [11, 'id', 12])]);
 	Assert::same(reformat('SELECT id FROM author WHERE id = ? OR [id] = ?'), $sql);
 	Assert::same([11, 12], $params);
 });
@@ -461,7 +461,7 @@ test(function () use ($preprocessor) {
 
 class ToString
 {
-	function __toString()
+	public function __toString()
 	{
 		return 'hello';
 	}

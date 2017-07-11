@@ -20,7 +20,7 @@ class CacheMock extends MemoryStorage
 	public $writes = 0;
 
 
-	function write(string $key, $data, array $dependencies): void
+	public function write(string $key, $data, array $dependencies): void
 	{
 		$this->writes++;
 		parent::write($key, $data, $dependencies);

@@ -25,7 +25,7 @@ function before(\Closure $function = null)
 {
 	static $val;
 	if (!func_num_args()) {
-		return ($val ? $val() : null);
+		return $val ? $val() : null;
 	}
 	$val = $function;
 }

@@ -298,5 +298,4 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	{
 		return $item === self::SUPPORT_MULTI_INSERT_AS_SELECT || $item === self::SUPPORT_SUBSELECT || $item === self::SUPPORT_MULTI_COLUMN_AS_OR_COND;
 	}
-
 }

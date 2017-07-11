@@ -75,9 +75,7 @@ interface ISupplementalDriver
 	 */
 	function normalizeRow($row);
 
-
 	/********************* reflection ****************d*g**/
-
 
 	/**
 	 * Returns list of tables.
@@ -119,5 +117,4 @@ interface ISupplementalDriver
 	 * @return bool
 	 */
 	function isSupported($item);
-
 }

@@ -88,5 +88,4 @@ interface IStructure
 	 * @return bool
 	 */
 	function isRebuilt();
-
 }

@@ -179,7 +179,6 @@ class StructureTestCase extends TestCase
 		parent::tearDown();
 		Mockery::close();
 	}
-
 }
 
 

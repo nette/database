@@ -5,8 +5,8 @@
  * @dataProvider? databases.ini
  */
 
-use Tester\Assert;
 use Nette\Database\SqlLiteral;
+use Tester\Assert;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
 

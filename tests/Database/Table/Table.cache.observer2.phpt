@@ -5,8 +5,8 @@
  * @dataProvider? ../databases.ini
  */
 
-use Tester\Assert;
 use Nette\Caching\Storages\MemoryStorage;
+use Tester\Assert;
 
 require __DIR__ . '/../connect.inc.php'; // create $connection
 
@@ -16,6 +16,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 class CacheMock extends MemoryStorage
 {
 	public $writes = 0;
+
 
 	function write($key, $data, array $dependencies)
 	{

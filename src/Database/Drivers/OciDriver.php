@@ -192,5 +192,4 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	{
 		return $item === self::SUPPORT_SEQUENCE || $item === self::SUPPORT_SUBSELECT;
 	}
-
 }

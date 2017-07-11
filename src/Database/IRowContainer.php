@@ -40,5 +40,4 @@ interface IRowContainer extends \Traversable
 	 * @return array
 	 */
 	function fetchAssoc($path);
-
 }

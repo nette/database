@@ -288,5 +288,4 @@ class Helpers
 		}
 		return implode(', ', $duplicates);
 	}
-
 }

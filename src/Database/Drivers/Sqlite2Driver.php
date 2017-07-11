@@ -40,5 +40,4 @@ class Sqlite2Driver extends SqliteDriver
 	public function getColumnTypes(\PDOStatement $statement)
 	{
 	}
-
 }

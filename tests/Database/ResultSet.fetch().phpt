@@ -44,10 +44,12 @@ test(function () use ($context, $driverName) { // tests closeCursor()
 		$context->getConnection()->getPdo()->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, FALSE);
 
 		$res = $context->query('CALL testProc(1)');
-		foreach ($res as $row) {}
+		foreach ($res as $row) {
+		}
 
 		$res = $context->query('SELECT * FROM book');
-		foreach ($res as $row) {}
+		foreach ($res as $row) {
+		}
 	}
 });
 

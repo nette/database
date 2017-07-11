@@ -50,12 +50,10 @@ test(function () use ($context) {
 test(function () use ($context) {
 	$tagsAuthors = [];
 	foreach ($context->table('tag') as $tag) {
-
 		$book_tags = $tag->related('book_tag')->group('book_tag.tag_id, book.author_id, book.author.name')->select('book.author_id')->order('book.author.name');
 		foreach ($book_tags as $book_tag) {
 			$tagsAuthors[$tag->name][] = $book_tag->ref('author', 'author_id')->name;
 		}
-
 	}
 
 	Assert::same([

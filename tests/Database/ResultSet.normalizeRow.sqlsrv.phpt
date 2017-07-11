@@ -5,8 +5,8 @@
  * @dataProvider? databases.ini  sqlsrv
  */
 
-use Tester\Assert;
 use Nette\Utils\DateTime;
+use Tester\Assert;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
 
@@ -122,9 +122,11 @@ Assert::same([
 ], (array) @$res->fetch());
 
 
-function isTimestamp($str) {
+function isTimestamp($str)
+{
 	return is_string($str) && preg_match('#[0-9A-F]{16}#', $str);
 }
+
 
 $row = (array) $context->query('SELECT [datetimeoffset], CAST([sql_variant] AS int) AS [sql_variant], [timestamp] FROM types2 WHERE id = 1')->fetch();
 Assert::type('DateTime', $row['datetimeoffset']);

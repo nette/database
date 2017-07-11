@@ -108,7 +108,6 @@ class StructureSchemasTestCase extends TestCase
 		parent::tearDown();
 		Mockery::close();
 	}
-
 }
 
 

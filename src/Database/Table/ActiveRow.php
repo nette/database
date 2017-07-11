@@ -336,5 +336,4 @@ class ActiveRow implements \IteratorAggregate, IRow
 	{
 		$this->table->removeAccessColumn($key);
 	}
-
 }

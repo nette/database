@@ -4,8 +4,8 @@
  * Test: DatabaseExtension.
  */
 
-use Nette\DI;
 use Nette\Bridges\DatabaseDI\DatabaseExtension;
+use Nette\DI;
 use Tester\Assert;
 
 

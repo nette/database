@@ -128,5 +128,4 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			$builder->addAlias("nette.database.$name.context", $this->prefix("$name.context"));
 		}
 	}
-
 }

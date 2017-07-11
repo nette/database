@@ -5,9 +5,9 @@
  * @dataProvider? ../databases.ini
  */
 
-use Tester\Assert;
 use Nette\Database\ISupplementalDriver;
 use Nette\Database\Table\SqlBuilder;
+use Tester\Assert;
 
 require __DIR__ . '/../connect.inc.php'; // create $connection
 
@@ -19,6 +19,8 @@ class SqlBuilderMock extends SqlBuilder
 	{
 		parent::parseJoins($joins, $query);
 	}
+
+
 	public function buildQueryJoins(array $joins, array $leftJoinConditions = [])
 	{
 		return parent::buildQueryJoins($joins, $leftJoinConditions);

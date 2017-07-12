@@ -12,8 +12,8 @@ use Tester\Assert;
 require __DIR__ . '/connect.inc.php'; // create $connection
 
 
-test(function () use ($context) { // numeric field
-	$row = $context->fetch("SELECT 123 AS {$context->getConnection()->getSupplementalDriver()->delimite('123')}, NULL as nullcol");
+test(function () use ($connection) { // numeric field
+	$row = $connection->fetch("SELECT 123 AS {$connection->getSupplementalDriver()->delimite('123')}, NULL as nullcol");
 	Assert::same(123, $row->{123});
 	Assert::same(123, $row->{'123'});
 	Assert::true(isset($row->{123}));
@@ -37,8 +37,8 @@ test(function () use ($context) { // numeric field
 });
 
 
-test(function () use ($context) { // named field
-	$row = $context->fetch('SELECT 123 AS title');
+test(function () use ($connection) { // named field
+	$row = $connection->fetch('SELECT 123 AS title');
 	Assert::same(123, $row->title);
 	Assert::same(123, $row[0]);
 	Assert::same(123, $row['title']);

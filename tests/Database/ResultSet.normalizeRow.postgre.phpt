@@ -15,7 +15,7 @@ require __DIR__ . '/connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/pgsql-nette_test3.sql');
 
 
-$res = $context->query('SELECT * FROM types');
+$res = $connection->query('SELECT * FROM types');
 
 $row = $res->fetch();
 Assert::type('string', $row->money);
@@ -126,7 +126,7 @@ Assert::same([
 ], (array) $res->fetch());
 
 
-$res = $context->query('SELECT "integer" AS a, "text" AS a FROM types');
+$res = $connection->query('SELECT "integer" AS a, "text" AS a FROM types');
 
 Assert::same([
 	'a' => 'a',

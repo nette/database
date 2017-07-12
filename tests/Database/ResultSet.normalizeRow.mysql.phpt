@@ -15,7 +15,7 @@ require __DIR__ . '/connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_test3.sql');
 
 
-$res = $context->query('SELECT * FROM types');
+$res = $connection->query('SELECT * FROM types');
 
 Assert::equal([
 	'unsigned_int' => 1,
@@ -117,7 +117,7 @@ Assert::same([
 ], (array) $res->fetch());
 
 
-$res = $context->query('SELECT `int` AS a, `char` AS a FROM types');
+$res = $connection->query('SELECT `int` AS a, `char` AS a FROM types');
 
 Assert::same([
 	'a' => 'a',

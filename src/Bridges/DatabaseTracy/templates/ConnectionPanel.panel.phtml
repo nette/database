@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Nette\Bridges\DatabaseTracy;
 
@@ -36,13 +37,13 @@ use Tracy;
 			<table class="tracy-collapsed nette-DbConnectionPanel-explain">
 			<tr>
 			<?php foreach ($explain[0] as $col => $foo): ?>
-				<th><?= htmlspecialchars($col, ENT_NOQUOTES, 'UTF-8') ?></th>
+				<th><?= htmlspecialchars((string) $col, ENT_NOQUOTES, 'UTF-8') ?></th>
 			<?php endforeach ?>
 			</tr>
 			<?php foreach ($explain as $row): ?>
 			<tr>
 			<?php foreach ($row as $col): ?>
-				<td><?= htmlspecialchars($col, ENT_NOQUOTES, 'UTF-8') ?></td>
+				<td><?= htmlspecialchars((string) $col, ENT_NOQUOTES, 'UTF-8') ?></td>
 			<?php endforeach ?>
 			</tr>
 			<?php endforeach ?>

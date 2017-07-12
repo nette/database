@@ -126,3 +126,9 @@ Assert::same([
 	'2002-02-02 00:00:00' => 'David Grudl',
 	'2002-02-20 00:00:00' => 'Jakub Vrana',
 ], $pairs);
+
+
+$pairs = $context->query('SELECT 1.5 AS k, 1 AS v')->fetchPairs();
+Assert::equal([
+	'1.5' => 1,
+], $pairs);

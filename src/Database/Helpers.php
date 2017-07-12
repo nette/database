@@ -259,7 +259,7 @@ class Helpers
 			}
 		} else {
 			foreach ($rows as $row) {
-				$return[is_object($row[$key]) ? (string) $row[$key] : $row[$key]] = ($value === null ? $row : $row[$value]);
+				$return[(string) $row[$key]] = ($value === null ? $row : $row[$value]);
 			}
 		}
 

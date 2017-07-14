@@ -277,7 +277,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 		}
 
 		$this->removeAccessColumn($key);
-		$hint = Nette\Utils\ObjectMixin::getSuggestion(array_keys($this->data), $key);
+		$hint = Nette\Utils\ObjectHelpers::getSuggestion(array_keys($this->data), $key);
 		throw new Nette\MemberAccessException("Cannot read an undeclared column '$key'" . ($hint ? ", did you mean '$hint'?" : '.'));
 	}
 

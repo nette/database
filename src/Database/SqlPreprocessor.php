@@ -112,7 +112,7 @@ class SqlPreprocessor extends Nette\Object
 	{
 		if (!$mode || $mode === 'auto') {
 			if (is_string($value)) {
-				if (strlen($value) > 20) {
+				if (strlen($value) > 20 || strpos($value, '\\') !== FALSE) {
 					$this->remaining[] = $value;
 					return '?';
 

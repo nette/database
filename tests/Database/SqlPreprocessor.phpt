@@ -28,6 +28,10 @@ test(function () use ($preprocessor) { // arg without placeholder
 	list($sql, $params) = $preprocessor->process(['SELECT id FROM author WHERE id =', '11']);
 	Assert::same("SELECT id FROM author WHERE id = '11'", $sql);
 	Assert::same([], $params);
+
+	list($sql, $params) = $preprocessor->process(['SELECT id FROM author WHERE id =', '1\\1']);
+	Assert::same('SELECT id FROM author WHERE id = ?', $sql);
+	Assert::same(['1\\1'], $params);
 });
 
 

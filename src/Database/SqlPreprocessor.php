@@ -114,7 +114,7 @@ class SqlPreprocessor
 	{
 		if (!$mode || $mode === 'auto') {
 			if (is_string($value)) {
-				if (strlen($value) > 20) {
+				if (strlen($value) > 20 || strpos($value, '\\') !== false) {
 					$this->remaining[] = $value;
 					return '?';
 

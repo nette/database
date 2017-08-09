@@ -113,5 +113,5 @@ class StructureSchemasTestCase extends TestCase
 }
 
 
-$test = new StructureSchemasTestCase();
+$test = new StructureSchemasTestCase;
 $test->run();

@@ -184,5 +184,5 @@ class StructureTestCase extends TestCase
 }
 
 
-$test = new StructureTestCase();
+$test = new StructureTestCase;
 $test->run();

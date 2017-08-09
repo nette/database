@@ -23,7 +23,7 @@ test(function () { // non lazy
 
 test(function () { // lazy
 	$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => true]);
-	$context = new Nette\Database\Context($connection, new Structure($connection, new DevNullStorage()));
+	$context = new Nette\Database\Context($connection, new Structure($connection, new DevNullStorage));
 	Assert::exception(function () use ($context) {
 		$context->query('SELECT ?', 10);
 	}, Nette\Database\DriverException::class, 'invalid data source name');

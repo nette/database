@@ -199,7 +199,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Returns row specified by primary key.
 	 * @param  mixed primary key
-	 * @return IRow or false if there is no such row
+	 * @return ActiveRow|false if there is no such row
 	 */
 	public function get($key)
 	{
@@ -210,6 +210,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * @inheritDoc
+	 * @return ActiveRow|false if there is no such row
 	 */
 	public function fetch()
 	{
@@ -807,7 +808,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Inserts row in a table.
 	 * @param  array|\Traversable|Selection array($column => $value)|\Traversable|Selection for INSERT ... SELECT
-	 * @return IRow|int|bool Returns IRow or number of affected rows for Selection or table without primary key
+	 * @return ActiveRow|int|bool Returns IRow or number of affected rows for Selection or table without primary key
 	 */
 	public function insert($data)
 	{
@@ -1013,7 +1014,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	}
 
 
-	/** @return IRow */
+	/** @return ActiveRow|bool */
 	public function current()
 	{
 		if (($key = current($this->keys)) !== false) {
@@ -1066,7 +1067,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Returns specified row.
 	 * @param  string row ID
-	 * @return IRow|null if there is no such row
+	 * @return ActiveRow|null if there is no such row
 	 */
 	public function offsetGet($key)
 	{

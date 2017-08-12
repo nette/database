@@ -186,9 +186,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Returns row specified by primary key.
 	 * @param  mixed primary key
-	 * @return IRow|null if there is no such row
 	 */
-	public function get($key): ?IRow
+	public function get($key): ?ActiveRow
 	{
 		$clone = clone $this;
 		return $clone->wherePrimary($key)->fetch();
@@ -197,6 +196,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * @inheritDoc
+	 * @return ActiveRow|null if there is no such row
 	 */
 	public function fetch(): ?Nette\Database\IRow
 	{
@@ -764,7 +764,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Inserts row in a table.
 	 * @param  array|\Traversable|Selection array($column => $value)|\Traversable|Selection for INSERT ... SELECT
-	 * @return IRow|int|bool Returns IRow or number of affected rows for Selection or table without primary key
+	 * @return ActiveRow|int|bool Returns IRow or number of affected rows for Selection or table without primary key
 	 */
 	public function insert($data)
 	{
@@ -963,7 +963,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	}
 
 
-	/** @return IRow|bool */
+	/** @return ActiveRow|bool */
 	public function current()
 	{
 		if (($key = current($this->keys)) !== false) {
@@ -1015,9 +1015,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Returns specified row.
 	 * @param  string row ID
-	 * @return IRow|null if there is no such row
 	 */
-	public function offsetGet($key): ?IRow
+	public function offsetGet($key): ?ActiveRow
 	{
 		$this->execute();
 		return $this->rows[$key];

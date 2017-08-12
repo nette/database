@@ -39,7 +39,6 @@ interface IRow extends Database\IRow
 
 	/**
 	 * Returns referenced row.
-	 * @return IRow|null if the row does not exist
 	 */
 	function ref(string $key, string $throughColumn = null): ?IRow;
 }

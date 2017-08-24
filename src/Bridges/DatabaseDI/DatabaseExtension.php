@@ -75,11 +75,11 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		}
 
 		$connection = $builder->addDefinition($this->prefix("$name.connection"))
-			->setClass(Nette\Database\Connection::class, [$config['dsn'], $config['user'], $config['password'], $config['options']])
+			->setFactory(Nette\Database\Connection::class, [$config['dsn'], $config['user'], $config['password'], $config['options']])
 			->setAutowired($config['autowired']);
 
 		$structure = $builder->addDefinition($this->prefix("$name.structure"))
-			->setClass(Nette\Database\Structure::class)
+			->setFactory(Nette\Database\Structure::class)
 			->setArguments([$connection])
 			->setAutowired($config['autowired']);
 
@@ -98,7 +98,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 
 		} elseif (is_string($config['conventions'])) {
 			$conventions = $builder->addDefinition($this->prefix("$name.$conventionsServiceName"))
-				->setClass(preg_match('#^[a-z]+\z#i', $config['conventions'])
+				->setFactory(preg_match('#^[a-z]+\z#i', $config['conventions'])
 					? 'Nette\Database\Conventions\\' . ucfirst($config['conventions']) . 'Conventions'
 					: $config['conventions'])
 				->setArguments(strtolower($config['conventions']) === 'discovered' ? [$structure] : [])
@@ -110,7 +110,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		}
 
 		$builder->addDefinition($this->prefix("$name.context"))
-			->setClass(Nette\Database\Context::class, [$connection, $structure, $conventions])
+			->setFactory(Nette\Database\Context::class, [$connection, $structure, $conventions])
 			->setAutowired($config['autowired']);
 
 		if ($config['debugger']) {

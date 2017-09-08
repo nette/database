@@ -540,7 +540,7 @@ class SqlBuilder
 		}
 		$this->parameters['joinConditionSorted'] = [];
 		if (count($joinConditions)) {
-			while (reset($tableJoins)) {
+			while ($tableJoins) {
 				$this->getSortedJoins(key($tableJoins), $leftJoinDependency, $tableJoins, $joins);
 			}
 		}

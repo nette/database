@@ -157,7 +157,10 @@ class SqlPreprocessor
 	private function formatValue($value, ?string $mode = null): string
 	{
 		if (!$mode || $mode === self::ModeAuto) {
-			if (is_scalar($value) || is_resource($value)) {
+			if (is_int($value)) {
+				return (string) $value;
+
+			} elseif (is_scalar($value) || is_resource($value)) {
 				if ($this->useParams) {
 					$this->remaining[] = $value;
 					return '?';
@@ -180,6 +183,7 @@ class SqlPreprocessor
 			} elseif ($value instanceof Table\ActiveRow) {
 				$this->remaining[] = $value->getPrimary();
 				return '?';
+				//return $this->formatValue($value->getPrimary());
 
 			} elseif ($value instanceof SqlLiteral) {
 				$prep = clone $this;

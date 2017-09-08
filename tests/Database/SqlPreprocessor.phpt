@@ -17,8 +17,8 @@ $preprocessor = new Nette\Database\SqlPreprocessor($connection);
 
 test('basic', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id = ?', 11]);
-	Assert::same('SELECT id FROM author WHERE id = ?', $sql);
-	Assert::same([11], $params);
+	Assert::same('SELECT id FROM author WHERE id = 11', $sql);
+	Assert::same([], $params);
 });
 
 
@@ -38,8 +38,8 @@ test('recognizes command in braces', function () use ($preprocessor) {
 
 test('arg without placeholder', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id =', 11]);
-	Assert::same('SELECT id FROM author WHERE id = ?', $sql);
-	Assert::same([11], $params);
+	Assert::same('SELECT id FROM author WHERE id = 11', $sql);
+	Assert::same([], $params);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id =', '11']);
 	Assert::same('SELECT id FROM author WHERE id = ?', $sql);
@@ -49,15 +49,15 @@ test('arg without placeholder', function () use ($preprocessor) {
 
 test('', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id = ? OR id = ?', 11, 12]);
-	Assert::same('SELECT id FROM author WHERE id = ? OR id = ?', $sql);
-	Assert::same([11, 12], $params);
+	Assert::same('SELECT id FROM author WHERE id = 11 OR id = 12', $sql);
+	Assert::same([], $params);
 });
 
 
 test('', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id = ?', 11, 'OR id = ?', 12]);
-	Assert::same('SELECT id FROM author WHERE id = ? OR id = ?', $sql);
-	Assert::same([11, 12], $params);
+	Assert::same('SELECT id FROM author WHERE id = 11 OR id = 12', $sql);
+	Assert::same([], $params);
 });
 
 
@@ -70,12 +70,12 @@ test('content after WHERE', function () use ($preprocessor) {
 
 test('IN', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id IN (?)', [10, 11]]);
-	Assert::same('SELECT id FROM author WHERE id IN (?, ?)', $sql);
-	Assert::same([10, 11], $params);
+	Assert::same('SELECT id FROM author WHERE id IN (10, 11)', $sql);
+	Assert::same([], $params);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE (id, name) IN (?)', [[10, 'a'], [11, 'b']]]);
-	Assert::same('SELECT id FROM author WHERE (id, name) IN ((?, ?), (?, ?))', $sql);
-	Assert::same([10, 'a', 11, 'b'], $params);
+	Assert::same("SELECT id FROM author WHERE (id, name) IN ((10, ?), (11, ?))", $sql);
+	Assert::same(['a', 'b'], $params);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE', [
 		'a' => [null, 1, 2, 3],
@@ -84,8 +84,8 @@ test('IN', function () use ($preprocessor) {
 		'd NOT IN' => [],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE ([a] IN (NULL, ?, ?, ?)) AND (1=0) AND ([c] NOT IN (NULL, ?, ?, ?))'), $sql);
-	Assert::same([1, 2, 3, 1, 2, 3], $params);
+	Assert::same(reformat('SELECT id FROM author WHERE ([a] IN (NULL, 1, 2, 3)) AND (1=0) AND ([c] NOT IN (NULL, 1, 2, 3))'), $sql);
+	Assert::same([], $params);
 
 	[$sql, $params] = $preprocessor->process(['SELECT * FROM table WHERE ? AND id IN (?) AND ?', ['a' => 111], [3, 4], ['b' => 222]]);
 	Assert::same(reformat('SELECT * FROM table WHERE ([a] = ?) AND id IN (?, ?) AND ([b] = ?)'), $sql);
@@ -107,30 +107,30 @@ test('IN', function () use ($preprocessor) {
 
 test('?name', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE ?name = ? OR ?name = ?', 'id', 12, 'table.number', 23]);
-	Assert::same(reformat('SELECT id FROM author WHERE [id] = ? OR [table].[number] = ?'), $sql);
-	Assert::same([12, 23], $params);
+	Assert::same(reformat('SELECT id FROM author WHERE [id] = 12 OR [table].[number] = 23'), $sql);
+	Assert::same([], $params);
 });
 
 
 test('comments', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(["SELECT id --?\nFROM author WHERE id = ?", 11]);
-	Assert::same("SELECT id --?\nFROM author WHERE id = ?", $sql);
-	Assert::same([11], $params);
+	Assert::same("SELECT id --?\nFROM author WHERE id = 11", $sql);
+	Assert::same([], $params);
 
 	[$sql, $params] = $preprocessor->process(["SELECT id /* ? \n */FROM author WHERE id = ? --*/", 11]);
-	Assert::same("SELECT id /* ? \n */FROM author WHERE id = ? --*/", $sql);
-	Assert::same([11], $params);
+	Assert::same("SELECT id /* ? \n */FROM author WHERE id = 11 --*/", $sql);
+	Assert::same([], $params);
 });
 
 
 test('strings', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(["SELECT id, '?' FROM author WHERE id = ?", 11]);
-	Assert::same("SELECT id, '?' FROM author WHERE id = ?", $sql);
-	Assert::same([11], $params);
+	Assert::same("SELECT id, '?' FROM author WHERE id = 11", $sql);
+	Assert::same([], $params);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id, "?" FROM author WHERE id = ?', 11]);
-	Assert::same('SELECT id, "?" FROM author WHERE id = ?', $sql);
-	Assert::same([11], $params);
+	Assert::same('SELECT id, "?" FROM author WHERE id = 11', $sql);
+	Assert::same([], $params);
 });
 
 
@@ -163,8 +163,8 @@ test('tuples', function () use ($preprocessor) {
 		[5, 6],
 	]]);
 
-	Assert::same(reformat('SELECT * FROM book_tag WHERE (book_id, tag_id) IN ((?, ?), (?, ?), (?, ?))'), $sql);
-	Assert::same([1, 2, 3, 4, 5, 6], $params);
+	Assert::same(reformat('SELECT * FROM book_tag WHERE (book_id, tag_id) IN ((1, 2), (3, 4), (5, 6))'), $sql);
+	Assert::same([], $params);
 });
 
 
@@ -198,8 +198,8 @@ test('mix of where & order', function () use ($preprocessor) {
 		'name' => false,
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE ([id] = ?) AND ([web] = ?) ORDER BY [name] DESC'), $sql);
-	Assert::same([1, 'web'], $params);
+	Assert::same(reformat('SELECT id FROM author WHERE ([id] = 1) AND ([web] = ?) ORDER BY [name] DESC'), $sql);
+	Assert::same(['web'], $params);
 });
 
 
@@ -242,15 +242,15 @@ test('unknown placeholder', function () use ($preprocessor) {
 
 test('SqlLiteral', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id =', new SqlLiteral('? OR ?name = ?', [11, 'id', 12])]);
-	Assert::same(reformat('SELECT id FROM author WHERE id = ? OR [id] = ?'), $sql);
-	Assert::same([11, 12], $params);
+	Assert::same(reformat('SELECT id FROM author WHERE id = 11 OR [id] = 12'), $sql);
+	Assert::same([], $params);
 });
 
 
 test('', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE', new SqlLiteral('id=11'), 'OR', new SqlLiteral('id=?', [12])]);
-	Assert::same('SELECT id FROM author WHERE id=11 OR id=?', $sql);
-	Assert::same([12], $params);
+	Assert::same('SELECT id FROM author WHERE id=11 OR id=12', $sql);
+	Assert::same([], $params);
 });
 
 
@@ -261,8 +261,8 @@ test('and', function () use ($preprocessor) {
 		'web' => new SqlLiteral('NOW()'),
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NULL) AND ([born] IN (?, ?, 3+1)) AND ([web] = NOW())'), $sql);
-	Assert::same([1, 2], $params);
+	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NULL) AND ([born] IN (1, 2, 3+1)) AND ([web] = NOW())'), $sql);
+	Assert::same([], $params);
 });
 
 
@@ -280,8 +280,8 @@ test('?and', function () use ($preprocessor) {
 		'born' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NULL) AND ([born] IN (?, ?))'), $sql);
-	Assert::same([1, 2], $params);
+	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NULL) AND ([born] IN (1, 2))'), $sql);
+	Assert::same([], $params);
 });
 
 
@@ -291,8 +291,8 @@ test('?or', function () use ($preprocessor) {
 		'born' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NULL) OR ([born] IN (?, ?))'), $sql);
-	Assert::same([1, 2], $params);
+	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NULL) OR ([born] IN (1, 2))'), $sql);
+	Assert::same([], $params);
 });
 
 
@@ -439,26 +439,26 @@ test('update', function () use ($preprocessor) {
 		new SqlLiteral('UPPER(?) = ?', ['John', 'DOE']),
 	]]);
 
-	Assert::same(reformat('UPDATE author SET [id]=?, [name]=UPPER(?), UPPER(?) = ?'), $sql);
-	Assert::same([12, 'John Doe', 'John', 'DOE'], $params);
+	Assert::same(reformat('UPDATE author SET [id]=12, [name]=UPPER(?), UPPER(?) = ?'), $sql);
+	Assert::same(['John Doe', 'John', 'DOE'], $params);
 
 	[$sql, $params] = $preprocessor->process(["UPDATE author SET \n",
 		['id' => 12, 'name' => 'John Doe'],
 	]);
-	Assert::same(reformat("UPDATE author SET \n [id]=?, [name]=?"), $sql);
-	Assert::same([12, 'John Doe'], $params);
+	Assert::same(reformat("UPDATE author SET \n [id]=12, [name]=?"), $sql);
+	Assert::same(['John Doe'], $params);
 
 	[$sql, $params] = $preprocessor->process(['UPDATE author SET',
 		['id' => 12, 'name' => 'John Doe'],
 	]);
-	Assert::same(reformat('UPDATE author SET [id]=?, [name]=?'), $sql);
-	Assert::same([12, 'John Doe'], $params);
+	Assert::same(reformat('UPDATE author SET [id]=12, [name]=?'), $sql);
+	Assert::same(['John Doe'], $params);
 
 	[$sql, $params] = $preprocessor->process(['UPDATE author SET a=1,',
 		['id' => 12, 'name' => 'John Doe'],
 	]);
-	Assert::same(reformat('UPDATE author SET a=1, [id]=?, [name]=?'), $sql);
-	Assert::same([12, 'John Doe'], $params);
+	Assert::same(reformat('UPDATE author SET a=1, [id]=12, [name]=?'), $sql);
+	Assert::same(['John Doe'], $params);
 });
 
 
@@ -467,8 +467,8 @@ test('?set', function () use ($preprocessor) {
 		['id' => 12, 'name' => 'John Doe'],
 	]);
 
-	Assert::same(reformat('UPDATE insert SET [id]=?, [name]=?'), $sql);
-	Assert::same([12, 'John Doe'], $params);
+	Assert::same(reformat('UPDATE insert SET [id]=12, [name]=?'), $sql);
+	Assert::same(['John Doe'], $params);
 });
 
 
@@ -477,8 +477,7 @@ test('update +=', function () use ($preprocessor) {
 		['id+=' => 1, 'id-=' => -1],
 	]);
 
-	Assert::same(reformat('UPDATE author SET [id]=[id] + ?, [id]=[id] - ?'), $sql);
-	Assert::same([1, -1], $params);
+	Assert::same(reformat('UPDATE author SET [id]=[id] + 1, [id]=[id] - -1'), $sql);
 });
 
 
@@ -488,8 +487,8 @@ test('insert & update', function () use ($preprocessor) {
 		['web' => 'http://nette.org', 'name' => 'Dave Lister'],
 	]);
 
-	Assert::same(reformat('INSERT INTO author ([id], [name]) VALUES (?, ?) ON DUPLICATE KEY UPDATE [web]=?, [name]=?'), $sql);
-	Assert::same([12, 'John Doe', 'http://nette.org', 'Dave Lister'], $params);
+	Assert::same(reformat('INSERT INTO author ([id], [name]) VALUES (12, ?) ON DUPLICATE KEY UPDATE [web]=?, [name]=?'), $sql);
+	Assert::same(['John Doe', 'http://nette.org', 'Dave Lister'], $params);
 });
 
 
@@ -511,8 +510,7 @@ test('', function () use ($preprocessor) {
 		new SqlLiteral('max > ?', [10]),
 		new SqlLiteral('min < ?', [20]),
 	]]);
-	Assert::same(reformat('SELECT id FROM author WHERE (max > ?) OR (min < ?)'), $sql);
-	Assert::same([10, 20], $params);
+	Assert::same(reformat('SELECT id FROM author WHERE (max > 10) OR (min < 20)'), $sql);
 });
 
 
@@ -521,8 +519,8 @@ test('', function () use ($preprocessor) {
 		new SqlLiteral('?and', [['a' => 1, 'b' => 2]]),
 		new SqlLiteral('?and', [['c' => 3, 'd' => 4]]),
 	]])]);
-	Assert::same(reformat('SELECT id FROM author WHERE (([a] = ?) AND ([b] = ?)) OR (([c] = ?) AND ([d] = ?))'), $sql);
-	Assert::same([1, 2, 3, 4], $params);
+	Assert::same(reformat('SELECT id FROM author WHERE (([a] = 1) AND ([b] = 2)) OR (([c] = 3) AND ([d] = 4))'), $sql);
+	Assert::same([], $params);
 });
 
 

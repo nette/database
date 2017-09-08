@@ -216,11 +216,12 @@ test('Test multiple use of same selection', function () use ($explorer) {
 
 	Assert::same([
 		reformat('SELECT * FROM [book]'), //First round
-		reformat('SELECT * FROM [book] WHERE ([author_id] = ?)'),
+		reformat('SELECT * FROM [book] WHERE ([author_id] = 11)'),
 		reformat('SELECT [id] FROM [book]'), //Second round
-		reformat('SELECT [id], [title] FROM [book] WHERE ([author_id] = ?)'),
-		reformat('SELECT * FROM [book] WHERE ([author_id] = ?)'), //Missing translator_id
+		reformat('SELECT [id], [title] FROM [book] WHERE ([author_id] = 11)'),
+		reformat('SELECT * FROM [book] WHERE ([author_id] = 11)'), //Missing translator_id
 		reformat('SELECT [id] FROM [book]'), //Third round
-		reformat('SELECT [id], [title], [translator_id] FROM [book] WHERE ([author_id] = ?)'),
+		reformat('SELECT [id], [title], [translator_id] FROM [book] WHERE ([author_id] = 11)'),
+
 	], $sql);
 });

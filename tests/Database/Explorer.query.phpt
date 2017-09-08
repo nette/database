@@ -17,20 +17,17 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 test('', function () use ($explorer) {
 	$res = $explorer->query('SELECT id FROM author WHERE id = ?', 11);
 	Assert::type(Nette\Database\ResultSet::class, $res);
-	Assert::same('SELECT id FROM author WHERE id = ?', $res->getQueryString());
-	Assert::same([11], $res->getParameters());
+	Assert::same('SELECT id FROM author WHERE id = 11', $res->getQueryString());
 });
 
 
 test('', function () use ($explorer) {
 	$res = $explorer->query('SELECT id FROM author WHERE id = ? OR id = ?', 11, 12);
-	Assert::same('SELECT id FROM author WHERE id = ? OR id = ?', $res->getQueryString());
-	Assert::same([11, 12], $res->getParameters());
+	Assert::same('SELECT id FROM author WHERE id = 11 OR id = 12', $res->getQueryString());
 });
 
 
 test('', function () use ($explorer) {
 	$res = $explorer->queryArgs('SELECT id FROM author WHERE id = ? OR id = ?', [11, 12]);
-	Assert::same('SELECT id FROM author WHERE id = ? OR id = ?', $res->getQueryString());
-	Assert::same([11, 12], $res->getParameters());
+	Assert::same('SELECT id FROM author WHERE id = 11 OR id = 12', $res->getQueryString());
 });

@@ -129,7 +129,7 @@ class ResultSet implements \Iterator, IRowContainer
 	public function normalizeRow(array $row): array
 	{
 		if ($this->types === null) {
-			$this->types = (array) $this->connection->getSupplementalDriver()->getColumnTypes($this->pdoStatement);
+			$this->types = $this->connection->getSupplementalDriver()->getColumnTypes($this->pdoStatement);
 		}
 
 		foreach ($this->types as $key => $type) {

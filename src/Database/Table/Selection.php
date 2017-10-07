@@ -552,7 +552,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		foreach ($result->getPdoStatement() as $key => $row) {
 			$row = $this->createRow($result->normalizeRow($row));
 			$primary = $row->getSignature(false);
-			$usedPrimary = $usedPrimary && (string) $primary !== '';
+			$usedPrimary = $usedPrimary && $primary !== '';
 			$this->rows[$usedPrimary ? $primary : $key] = $row;
 		}
 		$this->data = $this->rows;

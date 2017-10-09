@@ -68,7 +68,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	public function toArray(): array
 	{
-		$this->accessColumn(null);
+		$this->reloadAllColumns();
 		return $this->data;
 	}
 
@@ -204,7 +204,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	public function getIterator(): \Iterator
 	{
-		$this->accessColumn(null);
+		$this->reloadAllColumns();
 		return new \ArrayIterator($this->data);
 	}
 
@@ -301,14 +301,10 @@ class ActiveRow implements \IteratorAggregate, IRow
 	/**
 	 * @internal
 	 */
-	public function accessColumn($key, bool $selectColumn = true): bool
+	public function accessColumn(string $key, bool $selectColumn = true): bool
 	{
 		if ($this->table->accessColumn($key, $selectColumn) && !$this->dataRefreshed) {
-			if (!isset($this->table[$this->getSignature()])) {
-				throw new Nette\InvalidStateException("Database refetch failed; row with signature '{$this->getSignature()}' does not exist!");
-			}
-			$this->data = $this->table[$this->getSignature()]->data;
-			$this->dataRefreshed = true;
+			$this->refreshData();
 		}
 		return isset($this->data[$key]) || array_key_exists($key, $this->data);
 	}
@@ -317,5 +313,23 @@ class ActiveRow implements \IteratorAggregate, IRow
 	protected function removeAccessColumn($key): void
 	{
 		$this->table->removeAccessColumn($key);
+	}
+
+
+	protected function reloadAllColumns(): void
+	{
+		if ($this->table->reloadAllColumns() && !$this->dataRefreshed) {
+			$this->refreshData();
+		}
+	}
+
+
+	protected function refreshData(): void
+	{
+		if (!isset($this->table[$this->getSignature()])) {
+			throw new Nette\InvalidStateException("Database refetch failed; row with signature '{$this->getSignature()}' does not exist!");
+		}
+		$this->data = $this->table[$this->getSignature()]->data;
+		$this->dataRefreshed = true;
 	}
 }

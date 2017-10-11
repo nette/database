@@ -28,8 +28,14 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/** @var IConventions */
 	protected $conventions;
 
-	/** @var Nette\Caching\Cache */
+	/** @var ColumnAccessCache */
 	protected $cache;
+
+	/** @var ReferenceCache */
+	protected $refCache;
+
+	/** @var array cache of Selection and GroupedSelection prototypes */
+	protected $globalRefCache = [];
 
 	/** @var SqlBuilder */
 	protected $sqlBuilder;
@@ -47,34 +53,13 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	protected $rows;
 
 	/** @var IRow[] modifiable data in [primary key => IRow] format */
-	protected $data;
+	protected $data = [];
 
 	/** @var bool */
 	protected $dataRefreshed = false;
 
-	/** @var mixed cache array of Selection and GroupedSelection prototypes */
-	protected $globalRefCache;
-
-	/** @var mixed */
-	protected $refCache;
-
-	/** @var string */
-	protected $generalCacheKey;
-
-	/** @var string */
-	protected $specificCacheKey;
-
 	/** @var array of [conditions => [key => IRow]]; used by GroupedSelection */
 	protected $aggregation = [];
-
-	/** @var array of touched columns */
-	protected $accessedColumns;
-
-	/** @var array of earlier touched columns */
-	protected $previousAccessedColumns;
-
-	/** @var bool should instance observe accessed columns caching */
-	protected $observeCache = false;
 
 	/** @var array of primary key values */
 	protected $keys = [];
@@ -90,22 +75,26 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		$this->conventions = $conventions;
 		$this->name = $tableName;
 
-		$this->cache = $cacheStorage ? new Nette\Caching\Cache($cacheStorage, 'Nette.Database.' . md5($context->getConnection()->getDsn())) : null;
+		$this->cache = new ColumnAccessCache($this, $cacheStorage);
 		$this->primary = $conventions->getPrimary($tableName);
 		$this->sqlBuilder = new SqlBuilder($tableName, $context);
-		$this->refCache = &$this->getRefTable($refPath)->globalRefCache[$refPath];
+
+		$this->linkRefCache();
 	}
 
 
 	public function __destruct()
 	{
-		$this->saveCacheState();
+		$this->cache->saveState();
 	}
 
 
 	public function __clone()
 	{
+		$this->cache = clone $this->cache;
+		$this->cache->setSelection($this);
 		$this->sqlBuilder = clone $this->sqlBuilder;
+		$this->linkRefCache();
 	}
 
 
@@ -149,25 +138,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	public function getSql(): string
 	{
-		return $this->sqlBuilder->buildSelectQuery($this->getPreviousAccessedColumns());
-	}
-
-
-	/**
-	 * Loads cache of previous accessed columns and returns it.
-	 * @internal
-	 * @return array|bool
-	 */
-	public function getPreviousAccessedColumns()
-	{
-		if ($this->cache && $this->previousAccessedColumns === null) {
-			$this->accessedColumns = $this->previousAccessedColumns = $this->cache->load($this->getGeneralCacheKey());
-			if ($this->previousAccessedColumns === null) {
-				$this->previousAccessedColumns = [];
-			}
-		}
-
-		return array_keys(array_filter((array) $this->previousAccessedColumns));
+		return $this->sqlBuilder->buildSelectQuery($this->cache->getPreviousAccessedColumns());
 	}
 
 
@@ -177,6 +148,33 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	public function getSqlBuilder(): SqlBuilder
 	{
 		return $this->sqlBuilder;
+	}
+
+
+	/**
+	 * @internal
+	 */
+	public function getCache(): ColumnAccessCache
+	{
+		return $this->cache;
+	}
+
+
+	/**
+	 * @internal
+	 */
+	public function &getGlobalRefCache(string $key)
+	{
+		return $this->globalRefCache[$key];
+	}
+
+
+	/**
+	 * @internal
+	 */
+	public function getConnection(): Nette\Database\Connection
+	{
+		return $this->context->getConnection();
 	}
 
 
@@ -528,7 +526,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			return;
 		}
 
-		$this->observeCache = $this;
+		$this->cache->setObserveCache($this);
 
 		if ($this->primary === null && $this->sqlBuilder->getSelect() === null) {
 			throw new Nette\InvalidStateException('Table with no primary key requires an explicit select clause.');
@@ -538,13 +536,13 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			$result = $this->query($this->getSql());
 
 		} catch (Nette\Database\DriverException $exception) {
-			if (!$this->sqlBuilder->getSelect() && $this->previousAccessedColumns) {
-				$this->previousAccessedColumns = false;
-				$this->accessedColumns = [];
-				$result = $this->query($this->getSql());
-			} else {
+			if ($this->sqlBuilder->getSelect() || !$this->cache->getPreviousAccessedColumns()) {
 				throw $exception;
 			}
+
+			$this->cache->clearPreviousAccessedColumns();
+			$this->cache->setAccessedColumns([]);
+			$result = $this->query($this->getSql());
 		}
 
 		$this->rows = [];
@@ -557,9 +555,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		}
 		$this->data = $this->rows;
 
-		if ($usedPrimary && $this->accessedColumns !== false) {
+		if ($usedPrimary) {
 			foreach ((array) $this->primary as $primary) {
-				$this->accessedColumns[$primary] = true;
+				$this->cache->setAccessedColumn($primary, true);
 			}
 		}
 	}
@@ -573,13 +571,13 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	public function createSelectionInstance($table = null): self
 	{
-		return new self($this->context, $this->conventions, $table ?: $this->name, $this->cache ? $this->cache->getStorage() : null);
+		return new self($this->context, $this->conventions, $table ?: $this->name, $this->cache->getStorage());
 	}
 
 
 	protected function createGroupedSelectionInstance($table, $column): GroupedSelection
 	{
-		return new GroupedSelection($this->context, $this->conventions, $table, $column, $this, $this->cache ? $this->cache->getStorage() : null);
+		return new GroupedSelection($this->context, $this->conventions, $table, $column, $this, $this->cache->getStorage());
 	}
 
 
@@ -592,38 +590,20 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	protected function emptyResultSet(bool $clearCache = true, bool $deleteRererencedCache = true): void
 	{
 		if ($this->rows !== null && $clearCache) {
-			$this->saveCacheState();
+			$this->cache->saveState();
 		}
 
 		if ($clearCache) {
 			// NOT NULL in case of missing some column
-			$this->previousAccessedColumns = null;
-			$this->generalCacheKey = null;
+			$this->cache->clearPreviousAccessedColumns();
+			$this->cache->setGeneralCacheKey(null);
 		}
 
 		$this->rows = null;
-		$this->specificCacheKey = null;
-		$this->refCache['referencingPrototype'] = [];
+		$this->cache->setSpecificCacheKey(null);
+		$this->refCache->clearReferencingPrototype();
 		if ($deleteRererencedCache) {
-			$this->refCache['referenced'] = [];
-		}
-	}
-
-
-	protected function saveCacheState(): void
-	{
-		if ($this->observeCache === $this && $this->cache && !$this->sqlBuilder->getSelect() && $this->accessedColumns !== $this->previousAccessedColumns) {
-			$previousAccessed = $this->cache->load($this->getGeneralCacheKey());
-			$accessed = $this->accessedColumns;
-			$needSave = is_array($accessed) && is_array($previousAccessed)
-				? array_intersect_key($accessed, $previousAccessed) !== $accessed
-				: $accessed !== $previousAccessed;
-
-			if ($needSave) {
-				$save = is_array($accessed) && is_array($previousAccessed) ? $previousAccessed + $accessed : $accessed;
-				$this->cache->save($this->getGeneralCacheKey(), $save);
-				$this->previousAccessedColumns = null;
-			}
+			$this->refCache->clearReferenced();
 		}
 	}
 
@@ -647,93 +627,40 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Returns general cache key independent on query parameters or sql limit
-	 * Used e.g. for previously accessed columns caching
+	 * Link refCache references
 	 */
-	protected function getGeneralCacheKey(): string
+	protected function linkRefCache(): void
 	{
-		if ($this->generalCacheKey) {
-			return $this->generalCacheKey;
+		$refTable = $this->getRefTable($refPath);
+		if ($refTable === $this) {
+			$this->refCache = $this->globalRefCache[$refPath] = new ReferenceCache;
+		} else {
+			$this->refCache = &$refTable->getGlobalRefCache($refPath);
+			if ($this->refCache === null) {
+				$this->refCache = new ReferenceCache;
+			}
 		}
-
-		$key = [__CLASS__, $this->name, $this->sqlBuilder->getConditions()];
-		$trace = [];
-		foreach (debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS) as $item) {
-			$trace[] = isset($item['file'], $item['line']) ? $item['file'] . $item['line'] : null;
-		}
-
-		$key[] = $trace;
-		return $this->generalCacheKey = md5(serialize($key));
-	}
-
-
-	/**
-	 * Returns object specific cache key dependent on query parameters
-	 * Used e.g. for reference memory caching
-	 */
-	protected function getSpecificCacheKey(): string
-	{
-		if ($this->specificCacheKey) {
-			return $this->specificCacheKey;
-		}
-
-		return $this->specificCacheKey = $this->sqlBuilder->getSelectQueryHash($this->getPreviousAccessedColumns());
 	}
 
 
 	/**
 	 * @internal
-	 * @param  string|null column name or null to reload all columns
+	 * @param  string column name
 	 * @return bool if selection requeried for more columns.
 	 */
-	public function accessColumn(?string $key, bool $selectColumn = true): bool
+	public function accessColumn(string $key, bool $selectColumn = true): bool
 	{
-		if (!$this->cache) {
+		if (!$this->cache->getStorage()) {
 			return false;
 		}
 
-		if ($key === null) {
-			$this->accessedColumns = false;
-			$currentKey = key((array) $this->data);
-		} elseif ($this->accessedColumns !== false) {
-			$this->accessedColumns[$key] = $selectColumn;
+		$this->cache->setAccessedColumn($key, $selectColumn);
+
+		$previousAccessedColumns = $this->cache->getPreviousAccessedColumns();
+		if ($selectColumn && $previousAccessedColumns && !in_array($key, $previousAccessedColumns, true) && !$this->sqlBuilder->getSelect()) {
+			$this->refreshData();
 		}
 
-		if ($selectColumn && $this->previousAccessedColumns && ($key === null || !isset($this->previousAccessedColumns[$key])) && !$this->sqlBuilder->getSelect()) {
-			if ($this->sqlBuilder->getLimit()) {
-				$generalCacheKey = $this->generalCacheKey;
-				$sqlBuilder = $this->sqlBuilder;
-
-				$primaryValues = [];
-				foreach ((array) $this->rows as $row) {
-					$primary = $row->getPrimary();
-					$primaryValues[] = is_array($primary) ? array_values($primary) : $primary;
-				}
-
-				$this->emptyResultSet(false);
-				$this->sqlBuilder = clone $this->sqlBuilder;
-				$this->sqlBuilder->setLimit(null, null);
-				$this->wherePrimary($primaryValues);
-
-				$this->generalCacheKey = $generalCacheKey;
-				$this->previousAccessedColumns = [];
-				$this->execute();
-				$this->sqlBuilder = $sqlBuilder;
-			} else {
-				$this->emptyResultSet(false);
-				$this->previousAccessedColumns = [];
-				$this->execute();
-			}
-
-			$this->dataRefreshed = true;
-
-			// move iterator to specific key
-			if (isset($currentKey)) {
-				while (key($this->data) !== null && key($this->data) !== $currentKey) {
-					next($this->data);
-				}
-			}
-		}
 		return $this->dataRefreshed;
 	}
 
@@ -743,18 +670,65 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function removeAccessColumn(string $key): void
 	{
-		if ($this->cache && is_array($this->accessedColumns)) {
-			$this->accessedColumns[$key] = false;
-		}
+		$this->cache->setAccessedColumn($key, false);
 	}
 
 
 	/**
-	 * Returns if selection requeried for more columns.
+	 * @internal
+	 * @return bool if selection requeried for reload.
 	 */
-	public function getDataRefreshed(): bool
+	public function reloadAllColumns(): bool
 	{
+		if (!$this->cache->getStorage()) {
+			return false;
+		}
+
+		$this->cache->setAccessedColumns([]);
+		$currentKey = key($this->data);
+
+		$previousAccessedColumns = $this->cache->getPreviousAccessedColumns();
+		if ($previousAccessedColumns && !$this->sqlBuilder->getSelect()) {
+			$this->refreshData();
+
+			// move iterator to specific key
+			while (key($this->data) !== null && key($this->data) !== $currentKey) {
+				next($this->data);
+			}
+		}
+
 		return $this->dataRefreshed;
+	}
+
+
+	protected function refreshData(): void
+	{
+		if ($this->sqlBuilder->getLimit()) {
+			$generalCacheKey = $this->cache->getGeneralCacheKey();
+			$sqlBuilder = $this->sqlBuilder;
+
+			$primaryValues = [];
+			foreach ((array) $this->rows as $row) {
+				$primary = $row->getPrimary();
+				$primaryValues[] = is_array($primary) ? array_values($primary) : $primary;
+			}
+
+			$this->emptyResultSet(false);
+			$this->sqlBuilder = clone $this->sqlBuilder;
+			$this->sqlBuilder->setLimit(null, null);
+			$this->wherePrimary($primaryValues);
+
+			$this->cache->setGeneralCacheKey($generalCacheKey);
+			$this->cache->setPreviousAccessedColumns([]);
+			$this->execute();
+			$this->sqlBuilder = $sqlBuilder;
+		} else {
+			$this->emptyResultSet(false);
+			$this->cache->setPreviousAccessedColumns([]);
+			$this->execute();
+		}
+
+		$this->dataRefreshed = true;
 	}
 
 
@@ -781,7 +755,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		$this->loadRefCache();
 
 		if ($data instanceof self || $this->primary === null) {
-			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
+			$this->refCache->unsetReferencing($this->cache->getGeneralCacheKey(), $this->cache->getSpecificCacheKey());
 			return $return->getRowCount();
 		}
 
@@ -817,7 +791,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 		// If primaryKey cannot be prepared, return inserted rows count
 		} else {
-			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
+			$this->refCache->unsetReferencing($this->cache->getGeneralCacheKey(), $this->cache->getSpecificCacheKey());
 			return $return->getRowCount();
 		}
 
@@ -897,7 +871,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 		$checkPrimaryKey = $row[$column];
 
-		$referenced = &$this->refCache['referenced'][$this->getSpecificCacheKey()]["$table.$column"];
+		$referenced = &$this->refCache->getReferenced($this->cache->getSpecificCacheKey(), $table, $column);
 		$selection = &$referenced['selection'];
 		$cacheKeys = &$referenced['cacheKeys'];
 		if ($selection === null || ($checkPrimaryKey !== null && !isset($cacheKeys[$checkPrimaryKey]))) {
@@ -940,7 +914,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			[$table, $column] = $hasMany;
 		}
 
-		$prototype = &$this->refCache['referencingPrototype'][$this->getSpecificCacheKey()]["$table.$column"];
+		$prototype = &$this->refCache->getReferencingPrototype($this->cache->getSpecificCacheKey(), $table, $column);
 		if (!$prototype) {
 			$prototype = $this->createGroupedSelectionInstance($table, $column);
 			$prototype->where("$table.$column", array_keys((array) $this->rows));
@@ -968,9 +942,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	{
 		if (($key = current($this->keys)) !== false) {
 			return $this->data[$key];
-		} else {
-			return false;
 		}
+
+		return false;
 	}
 
 

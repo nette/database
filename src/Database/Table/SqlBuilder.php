@@ -259,7 +259,7 @@ class SqlBuilder
 	}
 
 
-	public function importConditions(SqlBuilder $builder)
+	public function importConditions(self $builder)
 	{
 		$this->where = $builder->where;
 		$this->joinCondition = $builder->joinCondition;

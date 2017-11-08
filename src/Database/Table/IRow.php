@@ -40,5 +40,5 @@ interface IRow extends Database\IRow
 	/**
 	 * Returns referenced row.
 	 */
-	function ref(string $key, string $throughColumn = null): ?IRow;
+	function ref(string $key, string $throughColumn = null): ?self;
 }

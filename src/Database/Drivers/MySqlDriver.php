@@ -39,10 +39,10 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 		$charset = $options['charset']
 			?? (version_compare($connection->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION), '5.5.3', '>=') ? 'utf8mb4' : 'utf8');
 		if ($charset) {
-			$connection->query("SET NAMES '$charset'");
+			$connection->query('SET NAMES ?', $charset);
 		}
 		if (isset($options['sqlmode'])) {
-			$connection->query("SET sql_mode='$options[sqlmode]'");
+			$connection->query('SET sql_mode=?', $options['sqlmode']);
 		}
 	}
 

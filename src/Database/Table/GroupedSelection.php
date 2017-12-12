@@ -157,9 +157,8 @@ class GroupedSelection extends Selection
 			$this->accessColumn($this->column);
 			foreach ((array) $this->rows as $key => $row) {
 				$ref = &$data[$row[$this->column]];
-				$ref = is_null($ref) ? [] : $ref;
 				$skip = &$offset[$row[$this->column]];
-				if ($limit === null || $rows <= 1 || (count($ref) < $limit && $skip >= $this->sqlBuilder->getOffset())) {
+				if ($limit === null || $rows <= 1 || (count($ref ?? []) < $limit && $skip >= $this->sqlBuilder->getOffset())) {
 					$ref[$key] = $row;
 				} else {
 					unset($this->rows[$key]);

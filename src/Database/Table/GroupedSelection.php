@@ -20,7 +20,6 @@ use Nette\Database\IConventions;
  */
 class GroupedSelection extends Selection
 {
-
 	/** @var mixed current assigned referencing array */
 	public $refCacheCurrent;
 

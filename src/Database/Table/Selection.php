@@ -410,7 +410,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	public function page(int $page, int $itemsPerPage, &$numOfPages = null)
 	{
 		if (func_num_args() > 2) {
-			$numOfPages = (int) ceil($this->count('*') / $itemsPerPage);
+			$numOfPages = (int) ceil($this->count() / $itemsPerPage);
 		}
 		if ($page < 1) {
 			$itemsPerPage = 0;

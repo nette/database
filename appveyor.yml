@@ -21,8 +21,8 @@ install:
     # Install PHP
     - IF EXIST c:\php (SET PHP=0) ELSE (mkdir c:\php)
     - IF %PHP%==1 cd c:\php
-    - IF %PHP%==1 appveyor DownloadFile http://windows.php.net/downloads/releases/archives/php-7.1.0-Win32-VC14-x64.zip
-    - IF %PHP%==1 7z x php-7.1.0-Win32-VC14-x64.zip >nul
+    - IF %PHP%==1 curl https://windows.php.net/downloads/releases/archives/php-7.1.0-Win32-VC14-x64.zip --output php.zip
+    - IF %PHP%==1 7z x php.zip >nul
     - IF %PHP%==1 echo extension_dir=ext >> php.ini
     - IF %PHP%==1 echo extension=php_openssl.dll >> php.ini
     - IF %PHP%==1 appveyor DownloadFile https://github.com/Microsoft/msphpsql/releases/download/4.1.4-Windows/7.1.zip

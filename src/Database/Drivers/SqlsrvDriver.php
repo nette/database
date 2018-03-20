@@ -152,7 +152,6 @@ class SqlsrvDriver implements Nette\Database\ISupplementalDriver
 				o.name AS [table],
 				UPPER(t.name) AS nativetype,
 				NULL AS size,
-				0 AS unsigned,
 				c.is_nullable AS nullable,
 				OBJECT_DEFINITION(c.default_object_id) AS [default],
 				c.is_identity AS autoincrement,
@@ -172,7 +171,6 @@ class SqlsrvDriver implements Nette\Database\ISupplementalDriver
 		") as $row) {
 			$row = (array) $row;
 			$row['vendor'] = $row;
-			$row['unsigned'] = (bool) $row['unsigned'];
 			$row['nullable'] = (bool) $row['nullable'];
 			$row['autoincrement'] = (bool) $row['autoincrement'];
 			$row['primary'] = (bool) $row['primary'];

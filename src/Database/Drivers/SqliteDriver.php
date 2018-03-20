@@ -163,7 +163,6 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 				'table' => $table,
 				'nativetype' => strtoupper($type[0]),
 				'size' => isset($type[1]) ? (int) $type[1] : null,
-				'unsigned' => false,
 				'nullable' => $row['notnull'] == '0',
 				'default' => $row['dflt_value'],
 				'autoincrement' => (bool) preg_match($pattern, (string) $meta['sql']),
@@ -233,8 +232,6 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 			$keys[$row['id']]['local'] = $row['from']; // local columns
 			$keys[$row['id']]['table'] = $row['table']; // referenced table
 			$keys[$row['id']]['foreign'] = $row['to']; // referenced columns
-			$keys[$row['id']]['onDelete'] = $row['on_delete'];
-			$keys[$row['id']]['onUpdate'] = $row['on_update'];
 
 			if ($keys[$row['id']]['foreign'][0] == null) {
 				$keys[$row['id']]['foreign'] = null;

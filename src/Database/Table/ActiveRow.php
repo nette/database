@@ -214,8 +214,8 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Stores value in column.
-	 * @param  string
-	 * @param  mixed
+	 * @param  string  $column
+	 * @param  mixed  $value
 	 */
 	public function offsetSet($column, $value): void
 	{
@@ -225,7 +225,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Returns value of column.
-	 * @param  string
+	 * @param  string  $column
 	 * @return mixed
 	 */
 	public function offsetGet($column)
@@ -236,7 +236,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Tests if column exists.
-	 * @param  string
+	 * @param  string  $column
 	 */
 	public function offsetExists($column): bool
 	{
@@ -246,7 +246,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Removes column from data.
-	 * @param  string
+	 * @param  string  $column
 	 */
 	public function offsetUnset($column): void
 	{

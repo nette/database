@@ -35,8 +35,6 @@ class GroupedSelection extends Selection
 
 	/**
 	 * Creates filtered and grouped table representation.
-	 * @param  string $tableName  database table name
-	 * @param  string $column  joining column
 	 */
 	public function __construct(Context $context, IConventions $conventions, string $tableName, string $column, Selection $refTable, Nette\Caching\IStorage $cacheStorage = null)
 	{
@@ -49,7 +47,7 @@ class GroupedSelection extends Selection
 	/**
 	 * Sets active group.
 	 * @internal
-	 * @param  int  primary key of grouped rows
+	 * @param  int  $active  primary key of grouped rows
 	 * @return static
 	 */
 	public function setActive(int $active)

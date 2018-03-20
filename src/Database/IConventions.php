@@ -26,8 +26,6 @@ interface IConventions
 	 * Example:
 	 *     (author, book) returns array(book, author_id)
 	 *
-	 * @param  string  source table
-	 * @param  string  referencing key
 	 * @return array|null   array(referenced table, referenced column)
 	 * @throws AmbiguousReferenceKeyException
 	 */
@@ -39,8 +37,6 @@ interface IConventions
 	 *     (book, author)      returns array(author, author_id)
 	 *     (book, translator)  returns array(author, translator_id)
 	 *
-	 * @param  string  source table
-	 * @param  string  referencing key
 	 * @return array|null   array(referenced table, referencing column)
 	 */
 	function getBelongsToReference(string $table, string $key): ?array;

@@ -67,7 +67,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Creates filtered table representation.
-	 * @param  string $tableName  table name
 	 */
 	public function __construct(Context $context, IConventions $conventions, string $tableName, Nette\Caching\IStorage $cacheStorage = null)
 	{
@@ -183,7 +182,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns row specified by primary key.
-	 * @param  mixed primary key
+	 * @param  mixed  $key  primary key
 	 */
 	public function get($key): ?ActiveRow
 	{
@@ -207,7 +206,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Fetches single field.
-	 * @param  string|null
 	 * @return mixed
 	 * @deprecated
 	 */
@@ -259,7 +257,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Adds select clause, more calls appends to the end.
-	 * @param  string|string[] for example "column, MD5(column) AS column_md5"
+	 * @param  string|string[]  $columns  for example "column, MD5(column) AS column_md5"
 	 * @return static
 	 */
 	public function select($columns, ...$params)
@@ -272,7 +270,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Adds condition for primary key.
-	 * @param  mixed
+	 * @param  mixed  $key
 	 * @return static
 	 */
 	public function wherePrimary($key)
@@ -297,8 +295,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Adds where condition, more calls appends with AND.
-	 * @param  string|string[] condition possibly containing ?
-	 * @param  mixed
+	 * @param  string|string[]  $condition  possibly containing ?
 	 * @return static
 	 */
 	public function where($condition, ...$params)
@@ -310,9 +307,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Adds ON condition when joining specified table, more calls appends with AND.
-	 * @param  string table chain or table alias for which you need additional left join condition
-	 * @param  string condition possibly containing ?
-	 * @param  mixed
+	 * @param  string  $tableChain  table chain or table alias for which you need additional left join condition
+	 * @param  string  $condition  possibly containing ?
 	 * @return static
 	 */
 	public function joinWhere(string $tableChain, string $condition, ...$params)
@@ -324,7 +320,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Adds condition, more calls appends with AND.
-	 * @param  string|string[] condition possibly containing ?
+	 * @param  string|string[]  $condition  possibly containing ?
 	 */
 	protected function condition($condition, array $params, $tableChain = null): void
 	{
@@ -348,7 +344,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Adds where condition using the OR operator between parameters.
 	 * More calls appends with AND.
-	 * @param  array ['column1' => 1, 'column2 > ?' => 2, 'full condition']
+	 * @param  array  $parameters ['column1' => 1, 'column2 > ?' => 2, 'full condition']
 	 * @return static
 	 * @throws \Nette\InvalidArgumentException
 	 */
@@ -381,7 +377,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Adds order clause, more calls appends to the end.
-	 * @param  string for example 'column1, column2 DESC'
+	 * @param  string  $columns  for example 'column1, column2 DESC'
 	 * @return static
 	 */
 	public function order(string $columns, ...$params)
@@ -460,7 +456,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Executes aggregation function.
-	 * @param  string select call in "FUNCTION(column)" format
+	 * @param  string  $function  select call in "FUNCTION(column)" format
 	 * @return mixed
 	 */
 	public function aggregation(string $function)
@@ -476,7 +472,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Counts number of rows.
-	 * @param  string  if it is not provided returns count of result rows, otherwise runs new sql counting query
+	 * @param  string  $column  if it is not provided returns count of result rows, otherwise runs new sql counting query
 	 */
 	public function count(string $column = null): int
 	{
@@ -646,7 +642,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * @internal
-	 * @param  string column name
 	 * @return bool if selection requeried for more columns.
 	 */
 	public function accessColumn(string $key, bool $selectColumn = true): bool
@@ -738,7 +733,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Inserts row in a table.
-	 * @param  array|\Traversable|Selection array($column => $value)|\Traversable|Selection for INSERT ... SELECT
+	 * @param  array|\Traversable|Selection  $data  array($column => $value)|\Traversable|Selection for INSERT ... SELECT
 	 * @return ActiveRow|int|bool Returns IRow or number of affected rows for Selection or table without primary key
 	 */
 	public function insert($data)
@@ -901,7 +896,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns referencing rows.
-	 * @param  int $active primary key
+	 * @param  int  $active  primary key
 	 */
 	public function getReferencingTable(string $table, string $column = null, int $active = null): ?GroupedSelection
 	{
@@ -977,8 +972,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Mimic row.
-	 * @param  string row ID
-	 * @param  IRow
+	 * @param  string  $key
+	 * @param  IRow  $value
 	 */
 	public function offsetSet($key, $value): void
 	{
@@ -989,7 +984,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns specified row.
-	 * @param  string row ID
+	 * @param  string  $key
 	 */
 	public function offsetGet($key): ?ActiveRow
 	{
@@ -1000,7 +995,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Tests if row exists.
-	 * @param  string row ID
+	 * @param  string  $key
 	 */
 	public function offsetExists($key): bool
 	{
@@ -1011,7 +1006,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Removes row from result set.
-	 * @param  string row ID
+	 * @param  string  $key
 	 */
 	public function offsetUnset($key): void
 	{

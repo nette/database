@@ -177,9 +177,6 @@ class ColumnAccessCache
 	}
 
 
-	/**
-	 * @param Selection
-	 */
 	public function setObserveCache(Selection $observeCache): void
 	{
 		$this->observeCache = $observeCache;

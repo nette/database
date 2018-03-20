@@ -60,12 +60,9 @@ class Context
 	}
 
 
-	/**
-	 * @param  string  sequence object
-	 */
-	public function getInsertId(string $name = null): string
+	public function getInsertId(string $sequence = null): string
 	{
-		return $this->connection->getInsertId($name);
+		return $this->connection->getInsertId($sequence);
 	}
 
 

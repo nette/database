@@ -110,13 +110,10 @@ class Connection
 	}
 
 
-	/**
-	 * @param  string  sequence object
-	 */
-	public function getInsertId(string $name = null): string
+	public function getInsertId(string $sequence = null): string
 	{
 		try {
-			$res = $this->getPdo()->lastInsertId($name);
+			$res = $this->getPdo()->lastInsertId($sequence);
 			return $res === false ? '0' : $res;
 		} catch (PDOException $e) {
 			throw $this->driver->convertException($e);
@@ -124,10 +121,6 @@ class Connection
 	}
 
 
-	/**
-	 * @param  string  string to be quoted
-	 * @param  int     data type hint
-	 */
 	public function quote(string $string, int $type = PDO::PARAM_STR): string
 	{
 		try {
@@ -180,7 +173,7 @@ class Connection
 
 
 	/**
-	 * @return [string, array]
+	 * @return array  [string, array]
 	 */
 	public function preprocess($sql, ...$params): array
 	{

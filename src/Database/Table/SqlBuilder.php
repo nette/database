@@ -178,7 +178,7 @@ class SqlBuilder
 
 	/**
 	 * Returns SQL query.
-	 * @param  string[] list of columns
+	 * @param  string[]  $columns
 	 */
 	public function buildSelectQuery(array $columns = null): string
 	{

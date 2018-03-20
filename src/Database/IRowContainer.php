@@ -29,8 +29,8 @@ interface IRowContainer extends \Traversable
 
 	/**
 	 * Fetches all rows as associative array.
-	 * @param  string|int column name used for an array key or null for numeric index
-	 * @param  string|int column name used for an array value or null for the whole row
+	 * @param  string|int  $key  column name used for an array key or null for numeric index
+	 * @param  string|int  $value  column name used for an array value or null for the whole row
 	 */
 	function fetchPairs($key = null, $value = null): array;
 
@@ -42,7 +42,7 @@ interface IRowContainer extends \Traversable
 
 	/**
 	 * Fetches all rows and returns associative tree.
-	 * @param  string  associative descriptor
+	 * @param  string  $path  associative descriptor
 	 */
 	function fetchAssoc(string $path): array;
 }

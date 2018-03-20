@@ -32,9 +32,9 @@ class StaticConventions implements IConventions
 
 	/**
 	 * Create static conventional structure.
-	 * @param  string %s stands for table name
-	 * @param  string %1$s stands for key used after ->, %2$s for table name
-	 * @param  string %1$s stands for key used after ->, %2$s for table name
+	 * @param  string  $primary  %s stands for table name
+	 * @param  string  $foreign  %1$s stands for key used after ->, %2$s for table name
+	 * @param  string  $table  %1$s stands for key used after ->, %2$s for table name
 	 */
 	public function __construct(string $primary = 'id', string $foreign = '%s_id', string $table = '%s')
 	{

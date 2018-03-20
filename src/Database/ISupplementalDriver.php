@@ -55,7 +55,7 @@ interface ISupplementalDriver
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 * @param  string  SQL query that will be modified.
+	 * @param  string  $sql query that will be modified.
 	 */
 	function applyLimit(string &$sql, ?int $limit, ?int $offset): void;
 
@@ -91,7 +91,7 @@ interface ISupplementalDriver
 
 	/**
 	 * Cheks if driver supports specific property
-	 * @param  string self::SUPPORT_* property
+	 * @param  string  $item  self::SUPPORT_* property
 	 */
 	function isSupported(string $item): bool;
 }

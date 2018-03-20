@@ -252,6 +252,9 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function fetchField($column = 0)
 	{
+		if (func_num_args()) {
+			trigger_error(__METHOD__ . '() argument is deprecated.', E_USER_DEPRECATED);
+		}
 		$row = $this->fetch();
 		return $row ? $row[$column] : null;
 	}

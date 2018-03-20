@@ -18,8 +18,6 @@ test(function () use ($connection) {
 	$res = $connection->query('SELECT name, id FROM author ORDER BY id');
 
 	Assert::same('Jakub Vrana', $res->fetchField());
-	Assert::same(12, $res->fetchField(1));
-	Assert::same('Geek', $res->fetchField('name'));
 });
 
 

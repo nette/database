@@ -209,8 +209,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Fetches single field.
 	 * @param  string|null
 	 * @return mixed
+	 * @deprecated
 	 */
-	public function fetchField($column = null)
+	public function fetchField(string $column = null)
 	{
 		if ($column) {
 			$this->select($column);

@@ -16,27 +16,18 @@ use Nette;
 class Sqlite2Driver extends SqliteDriver
 {
 
-	/**
-	 * Encodes string for use in a LIKE statement.
-	 */
 	public function formatLike($value, $pos)
 	{
 		throw new Nette\NotSupportedException;
 	}
 
 
-	/**
-	 * Returns metadata for all foreign keys in a table.
-	 */
 	public function getForeignKeys($table)
 	{
 		throw new Nette\NotSupportedException; // @see http://www.sqlite.org/foreignkeys.html
 	}
 
 
-	/**
-	 * Not supported.
-	 */
 	public function getColumnTypes(\PDOStatement $statement)
 	{
 	}

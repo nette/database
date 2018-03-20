@@ -52,9 +52,6 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	/********************* SQL ****************d*g**/
 
 
-	/**
-	 * Delimites identifier for use in a SQL statement.
-	 */
 	public function delimite($name)
 	{
 		// @see http://download.oracle.com/docs/cd/B10500_01/server.920/a96540/sql_elements9a.htm
@@ -62,45 +59,30 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Formats boolean for use in a SQL statement.
-	 */
 	public function formatBool($value)
 	{
 		return $value ? '1' : '0';
 	}
 
 
-	/**
-	 * Formats date-time for use in a SQL statement.
-	 */
 	public function formatDateTime(/*\DateTimeInterface*/ $value)
 	{
 		return $value->format($this->fmtDateTime);
 	}
 
 
-	/**
-	 * Formats date-time interval for use in a SQL statement.
-	 */
 	public function formatDateInterval(\DateInterval $value)
 	{
 		throw new Nette\NotSupportedException;
 	}
 
 
-	/**
-	 * Encodes string for use in a LIKE statement.
-	 */
 	public function formatLike($value, $pos)
 	{
 		throw new Nette\NotImplementedException;
 	}
 
 
-	/**
-	 * Injects LIMIT/OFFSET to the SQL query.
-	 */
 	public function applyLimit(&$sql, $limit, $offset)
 	{
 		if ($limit < 0 || $offset < 0) {
@@ -118,9 +100,6 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Normalizes result row.
-	 */
 	public function normalizeRow($row)
 	{
 		return $row;
@@ -130,9 +109,6 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	/********************* reflection ****************d*g**/
 
 
-	/**
-	 * Returns list of tables.
-	 */
 	public function getTables()
 	{
 		$tables = [];
@@ -148,46 +124,30 @@ class OciDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Returns metadata for all columns in a table.
-	 */
 	public function getColumns($table)
 	{
 		throw new Nette\NotImplementedException;
 	}
 
 
-	/**
-	 * Returns metadata for all indexes in a table.
-	 */
 	public function getIndexes($table)
 	{
 		throw new Nette\NotImplementedException;
 	}
 
 
-	/**
-	 * Returns metadata for all foreign keys in a table.
-	 */
 	public function getForeignKeys($table)
 	{
 		throw new Nette\NotImplementedException;
 	}
 
 
-	/**
-	 * Returns associative array of detected types (IReflection::FIELD_*) in result set.
-	 */
 	public function getColumnTypes(\PDOStatement $statement)
 	{
 		return [];
 	}
 
 
-	/**
-	 * @param  string
-	 * @return bool
-	 */
 	public function isSupported($item)
 	{
 		return $item === self::SUPPORT_SEQUENCE || $item === self::SUPPORT_SUBSELECT;

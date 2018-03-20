@@ -65,36 +65,24 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	/********************* SQL ****************d*g**/
 
 
-	/**
-	 * Delimites identifier for use in a SQL statement.
-	 */
 	public function delimite(string $name): string
 	{
 		return '[' . strtr($name, '[]', '  ') . ']';
 	}
 
 
-	/**
-	 * Formats date-time for use in a SQL statement.
-	 */
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
 		return $value->format($this->fmtDateTime);
 	}
 
 
-	/**
-	 * Formats date-time interval for use in a SQL statement.
-	 */
 	public function formatDateInterval(\DateInterval $value): string
 	{
 		throw new Nette\NotSupportedException;
 	}
 
 
-	/**
-	 * Encodes string for use in a LIKE statement.
-	 */
 	public function formatLike(string $value, int $pos): string
 	{
 		$value = addcslashes(substr($this->connection->quote($value), 1, -1), '%_\\');
@@ -102,9 +90,6 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Injects LIMIT/OFFSET to the SQL query.
-	 */
 	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
 	{
 		if ($limit < 0 || $offset < 0) {
@@ -120,9 +105,6 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	/********************* reflection ****************d*g**/
 
 
-	/**
-	 * Returns list of tables.
-	 */
 	public function getTables(): array
 	{
 		$tables = [];
@@ -142,9 +124,6 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Returns metadata for all columns in a table.
-	 */
 	public function getColumns(string $table): array
 	{
 		$meta = $this->connection->query("
@@ -174,9 +153,6 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Returns metadata for all indexes in a table.
-	 */
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
@@ -221,9 +197,6 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Returns metadata for all foreign keys in a table.
-	 */
 	public function getForeignKeys(string $table): array
 	{
 		$keys = [];
@@ -241,9 +214,6 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Returns associative array of detected types (IReflection::FIELD_*) in result set.
-	 */
 	public function getColumnTypes(\PDOStatement $statement): array
 	{
 		$types = [];

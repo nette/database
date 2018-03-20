@@ -56,9 +56,6 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 	/********************* SQL ****************d*g**/
 
 
-	/**
-	 * Delimites identifier for use in a SQL statement.
-	 */
 	public function delimite(string $name): string
 	{
 		// @see http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
@@ -66,27 +63,18 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Formats date-time for use in a SQL statement.
-	 */
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
 		return $value->format("'Y-m-d H:i:s'");
 	}
 
 
-	/**
-	 * Formats date-time interval for use in a SQL statement.
-	 */
 	public function formatDateInterval(\DateInterval $value): string
 	{
 		throw new Nette\NotSupportedException;
 	}
 
 
-	/**
-	 * Encodes string for use in a LIKE statement.
-	 */
 	public function formatLike(string $value, int $pos): string
 	{
 		$bs = substr($this->connection->quote('\\'), 1, -1); // standard_conforming_strings = on/off
@@ -96,9 +84,6 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Injects LIMIT/OFFSET to the SQL query.
-	 */
 	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
 	{
 		if ($limit < 0 || $offset < 0) {
@@ -116,9 +101,6 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 	/********************* reflection ****************d*g**/
 
 
-	/**
-	 * Returns list of tables.
-	 */
 	public function getTables(): array
 	{
 		$tables = [];
@@ -143,9 +125,6 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Returns metadata for all columns in a table.
-	 */
 	public function getColumns(string $table): array
 	{
 		$columns = [];
@@ -185,9 +164,6 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Returns metadata for all indexes in a table.
-	 */
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
@@ -216,9 +192,6 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Returns metadata for all foreign keys in a table.
-	 */
 	public function getForeignKeys(string $table): array
 	{
 		/* Does't work with multicolumn foreign keys */
@@ -243,9 +216,6 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Returns associative array of detected types (IReflection::FIELD_*) in result set.
-	 */
 	public function getColumnTypes(\PDOStatement $statement): array
 	{
 		return Nette\Database\Helpers::detectTypes($statement);

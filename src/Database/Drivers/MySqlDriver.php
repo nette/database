@@ -71,9 +71,6 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	/********************* SQL ****************d*g**/
 
 
-	/**
-	 * Delimites identifier for use in a SQL statement.
-	 */
 	public function delimite(string $name): string
 	{
 		// @see http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
@@ -81,27 +78,18 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Formats date-time for use in a SQL statement.
-	 */
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
 		return $value->format("'Y-m-d H:i:s'");
 	}
 
 
-	/**
-	 * Formats date-time interval for use in a SQL statement.
-	 */
 	public function formatDateInterval(\DateInterval $value): string
 	{
 		return $value->format("'%r%h:%I:%S'");
 	}
 
 
-	/**
-	 * Encodes string for use in a LIKE statement.
-	 */
 	public function formatLike(string $value, int $pos): string
 	{
 		$value = str_replace('\\', '\\\\', $value);
@@ -110,9 +98,6 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Injects LIMIT/OFFSET to the SQL query.
-	 */
 	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
 	{
 		if ($limit < 0 || $offset < 0) {
@@ -129,9 +114,6 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	/********************* reflection ****************d*g**/
 
 
-	/**
-	 * Returns list of tables.
-	 */
 	public function getTables(): array
 	{
 		$tables = [];
@@ -145,9 +127,6 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Returns metadata for all columns in a table.
-	 */
 	public function getColumns(string $table): array
 	{
 		$columns = [];
@@ -169,9 +148,6 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Returns metadata for all indexes in a table.
-	 */
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
@@ -185,9 +161,6 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Returns metadata for all foreign keys in a table.
-	 */
 	public function getForeignKeys(string $table): array
 	{
 		$keys = [];
@@ -205,9 +178,6 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Returns associative array of detected types (IReflection::FIELD_*) in result set.
-	 */
 	public function getColumnTypes(\PDOStatement $statement): array
 	{
 		$types = [];

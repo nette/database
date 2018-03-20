@@ -33,36 +33,24 @@ class OdbcDriver implements Nette\Database\ISupplementalDriver
 	/********************* SQL ****************d*g**/
 
 
-	/**
-	 * Delimites identifier for use in a SQL statement.
-	 */
 	public function delimite(string $name): string
 	{
 		return '[' . str_replace(['[', ']'], ['[[', ']]'], $name) . ']';
 	}
 
 
-	/**
-	 * Formats date-time for use in a SQL statement.
-	 */
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
 		return $value->format('#m/d/Y H:i:s#');
 	}
 
 
-	/**
-	 * Formats date-time interval for use in a SQL statement.
-	 */
 	public function formatDateInterval(\DateInterval $value): string
 	{
 		throw new Nette\NotSupportedException;
 	}
 
 
-	/**
-	 * Encodes string for use in a LIKE statement.
-	 */
 	public function formatLike(string $value, int $pos): string
 	{
 		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
@@ -70,9 +58,6 @@ class OdbcDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
-	/**
-	 * Injects LIMIT/OFFSET to the SQL query.
-	 */
 	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
 	{
 		if ($offset) {
@@ -93,45 +78,30 @@ class OdbcDriver implements Nette\Database\ISupplementalDriver
 	/********************* reflection ****************d*g**/
 
 
-	/**
-	 * Returns list of tables.
-	 */
 	public function getTables(): array
 	{
 		throw new Nette\NotImplementedException;
 	}
 
 
-	/**
-	 * Returns metadata for all columns in a table.
-	 */
 	public function getColumns(string $table): array
 	{
 		throw new Nette\NotImplementedException;
 	}
 
 
-	/**
-	 * Returns metadata for all indexes in a table.
-	 */
 	public function getIndexes(string $table): array
 	{
 		throw new Nette\NotImplementedException;
 	}
 
 
-	/**
-	 * Returns metadata for all foreign keys in a table.
-	 */
 	public function getForeignKeys(string $table): array
 	{
 		throw new Nette\NotImplementedException;
 	}
 
 
-	/**
-	 * Returns associative array of detected types (IReflection::FIELD_*) in result set.
-	 */
 	public function getColumnTypes(\PDOStatement $statement): array
 	{
 		return Nette\Database\Helpers::detectTypes($statement);

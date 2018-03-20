@@ -28,6 +28,9 @@ interface ISupplementalDriver
 	 */
 	function initialize(Connection $connection, array $options): void;
 
+	/**
+	 * Converts PDOException to DriverException or its descendant.
+	 */
 	function convertException(\PDOException $e): DriverException;
 
 	/**
@@ -59,25 +62,25 @@ interface ISupplementalDriver
 	/********************* reflection ****************d*g**/
 
 	/**
-	 * Returns list of tables.
-	 * @return array of [name [, (bool) view]]
+	 * Returns list of tables as tuples [(string) name, (bool) view, [(string) fullName]]
 	 */
 	function getTables(): array;
 
 	/**
 	 * Returns metadata for all columns in a table.
-	 * @return array of [name, nativetype, primary [, table, fullname, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (array) vendor]]
+	 * As tuples [(string) name, (string) table, (string) nativetype, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (bool) primary, (array) vendor]]
 	 */
 	function getColumns(string $table): array;
 
 	/**
 	 * Returns metadata for all indexes in a table.
-	 * @return array of [name, (array of names) columns [, (bool) unique, (bool) primary]]
+	 * As tuples [(string) name, (string[]) columns, (bool) unique, (bool) primary]
 	 */
 	function getIndexes(string $table): array;
 
 	/**
 	 * Returns metadata for all foreign keys in a table.
+	 * As tuples [(string) name, (string) local, (string) table, (string) foreign]
 	 */
 	function getForeignKeys(string $table): array;
 

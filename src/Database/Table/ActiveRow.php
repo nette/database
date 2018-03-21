@@ -310,7 +310,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
-	protected function removeAccessColumn($key): void
+	protected function removeAccessColumn(string $key): void
 	{
 		$this->table->removeAccessColumn($key);
 	}

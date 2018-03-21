@@ -114,7 +114,7 @@ class SqlPreprocessor
 	}
 
 
-	private function formatValue($value, $mode = null)
+	private function formatValue($value, string $mode = null): string
 	{
 		if (!$mode || $mode === 'auto') {
 			if (is_scalar($value) || is_resource($value)) {

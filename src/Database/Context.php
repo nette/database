@@ -145,7 +145,7 @@ class Context
 	}
 
 
-	public static function literal($value, ...$params): SqlLiteral
+	public static function literal(string $value, ...$params): SqlLiteral
 	{
 		return new SqlLiteral($value, $params);
 	}

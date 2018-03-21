@@ -46,18 +46,12 @@ class DriverException extends \PDOException
 	}
 
 
-	/**
-	 * @return string|null  SQLSTATE error code
-	 */
 	public function getSqlState(): ?string
 	{
 		return $this->errorInfo[0] ?? null;
 	}
 
 
-	/**
-	 * @return string|null  SQL command
-	 */
 	public function getQueryString(): ?string
 	{
 		return $this->queryString;

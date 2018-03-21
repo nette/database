@@ -238,7 +238,7 @@ class Structure implements IStructure
 	}
 
 
-	protected function analyzeForeignKeys(&$structure, $table): void
+	protected function analyzeForeignKeys(array &$structure, string $table): void
 	{
 		$lowerTable = strtolower($table);
 		foreach ($this->connection->getSupplementalDriver()->getForeignKeys($table) as $row) {

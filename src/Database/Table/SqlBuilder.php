@@ -281,7 +281,7 @@ class SqlBuilder
 	}
 
 
-	public function addJoinCondition($tableChain, $condition, ...$params): bool
+	public function addJoinCondition(string $tableChain, $condition, ...$params): bool
 	{
 		$this->parameters['joinConditionSorted'] = null;
 		if (!isset($this->joinCondition[$tableChain])) {

@@ -30,7 +30,7 @@ $context = new Nette\Database\Context($connection, $structure, $conventions, $ca
 
 
 /** Replaces [] with driver-specific quotes */
-function reformat($s)
+function reformat($s): string
 {
 	global $driverName;
 	if (is_array($s)) {

@@ -566,19 +566,19 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	}
 
 
-	public function createSelectionInstance($table = null): self
+	public function createSelectionInstance(string $table = null): self
 	{
 		return new self($this->context, $this->conventions, $table ?: $this->name, $this->cache->getStorage());
 	}
 
 
-	protected function createGroupedSelectionInstance($table, $column): GroupedSelection
+	protected function createGroupedSelectionInstance(string $table, string $column): GroupedSelection
 	{
 		return new GroupedSelection($this->context, $this->conventions, $table, $column, $this, $this->cache->getStorage());
 	}
 
 
-	protected function query($query): Nette\Database\ResultSet
+	protected function query(string $query): Nette\Database\ResultSet
 	{
 		return $this->context->queryArgs($query, $this->sqlBuilder->getParameters());
 	}
@@ -736,7 +736,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * @param  array|\Traversable|Selection  $data  array($column => $value)|\Traversable|Selection for INSERT ... SELECT
 	 * @return ActiveRow|int|bool Returns IRow or number of affected rows for Selection or table without primary key
 	 */
-	public function insert($data)
+	public function insert(iterable $data)
 	{
 		if ($data instanceof self) {
 			$return = $this->context->queryArgs($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), $data->getSqlBuilder()->getParameters());

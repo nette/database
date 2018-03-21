@@ -43,7 +43,7 @@ class Connection
 	private $pdo;
 
 
-	public function __construct($dsn, $user = null, $password = null, array $options = null)
+	public function __construct(string $dsn, string $user = null, string $password = null, array $options = null)
 	{
 		$this->params = [$dsn, $user, $password];
 		$this->options = (array) $options;
@@ -175,7 +175,7 @@ class Connection
 	/**
 	 * @return array  [string, array]
 	 */
-	public function preprocess($sql, ...$params): array
+	public function preprocess(string $sql, ...$params): array
 	{
 		$this->connect();
 		return $params
@@ -224,7 +224,7 @@ class Connection
 	}
 
 
-	public static function literal($value, ...$params): SqlLiteral
+	public static function literal(string $value, ...$params): SqlLiteral
 	{
 		return new SqlLiteral($value, $params);
 	}

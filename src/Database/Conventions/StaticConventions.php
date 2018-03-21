@@ -44,7 +44,7 @@ class StaticConventions implements IConventions
 	}
 
 
-	public function getPrimary(string $table)
+	public function getPrimary(string $table): string
 	{
 		return sprintf($this->primary, $this->getColumnFromTable($table));
 	}

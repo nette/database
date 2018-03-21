@@ -31,7 +31,7 @@ function before(\Closure $function = null)
 }
 
 
-function test(\Closure $function)
+function test(\Closure $function): void
 {
 	before();
 	$function();

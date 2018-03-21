@@ -62,7 +62,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 	}
 
 
-	private function setupDatabase($config, $name): void
+	private function setupDatabase(array $config, string $name): void
 	{
 		$builder = $this->getContainerBuilder();
 

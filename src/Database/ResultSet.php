@@ -48,7 +48,7 @@ class ResultSet implements \Iterator, IRowContainer
 	private $types;
 
 
-	public function __construct(Connection $connection, $queryString, array $params)
+	public function __construct(Connection $connection, string $queryString, array $params)
 	{
 		$time = microtime(true);
 		$this->connection = $connection;

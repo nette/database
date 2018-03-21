@@ -81,7 +81,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 	}
 
 
-	public static function renderException($e): ?array
+	public static function renderException(?\Throwable $e): ?array
 	{
 		if (!$e instanceof \PDOException) {
 			return null;

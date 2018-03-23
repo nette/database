@@ -19,7 +19,7 @@ $res = $connection->query('SELECT * FROM types');
 
 Assert::equal([
 	'bigint' => 1,
-	'binary_3' => '0000FF',
+	'binary_3' => "\x00\x00\xFF",
 	'bit' => '1',
 	'char_5' => 'a    ',
 	'date' => new DateTime('2012-10-13 00:00:00'),
@@ -27,9 +27,9 @@ Assert::equal([
 	'datetime2' => new DateTime('2012-10-13 10:10:10'),
 	'decimal' => 1.0,
 	'float' => '1.1000000000000001',
-	'geography' => 'E610000001148716D9CEF7D34740D7A3703D0A975EC08716D9CEF7D34740CBA145B6F3955EC0',
-	'geometry' => '0000000001040300000000000000000059400000000000005940000000000000344000000000008066400000000000806640000000000080664001000000010000000001000000FFFFFFFF0000000002',
-	'hierarchyid' => '58',
+	'geography' => "\xe6\x10\x00\x00\x01\x14\x87\x16\xd9\xce\xf7\xd3G@\xd7\xa3p=\n\x97^\xc0\x87\x16\xd9\xce\xf7\xd3G@\xcb\xa1E\xb6\xf3\x95^\xc0",
+	'geometry' => "\x00\x00\x00\x00\x01\x04\x03\x00\x00\x00\x00\x00\x00\x00\x00\x00Y@\x00\x00\x00\x00\x00\x00Y@\x00\x00\x00\x00\x00\x004@\x00\x00\x00\x00\x00\x80f@\x00\x00\x00\x00\x00\x80f@\x00\x00\x00\x00\x00\x80f@\x01\x00\x00\x00\x01\x00\x00\x00\x00\x01\x00\x00\x00\xff\xff\xff\xff\x00\x00\x00\x00\x02",
+	'hierarchyid' => 'X',
 	'int' => 1,
 	'money' => 1111.1,
 	'nchar' => 'a',
@@ -45,14 +45,14 @@ Assert::equal([
 	'time' => new DateTime('10:10:10'),
 	'tinyint' => 1,
 	'uniqueidentifier' => '678E9994-A048-11E2-9030-003048D30C14',
-	'varbinary' => '01',
+	'varbinary' => "\x01",
 	'varchar' => 'a',
 	'xml' => '<doc/>',
 ], (array) $res->fetch());
 
 Assert::equal([
 	'bigint' => 0,
-	'binary_3' => '000000',
+	'binary_3' => "\x00\x00\x00",
 	'bit' => '0',
 	'char_5' => '     ',
 	'date' => new DateTime('0001-01-01 00:00:00'),
@@ -78,7 +78,7 @@ Assert::equal([
 	'time' => new DateTime('00:00:00'),
 	'tinyint' => 0,
 	'uniqueidentifier' => '00000000-0000-0000-0000-000000000000',
-	'varbinary' => '00',
+	'varbinary' => "\x00",
 	'varchar' => '',
 	'xml' => '',
 ], (array) $res->fetch());
@@ -126,7 +126,7 @@ Assert::same([
 
 function isTimestamp($str)
 {
-	return is_string($str) && preg_match('#[0-9A-F]{16}#', $str);
+	return is_string($str) && substr($str, 0, 4) === "\x00\x00\x00\x00";
 }
 
 

@@ -305,6 +305,13 @@ class ActiveRow implements \IteratorAggregate, IRow
 		if ($this->accessColumn($key)) {
 			return isset($this->data[$key]);
 		}
+
+		$referenced = $this->table->getReferencedTable($this, $key);
+		if ($referenced !== false) {
+			$this->accessColumn($key, false);
+			return true;
+		}
+
 		$this->removeAccessColumn($key);
 		return false;
 	}

@@ -78,9 +78,9 @@ test(function () use ($context) {
 	Assert::true(empty($book->translator_id));
 	Assert::false(isset($book->test));
 
-	Assert::false(isset($book->author));
+	Assert::true(isset($book->author));
 	Assert::false(isset($book->translator));
-	Assert::true(empty($book->author));
+	Assert::false(empty($book->author));
 	Assert::true(empty($book->translator));
 });
 

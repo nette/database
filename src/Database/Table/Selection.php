@@ -325,7 +325,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	protected function condition($condition, array $params, $tableChain = null): void
 	{
 		$this->emptyResultSet();
-		if (is_array($condition) && $params === []) { // where(array('column1' => 1, 'column2 > ?' => 2))
+		if (is_array($condition) && $params === []) { // where(['column1' => 1, 'column2 > ?' => 2])
 			foreach ($condition as $key => $val) {
 				if (is_int($key)) {
 					$this->condition($val, [], $tableChain); // where('full condition')
@@ -733,7 +733,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Inserts row in a table.
-	 * @param  array|\Traversable|Selection  $data  array($column => $value)|\Traversable|Selection for INSERT ... SELECT
+	 * @param  array|\Traversable|Selection  $data  [$column => $value]|\Traversable|Selection for INSERT ... SELECT
 	 * @return ActiveRow|int|bool Returns IRow or number of affected rows for Selection or table without primary key
 	 */
 	public function insert(iterable $data)

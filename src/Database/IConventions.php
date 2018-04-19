@@ -24,9 +24,9 @@ interface IConventions
 	/**
 	 * Returns referenced table & referenced column.
 	 * Example:
-	 *     (author, book) returns array(book, author_id)
+	 *     (author, book) returns [book, author_id]
 	 *
-	 * @return array|null   array(referenced table, referenced column)
+	 * @return array|null   [referenced table, referenced column]
 	 * @throws AmbiguousReferenceKeyException
 	 */
 	function getHasManyReference(string $table, string $key): ?array;
@@ -34,10 +34,10 @@ interface IConventions
 	/**
 	 * Returns referenced table & referencing column.
 	 * Example
-	 *     (book, author)      returns array(author, author_id)
-	 *     (book, translator)  returns array(author, translator_id)
+	 *     (book, author)      returns [author, author_id]
+	 *     (book, translator)  returns [author, translator_id]
 	 *
-	 * @return array|null   array(referenced table, referencing column)
+	 * @return array|null   [referenced table, referencing column]
 	 */
 	function getBelongsToReference(string $table, string $key): ?array;
 }

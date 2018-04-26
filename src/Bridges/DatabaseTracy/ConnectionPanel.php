@@ -60,7 +60,8 @@ class ConnectionPanel implements Tracy\IBarPanel
 		$trace = $result instanceof \PDOException ? $result->getTrace() : debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		foreach ($trace as $row) {
 			if (isset($row['file']) && is_file($row['file']) && !Tracy\Debugger::getBluescreen()->isCollapsed($row['file'])) {
-				if ((strpos($row['function'] ?? '', 'call_user_func') === 0)
+				if (
+					(strpos($row['function'] ?? '', 'call_user_func') === 0)
 					|| (is_subclass_of($row['class'] ?? '', '\\Nette\\Database\\Connection'))
 				) {
 					continue;

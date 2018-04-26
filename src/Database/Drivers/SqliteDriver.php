@@ -40,18 +40,21 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 		if ($code !== 19) {
 			return Nette\Database\DriverException::from($e);
 
-		} elseif (strpos($msg, 'must be unique') !== false
+		} elseif (
+			strpos($msg, 'must be unique') !== false
 			|| strpos($msg, 'is not unique') !== false
 			|| strpos($msg, 'UNIQUE constraint failed') !== false
 		) {
 			return Nette\Database\UniqueConstraintViolationException::from($e);
 
-		} elseif (strpos($msg, 'may not be null') !== false
+		} elseif (
+			strpos($msg, 'may not be null') !== false
 			|| strpos($msg, 'NOT NULL constraint failed') !== false
 		) {
 			return Nette\Database\NotNullConstraintViolationException::from($e);
 
-		} elseif (strpos($msg, 'foreign key constraint failed') !== false
+		} elseif (
+			strpos($msg, 'foreign key constraint failed') !== false
 			|| strpos($msg, 'FOREIGN KEY constraint failed') !== false
 		) {
 			return Nette\Database\ForeignKeyConstraintViolationException::from($e);

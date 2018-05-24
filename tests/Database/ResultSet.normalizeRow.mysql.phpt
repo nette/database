@@ -120,3 +120,15 @@ $res = $connection->query('SELECT `int` AS a, `char` AS a FROM types');
 Assert::same([
 	'a' => 'a',
 ], (array) @$res->fetch());
+
+
+if (PHP_VERSION_ID >= 70100) {
+	$res = $connection->query('SELECT sec_to_time(avg(time_to_sec(`time`))) AS `avg_time` FROM `avgs`');
+
+	$avgTime = new DateInterval('PT10H10M10S');
+	$avgTime->f = 0.5;
+
+	Assert::equal([
+		'avg_time' => $avgTime,
+	], (array) $res->fetch());
+}

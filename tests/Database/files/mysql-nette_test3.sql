@@ -38,3 +38,13 @@ INSERT INTO `types` (`unsigned_int`, `int`, `smallint`, `tinyint`, `mediumint`, 
 (1,	1,	1,	1,	1,	1,	1,	1,	1.1,	1,	1.1,	'2012-10-13',	'30:10:10',	'2012-10-13 10:10:10',	'2012-10-13 10:10:10',	'2012',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a'),
 (0,	0,	0,	0,	0,	0,	0,	0,	0.5,	0.5,	0.5,	'0000-00-00',	'00:00:00',	'0000-00-00 00:00:00',	'0000-00-00 00:00:00',	'2000',	'',	'',	'\0',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'b',	''),
 (NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL);
+
+CREATE TEMPORARY TABLE `avgs` (
+  `time` time
+) ENGINE=InnoDB;
+
+INSERT INTO `avgs` (`time`) VALUES
+('10:10:12'),
+('10:10:11'),
+('10:10:10'),
+('10:10:10');

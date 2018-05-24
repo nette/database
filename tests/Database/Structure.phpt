@@ -24,7 +24,7 @@ class StructureMock extends Structure
 
 
 /**
- * @testCase
+ * @TestCase
  */
 class StructureTestCase extends TestCase
 {

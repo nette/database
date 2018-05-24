@@ -13,17 +13,18 @@ require __DIR__ . '/connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_test3.sql');
 
 
+if (PHP_VERSION_ID >= 70100) {
 
-$avgRes = $connection->query('SELECT sec_to_time(avg(time_to_sec(`time`))) AS `avg_time` FROM `avgs`');
+	$avgRes = $connection->query('SELECT sec_to_time(avg(time_to_sec(`time`))) AS `avg_time` FROM `avgs`');
 
-$avgTime = new DateInterval('PT10H10M10S');
-$avgTime->f = 0.7500;
+	$avgTime = new DateInterval('PT10H10M10S');
+	$avgTime->f = 0.7500;
 
-Assert::equal([
-	'avg_time' => $avgTime
-	], (array) $avgRes->fetch());
+	Assert::equal([
+		'avg_time' => $avgTime
+		], (array) $avgRes->fetch());
 
-
+}
 	
 	
 $res = $connection->query('SELECT * FROM types');

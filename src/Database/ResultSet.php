@@ -178,7 +178,9 @@ class ResultSet implements \Iterator, IRowContainer
 			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(.\d+)?\z#', $value, $m);
 				$row[$key] = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
-				$row[$key]->f = (empty($m[5]) ? 0 : floatval($m[5]));
+				if (PHP_VERSION_ID >= 70100) {
+					$row[$key]->f = (empty($m[5]) ? 0 : floatval($m[5]));
+				}
 				$row[$key]->invert = (int) (bool) $m[1];
 
 			} elseif ($type === IStructure::FIELD_UNIX_TIMESTAMP) {

@@ -17,6 +17,7 @@ use Tracy;
 	echo $count, ($totalTime ? sprintf(', time: %0.3f ms', $totalTime * 1000) : ''), ', ', htmlspecialchars($name, ENT_NOQUOTES, 'UTF-8') ?></h1>
 
 <div class="tracy-inner">
+<div class="tracy-inner-container">
 	<table>
 		<tr><th>Time&nbsp;ms</th><th>SQL Query</th><th>Rows</th></tr>
 		<?php
@@ -58,4 +59,5 @@ use Tracy;
 		<?php endforeach ?>
 	</table>
 	<?php if (count($queries) < $count): ?><p>...and more</p><?php endif ?>
+</div>
 </div>

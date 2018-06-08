@@ -42,6 +42,9 @@ class Connection
 	/** @var PDO */
 	private $pdo;
 
+	/** @var string|null */
+	private $sql;
+
 
 	public function __construct(string $dsn, string $user = null, string $password = null, array $options = null)
 	{
@@ -154,9 +157,9 @@ class Connection
 	 */
 	public function query(string $sql, ...$params): ResultSet
 	{
-		[$sql, $params] = $this->preprocess($sql, ...$params);
+		[$this->sql, $params] = $this->preprocess($sql, ...$params);
 		try {
-			$result = new ResultSet($this, $sql, $params);
+			$result = new ResultSet($this, $this->sql, $params);
 		} catch (PDOException $e) {
 			$this->onQuery($this, $e);
 			throw $e;
@@ -181,6 +184,12 @@ class Connection
 		return $params
 			? $this->preprocessor->process(func_get_args())
 			: [$sql, []];
+	}
+
+
+	public function getLastQueryString(): ?string
+	{
+		return $this->sql;
 	}
 
 

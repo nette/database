@@ -19,6 +19,7 @@ test(function () use ($connection) {
 	Assert::type(Nette\Database\ResultSet::class, $res);
 	Assert::same('SELECT id FROM author WHERE id = ?', $res->getQueryString());
 	Assert::same([11], $res->getParameters());
+	Assert::same('SELECT id FROM author WHERE id = ?', $connection->getLastQueryString());
 });
 
 

@@ -131,20 +131,20 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	{
 		$columns = [];
 		foreach ($this->connection->query('SHOW FULL COLUMNS FROM ' . $this->delimite($table)) as $row) {
-            $row=array_change_key_case((array) $row, CASE_LOWER);
-            $type = explode('(', $row['type']);
-            $columns[] = [
-                'name' => $row['field'],
-                'table' => $table,
-                'nativetype' => strtoupper($type[0]),
-                'size' => isset($type[1]) ? (int) $type[1] : null,
-                'unsigned' => (bool) strstr($row['type'], 'unsigned'),
-                'nullable' => $row['null'] === 'YES',
-                'default' => $row['default'],
-                'autoincrement' => $row['extra'] === 'auto_increment',
-                'primary' => $row['key'] === 'PRI',
-                'vendor' => (array) $row,
-            ];
+			$row=array_change_key_case((array) $row, CASE_LOWER);
+			$type = explode('(', $row['type']);
+			$columns[] = [
+				'name' => $row['field'],
+				'table' => $table,
+				'nativetype' => strtoupper($type[0]),
+				'size' => isset($type[1]) ? (int) $type[1] : null,
+				'unsigned' => (bool) strstr($row['type'], 'unsigned'),
+				'nullable' => $row['null'] === 'YES',
+				'default' => $row['default'],
+				'autoincrement' => $row['extra'] === 'auto_increment',
+				'primary' => $row['key'] === 'PRI',
+				'vendor' => (array) $row,
+			];
 		}
 		return $columns;
 	}
@@ -154,7 +154,7 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	{
 		$indexes = [];
 		foreach ($this->connection->query('SHOW INDEX FROM ' . $this->delimite($table)) as $row) {
-            $row=array_change_key_case((array) $row, CASE_LOWER);
+			$row=array_change_key_case((array) $row, CASE_LOWER);
 			$indexes[$row['key_name']]['name'] = $row['key_name'];
 			$indexes[$row['key_name']]['unique'] = !$row['non_unique'];
 			$indexes[$row['key_name']]['primary'] = $row['key_name'] === 'PRIMARY';
@@ -171,7 +171,7 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 			. 'WHERE TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME IS NOT NULL AND TABLE_NAME = ' . $this->connection->quote($table);
 
 		foreach ($this->connection->query($query) as $id => $row) {
-            $row=array_change_key_case((array) $row, CASE_LOWER);
+			$row=array_change_key_case((array) $row, CASE_LOWER);
 			$keys[$id]['name'] = $row['constraint_name']; // foreign key name
 			$keys[$id]['local'] = $row['column_name']; // local columns
 			$keys[$id]['table'] = $row['referenced_table_name']; // referenced table

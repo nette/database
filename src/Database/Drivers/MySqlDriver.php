@@ -131,16 +131,17 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	{
 		$columns = [];
 		foreach ($this->connection->query('SHOW FULL COLUMNS FROM ' . $this->delimite($table)) as $row) {
-			$type = explode('(', $row['Type']);
+			$row = array_change_key_case((array) $row, CASE_LOWER);
+			$type = explode('(', $row['type']);
 			$columns[] = [
-				'name' => $row['Field'],
+				'name' => $row['field'],
 				'table' => $table,
 				'nativetype' => strtoupper($type[0]),
 				'size' => isset($type[1]) ? (int) $type[1] : null,
-				'nullable' => $row['Null'] === 'YES',
-				'default' => $row['Default'],
-				'autoincrement' => $row['Extra'] === 'auto_increment',
-				'primary' => $row['Key'] === 'PRI',
+				'nullable' => $row['null'] === 'YES',
+				'default' => $row['default'],
+				'autoincrement' => $row['extra'] === 'auto_increment',
+				'primary' => $row['key'] === 'PRI',
 				'vendor' => (array) $row,
 			];
 		}
@@ -152,10 +153,11 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 	{
 		$indexes = [];
 		foreach ($this->connection->query('SHOW INDEX FROM ' . $this->delimite($table)) as $row) {
-			$indexes[$row['Key_name']]['name'] = $row['Key_name'];
-			$indexes[$row['Key_name']]['unique'] = !$row['Non_unique'];
-			$indexes[$row['Key_name']]['primary'] = $row['Key_name'] === 'PRIMARY';
-			$indexes[$row['Key_name']]['columns'][$row['Seq_in_index'] - 1] = $row['Column_name'];
+			$row = array_change_key_case((array) $row, CASE_LOWER);
+			$indexes[$row['key_name']]['name'] = $row['key_name'];
+			$indexes[$row['key_name']]['unique'] = !$row['non_unique'];
+			$indexes[$row['key_name']]['primary'] = $row['key_name'] === 'PRIMARY';
+			$indexes[$row['key_name']]['columns'][$row['seq_in_index'] - 1] = $row['column_name'];
 		}
 		return array_values($indexes);
 	}
@@ -168,10 +170,11 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 			. 'WHERE TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME IS NOT NULL AND TABLE_NAME = ' . $this->connection->quote($table);
 
 		foreach ($this->connection->query($query) as $id => $row) {
-			$keys[$id]['name'] = $row['CONSTRAINT_NAME']; // foreign key name
-			$keys[$id]['local'] = $row['COLUMN_NAME']; // local columns
-			$keys[$id]['table'] = $row['REFERENCED_TABLE_NAME']; // referenced table
-			$keys[$id]['foreign'] = $row['REFERENCED_COLUMN_NAME']; // referenced columns
+			$row = array_change_key_case((array) $row, CASE_LOWER);
+			$keys[$id]['name'] = $row['constraint_name']; // foreign key name
+			$keys[$id]['local'] = $row['column_name']; // local columns
+			$keys[$id]['table'] = $row['referenced_table_name']; // referenced table
+			$keys[$id]['foreign'] = $row['referenced_column_name']; // referenced columns
 		}
 
 		return array_values($keys);

@@ -21,6 +21,8 @@ The [Nette Database Core](https://doc.nette.org/database-core) is a wrapper arou
 
 The [Nette Database Explorer](https://doc.nette.org/database-explorer) layer helps you to fetch database data more easily and in a more optimized way.
 
+If you like Nette, **[please make a donation now](https://nette.org/donate)**. Thank you!
+
 
 Installation
 ------------

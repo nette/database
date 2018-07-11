@@ -56,6 +56,16 @@ test(function () use ($context) { // test more Selection as a parameter
 });
 
 
+test(function () use ($context) { // test more Selection as one of more argument
+	$sqlBuilder = new SqlBuilder('book', $context);
+	$sqlBuilder->addWhere('id ? AND id ?', $context->table('book')->where('id', 2), $context->table('book_tag')->select('book_id'));
+	Assert::equal(reformat([
+		'mysql' => 'SELECT * FROM `book` WHERE (`id` IN (?) AND `id` IN (?))',
+		'SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book] WHERE ([id] = ?)) AND [id] IN (SELECT [book_id] FROM [book_tag]))',
+	]), $sqlBuilder->buildSelectQuery());
+});
+
+
 test(function () use ($context) { // test more ActiveRow as a parameter
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$books = $context->table('book')->where('id', [1, 2])->fetchPairs('id');
@@ -73,7 +83,7 @@ test(function () use ($context) { // test Selection with parameters as a paramet
 	$schemaSupported = $context->getConnection()->getSupplementalDriver()->isSupported(ISupplementalDriver::SUPPORT_SCHEMA);
 	Assert::equal(reformat([
 		'mysql' => 'SELECT * FROM `book` WHERE (`id` IN (?))',
-		'SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book] LEFT JOIN ' . ($schemaSupported ? '[public].[book_tag] ' : '') . '[book_tag] ON [book].[id] = [book_tag].[book_id] HAVING COUNT([book_tag].[tag_id]) >))',
+		'SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book] LEFT JOIN ' . ($schemaSupported ? '[public].[book_tag] ' : '') . '[book_tag] ON [book].[id] = [book_tag].[book_id] HAVING COUNT([book_tag].[tag_id]) > ?))',
 	]), $sqlBuilder->buildSelectQuery());
 	Assert::count(1, $sqlBuilder->getParameters());
 });

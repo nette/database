@@ -317,7 +317,8 @@ class SqlBuilder
 
 		$replace = null;
 		$placeholderNum = 0;
-		foreach ($params as $arg) {
+		while (count($params)) {
+			$arg = array_shift($params);
 			preg_match('#(?:.*?\?.*?){' . $placeholderNum . '}(((?:&|\||^|~|\+|-|\*|/|%|\(|,|<|>|=|(?<=\W|^)(?:REGEXP|ALL|AND|ANY|BETWEEN|EXISTS|IN|[IR]?LIKE|OR|NOT|SOME|INTERVAL))\s*)?(?:\(\?\)|\?))#s', $condition, $match, PREG_OFFSET_CAPTURE);
 			$hasOperator = ($match[1][0] === '?' && $match[1][1] === 0) ? true : !empty($match[2][0]);
 
@@ -353,8 +354,11 @@ class SqlBuilder
 
 					if ($this->driver->isSupported(ISupplementalDriver::SUPPORT_SUBSELECT)) {
 						$arg = null;
-						$replace = $match[2][0] . '(' . $clone->getSql() . ')';
-						$conditionsParameters = array_merge($conditionsParameters, $clone->getSqlBuilder()->getParameters());
+						$subSelectPlaceholderCount = substr_count($clone->getSql(), '?');
+						$replace = $match[2][0] . '(' . $clone->getSql() . (!$subSelectPlaceholderCount && count($clone->getSqlBuilder()->getParameters()) === 1 ? ' ?' : '') . ')';
+						if (count($clone->getSqlBuilder()->getParameters())) {
+							array_unshift($params, ...$clone->getSqlBuilder()->getParameters());
+						}
 					} else {
 						$arg = [];
 						foreach ($clone as $row) {

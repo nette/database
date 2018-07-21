@@ -40,6 +40,12 @@ class MsSqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
+	public function formatBool(bool $value): string
+	{
+		return $value ? '1' : '0';
+	}
+
+
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
 		return $value->format("'Y-m-d H:i:s'");

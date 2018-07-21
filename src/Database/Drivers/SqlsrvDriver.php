@@ -49,6 +49,12 @@ class SqlsrvDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
+	public function formatBool(bool $value): string
+	{
+		return $value ? '1' : '0';
+	}
+
+
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
 		/** @see https://msdn.microsoft.com/en-us/library/ms187819.aspx */

@@ -39,6 +39,12 @@ class OdbcDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
+	public function formatBool(bool $value): string
+	{
+		return $value ? '1' : '0';
+	}
+
+
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
 		return $value->format('#m/d/Y H:i:s#');

@@ -63,6 +63,12 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
+	public function formatBool(bool $value): string
+	{
+		return $value ? 'TRUE' : 'FALSE';
+	}
+
+
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
 		return $value->format("'Y-m-d H:i:s'");

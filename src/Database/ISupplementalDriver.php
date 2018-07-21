@@ -39,6 +39,11 @@ interface ISupplementalDriver
 	function delimite(string $name): string;
 
 	/**
+	 * Formats boolean for use in a SQL statement.
+	 */
+	function formatBool(bool $value): string;
+
+	/**
 	 * Formats date-time for use in a SQL statement.
 	 */
 	function formatDateTime(\DateTimeInterface $value): string;

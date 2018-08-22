@@ -119,7 +119,12 @@ class SqlPreprocessor
 					return '?';
 
 				} else {
-					return $this->connection->quote($value);
+					$res = $this->connection->quote($value);
+					if ($res === false) {
+						$this->remaining[] = $value;
+						return '?';
+					}
+					return $res;
 				}
 
 			} elseif (is_int($value)) {

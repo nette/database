@@ -109,7 +109,7 @@ class OdbcDriver implements Nette\Database\ISupplementalDriver
 
 	public function getColumnTypes(\PDOStatement $statement)
 	{
-		return Nette\Database\Helpers::detectTypes($statement);
+		return [];
 	}
 
 

@@ -29,6 +29,11 @@ test(function () use ($connection) { // fetchField
 });
 
 
+test(function () use ($connection) { // fetchFields
+	Assert::same([11, 'Jakub Vrana'], $connection->fetchFields('SELECT id, name FROM author ORDER BY id'));
+});
+
+
 test(function () use ($connection) { // fetchPairs
 	$pairs = $connection->fetchPairs('SELECT name, id FROM author WHERE id > ? ORDER BY id', 11);
 	Assert::same([

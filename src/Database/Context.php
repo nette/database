@@ -128,6 +128,15 @@ class Context
 
 
 	/**
+	 * Shortcut for query()->fetchFields()
+	 */
+	public function fetchFields(string $sql, ...$params): ?array
+	{
+		return $this->connection->query($sql, ...$params)->fetchFields();
+	}
+
+
+	/**
 	 * Shortcut for query()->fetchPairs()
 	 */
 	public function fetchPairs(string $sql, ...$params): array

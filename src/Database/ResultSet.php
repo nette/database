@@ -287,6 +287,17 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
+	 * Fetches array of fields.
+	 * @return array|null
+	 */
+	public function fetchFields()
+	{
+		$row = $this->fetch();
+		return $row ? array_values((array) $row) : null;
+	}
+
+
+	/**
 	 * @inheritDoc
 	 */
 	public function fetchPairs($key = null, $value = null)

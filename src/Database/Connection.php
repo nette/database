@@ -247,6 +247,17 @@ class Connection
 
 
 	/**
+	 * Shortcut for query()->fetchFields()
+	 * @param  string
+	 * @return array|null
+	 */
+	public function fetchFields($sql, ...$params)
+	{
+		return $this->query($sql, ...$params)->fetchFields();
+	}
+
+
+	/**
 	 * Shortcut for query()->fetchPairs()
 	 * @param  string
 	 * @return array

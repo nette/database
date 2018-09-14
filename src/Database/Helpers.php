@@ -56,7 +56,14 @@ class Helpers
 			}
 			echo "\t<tr>\n\t\t<th>", $i, "</th>\n";
 			foreach ($row as $col) {
-				echo "\t\t<td>", htmlspecialchars($col, ENT_NOQUOTES, 'UTF-8'), "</td>\n";
+				if (is_bool($col)) {
+					$s = $col ? 'TRUE' : 'FALSE';
+				} elseif ($col === null) {
+					$s = 'NULL';
+				} else {
+					$s = (string) $col;
+				}
+				echo "\t\t<td>", htmlspecialchars($s, ENT_NOQUOTES, 'UTF-8'), "</td>\n";
 			}
 			echo "\t</tr>\n";
 			$i++;

@@ -20,6 +20,10 @@ class Helpers
 {
 	use Nette\StaticClass;
 
+	const VALUE_TRUE = 'TRUE',
+		VALUE_FALSE = 'FALSE',
+		VALUE_NULL = 'NULL';
+
 	/** @var int maximum SQL length */
 	public static $maxLength = 100;
 
@@ -57,7 +61,7 @@ class Helpers
 			}
 			echo "\t<tr>\n\t\t<th>", $i, "</th>\n";
 			foreach ($row as $col) {
-				echo "\t\t<td>", htmlspecialchars($col, ENT_NOQUOTES, 'UTF-8'), "</td>\n";
+				echo "\t\t<td>", self::dumpVar($col), "</td>\n";
 			}
 			echo "\t</tr>\n";
 			$i++;
@@ -174,6 +178,34 @@ class Helpers
 		return $cache[$type];
 	}
 
+	/**
+	 * @param mixed $value
+	 * @return string
+	 */
+	public static function dumpVar($value): string
+	{
+		$type = strtolower(gettype($value));
+		switch($type){
+			case 'boolean':
+				return ($value ? self::VALUE_TRUE : self::VALUE_FALSE);
+
+			case 'null':
+				return self::VALUE_NULL;
+
+			case 'integer':
+			case 'double':
+				return (string) $value;
+
+			case 'string':
+				return htmlspecialchars($value, ENT_NOQUOTES, 'UTF-8');
+
+			case 'object':
+				return (string) $value;
+
+			default:
+				return 'Unknown type';
+		}
+	}
 
 	/**
 	 * Import SQL dump from file - extremely fast.

@@ -275,6 +275,13 @@ class SqlBuilder
 	}
 
 
+	public function resetSelect(): void
+	{
+		$this->select = [];
+		$this->parameters['select'] = [];
+	}
+
+
 	public function addWhere($condition, ...$params): bool
 	{
 		return $this->addCondition($condition, $params, $this->where, $this->parameters['where']);

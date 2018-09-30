@@ -293,6 +293,13 @@ class SqlBuilder
 	}
 
 
+	public function resetSelect()
+	{
+		$this->select = [];
+		$this->parameters['select'] = [];
+	}
+
+
 	/**
 	 * @return bool
 	 */

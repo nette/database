@@ -5,15 +5,15 @@
  * @dataProvider? databases.ini  sqlsrv
  */
 
-use Tester\Assert;
 use Nette\Utils\DateTime;
+use Tester\Assert;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlsrv-nette_test3.sql');
 
 
-$res = $context->query('SELECT * FROM types');
+$res = $connection->query('SELECT * FROM types');
 
 Assert::equal([
 	'bigint' => 1,
@@ -58,8 +58,8 @@ Assert::equal([
 	'datetime2' => new DateTime('0001-01-01 00:00:00'),
 	'decimal' => 0.0,
 	'float' => 0.5,
-	'geography' => NULL,
-	'geometry' => NULL,
+	'geography' => null,
+	'geometry' => null,
 	'hierarchyid' => '',
 	'int' => 0,
 	'money' => 0.0,
@@ -82,63 +82,65 @@ Assert::equal([
 ], (array) $res->fetch());
 
 Assert::same([
-	'bigint' => NULL,
-	'binary_3' => NULL,
-	'bit' => NULL,
-	'char_5' => NULL,
-	'date' => NULL,
-	'datetime' => NULL,
-	'datetime2' => NULL,
-	'decimal' => NULL,
-	'float' => NULL,
-	'geography' => NULL,
-	'geometry' => NULL,
-	'hierarchyid' => NULL,
-	'int' => NULL,
-	'money' => NULL,
-	'nchar' => NULL,
-	'ntext' => NULL,
-	'numeric_10_0' => NULL,
-	'numeric_10_2' => NULL,
-	'nvarchar' => NULL,
-	'real' => NULL,
-	'smalldatetime' => NULL,
-	'smallint' => NULL,
-	'smallmoney' => NULL,
-	'text' => NULL,
-	'time' => NULL,
-	'tinyint' => NULL,
-	'uniqueidentifier' => NULL,
-	'varbinary' => NULL,
-	'varchar' => NULL,
-	'xml' => NULL,
+	'bigint' => null,
+	'binary_3' => null,
+	'bit' => null,
+	'char_5' => null,
+	'date' => null,
+	'datetime' => null,
+	'datetime2' => null,
+	'decimal' => null,
+	'float' => null,
+	'geography' => null,
+	'geometry' => null,
+	'hierarchyid' => null,
+	'int' => null,
+	'money' => null,
+	'nchar' => null,
+	'ntext' => null,
+	'numeric_10_0' => null,
+	'numeric_10_2' => null,
+	'nvarchar' => null,
+	'real' => null,
+	'smalldatetime' => null,
+	'smallint' => null,
+	'smallmoney' => null,
+	'text' => null,
+	'time' => null,
+	'tinyint' => null,
+	'uniqueidentifier' => null,
+	'varbinary' => null,
+	'varchar' => null,
+	'xml' => null,
 ], (array) $res->fetch());
 
 
-$res = $context->query('SELECT [int] AS a, [text] AS a FROM types');
+$res = $connection->query('SELECT [int] AS a, [text] AS a FROM types');
 
 Assert::same([
 	'a' => 'a',
 ], (array) @$res->fetch());
 
 
-function isTimestamp($str) {
+function isTimestamp($str)
+{
 	return is_string($str) && preg_match('#[0-9A-F]{16}#', $str);
 }
 
-$row = (array) $context->query('SELECT [datetimeoffset], CAST([sql_variant] AS int) AS [sql_variant], [timestamp] FROM types2 WHERE id = 1')->fetch();
+
+$row = (array) $connection->query('SELECT [datetimeoffset], CAST([sql_variant] AS int) AS [sql_variant], [timestamp] FROM types2 WHERE id = 1')->fetch();
 Assert::type('DateTime', $row['datetimeoffset']);
 Assert::same($row['datetimeoffset']->format('Y-m-d H:i:s P'), '2012-10-13 10:10:10 +02:00');
 Assert::same($row['sql_variant'], 123456);
 Assert::true(isTimestamp($row['timestamp']));
 
-$row = (array) $context->query('SELECT [datetimeoffset], CAST([sql_variant] AS varchar) AS [sql_variant], [timestamp] FROM types2 WHERE id = 2')->fetch();
+$row = (array) $connection->query('SELECT [datetimeoffset], CAST([sql_variant] AS varchar) AS [sql_variant], [timestamp] FROM types2 WHERE id = 2')->fetch();
 Assert::type('DateTime', $row['datetimeoffset']);
 Assert::same($row['datetimeoffset']->format('Y-m-d H:i:s P'), '0001-01-01 00:00:00 +00:00');
 Assert::same($row['sql_variant'], 'abcd');
 Assert::true(isTimestamp($row['timestamp']));
 
-$row = (array) $context->query('SELECT [datetimeoffset], CAST([sql_variant] AS int) AS [sql_variant], [timestamp] FROM types2 WHERE id = 3')->fetch();
-Assert::same($row['datetimeoffset'], NULL);
-Assert::same($row['sql_variant'], NULL);
+$row = (array) $connection->query('SELECT [datetimeoffset], CAST([sql_variant] AS int) AS [sql_variant], [timestamp] FROM types2 WHERE id = 3')->fetch();
+Assert::same($row['datetimeoffset'], null);
+Assert::same($row['sql_variant'], null);
 Assert::true(isTimestamp($row['timestamp']));

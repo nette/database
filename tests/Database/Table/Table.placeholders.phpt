@@ -5,8 +5,8 @@
  * @dataProvider? ../databases.ini
  */
 
-use Tester\Assert;
 use Nette\Database\SqlLiteral;
+use Tester\Assert;
 
 require __DIR__ . '/../connect.inc.php'; // create $connection
 
@@ -34,7 +34,7 @@ test(function () use ($context, $driverName) {
 
 	$selection = $context
 		->table('book')
-		->select('? AS col1', 'hi there!')
+		->select($driverName === 'pgsql' ? '?::text AS col1' : '? AS col1', 'hi there!')
 		->select('? AS col2', $literal);
 
 	$row = $selection->fetch();
@@ -82,8 +82,10 @@ test(function () use ($context, $driverName) { // Test placeholder for GroupedSe
 	}
 
 	$books = $context->table('author')->get(11)->related('book')->order('title = ? DESC', 'Test');
-	foreach ($books as $book) {}
+	foreach ($books as $book) {
+	}
 
 	$books = $context->table('author')->get(11)->related('book')->select('SUBSTR(title, ?)', 3);
-	foreach ($books as $book) {}
+	foreach ($books as $book) {
+	}
 });

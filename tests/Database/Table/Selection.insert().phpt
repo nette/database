@@ -53,7 +53,7 @@ if ($driverName !== 'sqlsrv') {
 if ($driverName !== 'sqlsrv') {
 	switch ($driverName) {
 		case 'mysql':
-			$selection = $context->table('author')->select('NULL, id, NULL, CONCAT(?, name), NULL',  'Biography: ');
+			$selection = $context->table('author')->select('NULL, id, NULL, CONCAT(?, name), NULL', 'Biography: ');
 			break;
 		case 'pgsql':
 			$selection = $context->table('author')->select('nextval(?), id, NULL, ? || name, NULL', 'book_id_seq', 'Biography: ');

@@ -15,17 +15,40 @@ use Nette\Database;
  */
 interface IRow extends Database\IRow
 {
-
 	function setTable(Selection $name);
 
+	/**
+	 * @return Selection
+	 */
 	function getTable();
 
-	function getPrimary($need = TRUE);
+	/**
+	 * Returns primary key value.
+	 * @param  bool
+	 * @return mixed
+	 */
+	function getPrimary($throw = true);
 
-	function getSignature($need = TRUE);
+	/**
+	 * Returns row signature (composition of primary keys)
+	 * @param  bool
+	 * @return string
+	 */
+	function getSignature($throw = true);
 
-	function related($key, $throughColumn = NULL);
+	/**
+	 * Returns referencing rows.
+	 * @param  string
+	 * @param  string
+	 * @return GroupedSelection
+	 */
+	function related($key, $throughColumn = null);
 
-	function ref($key, $throughColumn = NULL);
-
+	/**
+	 * Returns referenced row.
+	 * @param  string
+	 * @param  string
+	 * @return IRow|null if the row does not exist
+	 */
+	function ref($key, $throughColumn = null);
 }

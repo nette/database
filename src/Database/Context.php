@@ -31,7 +31,7 @@ class Context
 	private $cacheStorage;
 
 
-	public function __construct(Connection $connection, IStructure $structure, IConventions $conventions = NULL, Nette\Caching\IStorage $cacheStorage = NULL)
+	public function __construct(Connection $connection, IStructure $structure, IConventions $conventions = null, Nette\Caching\IStorage $cacheStorage = null)
 	{
 		$this->connection = $connection;
 		$this->structure = $structure;
@@ -65,7 +65,7 @@ class Context
 	 * @param  string  sequence object
 	 * @return string
 	 */
-	public function getInsertId($name = NULL)
+	public function getInsertId($name = null)
 	{
 		return $this->connection->getInsertId($name);
 	}
@@ -149,6 +149,17 @@ class Context
 
 
 	/**
+	 * Shortcut for query()->fetchFields()
+	 * @param  string
+	 * @return array|null
+	 */
+	public function fetchFields($sql, ...$params)
+	{
+		return $this->connection->query($sql, ...$params)->fetchFields();
+	}
+
+
+	/**
 	 * Shortcut for query()->fetchPairs()
 	 * @param  string
 	 * @return array
@@ -177,5 +188,4 @@ class Context
 	{
 		return new SqlLiteral($value, $params);
 	}
-
 }

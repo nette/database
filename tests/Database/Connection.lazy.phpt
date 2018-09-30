@@ -20,7 +20,7 @@ test(function () { // non lazy
 
 
 test(function () { // lazy
-	$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => TRUE]);
+	$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => true]);
 	$context = new Nette\Database\Context($connection, new Structure($connection, new DevNullStorage()));
 	Assert::exception(function () use ($context) {
 		$context->query('SELECT ?', 10);
@@ -29,7 +29,7 @@ test(function () { // lazy
 
 
 test(function () {
-	$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => TRUE]);
+	$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => true]);
 	Assert::exception(function () use ($connection) {
 		$connection->quote('x');
 	}, Nette\Database\DriverException::class, 'invalid data source name');
@@ -37,7 +37,7 @@ test(function () {
 
 
 test(function () { // connect & disconnect
-	$options = Tester\Environment::loadData() + ['user' => NULL, 'password' => NULL];
+	$options = Tester\Environment::loadData() + ['user' => null, 'password' => null];
 	$connections = 1;
 
 	try {
@@ -45,7 +45,7 @@ test(function () { // connect & disconnect
 	} catch (PDOException $e) {
 		Tester\Environment::skip("Connection to '$options[dsn]' failed. Reason: " . $e->getMessage());
 	}
-	$connection->onConnect[] = function () use (& $connections) {
+	$connection->onConnect[] = function () use (&$connections) {
 		$connections++;
 	};
 

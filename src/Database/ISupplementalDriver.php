@@ -21,6 +21,7 @@ interface ISupplementalDriver
 		SUPPORT_SCHEMA = 'schema';
 
 	/**
+	 * Converts PDOException to DriverException or its descendant.
 	 * @return DriverException
 	 */
 	function convertException(\PDOException $e);
@@ -35,7 +36,7 @@ interface ISupplementalDriver
 	/**
 	 * Formats boolean for use in a SQL statement.
 	 * @param  bool
-	 * @return mixed
+	 * @return string
 	 */
 	function formatBool($value);
 
@@ -62,11 +63,11 @@ interface ISupplementalDriver
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
 	 * @param  string  SQL query that will be modified.
-	 * @param  int|NULL
-	 * @param  int|NULL
+	 * @param  int|null
+	 * @param  int|null
 	 * @return void
 	 */
-	function applyLimit(& $sql, $limit, $offset);
+	function applyLimit(&$sql, $limit, $offset);
 
 	/**
 	 * Normalizes result row.
@@ -75,34 +76,32 @@ interface ISupplementalDriver
 	 */
 	function normalizeRow($row);
 
-
 	/********************* reflection ****************d*g**/
-
 
 	/**
 	 * Returns list of tables.
-	 * @return array of [name [, (bool) view]]
+	 * @return array of tuples [(string) name, (bool) view, [(string) fullName]]
 	 */
 	function getTables();
 
 	/**
 	 * Returns metadata for all columns in a table.
 	 * @param  string
-	 * @return array of [name, nativetype, primary [, table, fullname, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (array) vendor]]
+	 * @return array of tuples [(string) name, (string) table, (string) nativetype, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (bool) primary, (array) vendor]]
 	 */
 	function getColumns($table);
 
 	/**
 	 * Returns metadata for all indexes in a table.
 	 * @param  string
-	 * @return array of [name, (array of names) columns [, (bool) unique, (bool) primary]]
+	 * @return array of tuples [(string) name, (string[]) columns, (bool) unique, (bool) primary]
 	 */
 	function getIndexes($table);
 
 	/**
 	 * Returns metadata for all foreign keys in a table.
 	 * @param  string
-	 * @return array
+	 * @return array of tuples [(string) name, (string) local, (string) table, (string) foreign]
 	 */
 	function getForeignKeys($table);
 
@@ -119,5 +118,4 @@ interface ISupplementalDriver
 	 * @return bool
 	 */
 	function isSupported($item);
-
 }

@@ -12,7 +12,7 @@ require __DIR__ . '/connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
 
 
-$res = $context->query('SELECT id FROM book ORDER BY id');
+$res = $connection->query('SELECT id FROM book ORDER BY id');
 
 switch ($driverName) {
 	case 'sqlite': // sqlite: rowCount for SELECT queries is not supported

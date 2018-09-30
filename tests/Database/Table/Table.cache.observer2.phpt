@@ -5,8 +5,8 @@
  * @dataProvider? ../databases.ini
  */
 
-use Tester\Assert;
 use Nette\Caching\Storages\MemoryStorage;
+use Tester\Assert;
 
 require __DIR__ . '/../connect.inc.php'; // create $connection
 
@@ -17,7 +17,8 @@ class CacheMock extends MemoryStorage
 {
 	public $writes = 0;
 
-	function write($key, $data, array $dependencies)
+
+	public function write($key, $data, array $dependencies)
 	{
 		$this->writes++;
 		return parent::write($key, $data, $dependencies);

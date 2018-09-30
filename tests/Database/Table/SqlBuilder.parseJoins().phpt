@@ -5,10 +5,10 @@
  * @dataProvider? ../databases.ini
  */
 
-use Nette\Database\ISupplementalDriver;
-use Tester\Assert;
 use Nette\Database\Conventions\DiscoveredConventions;
+use Nette\Database\ISupplementalDriver;
 use Nette\Database\Table\SqlBuilder;
+use Tester\Assert;
 
 require __DIR__ . '/../connect.inc.php'; // create $connection
 
@@ -17,10 +17,12 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 class SqlBuilderMock extends SqlBuilder
 {
-	public function parseJoins(& $joins, & $query, $inner = FALSE)
+	public function parseJoins(&$joins, &$query, $inner = false)
 	{
 		parent::parseJoins($joins, $query);
 	}
+
+
 	public function buildQueryJoins(array $joins, array $leftJoinConditions = [])
 	{
 		return parent::buildQueryJoins($joins, $leftJoinConditions);
@@ -39,7 +41,7 @@ $join = $sqlBuilder->buildQueryJoins($joins);
 Assert::same('WHERE priorit.id IS NULL', $query);
 
 $tables = $connection->getSupplementalDriver()->getTables();
-if (!in_array($tables[0]['name'], ['npriorities', 'ntopics', 'nusers', 'nusers_ntopics', 'nusers_ntopics_alt'], TRUE)) {
+if (!in_array($tables[0]['name'], ['npriorities', 'ntopics', 'nusers', 'nusers_ntopics', 'nusers_ntopics_alt'], true)) {
 	if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
 		Assert::same(
 			'LEFT JOIN public.nUsers_nTopics nusers_ntopics ON nUsers.nUserId = nusers_ntopics.nUserId ' .

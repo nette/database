@@ -51,16 +51,16 @@ class StructureSchemasTestCase extends TestCase
 		$this->connection->shouldReceive('getDsn')->once()->andReturn('');
 		$this->connection->shouldReceive('getSupplementalDriver')->once()->andReturn($this->driver);
 		$this->driver->shouldReceive('getTables')->once()->andReturn([
-			['name' => 'authors', 'view' => FALSE, 'fullName' => 'authors.authors'],
-			['name' => 'books', 'view' => FALSE, 'fullName' => 'books.books'],
+			['name' => 'authors', 'view' => false, 'fullName' => 'authors.authors'],
+			['name' => 'books', 'view' => false, 'fullName' => 'books.books'],
 		]);
 		$this->driver->shouldReceive('getColumns')->with('authors.authors')->once()->andReturn([
-			['name' => 'id', 'primary' => TRUE, 'vendor' => ['sequence' => '"authors"."authors_id_seq"']],
-			['name' => 'name', 'primary' => FALSE, 'vendor' => []],
+			['name' => 'id', 'primary' => true, 'vendor' => ['sequence' => '"authors"."authors_id_seq"']],
+			['name' => 'name', 'primary' => false, 'vendor' => []],
 		]);
 		$this->driver->shouldReceive('getColumns')->with('books.books')->once()->andReturn([
-			['name' => 'id', 'primary' => TRUE, 'vendor' => ['sequence' => '"books"."books_id_seq"']],
-			['name' => 'title', 'primary' => FALSE, 'vendor' => []],
+			['name' => 'id', 'primary' => true, 'vendor' => ['sequence' => '"books"."books_id_seq"']],
+			['name' => 'title', 'primary' => false, 'vendor' => []],
 		]);
 
 		$this->connection->shouldReceive('getSupplementalDriver')->times(2)->andReturn($this->driver);
@@ -108,7 +108,6 @@ class StructureSchemasTestCase extends TestCase
 		parent::tearDown();
 		Mockery::close();
 	}
-
 }
 
 

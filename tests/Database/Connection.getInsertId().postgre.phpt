@@ -6,7 +6,6 @@
  */
 
 use Tester\Assert;
-use Nette\Utils\DateTime;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
 
@@ -19,10 +18,13 @@ $connection->query('
 ');
 
 $connection->query('INSERT INTO primarykey (prim) VALUES (5)');
-Assert::equal(PHP_VERSION_ID < 70011 ? FALSE : '0', $connection->getInsertId());
-
-$connection->query('INSERT INTO primarykey (prim) VALUES (6)');
-Assert::equal(PHP_VERSION_ID < 70011 ? FALSE : '0', $connection->getInsertId());
+if (PHP_VERSION_ID >= 70016) {
+	Assert::exception(function () use ($connection) {
+		$connection->getInsertId();
+	}, Nette\Database\DriverException::class);
+} else {
+	Assert::equal('0', $connection->getInsertId());
+}
 
 
 $connection->query('

@@ -151,7 +151,7 @@ test(function () {
 // tests rebuilt
 test(function () {
 	$structure = Mockery::mock(Nette\Database\IStructure::class);
-	$structure->shouldReceive('isRebuilt')->andReturn(FALSE);
+	$structure->shouldReceive('isRebuilt')->andReturn(false);
 	$structure->shouldReceive('rebuild');
 	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn([])->once();
 	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn([
@@ -166,7 +166,7 @@ test(function () {
 // tests already rebuilt structure
 test(function () {
 	$structure = Mockery::mock(Nette\Database\IStructure::class);
-	$structure->shouldReceive('isRebuilt')->andReturn(TRUE);
+	$structure->shouldReceive('isRebuilt')->andReturn(true);
 	$structure->shouldReceive('getHasManyReference')->with('author')->andReturn([])->once();
 
 	$conventions = new DiscoveredConventions($structure);

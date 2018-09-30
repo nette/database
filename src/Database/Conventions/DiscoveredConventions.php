@@ -40,12 +40,12 @@ class DiscoveredConventions implements IConventions
 
 		foreach ($targets as $targetNsTable => $targetColumns) {
 			$targetTable = preg_replace('#^(.*\.)?(.*)$#', '$2', $targetNsTable);
-			if (stripos($targetNsTable, $key) === FALSE) {
+			if (stripos($targetNsTable, $key) === false) {
 				continue;
 			}
 
 			foreach ($targetColumns as $targetColumn) {
-				if (stripos($targetColumn, $table) !== FALSE) {
+				if (stripos($targetColumn, $table) !== false) {
 					$columnCandidates[] = $candidate = [$targetNsTable, $targetColumn];
 					if (strcmp($targetTable, $key) === 0 || strcmp($targetNsTable, $key) === 0) {
 						return $candidate;
@@ -73,7 +73,7 @@ class DiscoveredConventions implements IConventions
 		}
 
 		if ($this->structure->isRebuilt()) {
-			return NULL;
+			return null;
 		}
 
 		$this->structure->rebuild();
@@ -86,17 +86,16 @@ class DiscoveredConventions implements IConventions
 		$tableColumns = $this->structure->getBelongsToReference($table);
 
 		foreach ($tableColumns as $column => $targetTable) {
-			if (stripos($column, $key) !== FALSE) {
+			if (stripos($column, $key) !== false) {
 				return [$targetTable, $column];
 			}
 		}
 
 		if ($this->structure->isRebuilt()) {
-			return NULL;
+			return null;
 		}
 
 		$this->structure->rebuild();
 		return $this->getBelongsToReference($table, $key);
 	}
-
 }

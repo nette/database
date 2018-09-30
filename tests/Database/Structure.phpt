@@ -51,31 +51,31 @@ class StructureTestCase extends TestCase
 		$this->connection->shouldReceive('getDsn')->once()->andReturn('');
 		$this->connection->shouldReceive('getSupplementalDriver')->once()->andReturn($this->driver);
 		$this->driver->shouldReceive('getTables')->once()->andReturn([
-			['name' => 'authors', 'view' => FALSE],
-			['name' => 'Books', 'view' => FALSE],
-			['name' => 'tags', 'view' => FALSE],
-			['name' => 'books_x_tags', 'view' => FALSE],
-			['name' => 'books_view', 'view' => TRUE],
+			['name' => 'authors', 'view' => false],
+			['name' => 'Books', 'view' => false],
+			['name' => 'tags', 'view' => false],
+			['name' => 'books_x_tags', 'view' => false],
+			['name' => 'books_view', 'view' => true],
 		]);
 		$this->driver->shouldReceive('getColumns')->with('authors')->once()->andReturn([
-			['name' => 'id', 'primary' => TRUE, 'vendor' => ['sequence' => '"public"."authors_id_seq"']],
-			['name' => 'name', 'primary' => FALSE, 'vendor' => []],
+			['name' => 'id', 'primary' => true, 'autoincrement' => true, 'vendor' => ['sequence' => '"public"."authors_id_seq"']],
+			['name' => 'name', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
 		]);
 		$this->driver->shouldReceive('getColumns')->with('Books')->once()->andReturn([
-			['name' => 'id', 'primary' => TRUE, 'vendor' => ['sequence' => '"public"."Books_id_seq"']],
-			['name' => 'title', 'primary' => FALSE, 'vendor' => []],
+			['name' => 'id', 'primary' => true, 'autoincrement' => true, 'vendor' => ['sequence' => '"public"."Books_id_seq"']],
+			['name' => 'title', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
 		]);
 		$this->driver->shouldReceive('getColumns')->with('tags')->once()->andReturn([
-			['name' => 'id', 'primary' => TRUE, 'vendor' => []],
-			['name' => 'name', 'primary' => FALSE, 'vendor' => []],
+			['name' => 'id', 'primary' => true, 'autoincrement' => false, 'vendor' => []],
+			['name' => 'name', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
 		]);
 		$this->driver->shouldReceive('getColumns')->with('books_x_tags')->once()->andReturn([
-			['name' => 'book_id', 'primary' => TRUE, 'vendor' => []],
-			['name' => 'tag_id', 'primary' => TRUE, 'vendor' => []],
+			['name' => 'book_id', 'primary' => true, 'autoincrement' => false, 'vendor' => []],
+			['name' => 'tag_id', 'primary' => true, 'autoincrement' => false, 'vendor' => []],
 		]);
 		$this->driver->shouldReceive('getColumns')->with('books_view')->once()->andReturn([
-			['name' => 'id', 'primary' => FALSE, 'vendor' => []],
-			['name' => 'title', 'primary' => FALSE, 'vendor' => []],
+			['name' => 'id', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
+			['name' => 'title', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
 		]);
 		$this->connection->shouldReceive('getSupplementalDriver')->times(4)->andReturn($this->driver);
 		$this->driver->shouldReceive('getForeignKeys')->with('authors')->once()->andReturn([]);
@@ -96,11 +96,11 @@ class StructureTestCase extends TestCase
 	public function testGetTables()
 	{
 		Assert::same([
-			['name' => 'authors', 'view' => FALSE],
-			['name' => 'Books', 'view' => FALSE],
-			['name' => 'tags', 'view' => FALSE],
-			['name' => 'books_x_tags', 'view' => FALSE],
-			['name' => 'books_view', 'view' => TRUE],
+			['name' => 'authors', 'view' => false],
+			['name' => 'Books', 'view' => false],
+			['name' => 'tags', 'view' => false],
+			['name' => 'books_x_tags', 'view' => false],
+			['name' => 'books_view', 'view' => true],
 		], $this->structure->getTables());
 	}
 
@@ -108,8 +108,8 @@ class StructureTestCase extends TestCase
 	public function testGetColumns()
 	{
 		$columns = [
-			['name' => 'id', 'primary' => TRUE, 'vendor' => []],
-			['name' => 'name', 'primary' => FALSE, 'vendor' => []],
+			['name' => 'id', 'primary' => true, 'autoincrement' => false, 'vendor' => []],
+			['name' => 'name', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
 		];
 
 		Assert::same($columns, $this->structure->getColumns('tags'));
@@ -126,7 +126,7 @@ class StructureTestCase extends TestCase
 	{
 		Assert::same('id', $this->structure->getPrimaryKey('books'));
 		Assert::same(['book_id', 'tag_id'], $this->structure->getPrimaryKey('Books_x_tags'));
-		Assert::exception(function() {
+		Assert::exception(function () {
 			$this->structure->getPrimaryKey('invalid');
 		}, Nette\InvalidArgumentException::class, "Table 'invalid' does not exist.");
 	}
@@ -135,8 +135,8 @@ class StructureTestCase extends TestCase
 	public function testGetPrimaryKeySequence()
 	{
 		$this->connection->shouldReceive('getSupplementalDriver')->times(4)->andReturn($this->driver);
-		$this->driver->shouldReceive('isSupported')->with('sequence')->once()->andReturn(FALSE);
-		$this->driver->shouldReceive('isSupported')->with('sequence')->times(3)->andReturn(TRUE);
+		$this->driver->shouldReceive('isSupported')->with('sequence')->once()->andReturn(false);
+		$this->driver->shouldReceive('isSupported')->with('sequence')->times(3)->andReturn(true);
 
 		Assert::null($this->structure->getPrimaryKeySequence('Authors'));
 		Assert::same('"public"."authors_id_seq"', $this->structure->getPrimaryKeySequence('Authors'));
@@ -179,7 +179,6 @@ class StructureTestCase extends TestCase
 		parent::tearDown();
 		Mockery::close();
 	}
-
 }
 
 

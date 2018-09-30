@@ -53,7 +53,7 @@ class SqlPreprocessor
 		$this->counter = 0;
 		$prev = -1;
 		$this->remaining = [];
-		$this->arrayMode = NULL;
+		$this->arrayMode = null;
 		$res = [];
 
 		while ($this->counter < count($params)) {
@@ -61,11 +61,11 @@ class SqlPreprocessor
 
 			if (($this->counter === 2 && count($params) === 2) || !is_scalar($param)) {
 				$res[] = $this->formatValue($param, 'auto');
-				$this->arrayMode = NULL;
+				$this->arrayMode = null;
 
 			} elseif (is_string($param) && $this->counter > $prev + 1) {
 				$prev = $this->counter;
-				$this->arrayMode = NULL;
+				$this->arrayMode = null;
 				$res[] = Nette\Utils\Strings::replace(
 					$param,
 					'~\'[^\']*+\'|"[^"]*+"|\?[a-z]*|^\s*+(?:INSERT|REPLACE)\b|\b(?:SET|WHERE|HAVING|ORDER BY|GROUP BY|KEY UPDATE)(?=\s*\z|\s*\?)|/\*.*?\*/|--[^\n]*~si',
@@ -110,17 +110,12 @@ class SqlPreprocessor
 	}
 
 
-	private function formatValue($value, $mode = NULL)
+	private function formatValue($value, $mode = null)
 	{
 		if (!$mode || $mode === 'auto') {
-			if (is_string($value)) {
-				if (strlen($value) > 20) {
-					$this->remaining[] = $value;
-					return '?';
-
-				} else {
-					return $this->connection->quote($value);
-				}
+			if (is_string($value) || is_resource($value)) {
+				$this->remaining[] = $value;
+				return '?';
 
 			} elseif (is_int($value)) {
 				return (string) $value;
@@ -131,7 +126,7 @@ class SqlPreprocessor
 			} elseif (is_bool($value)) {
 				return $this->driver->formatBool($value);
 
-			} elseif ($value === NULL) {
+			} elseif ($value === null) {
 				return 'NULL';
 
 			} elseif ($value instanceof Table\IRow) {
@@ -151,10 +146,6 @@ class SqlPreprocessor
 
 			} elseif (is_object($value) && method_exists($value, '__toString')) {
 				return $this->formatValue((string) $value);
-
-			} elseif (is_resource($value)) {
-				$this->remaining[] = $value;
-				return '?';
 			}
 
 		} elseif ($mode === 'name') {
@@ -243,7 +234,7 @@ class SqlPreprocessor
 				throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
 			}
 
-		} elseif (in_array($mode, ['and', 'or', 'set', 'values', 'order'], TRUE)) {
+		} elseif (in_array($mode, ['and', 'or', 'set', 'values', 'order'], true)) {
 			$type = gettype($value);
 			throw new Nette\InvalidArgumentException("Placeholder ?$mode expects array or Traversable object, $type given.");
 
@@ -260,5 +251,4 @@ class SqlPreprocessor
 	{
 		return implode('.', array_map([$this->driver, 'delimite'], explode('.', $name)));
 	}
-
 }

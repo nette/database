@@ -5,15 +5,15 @@
  * @dataProvider? databases.ini  mysql
  */
 
-use Tester\Assert;
 use Nette\Utils\DateTime;
+use Tester\Assert;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_test3.sql');
 
 
-$res = $context->query('SELECT * FROM types');
+$res = $connection->query('SELECT * FROM types');
 
 Assert::equal([
 	'unsigned_int' => 1,
@@ -82,41 +82,53 @@ Assert::equal([
 ], (array) $res->fetch());
 
 Assert::same([
-	'unsigned_int' => NULL,
-	'int' => NULL,
-	'smallint' => NULL,
-	'tinyint' => NULL,
-	'mediumint' => NULL,
-	'bigint' => NULL,
-	'bit' => NULL,
-	'decimal' => NULL,
-	'decimal2' => NULL,
-	'float' => NULL,
-	'double' => NULL,
-	'date' => NULL,
-	'time' => NULL,
-	'datetime' => NULL,
-	'timestamp' => NULL,
-	'year' => NULL,
-	'char' => NULL,
-	'varchar' => NULL,
-	'binary' => NULL,
-	'varbinary' => NULL,
-	'blob' => NULL,
-	'tinyblob' => NULL,
-	'mediumblob' => NULL,
-	'longblob' => NULL,
-	'text' => NULL,
-	'tinytext' => NULL,
-	'mediumtext' => NULL,
-	'longtext' => NULL,
-	'enum' => NULL,
-	'set' => NULL,
+	'unsigned_int' => null,
+	'int' => null,
+	'smallint' => null,
+	'tinyint' => null,
+	'mediumint' => null,
+	'bigint' => null,
+	'bit' => null,
+	'decimal' => null,
+	'decimal2' => null,
+	'float' => null,
+	'double' => null,
+	'date' => null,
+	'time' => null,
+	'datetime' => null,
+	'timestamp' => null,
+	'year' => null,
+	'char' => null,
+	'varchar' => null,
+	'binary' => null,
+	'varbinary' => null,
+	'blob' => null,
+	'tinyblob' => null,
+	'mediumblob' => null,
+	'longblob' => null,
+	'text' => null,
+	'tinytext' => null,
+	'mediumtext' => null,
+	'longtext' => null,
+	'enum' => null,
+	'set' => null,
 ], (array) $res->fetch());
 
 
-$res = $context->query('SELECT `int` AS a, `char` AS a FROM types');
+$res = $connection->query('SELECT `int` AS a, `char` AS a FROM types');
 
 Assert::same([
 	'a' => 'a',
 ], (array) @$res->fetch());
+
+
+if (PHP_VERSION_ID >= 70100) {
+	$res = $connection->query('SELECT sec_to_time(avg(time_to_sec(`time`))) AS `avg_time` FROM `avgs`');
+
+	$avgTime = new DateInterval('PT10H10M10S');
+	$avgTime->f = 0.5;
+
+	Assert::equal([
+		'avg_time' => $avgTime,
+	], (array) $res->fetch());
+}

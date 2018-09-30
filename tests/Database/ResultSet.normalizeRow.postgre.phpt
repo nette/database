@@ -5,15 +5,15 @@
  * @dataProvider? databases.ini  postgresql
  */
 
-use Tester\Assert;
 use Nette\Utils\DateTime;
+use Tester\Assert;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/pgsql-nette_test3.sql');
 
 
-$res = $context->query('SELECT * FROM types');
+$res = $connection->query('SELECT * FROM types');
 
 $row = $res->fetch();
 Assert::type('string', $row->money);
@@ -26,10 +26,11 @@ Assert::equal([
 	'numeric' => 1.0,
 	'real' => 1.1,
 	'double' => 1.11,
-	'bool' => TRUE,
+	'bool' => true,
 	'date' => new DateTime('2012-10-13'),
 	'time' => new DateTime('10:10:10'),
 	'timestamp' => new DateTime('2012-10-13 10:10:10'),
+	'timestampZone' => new DateTime('2012-10-13 09:10:10+00'),
 	'interval' => '1 year',
 	'character' => 'a                             ',
 	'character_varying' => 'a',
@@ -43,7 +44,7 @@ Assert::equal([
 	'macaddr' => '08:00:2b:01:02:03',
 	'bit' => '1',
 	'bit_varying' => '1',
-	'bytea' => NULL,
+	'bytea' => null,
 	'box' => '(30,40),(10,20)',
 	'circle' => '<(10,20),30>',
 	'lseg' => '[(10,20),(30,40)]',
@@ -59,11 +60,12 @@ Assert::same([
 	'numeric' => 0.0,
 	'real' => 0.0,
 	'double' => 0.0,
-	'money' => NULL,
-	'bool' => FALSE,
-	'date' => NULL,
-	'time' => NULL,
-	'timestamp' => NULL,
+	'money' => null,
+	'bool' => false,
+	'date' => null,
+	'time' => null,
+	'timestamp' => null,
+	'timestampZone' => null,
 	'interval' => '00:00:00',
 	'character' => '                              ',
 	'character_varying' => '',
@@ -77,7 +79,7 @@ Assert::same([
 	'macaddr' => '08:00:2b:01:02:03',
 	'bit' => '0',
 	'bit_varying' => '0',
-	'bytea' => NULL,
+	'bytea' => null,
 	'box' => '(30,40),(10,20)',
 	'circle' => '<(10,20),30>',
 	'lseg' => '[(10,20),(30,40)]',
@@ -87,41 +89,42 @@ Assert::same([
 ], (array) $res->fetch());
 
 Assert::same([
-	'smallint' => NULL,
-	'integer' => NULL,
-	'bigint' => NULL,
-	'numeric' => NULL,
-	'real' => NULL,
-	'double' => NULL,
-	'money' => NULL,
-	'bool' => NULL,
-	'date' => NULL,
-	'time' => NULL,
-	'timestamp' => NULL,
-	'interval' => NULL,
-	'character' => NULL,
-	'character_varying' => NULL,
-	'text' => NULL,
-	'tsquery' => NULL,
-	'tsvector' => NULL,
-	'uuid' => NULL,
-	'xml' => NULL,
-	'cidr' => NULL,
-	'inet' => NULL,
-	'macaddr' => NULL,
-	'bit' => NULL,
-	'bit_varying' => NULL,
-	'bytea' => NULL,
-	'box' => NULL,
-	'circle' => NULL,
-	'lseg' => NULL,
-	'path' => NULL,
-	'point' => NULL,
-	'polygon' => NULL,
+	'smallint' => null,
+	'integer' => null,
+	'bigint' => null,
+	'numeric' => null,
+	'real' => null,
+	'double' => null,
+	'money' => null,
+	'bool' => null,
+	'date' => null,
+	'time' => null,
+	'timestamp' => null,
+	'timestampZone' => null,
+	'interval' => null,
+	'character' => null,
+	'character_varying' => null,
+	'text' => null,
+	'tsquery' => null,
+	'tsvector' => null,
+	'uuid' => null,
+	'xml' => null,
+	'cidr' => null,
+	'inet' => null,
+	'macaddr' => null,
+	'bit' => null,
+	'bit_varying' => null,
+	'bytea' => null,
+	'box' => null,
+	'circle' => null,
+	'lseg' => null,
+	'path' => null,
+	'point' => null,
+	'polygon' => null,
 ], (array) $res->fetch());
 
 
-$res = $context->query('SELECT "integer" AS a, "text" AS a FROM types');
+$res = $connection->query('SELECT "integer" AS a, "text" AS a FROM types');
 
 Assert::same([
 	'a' => 'a',

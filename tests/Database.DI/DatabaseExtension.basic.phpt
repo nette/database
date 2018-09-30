@@ -4,8 +4,8 @@
  * Test: DatabaseExtension.
  */
 
-use Nette\DI;
 use Nette\Bridges\DatabaseDI\DatabaseExtension;
+use Nette\DI;
 use Tester\Assert;
 
 
@@ -28,7 +28,7 @@ test(function () {
 	', 'neon'));
 
 	$compiler = new DI\Compiler;
-	$compiler->addExtension('database', new DatabaseExtension(FALSE));
+	$compiler->addExtension('database', new DatabaseExtension(false));
 	eval($compiler->addConfig($config)->setClassName('Container1')->compile());
 
 	$container = new Container1;

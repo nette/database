@@ -28,7 +28,7 @@ foreach ($context->table('book') as $book) {
 
 $webs = [];
 foreach ($authors as $author) {
-	$webs[$author->web] = NULL;
+	$webs[$author->web] = null;
 }
 ksort($webs);
 Assert::same([

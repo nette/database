@@ -24,7 +24,7 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @var ISupplementalDriver */
 	private $supplementalDriver;
 
-	/** @var \PDOStatement|NULL */
+	/** @var \PDOStatement|null */
 	private $pdoStatement;
 
 	/** @var IRow */
@@ -51,7 +51,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 	public function __construct(Connection $connection, $queryString, array $params)
 	{
-		$time = microtime(TRUE);
+		$time = microtime(true);
 		$this->connection = $connection;
 		$this->supplementalDriver = $connection->getSupplementalDriver();
 		$this->queryString = $queryString;
@@ -60,9 +60,9 @@ class ResultSet implements \Iterator, IRowContainer
 		try {
 			if (substr($queryString, 0, 2) === '::') {
 				$connection->getPdo()->{substr($queryString, 2)}();
-			} elseif ($queryString !== NULL) {
+			} elseif ($queryString !== null) {
 				static $types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT,
-					'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
+					'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL, ];
 				$this->pdoStatement = $connection->getPdo()->prepare($queryString);
 				foreach ($params as $key => $value) {
 					$type = gettype($value);
@@ -76,7 +76,7 @@ class ResultSet implements \Iterator, IRowContainer
 			$e->queryString = $queryString;
 			throw $e;
 		}
-		$this->time = microtime(TRUE) - $time;
+		$this->time = microtime(true) - $time;
 	}
 
 
@@ -122,7 +122,7 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function getColumnCount()
 	{
-		return $this->pdoStatement ? $this->pdoStatement->columnCount() : NULL;
+		return $this->pdoStatement ? $this->pdoStatement->columnCount() : null;
 	}
 
 
@@ -131,7 +131,7 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function getRowCount()
 	{
-		return $this->pdoStatement ? $this->pdoStatement->rowCount() : NULL;
+		return $this->pdoStatement ? $this->pdoStatement->rowCount() : null;
 	}
 
 
@@ -151,19 +151,19 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function normalizeRow($row)
 	{
-		if ($this->types === NULL) {
+		if ($this->types === null) {
 			$this->types = (array) $this->supplementalDriver->getColumnTypes($this->pdoStatement);
 		}
 
 		foreach ($this->types as $key => $type) {
 			$value = $row[$key];
-			if ($value === NULL || $value === FALSE || $type === IStructure::FIELD_TEXT) {
-
+			if ($value === null || $value === false || $type === IStructure::FIELD_TEXT) {
+				// do nothing
 			} elseif ($type === IStructure::FIELD_INTEGER) {
 				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
 
 			} elseif ($type === IStructure::FIELD_FLOAT) {
-				if (($pos = strpos($value, '.')) !== FALSE) {
+				if (($pos = strpos($value, '.')) !== false) {
 					$value = rtrim(rtrim($pos === 0 ? "0$value" : $value, '0'), '.');
 				}
 				$float = (float) $value;
@@ -176,8 +176,11 @@ class ResultSet implements \Iterator, IRowContainer
 				$row[$key] = new Nette\Utils\DateTime($value);
 
 			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
-				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)\z#', $value, $m);
+				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?\z#', $value, $m);
 				$row[$key] = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
+				if (PHP_VERSION_ID >= 70100) {
+					$row[$key]->f = isset($m[5]) ? (float) $m[5] : 0.0;
+				}
 				$row[$key]->invert = (int) (bool) $m[1];
 
 			} elseif ($type === IStructure::FIELD_UNIX_TIMESTAMP) {
@@ -207,7 +210,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 	public function rewind()
 	{
-		if ($this->result === FALSE) {
+		if ($this->result === false) {
 			throw new Nette\InvalidStateException('Nette\\Database\\ResultSet implements only one way iterator.');
 		}
 	}
@@ -227,17 +230,17 @@ class ResultSet implements \Iterator, IRowContainer
 
 	public function next()
 	{
-		$this->result = FALSE;
+		$this->result = false;
 	}
 
 
 	public function valid()
 	{
 		if ($this->result) {
-			return TRUE;
+			return true;
 		}
 
-		return $this->fetch() !== FALSE;
+		return $this->fetch() !== false;
 	}
 
 
@@ -249,12 +252,12 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function fetch()
 	{
-		$data = $this->pdoStatement ? $this->pdoStatement->fetch() : NULL;
+		$data = $this->pdoStatement ? $this->pdoStatement->fetch() : null;
 		if (!$data) {
 			$this->pdoStatement->closeCursor();
-			return FALSE;
+			return false;
 
-		} elseif ($this->result === NULL && count($data) !== $this->pdoStatement->columnCount()) {
+		} elseif ($this->result === null && count($data) !== $this->pdoStatement->columnCount()) {
 			$duplicates = Helpers::findDuplicates($this->pdoStatement);
 			trigger_error("Found duplicate columns in database result set: $duplicates.", E_USER_NOTICE);
 		}
@@ -274,19 +277,30 @@ class ResultSet implements \Iterator, IRowContainer
 	/**
 	 * Fetches single field.
 	 * @param  int
-	 * @return mixed|FALSE
+	 * @return mixed|false
 	 */
 	public function fetchField($column = 0)
 	{
 		$row = $this->fetch();
-		return $row ? $row[$column] : FALSE;
+		return $row ? $row[$column] : false;
+	}
+
+
+	/**
+	 * Fetches array of fields.
+	 * @return array|null
+	 */
+	public function fetchFields()
+	{
+		$row = $this->fetch();
+		return $row ? array_values((array) $row) : null;
 	}
 
 
 	/**
 	 * @inheritDoc
 	 */
-	public function fetchPairs($key = NULL, $value = NULL)
+	public function fetchPairs($key = null, $value = null)
 	{
 		return Helpers::toPairs($this->fetchAll(), $key, $value);
 	}
@@ -297,7 +311,7 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function fetchAll()
 	{
-		if ($this->results === NULL) {
+		if ($this->results === null) {
 			$this->results = iterator_to_array($this);
 		}
 		return $this->results;
@@ -311,5 +325,4 @@ class ResultSet implements \Iterator, IRowContainer
 	{
 		return Nette\Utils\Arrays::associate($this->fetchAll(), $path);
 	}
-
 }

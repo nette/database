@@ -29,7 +29,7 @@ class Helpers
 		'BOOL(EAN)?' => IStructure::FIELD_BOOL,
 		'TIME' => IStructure::FIELD_TIME,
 		'DATE' => IStructure::FIELD_DATE,
-		'(SMALL)?DATETIME(OFFSET)?\d*|TIME(STAMP)?' => IStructure::FIELD_DATETIME,
+		'(SMALL)?DATETIME(OFFSET)?\d*|TIME(STAMP.*)?' => IStructure::FIELD_DATETIME,
 		'BYTEA|(TINY|MEDIUM|LONG|)BLOB|(LONG )?(VAR)?BINARY|IMAGE' => IStructure::FIELD_BINARY,
 	];
 
@@ -40,7 +40,7 @@ class Helpers
 	 */
 	public static function dumpResult(ResultSet $result)
 	{
-		echo "\n<table class=\"dump\">\n<caption>" . htmlSpecialChars($result->getQueryString(), ENT_IGNORE, 'UTF-8') . "</caption>\n";
+		echo "\n<table class=\"dump\">\n<caption>" . htmlspecialchars($result->getQueryString(), ENT_IGNORE, 'UTF-8') . "</caption>\n";
 		if (!$result->getColumnCount()) {
 			echo "\t<tr>\n\t\t<th>Affected rows:</th>\n\t\t<td>", $result->getRowCount(), "</td>\n\t</tr>\n</table>\n";
 			return;
@@ -50,13 +50,20 @@ class Helpers
 			if ($i === 0) {
 				echo "<thead>\n\t<tr>\n\t\t<th>#row</th>\n";
 				foreach ($row as $col => $foo) {
-					echo "\t\t<th>" . htmlSpecialChars($col, ENT_NOQUOTES, 'UTF-8') . "</th>\n";
+					echo "\t\t<th>" . htmlspecialchars($col, ENT_NOQUOTES, 'UTF-8') . "</th>\n";
 				}
 				echo "\t</tr>\n</thead>\n<tbody>\n";
 			}
 			echo "\t<tr>\n\t\t<th>", $i, "</th>\n";
 			foreach ($row as $col) {
-				echo "\t\t<td>", htmlSpecialChars($col, ENT_NOQUOTES, 'UTF-8'), "</td>\n";
+				if (is_bool($col)) {
+					$s = $col ? 'TRUE' : 'FALSE';
+				} elseif ($col === null) {
+					$s = 'NULL';
+				} else {
+					$s = (string) $col;
+				}
+				echo "\t\t<td>", htmlspecialchars($s, ENT_NOQUOTES, 'UTF-8'), "</td>\n";
 			}
 			echo "\t</tr>\n";
 			$i++;
@@ -75,7 +82,7 @@ class Helpers
 	 * @param  string
 	 * @return string
 	 */
-	public static function dumpSql($sql, array $params = NULL, Connection $connection = NULL)
+	public static function dumpSql($sql, array $params = null, Connection $connection = null)
 	{
 		static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
 		static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|[RI]?LIKE|REGEXP|TRUE|FALSE';
@@ -91,7 +98,7 @@ class Helpers
 		$sql = preg_replace('#([ \t]*\r?\n){2,}#', "\n", $sql);
 
 		// syntax highlight
-		$sql = htmlSpecialChars($sql, ENT_IGNORE, 'UTF-8');
+		$sql = htmlspecialchars($sql, ENT_IGNORE, 'UTF-8');
 		$sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is", function ($matches) {
 			if (!empty($matches[1])) { // comment
 				return '<em style="color:gray">' . $matches[1] . '</em>';
@@ -128,8 +135,8 @@ class Helpers
 				if ($type === 'stream') {
 					$info = stream_get_meta_data($param);
 				}
-				return '<i' . (isset($info['uri']) ? ' title="' . htmlspecialchars($info['uri'], ENT_NOQUOTES, 'UTF-8') . '"' : NULL)
-					. '>&lt;' . htmlSpecialChars($type, ENT_NOQUOTES, 'UTF-8') . ' resource&gt;</i> ';
+				return '<i' . (isset($info['uri']) ? ' title="' . htmlspecialchars($info['uri'], ENT_NOQUOTES, 'UTF-8') . '"' : null)
+					. '>&lt;' . htmlspecialchars($type, ENT_NOQUOTES, 'UTF-8') . ' resource&gt;</i> ';
 
 			} else {
 				return htmlspecialchars($param, ENT_NOQUOTES, 'UTF-8');
@@ -220,7 +227,7 @@ class Helpers
 	}
 
 
-	public static function createDebugPanel($connection, $explain = TRUE, $name = NULL)
+	public static function createDebugPanel($connection, $explain = true, $name = null)
 	{
 		$panel = new Nette\Bridges\DatabaseTracy\ConnectionPanel($connection);
 		$panel->explain = $explain;
@@ -234,7 +241,7 @@ class Helpers
 	 * Reformat source to key -> value pairs.
 	 * @return array
 	 */
-	public static function toPairs(array $rows, $key = NULL, $value = NULL)
+	public static function toPairs(array $rows, $key = null, $value = null)
 	{
 		if (!$rows) {
 			return [];
@@ -244,7 +251,7 @@ class Helpers
 		if (!count($keys)) {
 			throw new \LogicException('Result set does not contain any column.');
 
-		} elseif ($key === NULL && $value === NULL) {
+		} elseif ($key === null && $value === null) {
 			if (count($keys) === 1) {
 				list($value) = $keys;
 			} else {
@@ -253,13 +260,13 @@ class Helpers
 		}
 
 		$return = [];
-		if ($key === NULL) {
+		if ($key === null) {
 			foreach ($rows as $row) {
-				$return[] = ($value === NULL ? $row : $row[$value]);
+				$return[] = ($value === null ? $row : $row[$value]);
 			}
 		} else {
 			foreach ($rows as $row) {
-				$return[is_object($row[$key]) ? (string) $row[$key] : $row[$key]] = ($value === NULL ? $row : $row[$value]);
+				$return[(string) $row[$key]] = ($value === null ? $row : $row[$value]);
 			}
 		}
 
@@ -288,5 +295,4 @@ class Helpers
 		}
 		return implode(', ', $duplicates);
 	}
-
 }

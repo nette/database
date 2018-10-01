@@ -596,7 +596,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			$this->cache->setGeneralCacheKey(null);
 		}
 
-		$this->rows = null;
+		$null = null;
+		$this->rows = &$null;
 		$this->cache->setSpecificCacheKey(null);
 		$this->refCache->clearReferencingPrototype();
 		if ($deleteRererencedCache) {

@@ -50,7 +50,7 @@ test(function () use ($context) {
 test(function () use ($context) {
 	$books = [];
 	for ($i = 0; $i < 2; $i++) {
-		$booksSelection = $context->table('book')->where('id IN ?', [3, 4]);
+		$booksSelection = $context->table('book')->where('id IN ?', [3, 4])->order('id');
 		foreach ($booksSelection as $book) {
 			$books[] = $book->id;
 

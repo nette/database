@@ -6,6 +6,7 @@
  */
 
 use Nette\Database\Table\ActiveRow;
+use Tester\Assert;
 
 require __DIR__ . '/../../connect.inc.php';
 
@@ -33,3 +34,5 @@ foreach ([true, false] as $published) {
 	$result->__destruct();
 	$related->__destruct();
 }
+
+Assert::true(true);

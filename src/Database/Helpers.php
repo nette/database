@@ -98,7 +98,7 @@ class Helpers
 
 		// syntax highlight
 		$sql = htmlspecialchars($sql, ENT_IGNORE, 'UTF-8');
-		$sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is", function ($matches) {
+		$sql = preg_replace_callback("#(/\\*.+?\\*/)|(\\*\\*.+?\\*\\*)|(?<=[\\s,(])($keywords1)(?=[\\s,)])|(?<=[\\s,(=])($keywords2)(?=[\\s,)=])#is", function (array $matches) {
 			if (!empty($matches[1])) { // comment
 				return '<em style="color:gray">' . $matches[1] . '</em>';
 
@@ -114,7 +114,7 @@ class Helpers
 		}, $sql);
 
 		// parameters
-		$sql = preg_replace_callback('#\?#', function () use ($params, $connection) {
+		$sql = preg_replace_callback('#\?#', function () use ($params, $connection): string {
 			static $i = 0;
 			if (!isset($params[$i])) {
 				return '?';

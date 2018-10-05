@@ -536,7 +536,7 @@ class SqlBuilder
 			$tableAlias = substr($fooQuery, 0, -4);
 			$tableJoins[$tableAlias] = $requiredJoins;
 			$leftJoinDependency[$tableAlias] = [];
-			$finalJoinConditions[$tableAlias] = preg_replace_callback($this->getColumnChainsRegxp(), function ($match) use ($tableAlias, &$tableJoins, &$leftJoinDependency) {
+			$finalJoinConditions[$tableAlias] = preg_replace_callback($this->getColumnChainsRegxp(), function (array $match) use ($tableAlias, &$tableJoins, &$leftJoinDependency): string {
 				$requiredJoins = [];
 				$query = $this->parseJoinsCb($requiredJoins, $match);
 				$queryParts = explode('.', $query);
@@ -562,7 +562,7 @@ class SqlBuilder
 	protected function getSortedJoins(string $table, &$leftJoinDependency, &$tableJoins, &$finalJoins): void
 	{
 		if (isset($this->expandingJoins[$table])) {
-			$path = implode("' => '", array_map(function ($value) { return $this->reservedTableNames[$value]; }, array_merge(array_keys($this->expandingJoins), [$table])));
+			$path = implode("' => '", array_map(function (string $value): string { return $this->reservedTableNames[$value]; }, array_merge(array_keys($this->expandingJoins), [$table])));
 			throw new Nette\InvalidArgumentException("Circular reference detected at left join conditions (tables '$path').");
 		}
 		if (isset($tableJoins[$table])) {
@@ -595,7 +595,7 @@ class SqlBuilder
 
 	protected function parseJoins(&$joins, &$query): void
 	{
-		$query = preg_replace_callback($this->getColumnChainsRegxp(), function ($match) use (&$joins) {
+		$query = preg_replace_callback($this->getColumnChainsRegxp(), function (array $match) use (&$joins): string {
 			return $this->parseJoinsCb($joins, $match);
 		}, $query);
 	}
@@ -767,7 +767,7 @@ class SqlBuilder
 
 	protected function tryDelimite(string $s): string
 	{
-		return preg_replace_callback('#(?<=[^\w`"\[?:]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|\z)#i', function ($m) {
+		return preg_replace_callback('#(?<=[^\w`"\[?:]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|\z)#i', function (array $m): string {
 			return strtoupper($m[0]) === $m[0] ? $m[0] : $this->driver->delimite($m[0]);
 		}, $s);
 	}
@@ -805,7 +805,7 @@ class SqlBuilder
 	private function getCachedTableList(): array
 	{
 		if (!$this->cacheTableList) {
-			$this->cacheTableList = array_flip(array_map(function ($pair) {
+			$this->cacheTableList = array_flip(array_map(function (array $pair): string {
 				return $pair['fullName'] ?? $pair['name'];
 			}, $this->structure->getTables()));
 		}

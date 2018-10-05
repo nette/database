@@ -207,7 +207,7 @@ class Structure implements IStructure
 
 		if (isset($structure['hasMany'])) {
 			foreach ($structure['hasMany'] as &$table) {
-				uksort($table, function ($a, $b) {
+				uksort($table, function ($a, $b): int {
 					return strlen($a) <=> strlen($b);
 				});
 			}
@@ -247,7 +247,7 @@ class Structure implements IStructure
 		}
 
 		if (isset($structure['belongsTo'][$lowerTable])) {
-			uksort($structure['belongsTo'][$lowerTable], function ($a, $b) {
+			uksort($structure['belongsTo'][$lowerTable], function ($a, $b): int {
 				return strlen($a) <=> strlen($b);
 			});
 		}

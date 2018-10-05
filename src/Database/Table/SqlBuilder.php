@@ -596,7 +596,7 @@ class SqlBuilder
 			$tableAlias = substr($fooQuery, 0, -4);
 			$tableJoins[$tableAlias] = $requiredJoins;
 			$leftJoinDependency[$tableAlias] = [];
-			$finalJoinConditions[$tableAlias] = preg_replace_callback($this->getColumnChainsRegxp(), function ($match) use ($tableAlias, &$tableJoins, &$leftJoinDependency) {
+			$finalJoinConditions[$tableAlias] = preg_replace_callback($this->getColumnChainsRegxp(), function (array $match) use ($tableAlias, &$tableJoins, &$leftJoinDependency) {
 				$requiredJoins = [];
 				$query = $this->parseJoinsCb($requiredJoins, $match);
 				$queryParts = explode('.', $query);
@@ -655,7 +655,7 @@ class SqlBuilder
 
 	protected function parseJoins(&$joins, &$query)
 	{
-		$query = preg_replace_callback($this->getColumnChainsRegxp(), function ($match) use (&$joins) {
+		$query = preg_replace_callback($this->getColumnChainsRegxp(), function (array $match) use (&$joins) {
 			return $this->parseJoinsCb($joins, $match);
 		}, $query);
 	}
@@ -895,7 +895,7 @@ class SqlBuilder
 	private function getCachedTableList()
 	{
 		if (!$this->cacheTableList) {
-			$this->cacheTableList = array_flip(array_map(function ($pair) {
+			$this->cacheTableList = array_flip(array_map(function (array $pair) {
 				return isset($pair['fullName']) ? $pair['fullName'] : $pair['name'];
 			}, $this->structure->getTables()));
 		}

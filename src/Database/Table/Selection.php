@@ -934,7 +934,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	}
 
 
-	/** @return ActiveRow|bool */
+	/** @return ActiveRow|false */
 	public function current()
 	{
 		if (($key = current($this->keys)) !== false) {

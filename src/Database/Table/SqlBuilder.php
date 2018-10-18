@@ -604,12 +604,7 @@ class SqlBuilder
 	private function getColumnChainsRegxp(): string
 	{
 		return '~
-			(?(DEFINE)
-				(?P<word> [\w_]*[a-z][\w_]* )
-				(?P<del> [.:] )
-				(?P<node> (?&del)? (?&word) (\((?&word)\))? )
-			)
-			(?P<chain> (?!\.) ((?&node))*)  \. (?P<column> (?&word) | \*  )
+			(?P<chain> (?!\.) (?: [.:]? (?>[\w_]*[a-z][\w_]*) (\([\w_]*[a-z][\w_]*\))? ) *)  \. (?P<column> (?>[\w_]*[a-z][\w_]*) | \*  )
 		~xi';
 	}
 
@@ -622,10 +617,7 @@ class SqlBuilder
 		}
 
 		preg_match_all('~
-			(?(DEFINE)
-				(?P<word> [\w_]*[a-z][\w_]* )
-			)
-			(?P<del> [.:])?(?P<key> (?&word))(\((?P<throughColumn> (?&word))\))?
+			(?P<del> [.:])?(?P<key> [\w_]*[a-z][\w_]* )(\((?P<throughColumn> [\w_]*[a-z][\w_]* )\))?
 		~xi', $chain, $keyMatches, PREG_SET_ORDER);
 
 		$parent = $this->tableName;

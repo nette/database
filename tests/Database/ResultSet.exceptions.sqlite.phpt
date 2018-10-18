@@ -16,7 +16,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 
 $e = Assert::exception(function () use ($connection) {
 	$connection->query('SELECT');
-}, Nette\Database\DriverException::class, '%a% syntax error', 'HY000');
+}, Nette\Database\DriverException::class, '%a% error%a%', 'HY000');
 
 Assert::same(1, $e->getDriverCode());
 Assert::same($e->getCode(), $e->getSqlState());

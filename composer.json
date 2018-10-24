@@ -22,7 +22,7 @@
 	},
 	"require-dev": {
 		"nette/tester": "^2.0",
-		"nette/di": "^2.4 || ~3.0.0",
+		"nette/di": "^v3.0.0-beta2",
 		"mockery/mockery": "^1.0.0",
 		"tracy/tracy": "^2.4"
 	},

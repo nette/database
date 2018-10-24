@@ -78,7 +78,8 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 
 		$connection = $builder->addDefinition($this->prefix("$name.connection"))
 			->setFactory(Nette\Database\Connection::class, [$config['dsn'], $config['user'], $config['password'], $config['options']])
-			->setAutowired($config['autowired']);
+			->setAutowired($config['autowired'])
+			->setExported();
 
 		$structure = $builder->addDefinition($this->prefix("$name.structure"))
 			->setFactory(Nette\Database\Structure::class)
@@ -107,13 +108,13 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				->setAutowired($config['autowired']);
 
 		} else {
-			$class = method_exists(Nette\DI\Helpers::class, 'filterArguments') ? Nette\DI\Helpers::class : Nette\DI\Compiler::class;
-			$conventions = $class::filterArguments([$config['conventions']])[0];
+			$conventions = Nette\DI\Config\Processor::filterArguments([$config['conventions']])[0];
 		}
 
 		$builder->addDefinition($this->prefix("$name.context"))
 			->setFactory(Nette\Database\Context::class, [$connection, $structure, $conventions])
-			->setAutowired($config['autowired']);
+			->setAutowired($config['autowired'])
+			->setExported();
 
 		if ($config['debugger']) {
 			$connection->addSetup('@Tracy\BlueScreen::addPanel', [

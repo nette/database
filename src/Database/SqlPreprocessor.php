@@ -22,6 +22,17 @@ class SqlPreprocessor
 	/** @var array */
 	private const MODE_LIST = ['and', 'or', 'set', 'values', 'order'];
 
+	private const ARRAY_MODES = [
+		'INSERT' => 'values',
+		'REPLACE' => 'values',
+		'KEY UPDATE' => 'set',
+		'SET' => 'set',
+		'WHERE' => 'and',
+		'HAVING' => 'and',
+		'ORDER BY' => 'order',
+		'GROUP BY' => 'order',
+	];
+
 	/** @var Connection */
 	private $connection;
 
@@ -98,17 +109,8 @@ class SqlPreprocessor
 			return $m;
 
 		} else { // command
-			static $modes = [
-				'INSERT' => 'values',
-				'REPLACE' => 'values',
-				'KEY UPDATE' => 'set',
-				'SET' => 'set',
-				'WHERE' => 'and',
-				'HAVING' => 'and',
-				'ORDER BY' => 'order',
-				'GROUP BY' => 'order',
-			];
-			$this->arrayMode = $modes[ltrim(strtoupper($m))];
+			$cmd = ltrim(strtoupper($m));
+			$this->arrayMode = self::ARRAY_MODES[$cmd];
 			return $m;
 		}
 	}

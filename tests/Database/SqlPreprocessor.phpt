@@ -309,8 +309,8 @@ test(function () use ($preprocessor) { // insert
 	[$sql, $params] = $preprocessor->process(['/* comment */  INSERT INTO author',
 		['name' => 'Catelyn Stark'],
 	]);
-	Assert::same(reformat('/* comment */  INSERT INTO author [name]=?'), $sql); // autodetection not used
-	Assert::same(['Catelyn Stark'], $params);
+	Assert::same(reformat("/* comment */  INSERT INTO author [name]='Catelyn Stark'"), $sql); // autodetection not used
+	Assert::same([], $params);
 });
 
 

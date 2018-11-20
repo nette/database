@@ -143,10 +143,14 @@ class Connection
 	public function quote($string, $type = PDO::PARAM_STR)
 	{
 		try {
-			return $this->getPdo()->quote($string, $type);
+			$res = $this->getPdo()->quote($string, $type);
 		} catch (PDOException $e) {
 			throw DriverException::from($e);
 		}
+		if (!is_string($res)) {
+			throw new DriverException('PDO driver is unable to quote string.');
+		}
+		return $res;
 	}
 
 

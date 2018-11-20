@@ -229,7 +229,12 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 
 	public function getColumnTypes(\PDOStatement $statement)
 	{
-		return Nette\Database\Helpers::detectTypes($statement);
+		static $cache;
+		$item = &$cache[$statement->queryString];
+		if ($item === null) {
+			$item = Nette\Database\Helpers::detectTypes($statement);
+		}
+		return $item;
 	}
 
 

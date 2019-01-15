@@ -170,7 +170,7 @@ class MsSqlDriver implements Nette\Database\ISupplementalDriver
 	public function getForeignKeys(string $table): array
 	{
 		[$table_schema, $table_name] = explode('.', $table);
-		$keys = array();
+		$keys = [];
 
 		$query = "
 			SELECT  

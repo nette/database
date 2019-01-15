@@ -101,9 +101,21 @@ class MsSqlDriver implements Nette\Database\ISupplementalDriver
 	{
 		[$table_schema, $table_name] = explode('.', $table);
 		$columns = [];
-		$query = 'SELECT COLUMN_NAME, DATA_TYPE, CHARACTER_MAXIMUM_LENGTH, NUMERIC_PRECISION, IS_NULLABLE, COLUMN_DEFAULT, DOMAIN_NAME '
-			. 'FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = ' . $this->connection->quote($table_schema) . ' AND TABLE_NAME = '
-			. $this->connection->quote($table_name);
+
+		$query = "
+			SELECT 
+				COLUMN_NAME, 
+				DATA_TYPE, 
+				CHARACTER_MAXIMUM_LENGTH, 
+				NUMERIC_PRECISION, 
+				IS_NULLABLE, 
+				COLUMN_DEFAULT, 
+				DOMAIN_NAME  
+			FROM 
+				INFORMATION_SCHEMA.COLUMNS 
+			WHERE 
+				TABLE_SCHEMA = {$this->connection->quote($table_schema)} 
+				AND TABLE_NAME = {$this->connection->quote($table_name)}";
 
 		foreach ($this->connection->query($query) as $row) {
 			$columns[] = [
@@ -136,12 +148,12 @@ class MsSqlDriver implements Nette\Database\ISupplementalDriver
 				 ind.is_unique,
 				 ind.is_primary_key
 			FROM
-				 sys.indexes ind
+				sys.indexes ind
 				INNER JOIN sys.index_columns ic ON  ind.object_id = ic.object_id and ind.index_id = ic.index_id
 				INNER JOIN sys.columns col ON ic.object_id = col.object_id and ic.column_id = col.column_id
 				INNER JOIN sys.tables t ON ind.object_id = t.object_id
 			WHERE
-				 t.name = " . $this->connection->quote($table_name) . "
+				 t.name = {$this->connection->quote($table_name)}
 			ORDER BY
 				 t.name, ind.name, ind.index_id, ic.index_column_id";
 
@@ -161,11 +173,13 @@ class MsSqlDriver implements Nette\Database\ISupplementalDriver
 		$keys = array();
 
 		$query = "
-			SELECT  obj.name AS [fk_name],
+			SELECT  
+				obj.name AS [fk_name],
 				col1.name AS [column],
 				tab2.name AS [referenced_table],
 				col2.name AS [referenced_column]
-			FROM sys.foreign_key_columns fkc
+			FROM 
+				sys.foreign_key_columns fkc
 				INNER JOIN sys.objects obj
 					ON obj.object_id = fkc.constraint_object_id
 				INNER JOIN sys.tables tab1
@@ -178,7 +192,8 @@ class MsSqlDriver implements Nette\Database\ISupplementalDriver
 					ON tab2.object_id = fkc.referenced_object_id
 				INNER JOIN sys.columns col2
 				ON col2.column_id = referenced_column_id AND col2.object_id = tab2.object_id
-			WHERE tab1.name = " . $this->connection->quote($table_name);
+			WHERE 
+				tab1.name = {$this->connection->quote($table_name)}";
 
 		foreach ($this->connection->query($query) as $id => $row) {
 			$keys[$id]['name'] = $row['fk_name'];

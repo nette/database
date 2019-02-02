@@ -103,18 +103,18 @@ class MsSqlDriver implements Nette\Database\ISupplementalDriver
 		$columns = [];
 
 		$query = "
-			SELECT 
-				COLUMN_NAME, 
-				DATA_TYPE, 
-				CHARACTER_MAXIMUM_LENGTH, 
-				NUMERIC_PRECISION, 
-				IS_NULLABLE, 
-				COLUMN_DEFAULT, 
-				DOMAIN_NAME  
-			FROM 
-				INFORMATION_SCHEMA.COLUMNS 
-			WHERE 
-				TABLE_SCHEMA = {$this->connection->quote($table_schema)} 
+			SELECT
+				COLUMN_NAME,
+				DATA_TYPE,
+				CHARACTER_MAXIMUM_LENGTH,
+				NUMERIC_PRECISION,
+				IS_NULLABLE,
+				COLUMN_DEFAULT,
+				DOMAIN_NAME
+			FROM
+				INFORMATION_SCHEMA.COLUMNS
+			WHERE
+				TABLE_SCHEMA = {$this->connection->quote($table_schema)}
 				AND TABLE_NAME = {$this->connection->quote($table_name)}";
 
 		foreach ($this->connection->query($query) as $row) {
@@ -173,12 +173,12 @@ class MsSqlDriver implements Nette\Database\ISupplementalDriver
 		$keys = [];
 
 		$query = "
-			SELECT  
+			SELECT
 				obj.name AS [fk_name],
 				col1.name AS [column],
 				tab2.name AS [referenced_table],
 				col2.name AS [referenced_column]
-			FROM 
+			FROM
 				sys.foreign_key_columns fkc
 				INNER JOIN sys.objects obj
 					ON obj.object_id = fkc.constraint_object_id
@@ -192,7 +192,7 @@ class MsSqlDriver implements Nette\Database\ISupplementalDriver
 					ON tab2.object_id = fkc.referenced_object_id
 				INNER JOIN sys.columns col2
 				ON col2.column_id = referenced_column_id AND col2.object_id = tab2.object_id
-			WHERE 
+			WHERE
 				tab1.name = {$this->connection->quote($table_name)}";
 
 		foreach ($this->connection->query($query) as $id => $row) {

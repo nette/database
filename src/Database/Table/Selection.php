@@ -739,6 +739,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function insert(iterable $data)
 	{
+		//should be called before query for not to spoil PDO::lastInsertId
+		$primarySequenceName = $this->getPrimarySequence();
+		$primaryAutoincrementKey = $this->context->getStructure()->getPrimaryAutoincrementKey($this->name);
+
 		if ($data instanceof self) {
 			$return = $this->context->queryArgs($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), $data->getSqlBuilder()->getParameters());
 
@@ -755,9 +759,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			$this->refCache->unsetReferencing($this->cache->getGeneralCacheKey(), $this->cache->getSpecificCacheKey());
 			return $return->getRowCount();
 		}
-
-		$primarySequenceName = $this->getPrimarySequence();
-		$primaryAutoincrementKey = $this->context->getStructure()->getPrimaryAutoincrementKey($this->name);
 
 		$primaryKey = [];
 		foreach ((array) $this->primary as $key) {

@@ -44,4 +44,3 @@ $book = $context->table('author')->insert([
 Assert::type(Nette\Database\Table\ActiveRow::class, $book);
 Assert::equal('eddard stark', $book->name);
 Assert::equal(new Nette\Utils\DateTime('2011-11-11'), $book->born);
-

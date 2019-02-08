@@ -1,9 +1,11 @@
 <?php
 
 /**
- * Test: Nette\Database\Table\Selection: Insert operations
+ * Test: bug #216
  * @dataProvider? ../databases.ini
  */
+
+declare(strict_types=1);
 
 use Tester\Assert;
 

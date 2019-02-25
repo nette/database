@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Bridges\DatabaseTracy;
 
 use Nette;
+use Nette\Database\Connection;
 use Nette\Database\Helpers;
 use Tracy;
 
@@ -43,13 +44,13 @@ class ConnectionPanel implements Tracy\IBarPanel
 	private $queries = [];
 
 
-	public function __construct(Nette\Database\Connection $connection)
+	public function __construct(Connection $connection)
 	{
 		$connection->onQuery[] = [$this, 'logQuery'];
 	}
 
 
-	public function logQuery(Nette\Database\Connection $connection, $result): void
+	public function logQuery(Connection $connection, $result): void
 	{
 		if ($this->disabled) {
 			return;
@@ -59,13 +60,11 @@ class ConnectionPanel implements Tracy\IBarPanel
 		$source = null;
 		$trace = $result instanceof \PDOException ? $result->getTrace() : debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		foreach ($trace as $row) {
-			if (isset($row['file']) && is_file($row['file']) && !Tracy\Debugger::getBluescreen()->isCollapsed($row['file'])) {
-				if (
-					(strpos($row['function'] ?? '', 'call_user_func') === 0)
-					|| (is_subclass_of($row['class'] ?? '', '\\Nette\\Database\\Connection'))
-				) {
-					continue;
-				}
+			if (
+				(isset($row['file']) && is_file($row['file']) && !Tracy\Debugger::getBluescreen()->isCollapsed($row['file']))
+				&& ($row['class'] ?? '') !== self::class
+				&& !is_a($row['class'] ?? '', Connection::class, true)
+			) {
 				$source = [$row['file'], (int) $row['line']];
 				break;
 			}

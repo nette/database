@@ -185,7 +185,7 @@ class ResultSet implements \Iterator, IRowContainer
 	public function rewind(): void
 	{
 		if ($this->result === false) {
-			throw new Nette\InvalidStateException('Nette\\Database\\ResultSet implements only one way iterator.');
+			throw new Nette\InvalidStateException(__CLASS__ . ' implements only one way iterator.');
 		}
 	}
 

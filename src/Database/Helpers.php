@@ -184,7 +184,7 @@ class Helpers
 
 	/**
 	 * Import SQL dump from file - extremely fast.
-	 * @param  callable  $onProgress  function (int $count, ?float $percent): void
+	 * @param  callable&callable(int $count, ?float $percent): void  $onProgress  function (int $count, ?float $percent): void
 	 * @return int  count of commands
 	 */
 	public static function loadFromFile(Connection $connection, string $file, callable $onProgress = null): int

@@ -27,7 +27,7 @@
 		"tracy/tracy": "^2.4"
 	},
 	"conflict": {
-		"nette/di": "<3.0"
+		"nette/di": "<3.0-stable"
 	},
 	"autoload": {
 		"classmap": ["src/"]

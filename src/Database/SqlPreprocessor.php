@@ -255,7 +255,7 @@ class SqlPreprocessor
 
 			} elseif ($mode === 'as') {
 				foreach ($value as $k => $v) {
-					$vx[] = $this->delimite($k) . ' AS ' . $this->delimite($v);
+					$vx[] = $this->delimite($k) . ' AS ' . $v;
 				}
 				return implode(', ', $vx);
 

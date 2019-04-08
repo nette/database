@@ -253,6 +253,12 @@ class SqlPreprocessor
 				}
 				return implode(', ', $vx);
 
+			} elseif ($mode === 'as') {
+				foreach ($value as $k => $v) {
+					$vx[] = $this->delimite($k) . ' AS ' . $this->delimite($v);
+				}
+				return implode(', ', $vx);
+
 			} else {
 				throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
 			}

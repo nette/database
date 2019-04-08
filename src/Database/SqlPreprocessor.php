@@ -20,7 +20,7 @@ class SqlPreprocessor
 	use Nette\SmartObject;
 
 	/** @var array */
-	private const MODE_LIST = ['and', 'or', 'set', 'values', 'order'];
+	private const MODE_LIST = ['and', 'or', 'set', 'values', 'order', 'as'];
 
 	private const ARRAY_MODES = [
 		'INSERT' => 'values',

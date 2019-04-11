@@ -12,7 +12,7 @@ use Tester\Assert;
 
 require __DIR__ . '/../../connect.inc.php';
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-nette_test5.sql");
+Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-bug187.sql");
 
 foreach ([true, false] as $published) {
 	if ($published) {

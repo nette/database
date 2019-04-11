@@ -148,7 +148,9 @@ class Structure implements IStructure
 
 		if ($column) {
 			$column = strtolower($column);
-			return $this->structure['belongsTo'][$table][$column] ?? null;
+			return isset($this->structure['belongsTo'][$table][$column])
+				? [$this->structure['belongsTo'][$table][$column], $column]
+				: null;
 
 		} else {
 			return $this->structure['belongsTo'][$table] ?? [];

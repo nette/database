@@ -173,6 +173,14 @@ class StructureTestCase extends TestCase
 			'tag_id' => 'tags',
 			'book_id' => 'Books',
 		], $this->structure->getBelongsToReference('books_x_tags'));
+
+
+		Assert::same(
+			['Books', 'book_id'],
+			$this->structure->getBelongsToReference('books_x_tags', 'book_id')
+		);
+
+		Assert::null($this->structure->getBelongsToReference('books_x_tags', 'non_exist'));
 	}
 
 

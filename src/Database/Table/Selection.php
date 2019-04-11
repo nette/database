@@ -898,9 +898,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns referencing rows.
-	 * @param  int  $active  primary key
+	 * @param  int|string  $active  primary key
 	 */
-	public function getReferencingTable(string $table, string $column = null, int $active = null): ?GroupedSelection
+	public function getReferencingTable(string $table, string $column = null, $active = null): ?GroupedSelection
 	{
 		if (strpos($table, '.') !== false) {
 			[$table, $column] = explode('.', $table);

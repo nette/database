@@ -47,10 +47,10 @@ class GroupedSelection extends Selection
 	/**
 	 * Sets active group.
 	 * @internal
-	 * @param  int  $active  primary key of grouped rows
+	 * @param  int|string  $active  primary key of grouped rows
 	 * @return static
 	 */
-	public function setActive(int $active)
+	public function setActive($active)
 	{
 		$this->active = $active;
 		return $this;

@@ -130,7 +130,12 @@ class SqlPreprocessor
 	}
 
 
-	private function formatValue($value, string $mode = null): string
+    /**
+     * @param $value
+     * @param string|null $mode
+     * @return string
+     */
+    private function formatValue($value, string $mode = null): string
 	{
 		if (!$mode || $mode === 'auto') {
 			if (is_scalar($value) || is_resource($value)) {
@@ -242,7 +247,16 @@ class SqlPreprocessor
 						}
 					} else {
 						$v = $this->formatValue($v);
-						$vx[] = $k . ' ' . ($operator ?: ($v === 'NULL' ? 'IS' : '=')) . ' ' . $v;
+                        // Allow usage of IS NOT NULL
+                        // Call
+                        // 'database_field NOT' => NULL,
+                        // Will represent database_field IS NOT NULL
+                        if ($operator) {
+                            $operation = (($operator === 'NOT') && ($v === 'NULL') ? 'IS NOT' : $operator);
+                        } else {
+                            $operation = ($v === 'NULL') ? 'IS' : '=';
+                        }
+                        $vx[] = $k . ' ' . $operation . ' ' . $v;
 					}
 				}
 				return $value ? '(' . implode(') ' . strtoupper($mode) . ' (', $vx) . ')' : '1=1';

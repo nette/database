@@ -242,7 +242,21 @@ class SqlPreprocessor
 						}
 					} else {
 						$v = $this->formatValue($v);
-						$vx[] = $k . ' ' . ($operator ?: ($v === 'NULL' ? 'IS' : '=')) . ' ' . $v;
+						// Allow usage of IS NULL
+						// Call 
+						// 'database_field' => NULL, 
+						// Will represent database_field IS NULL
+						if ($operator) {
+						    if (($operator === 'NOT') && ($v === 'NULL')) {
+							$operation = 'IS NOT';
+						    }
+						} elseif ($v === 'NULL') {
+						    $operation = 'IS';
+						} else {
+						    $operation = '=';
+						}
+						$vx[] = $k . ' ' . $operation . ' ' . $v;
+						
 					}
 				}
 				return $value ? '(' . implode(') ' . strtoupper($mode) . ' (', $vx) . ')' : '1=1';

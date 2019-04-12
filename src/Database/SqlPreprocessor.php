@@ -130,12 +130,7 @@ class SqlPreprocessor
 	}
 
 
-    /**
-     * @param $value
-     * @param string|null $mode
-     * @return string
-     */
-    private function formatValue($value, string $mode = null): string
+	private function formatValue($value, string $mode = null): string
 	{
 		if (!$mode || $mode === 'auto') {
 			if (is_scalar($value) || is_resource($value)) {

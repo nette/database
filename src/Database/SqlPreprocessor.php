@@ -251,7 +251,7 @@ class SqlPreprocessor
 						} else {
 							$operation = ($v === 'NULL') ? 'IS' : '=';
 						}
-                        $vx[] = $k . ' ' . $operation . ' ' . $v;
+						$vx[] = $k . ' ' . $operation . ' ' . $v;
 					}
 				}
 				return $value ? '(' . implode(') ' . strtoupper($mode) . ' (', $vx) . ')' : '1=1';

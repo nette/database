@@ -585,6 +585,9 @@ class SqlBuilder
 			}
 			$finalJoins += $tableJoins[$table];
 			$key = isset($this->aliases[$table]) ? $table : $this->reservedTableNames[$table];
+			if ($key[0] === '.') {
+				$key = substr($key, 1);
+			}
 			$this->parameters['joinConditionSorted'] += isset($this->parameters['joinCondition'][$key])
 				? [$table => $this->parameters['joinCondition'][$key]]
 				: [];

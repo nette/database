@@ -117,8 +117,10 @@ test(function () use ($context) {
 	}
 
 	foreach ($relatedStack as $related) {
+		$property = (new ReflectionClass($related))->getProperty('accessedColumns');
+		$property->setAccessible(true);
 		// checks if instances have shared data of accessed columns
-		Assert::same(['id', 'author_id'], array_keys((array) $related->getCache()->getAccessedColumns()));
+		Assert::same(['id', 'author_id'], array_keys((array) $property->getValue($related)));
 	}
 });
 
@@ -128,7 +130,7 @@ test(function () use ($context) { // Test saving joining keys even with 0 rows
 	for ($i = 0; $i < 2; $i += 1) {
 		$author = $context->table('author')->get(11);
 		$books = $author->related('book')->where('translator_id', 99); // 0 rows
-		$cols[] = $books->getCache()->getPreviousAccessedColumns();
+		$cols[] = $books->getPreviousAccessedColumns();
 		foreach ($books as $book) {
 		}
 		$books->__destruct();
@@ -146,7 +148,7 @@ test(function () use ($context) { // Test saving the union of needed cols, the s
 	for ($i = 0; $i < 3; $i += 1) {
 		$author = $context->table('author')->get(11);
 		$books = $author->related('book');
-		$cols[] = $books->getCache()->getPreviousAccessedColumns();
+		$cols[] = $books->getPreviousAccessedColumns();
 		foreach ($books as $book) {
 			if ($i === 0) {
 				$book->translator_id;
@@ -169,7 +171,7 @@ test(function () use ($context) { // Test saving the union of needed cols, the s
 	for ($i = 0; $i < 3; $i += 1) {
 		$author = $context->table('author')->get(11);
 		$books = $author->related('book');
-		$cols[] = $books->getCache()->getPreviousAccessedColumns();
+		$cols[] = $books->getPreviousAccessedColumns();
 		foreach ($books as $book) {
 			if ($i === 0) {
 				$book->translator_id;

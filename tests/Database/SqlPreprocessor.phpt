@@ -111,6 +111,14 @@ test(function () use ($preprocessor) { // where
 	Assert::same(['a', 1, 2, 3], $params);
 });
 
+test(function () use ($preprocessor) { // where is not null
+	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE', [
+		'id NOT' => null,
+	]]);
+
+	Assert::same(reformat('SELECT id FROM author WHERE [id] IS NOT NULL'), $sql);
+	Assert::same([], $params);
+});
 
 test(function () use ($preprocessor) { // tuples
 	[$sql, $params] = $preprocessor->process(['SELECT * FROM book_tag WHERE (book_id, tag_id) IN (?)', [

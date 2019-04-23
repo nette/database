@@ -102,14 +102,23 @@ test(function () use ($preprocessor) { // where
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE', [
 		'id' => null,
 		'x.name <>' => 'a',
+		'born NOT' => null,
 		'born' => [null, 1, 2, 3],
 		'web' => [],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NULL) AND ([x].[name] <> ?) AND ([born] IN (NULL, ?, ?, ?)) AND (1=0)'), $sql);
+	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NULL) AND ([x].[name] <> ?) AND ([born] IS NOT NULL) AND ([born] IN (NULL, ?, ?, ?)) AND (1=0)'), $sql);
 	Assert::same(['a', 1, 2, 3], $params);
 });
 
+test(function () use ($preprocessor) { // where is not null
+	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE', [
+		'id NOT' => null,
+	]]);
+
+	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NOT NULL)'), $sql);
+	Assert::same([], $params);
+});
 
 test(function () use ($preprocessor) { // tuples
 	[$sql, $params] = $preprocessor->process(['SELECT * FROM book_tag WHERE (book_id, tag_id) IN (?)', [

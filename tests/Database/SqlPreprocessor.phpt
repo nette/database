@@ -104,7 +104,7 @@ test(function () use ($preprocessor) { // where
 		'x.name <>' => 'a',
 		'date NOT' => null,
 		'born' => [null, 1, 2, 3],
-		'web' => []
+		'web' => [],
 	]]);
 
 	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NULL) AND ([x].[name] <> ?) AND ([date] IS NOT NULL) AND ([born] IN (NULL, ?, ?, ?)) AND (1=0)'), $sql);

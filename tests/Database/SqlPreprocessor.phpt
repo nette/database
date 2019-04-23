@@ -116,7 +116,7 @@ test(function () use ($preprocessor) { // where is not null
 		'id NOT' => null,
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE [id] IS NOT NULL'), $sql);
+	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NOT NULL)'), $sql);
 	Assert::same([], $params);
 });
 

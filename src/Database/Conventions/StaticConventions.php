@@ -72,7 +72,7 @@ class StaticConventions implements IConventions
 
 	protected function getColumnFromTable(string $name): string
 	{
-		if ($this->table !== '%s' && preg_match('(^' . str_replace('%s', '(.*)', preg_quote($this->table)) . '\z)', $name, $match)) {
+		if ($this->table !== '%s' && preg_match('(^' . str_replace('%s', '(.*)', preg_quote($this->table)) . '$)D', $name, $match)) {
 			return $match[1];
 		}
 

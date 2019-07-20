@@ -243,7 +243,19 @@ class Structure implements IStructure
 	protected function analyzeForeignKeys(array &$structure, string $table): void
 	{
 		$lowerTable = strtolower($table);
-		foreach ($this->connection->getSupplementalDriver()->getForeignKeys($table) as $row) {
+
+		$foreignKeys = $this->connection->getSupplementalDriver()->getForeignKeys($table);
+
+		$fksColumnsCounts = [];
+		foreach ($foreignKeys as $foreignKey) {
+			$tmp = &$fksColumnsCounts[$foreignKey['name']];
+			$tmp++;
+		}
+		usort($foreignKeys, function ($a, $b) use ($fksColumnsCounts): int {
+			return $fksColumnsCounts[$b['name']] <=> $fksColumnsCounts[$a['name']];
+		});
+
+		foreach ($foreignKeys as $row) {
 			$structure['belongsTo'][$lowerTable][$row['local']] = $row['table'];
 			$structure['hasMany'][strtolower($row['table'])][$table][] = $row['local'];
 		}

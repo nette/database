@@ -56,7 +56,7 @@ class Structure implements IStructure
 
 
 	/**
-	 * @return string|array|null
+	 * @return string|string[]|null
 	 */
 	public function getPrimaryKey(string $table)
 	{

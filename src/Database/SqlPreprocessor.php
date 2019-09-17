@@ -141,7 +141,7 @@ class SqlPreprocessor
 					if (is_resource($value)) {
 						$value = stream_get_contents($value);
 					}
-					return $this->connection->quote($value);
+					return $this->connection->quote((string) $value);
 				}
 
 			} elseif ($value === null) {

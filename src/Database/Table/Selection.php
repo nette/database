@@ -394,7 +394,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Sets limit clause, more calls rewrite old values.
 	 * @return static
 	 */
-	public function limit(int $limit, int $offset = null)
+	public function limit(?int $limit, int $offset = null)
 	{
 		$this->emptyResultSet();
 		$this->sqlBuilder->setLimit($limit, $offset);

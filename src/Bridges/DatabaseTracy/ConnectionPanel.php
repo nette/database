@@ -132,6 +132,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 				}
 			}
 			$query[] = $explain;
+			$query[] = Helpers::detectSqlTypeClass($sql);
 			$queries[] = $query;
 		}
 

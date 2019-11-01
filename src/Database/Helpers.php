@@ -296,4 +296,17 @@ class Helpers
 		}
 		return implode(', ', $duplicates);
 	}
+
+
+    /**
+     * Detect type of query
+     */
+    public static function detectSqlTypeClass(string $sql): string
+    {
+        if (preg_match('#^(SELECT|INSERT|UPDATE|DELETE|SET).*#u', Nette\Utils\Strings::upper($sql), $m) && isset($m[1])) {
+            return ' nette-DbConnectionPanel-type-' . Nette\Utils\Strings::lower($m[1]);
+        }
+
+        return '';
+    }
 }

@@ -12,6 +12,9 @@ use Tracy\Helpers;
 	#tracy-debug td.nette-DbConnectionPanel-sql { background: white !important }
 	#tracy-debug .nette-DbConnectionPanel-source { color: #BBB !important }
 	#tracy-debug .nette-DbConnectionPanel-explain td { white-space: pre }
+	#tracy-debug td.nette-DbConnectionPanel-sql-insert { background: #E7ffE7 !important }
+	#tracy-debug td.nette-DbConnectionPanel-sql-delete { background: #FFE7E7 !important }
+	#tracy-debug td.nette-DbConnectionPanel-sql-update { background: #E7FBFF !important }
 </style>
 
 <h1 title="<?= Helpers::escapeHtml($connection->getDsn()) ?>">Queries: <?php
@@ -23,7 +26,7 @@ use Tracy\Helpers;
 		<tr><th>Time&nbsp;ms</th><th>SQL Query</th><th>Rows</th></tr>
 		<?php
 		foreach ($queries as $query):
-			[$connection, $sql, $params, $source, $time, $rows, $error, $explain] = $query;
+			[$connection, $sql, $params, $source, $time, $rows, $error, $command, $explain] = $query;
 		?>
 		<tr>
 		<td>
@@ -34,7 +37,7 @@ use Tracy\Helpers;
 			<br /><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-explain">explain</a>
 		<?php endif ?>
 		</td>
-		<td class="nette-DbConnectionPanel-sql"><?= DbHelpers::dumpSql($sql, $params, $connection) ?>
+		<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-<?= Helpers::escapeHtml($command) ?>"><?= DbHelpers::dumpSql($sql, $params, $connection) ?>
 		<?php if ($explain): ?>
 			<table class="tracy-collapsed nette-DbConnectionPanel-explain">
 			<tr>

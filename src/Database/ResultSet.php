@@ -56,7 +56,11 @@ class ResultSet implements \Iterator, IRowContainer
 		$this->params = $params;
 
 		try {
-			if (substr($queryString, 0, 2) === '::') {
+			if ($queryString === '::commit') { 
+				if (!$connection->getPdo()->commit()) {
+					throw new DriverException("Unable to commit as PDO::commit returned false", null, null);
+				}
+			} elseif (substr($queryString, 0, 2) === '::') { 
 				$connection->getPdo()->{substr($queryString, 2)}();
 			} elseif ($queryString !== null) {
 				static $types = ['boolean' => PHP_VERSION < 70307 ? PDO::PARAM_INT : PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT,

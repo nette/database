@@ -1,3 +1,5 @@
+SET @@sql_mode = sys.list_drop(@@sql_mode, 'ONLY_FULL_GROUP_BY');
+
 DROP DATABASE IF EXISTS nette_test;
 CREATE DATABASE nette_test;
 USE nette_test;

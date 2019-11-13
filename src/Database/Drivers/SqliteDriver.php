@@ -110,7 +110,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	{
 		foreach ($row as $key => $value) {
 			unset($row[$key]);
-			if ($key[0] === '[' || $key[0] === '"') {
+			if (is_string($key) && ($key[0] === '[' || $key[0] === '"')) {
 				$key = substr($key, 1, -1);
 			}
 			$row[$key] = $value;
@@ -162,7 +162,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 				'unsigned' => false,
 				'nullable' => $row['notnull'] == '0',
 				'default' => $row['dflt_value'],
-				'autoincrement' => (bool) preg_match($pattern, $meta['sql']),
+				'autoincrement' => $meta && preg_match($pattern, (string) $meta['sql']),
 				'primary' => $row['pk'] > 0,
 				'vendor' => (array) $row,
 			];

@@ -355,6 +355,21 @@ test(function () use ($preprocessor) { // multi insert
 });
 
 
+test(function () use ($preprocessor) { // multi insert respects keys
+	[$sql, $params] = $preprocessor->process(['INSERT INTO author', [
+		['name' => 'Catelyn Stark', 'born' => new DateTime('2011-11-11')],
+		['born' => new DateTime('2021-11-11'), 'name' => 'Sansa Stark'],
+	]]);
+
+	Assert::same(reformat([
+		'sqlite' => 'INSERT INTO author ([name], [born]) SELECT ?, 1320966000 UNION ALL SELECT ?, 1636585200',
+		'sqlsrv' => "INSERT INTO author ([name], [born]) VALUES (?, '2011-11-11T00:00:00'), (?, '2021-11-11T00:00:00')",
+		"INSERT INTO author ([name], [born]) VALUES (?, '2011-11-11 00:00:00'), (?, '2021-11-11 00:00:00')",
+	]), $sql);
+	Assert::same(['Catelyn Stark', 'Sansa Stark'], $params);
+});
+
+
 test(function () use ($preprocessor) { // multi insert ?values
 	[$sql, $params] = $preprocessor->process(['INSERT INTO author ?values', [
 		['name' => 'Catelyn Stark', 'born' => new DateTime('2011-11-11')],

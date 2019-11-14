@@ -196,8 +196,8 @@ class SqlPreprocessor
 					}
 					foreach ($value as $val) {
 						$vx2 = [];
-						foreach ($val as $v) {
-							$vx2[] = $this->formatValue($v);
+						foreach ($value[0] as $k => $foo) {
+							$vx2[] = $this->formatValue($val[$k]);
 						}
 						$vx[] = implode(', ', $vx2);
 					}

@@ -355,23 +355,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		if (count($parameters) < 2) {
 			return $this->where($parameters);
 		}
-		$columns = [];
-		$values = [];
-		foreach ($parameters as $key => $val) {
-			if (is_int($key)) { // whereOr(['full condition'])
-				$columns[] = $val;
-			} elseif (strpos($key, '?') === false) { // whereOr(['column1' => 1])
-				$columns[] = $key . ' ?';
-				$values[] = $val;
-			} else { // whereOr(['column1 > ?' => 1])
-				$qNumber = substr_count($key, '?');
-				if ($qNumber > 1 && (!is_array($val) || $qNumber !== count($val))) {
-					throw new Nette\InvalidArgumentException('Argument count does not match placeholder count.');
-				}
-				$columns[] = $key;
-				$values = array_merge($values, $qNumber > 1 ? $val : [$val]);
-			}
-		}
+		[$columns, $values] = $this->paramsOr($parameters);
 		$columnsString = '(' . implode(') OR (', $columns) . ')';
 		return $this->where($columnsString, $values);
 	}
@@ -439,6 +423,19 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		$this->emptyResultSet();
 		$this->sqlBuilder->setHaving($having, ...$params);
 		return $this;
+	}
+
+
+	/**
+	 * Sets having clause, more calls rewrite old value.
+	 * @param  array  $parameters ['column1' => 1, 'column2 > ?' => 2, 'full condition']
+	 * @return static
+	 */
+	public function havingOr(array $parameters)
+	{
+		[$columns, $values] = $this->paramsOr($parameters);
+		$columnsString = count($columns) > 1 ? '(' . implode(') OR (', $columns) . ')' : implode('', $columns);
+		return $this->having($columnsString, $values);
 	}
 
 
@@ -753,6 +750,33 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	public function getDataRefreshed(): bool
 	{
 		return $this->dataRefreshed;
+	}
+
+
+	/**
+	 * @param  array  $parameters ['column1' => 1, 'column2 > ?' => 2, 'full condition']
+	 * @return array  [$columns, $values] to be used with `where` or `having`
+	 */
+	protected function paramsOr(array $parameters): array
+	{
+		$columns = [];
+		$values = [];
+		foreach ($parameters as $key => $val) {
+			if (is_int($key)) { // whereOr(['full condition'])
+				$columns[] = $val;
+			} elseif (strpos($key, '?') === FALSE) { // whereOr(['column1' => 1])
+				$columns[] = $key . ' ?';
+				$values[] = $val;
+			} else { // whereOr(['column1 > ?' => 1])
+				$qNumber = substr_count($key, '?');
+				if ($qNumber > 1 && (!is_array($val) || $qNumber !== count($val))) {
+					throw new Nette\InvalidArgumentException('Argument count does not match placeholder count.');
+				}
+				$columns[] = $key;
+				$values = array_merge($values, $qNumber > 1 ? $val : [$val]);
+			}
+		}
+		return [$columns, $values];
 	}
 
 

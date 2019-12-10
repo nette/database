@@ -60,7 +60,7 @@ class SqlPreprocessor
 	/** @var bool */
 	private $useParams;
 
-	/** @var string values|set|and|order */
+	/** @var string|null values|set|and|order */
 	private $arrayMode;
 
 

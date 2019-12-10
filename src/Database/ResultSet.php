@@ -26,7 +26,7 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @var \PDOStatement|null */
 	private $pdoStatement;
 
-	/** @var IRow */
+	/** @var IRow|false */
 	private $result;
 
 	/** @var int */

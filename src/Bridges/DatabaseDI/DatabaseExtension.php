@@ -106,7 +106,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				->setAutowired($config->autowired);
 
 		} else {
-			$conventions = Nette\DI\Config\Processor::processArguments([$config['conventions']])[0];
+			$conventions = Nette\DI\Helpers::filterArguments([$config->conventions])[0];
 		}
 
 		$builder->addDefinition($this->prefix("$name.context"))

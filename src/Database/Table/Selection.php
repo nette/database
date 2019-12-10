@@ -58,23 +58,23 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/** @var mixed */
 	protected $refCache;
 
-	/** @var string */
+	/** @var string|null */
 	protected $generalCacheKey;
 
-	/** @var string */
+	/** @var string|null */
 	protected $specificCacheKey;
 
 	/** @var array of [conditions => [key => IRow]]; used by GroupedSelection */
 	protected $aggregation = [];
 
-	/** @var array of touched columns */
+	/** @var array|false|null of touched columns */
 	protected $accessedColumns;
 
-	/** @var array of earlier touched columns */
+	/** @var array|false|null of earlier touched columns */
 	protected $previousAccessedColumns;
 
-	/** @var bool should instance observe accessed columns caching */
-	protected $observeCache = false;
+	/** @var self|null should instance observe accessed columns caching */
+	protected $observeCache;
 
 	/** @var array of primary key values */
 	protected $keys = [];

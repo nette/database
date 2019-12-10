@@ -111,7 +111,7 @@ class Context
 	/**
 	 * Shortcut for query()->fetch()
 	 */
-	public function fetch(string $sql, ...$params): ?Row
+	public function fetch(string $sql, ...$params): ?IRow
 	{
 		return $this->connection->query($sql, ...$params)->fetch();
 	}

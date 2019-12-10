@@ -39,7 +39,7 @@ class Connection
 	/** @var SqlPreprocessor */
 	private $preprocessor;
 
-	/** @var PDO */
+	/** @var PDO|null */
 	private $pdo;
 
 	/** @var string|null */
@@ -199,7 +199,7 @@ class Connection
 	/**
 	 * Shortcut for query()->fetch()
 	 */
-	public function fetch(string $sql, ...$params): ?Row
+	public function fetch(string $sql, ...$params): ?IRow
 	{
 		return $this->query($sql, ...$params)->fetch();
 	}

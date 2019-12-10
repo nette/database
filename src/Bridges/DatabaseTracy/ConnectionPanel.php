@@ -34,7 +34,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 	/** @var bool */
 	public $disabled = false;
 
-	/** @var int logged time */
+	/** @var float logged time */
 	private $totalTime = 0;
 
 	/** @var int */

@@ -24,7 +24,8 @@
 		"nette/tester": "^2.0",
 		"nette/di": "^v3.0",
 		"mockery/mockery": "^1.0.0",
-		"tracy/tracy": "^2.4"
+		"tracy/tracy": "^2.4",
+		"phpstan/phpstan-nette": "^0.12"
 	},
 	"conflict": {
 		"nette/di": "<3.0-stable"
@@ -33,6 +34,10 @@
 		"classmap": ["src/"]
 	},
 	"minimum-stability": "dev",
+	"scripts": {
+		"phpstan": "phpstan analyse --level 5 --configuration tests/phpstan.neon src",
+		"tester": "tester tests -s"
+	},
 	"extra": {
 		"branch-alias": {
 			"dev-master": "3.0-dev"

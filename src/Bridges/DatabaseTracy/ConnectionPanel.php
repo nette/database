@@ -122,13 +122,13 @@ class ConnectionPanel implements Tracy\IBarPanel
 		$totalTime = $this->totalTime;
 		$queries = [];
 		foreach ($this->queries as $query) {
-			[$connection, $sql, $params, , , , $error] = $query;
+			[$connection, $sql, , , , , $error] = $query;
 			$explain = null;
 			$command = preg_match('#\s*\(?\s*(SELECT|INSERT|UPDATE|DELETE)\s#iA', $sql, $m) ? strtolower($m[1]) : null;
 			if (!$error && $this->explain && $command === 'select') {
 				try {
 					$cmd = is_string($this->explain) ? $this->explain : 'EXPLAIN';
-					$explain = $connection->queryArgs("$cmd $sql", $params)->fetchAll();
+					$explain = $connection->queryArgs("$cmd $sql", [])->fetchAll();
 				} catch (\PDOException $e) {
 				}
 			}

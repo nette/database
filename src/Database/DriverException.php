@@ -18,6 +18,9 @@ class DriverException extends \PDOException
 	/** @var string */
 	public $queryString;
 
+	/** @var array */
+	public $params;
+
 
 	/**
 	 * @return static
@@ -57,5 +60,11 @@ class DriverException extends \PDOException
 	public function getQueryString(): ?string
 	{
 		return $this->queryString;
+	}
+
+
+	public function getParameters(): ?array
+	{
+		return $this->params;
 	}
 }

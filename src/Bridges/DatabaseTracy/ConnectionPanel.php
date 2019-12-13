@@ -94,7 +94,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 		}
 		return isset($sql) ? [
 			'tab' => 'SQL',
-			'panel' => Helpers::dumpSql($sql),
+			'panel' => Helpers::dumpSql($sql, $e->params ?? []),
 		] : null;
 	}
 

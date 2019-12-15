@@ -101,12 +101,12 @@ class ConnectionPanel implements Tracy\IBarPanel
 
 	public function getTab(): string
 	{
-		$name = $this->name;
-		$count = $this->count;
-		$totalTime = $this->totalTime;
-		ob_start(function () {});
-		require __DIR__ . '/templates/ConnectionPanel.tab.phtml';
-		return ob_get_clean();
+		return Nette\Utils\Helpers::capture(function () {
+			$name = $this->name;
+			$count = $this->count;
+			$totalTime = $this->totalTime;
+			require __DIR__ . '/templates/ConnectionPanel.tab.phtml';
+		});
 	}
 
 
@@ -117,9 +117,6 @@ class ConnectionPanel implements Tracy\IBarPanel
 			return null;
 		}
 
-		$name = $this->name;
-		$count = $this->count;
-		$totalTime = $this->totalTime;
 		$queries = [];
 		foreach ($this->queries as $query) {
 			[$connection, $sql, $params, , , , $error] = $query;
@@ -137,8 +134,11 @@ class ConnectionPanel implements Tracy\IBarPanel
 			$queries[] = $query;
 		}
 
-		ob_start(function () {});
-		require __DIR__ . '/templates/ConnectionPanel.panel.phtml';
-		return ob_get_clean();
+		return Nette\Utils\Helpers::capture(function () use ($queries, $connection) {
+			$name = $this->name;
+			$count = $this->count;
+			$totalTime = $this->totalTime;
+			require __DIR__ . '/templates/ConnectionPanel.panel.phtml';
+		});
 	}
 }

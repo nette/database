@@ -24,6 +24,12 @@ class Row extends Nette\Utils\ArrayHash implements IRow
 	}
 
 
+	public function __isset($key)
+	{
+		return isset($this->key);
+	}
+
+
 	/**
 	 * Returns a item.
 	 * @param  string|int  $key  key or index

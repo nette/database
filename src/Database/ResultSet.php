@@ -67,7 +67,7 @@ class ResultSet implements \Iterator, IRowContainer
 					$this->pdoStatement->bindValue(is_int($key) ? $key + 1 : $key, $value, $types[$type] ?? PDO::PARAM_STR);
 				}
 				$this->pdoStatement->setFetchMode(PDO::FETCH_ASSOC);
-				$this->pdoStatement->execute();
+				@$this->pdoStatement->execute(); // @ PHP generates warning when ATTR_ERRMODE = ERRMODE_EXCEPTION bug #73878
 			}
 		} catch (\PDOException $e) {
 			$e = $connection->getSupplementalDriver()->convertException($e);

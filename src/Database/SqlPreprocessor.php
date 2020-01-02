@@ -188,7 +188,7 @@ class SqlPreprocessor
 
 			if ($mode === 'values') { // (key, key, ...) VALUES (value, value, ...)
 				if (array_key_exists(0, $value)) { // multi-insert
-					if (!is_array($value[0])) {
+					if (!is_array($value[0]) && !$value[0] instanceof Row) {
 						throw new Nette\InvalidArgumentException('Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?[' . implode('|', self::MODE_LIST) . ']". Mode "' . $mode . '" was used.');
 					}
 					foreach ($value[0] as $k => $v) {

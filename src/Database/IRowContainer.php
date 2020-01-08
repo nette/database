@@ -15,7 +15,6 @@ namespace Nette\Database;
  */
 interface IRowContainer extends \Traversable
 {
-
 	/**
 	 * Fetches single row object.
 	 */

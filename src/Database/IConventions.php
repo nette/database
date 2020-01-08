@@ -14,7 +14,6 @@ use Nette\Database\Conventions\AmbiguousReferenceKeyException;
 
 interface IConventions
 {
-
 	/**
 	 * Returns primary key for table.
 	 * @return string|string[]|null

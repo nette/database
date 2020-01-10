@@ -29,6 +29,13 @@ test(function () use ($preprocessor) { // no parameters
 });
 
 
+test(function () use ($preprocessor) { // recognizes command in braces
+	[$sql, $params] = $preprocessor->process(['(SELECT ?) UNION (SELECT ?)', 1, 2]);
+	Assert::same('(SELECT ?) UNION (SELECT ?)', $sql);
+	Assert::same([1, 2], $params);
+});
+
+
 test(function () use ($preprocessor) { // arg without placeholder
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id =', 11]);
 	Assert::same('SELECT id FROM author WHERE id = ?', $sql);

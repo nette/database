@@ -96,7 +96,7 @@ class SqlPreprocessor
 				$this->arrayMode = null;
 				$res[] = Nette\Utils\Strings::replace(
 					$param,
-					'~\'[^\']*+\'|"[^"]*+"|\?[a-z]*|^\s*+(?:SELECT|INSERT|UPDATE|DELETE|REPLACE|EXPLAIN)\b|\b(?:SET|WHERE|HAVING|ORDER BY|GROUP BY|KEY UPDATE)(?=\s*$|\s*\?)|/\*.*?\*/|--[^\n]*~Dsi',
+					'~\'[^\']*+\'|"[^"]*+"|\?[a-z]*|^\s*+(?:\(?\s*SELECT|INSERT|UPDATE|DELETE|REPLACE|EXPLAIN)\b|\b(?:SET|WHERE|HAVING|ORDER BY|GROUP BY|KEY UPDATE)(?=\s*$|\s*\?)|/\*.*?\*/|--[^\n]*~Dsi',
 					[$this, 'callback']
 				);
 			} else {
@@ -122,7 +122,7 @@ class SqlPreprocessor
 			return $m;
 
 		} else { // command
-			$cmd = ltrim(strtoupper($m));
+			$cmd = ltrim(strtoupper($m), "\t\n\r (");
 			$this->arrayMode = self::ARRAY_MODES[$cmd] ?? null;
 			$this->useParams = isset(self::PARAMETRIC_COMMANDS[$cmd]) || $this->useParams;
 			return $m;

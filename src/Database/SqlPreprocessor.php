@@ -137,10 +137,17 @@ class SqlPreprocessor
 				if ($this->useParams) {
 					$this->remaining[] = $value;
 					return '?';
+
+				} elseif (is_int($value) || is_bool($value)) {
+					return (string) (int) $value;
+
+				} elseif (is_float($value)) {
+					return rtrim(rtrim(number_format($value, 10, '.', ''), '0'), '.');
+
+				} elseif (is_resource($value)) {
+					return $this->connection->quote(stream_get_contents($value));
+
 				} else {
-					if (is_resource($value)) {
-						$value = stream_get_contents($value);
-					}
 					return $this->connection->quote((string) $value);
 				}
 

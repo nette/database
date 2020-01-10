@@ -22,6 +22,13 @@ test(function () use ($preprocessor) { // basic
 });
 
 
+test(function () use ($preprocessor) { // no parameters
+	[$sql, $params] = $preprocessor->process(['UNKNOWN a = ?, b = ?, c = ?, d = ?, e = ?', 123, 'abc', true, false, null]);
+	Assert::same("UNKNOWN a = 123, b = 'abc', c = 1, d = 0, e = NULL", $sql);
+	Assert::same([], $params);
+});
+
+
 test(function () use ($preprocessor) { // arg without placeholder
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id =', 11]);
 	Assert::same('SELECT id FROM author WHERE id = ?', $sql);

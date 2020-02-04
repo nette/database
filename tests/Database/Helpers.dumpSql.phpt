@@ -19,6 +19,11 @@ test(function () use ($connection) { // int check
 "<pre class=\"dump\"><strong style=\"color:blue\">SELECT</strong> id \n<strong style=\"color:blue\">FROM</strong> author \n<strong style=\"color:blue\">WHERE</strong> id = 10 <strong style=\"color:green\">OR</strong> id = 11</pre>\n", Nette\Database\Helpers::dumpSql('SELECT id FROM author WHERE id = ? OR id = ?', [10, 11], $connection));
 });
 
+test(function () use ($connection) { // bool check
+	Assert::same(
+"<pre class=\"dump\"><strong style=\"color:blue\">SELECT</strong> id \n<strong style=\"color:blue\">FROM</strong> author \n<strong style=\"color:blue\">WHERE</strong> deleted = 0</pre>\n", Nette\Database\Helpers::dumpSql('SELECT id FROM author WHERE deleted = ?', [false], $connection));
+});
+
 test(function () use ($connection) { // string check
 	Assert::same(
 "<pre class=\"dump\"><strong style=\"color:blue\">SELECT</strong> id \n<strong style=\"color:blue\">FROM</strong> author \n<strong style=\"color:blue\">WHERE</strong> name = <span title=\"Length 15 characters\">'Alexej Chruščev'</span></pre>\n", Nette\Database\Helpers::dumpSql('SELECT id FROM author WHERE name = ?', ['Alexej Chruščev'], $connection));

@@ -137,9 +137,11 @@ class Helpers
 				return '<i' . (isset($info['uri']) ? ' title="' . htmlspecialchars($info['uri'], ENT_NOQUOTES, 'UTF-8') . '"' : null)
 					. '>&lt;' . htmlspecialchars($type, ENT_NOQUOTES, 'UTF-8') . ' resource&gt;</i> ';
 
-			} else {
-				return htmlspecialchars((string) $param, ENT_NOQUOTES, 'UTF-8');
+			} elseif (is_bool($param)) {
+				$param = (int) $param;
 			}
+
+			return htmlspecialchars((string) $param, ENT_NOQUOTES, 'UTF-8');
 		}, $sql);
 
 		return '<pre class="dump">' . trim($sql) . "</pre>\n";

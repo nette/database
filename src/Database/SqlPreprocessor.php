@@ -20,7 +20,7 @@ class SqlPreprocessor
 	use Nette\SmartObject;
 
 	/** @var array */
-	private const MODE_LIST = ['and', 'or', 'set', 'values', 'order'];
+	private const MODE_LIST = ['and', 'or', 'set', 'values', 'order', 'as'];
 
 	private const ARRAY_MODES = [
 		'INSERT' => 'values',
@@ -260,6 +260,12 @@ class SqlPreprocessor
 			} elseif ($mode === 'order') { // key, key DESC, ...
 				foreach ($value as $k => $v) {
 					$vx[] = $this->delimite($k) . ($v > 0 ? '' : ' DESC');
+				}
+				return implode(', ', $vx);
+
+			} elseif ($mode === 'as') {
+				foreach ($value as $k => $v) {
+					$vx[] = $this->delimite($k) . ' AS ' . $v;
 				}
 				return implode(', ', $vx);
 

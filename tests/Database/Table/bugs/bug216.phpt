@@ -32,7 +32,7 @@ $conventions = new Nette\Database\Conventions\StaticConventions();
 $context = new Nette\Database\Context($connection, $structure, $conventions, $cacheMemoryStorage);
 
 //Testing
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-nette_test1.sql");
 
 $book = $context->table('author')->insert([
 	'name' => $context->literal('LOWER(?)', 'Eddard Stark'),

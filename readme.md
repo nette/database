@@ -71,7 +71,7 @@ Nette Database Explorer layer helps you to fetch database data more easily and i
 
 Let's take a look at common use-case. You need to fetch books and their authors. It is common 1:N relationship. The often used implementation fetches data by one SQL query with table joins. The second possibility is to fetch data separately, run one query for getting books and then get an author for each book by another query (e.g. in your foreach cycle). This could be easily optimized to run only two queries, one for books, and another for the needed authors - and this is just the way how Nette Database Explorer does it.
 
-Selecting data starts with the table, just call `$context->table()` on the `Nette\Database\Context` object. The easiest way to get it is [described here](https://doc.nette.org/database-core#toc-configuration), but if we use Nette Database Explorer alone, it can be [manually created](https://doc.nette.org/database-explorer#toc-manual-creating-nette-database-context).
+Selecting data starts with the table, just call `$context->table()` on the `Nette\Database\Explorer` object. The easiest way to get it is [described here](https://doc.nette.org/database-core#toc-configuration), but if we use Nette Database Explorer alone, it can be [manually created](https://doc.nette.org/database-explorer#toc-manual-creating-nette-database-context).
 
 
 ```php

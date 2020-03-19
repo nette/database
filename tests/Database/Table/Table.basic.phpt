@@ -75,7 +75,7 @@ test('', function () use ($context) {
 
 
 test('', function () use ($connection, $structure) {
-	$context = new Nette\Database\Context(
+	$context = new Nette\Database\Explorer(
 		$connection,
 		$structure,
 		new Nette\Database\Conventions\DiscoveredConventions($structure)

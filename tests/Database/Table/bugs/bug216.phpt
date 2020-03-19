@@ -29,7 +29,7 @@ $cacheMemoryStorage = new Nette\Caching\Storages\MemoryStorage;
 
 $structure = new Nette\Database\Structure($connection, $cacheMemoryStorage);
 $conventions = new Nette\Database\Conventions\StaticConventions;
-$context = new Nette\Database\Context($connection, $structure, $conventions, $cacheMemoryStorage);
+$context = new Nette\Database\Explorer($connection, $structure, $conventions, $cacheMemoryStorage);
 
 //Testing
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");

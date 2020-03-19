@@ -258,7 +258,7 @@ test('', function () use ($driverName, $context, $connection, $structure) {
 
 	$structure->rebuild();
 	$conventions = new DiscoveredConventions($structure);
-	$dao = new Nette\Database\Context($connection, $structure, $conventions);
+	$dao = new Nette\Database\Explorer($connection, $structure, $conventions);
 
 	$e = Assert::exception(function () use ($dao) {
 		$books = $dao->table('book')->where(

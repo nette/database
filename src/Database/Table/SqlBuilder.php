@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Table;
 
 use Nette;
-use Nette\Database\Context;
+use Nette\Database\Explorer;
 use Nette\Database\IConventions;
 use Nette\Database\IStructure;
 use Nette\Database\ISupplementalDriver;
@@ -93,12 +93,12 @@ class SqlBuilder
 	private $expandingJoins = [];
 
 
-	public function __construct(string $tableName, Context $context)
+	public function __construct(string $tableName, Explorer $explorer)
 	{
 		$this->tableName = $tableName;
-		$this->driver = $context->getConnection()->getSupplementalDriver();
-		$this->conventions = $context->getConventions();
-		$this->structure = $context->getStructure();
+		$this->driver = $explorer->getConnection()->getSupplementalDriver();
+		$this->conventions = $explorer->getConventions();
+		$this->structure = $explorer->getStructure();
 		$tableNameParts = explode('.', $tableName);
 		$this->delimitedTable = implode('.', array_map([$this->driver, 'delimite'], $tableNameParts));
 		$this->checkUniqueTableName(end($tableNameParts), $tableName);

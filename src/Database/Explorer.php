@@ -14,9 +14,9 @@ use Nette\Database\Conventions\StaticConventions;
 
 
 /**
- * Database context.
+ * Database explorer.
  */
-class Context
+class Explorer
 {
 	use Nette\SmartObject;
 
@@ -172,3 +172,6 @@ class Context
 		return new SqlLiteral($value, $params);
 	}
 }
+
+
+class_exists(Context::class);

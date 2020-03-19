@@ -75,7 +75,7 @@ if ($driverName !== 'sqlsrv') {
 
 
 // Insert into table without primary key
-$context = new Nette\Database\Context(
+$context = new Nette\Database\Explorer(
 	$connection,
 	$structure,
 	new Nette\Database\Conventions\DiscoveredConventions($structure)

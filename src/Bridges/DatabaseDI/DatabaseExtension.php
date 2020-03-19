@@ -128,7 +128,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		}
 
 		$builder->addDefinition($this->prefix("$name.context"))
-			->setFactory(Nette\Database\Context::class, [$connection, $structure, $conventions])
+			->setFactory(Nette\Database\Explorer::class, [$connection, $structure, $conventions])
 			->setAutowired($config->autowired);
 
 		if ($this->name === 'database') {

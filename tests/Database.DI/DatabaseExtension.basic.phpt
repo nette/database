@@ -41,7 +41,7 @@ test('', function () {
 	Assert::same('sqlite::memory:', $connection->getDsn());
 
 	$context = $container->getService('database.default.context');
-	Assert::type(Nette\Database\Context::class, $context);
+	Assert::type(Nette\Database\Explorer::class, $context);
 	Assert::same($connection, $context->getConnection());
 
 	Assert::type(Nette\Database\Structure::class, $context->getStructure());

@@ -10,7 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Table;
 
 use Nette;
-use Nette\Database\Context;
+use Nette\Database\Explorer;
 use Nette\Database\IConventions;
 
 
@@ -22,7 +22,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 {
 	use Nette\SmartObject;
 
-	/** @var Context */
+	/** @var Explorer */
 	protected $context;
 
 	/** @var IConventions */
@@ -84,20 +84,20 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Creates filtered table representation.
 	 */
 	public function __construct(
-		Context $context,
+		Explorer $explorer,
 		IConventions $conventions,
 		string $tableName,
 		Nette\Caching\IStorage $cacheStorage = null
 	) {
-		$this->context = $context;
+		$this->context = $explorer;
 		$this->conventions = $conventions;
 		$this->name = $tableName;
 
 		$this->cache = $cacheStorage
-			? new Nette\Caching\Cache($cacheStorage, 'Nette.Database.' . md5($context->getConnection()->getDsn()))
+			? new Nette\Caching\Cache($cacheStorage, 'Nette.Database.' . md5($explorer->getConnection()->getDsn()))
 			: null;
 		$this->primary = $conventions->getPrimary($tableName);
-		$this->sqlBuilder = new SqlBuilder($tableName, $context);
+		$this->sqlBuilder = new SqlBuilder($tableName, $explorer);
 		$this->refCache = &$this->getRefTable($refPath)->globalRefCache[$refPath];
 	}
 

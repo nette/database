@@ -28,7 +28,7 @@ class CacheMock extends MemoryStorage
 }
 
 $cacheStorage = new CacheMock;
-$context = new Nette\Database\Context($connection, $structure, $conventions, $cacheStorage);
+$context = new Nette\Database\Explorer($connection, $structure, $conventions, $cacheStorage);
 
 for ($i = 0; $i < 2; ++$i) {
 	$authors = $context->table('author');

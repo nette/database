@@ -347,10 +347,10 @@ test(function () use ($preprocessor) { // ?values
 });
 
 
-test(function () use ($preprocessor) { // automatic detection faild
+test(function () use ($preprocessor) { // automatic detection failed
 	Assert::exception(function () use ($preprocessor) {
 		$preprocessor->process(['INSERT INTO author (name) SELECT name FROM user WHERE id IN (?)', [11, 12]]);
-	}, Nette\InvalidArgumentException::class, 'Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?[and|or|set|values|order]". Mode "values" was used.');
+	}, Nette\InvalidArgumentException::class, 'Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?[and|or|set|values|order|list]". Mode "values" was used.');
 });
 
 

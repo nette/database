@@ -332,7 +332,7 @@ test(function () use ($preprocessor) { // insert
 	[$sql, $params] = $preprocessor->process(['/* comment */  INSERT INTO author',
 		['name' => 'Catelyn Stark'],
 	]);
-	Assert::same(reformat("/* comment */  INSERT INTO author [name]='Catelyn Stark'"), $sql); // autodetection not used
+	Assert::same(reformat("/* comment */  INSERT INTO author 'Catelyn Stark'"), $sql); // autodetection not used
 	Assert::same([], $params);
 });
 
@@ -440,10 +440,10 @@ test(function () use ($preprocessor) { // update
 	Assert::same([12, 'John Doe'], $params);
 
 
-	[$sql, $params] = $preprocessor->process(['UPDATE author SET a=1,',
+	[$sql, $params] = $preprocessor->process(['UPDATE author SET a=1,', // autodetection not used
 		['id' => 12, 'name' => 'John Doe'],
 	]);
-	Assert::same(reformat('UPDATE author SET a=1, [id]=?, [name]=?'), $sql);
+	Assert::same(reformat('UPDATE author SET a=1, ?, ?'), $sql);
 	Assert::same([12, 'John Doe'], $params);
 });
 

@@ -100,7 +100,7 @@ class Structure implements IStructure
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
 
-		if (!$this->connection->getSupplementalDriver()->isSupported(ISupplementalDriver::SUPPORT_SEQUENCE)) {
+		if (!$this->connection->getSupplementalDriver()->isSupported(Driver::SUPPORT_SEQUENCE)) {
 			return null;
 		}
 

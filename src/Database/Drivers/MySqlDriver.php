@@ -15,7 +15,7 @@ use Nette;
 /**
  * Supplemental MySQL database driver.
  */
-class MySqlDriver implements Nette\Database\ISupplementalDriver
+class MySqlDriver implements Nette\Database\Driver
 {
 	use Nette\SmartObject;
 

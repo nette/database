@@ -15,7 +15,7 @@ use Nette;
 /**
  * Supplemental SQL Server 2005 and later database driver.
  */
-class SqlsrvDriver implements Nette\Database\ISupplementalDriver
+class SqlsrvDriver implements Nette\Database\Driver
 {
 	use Nette\SmartObject;
 

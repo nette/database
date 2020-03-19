@@ -15,7 +15,7 @@ use Nette;
 /**
  * Supplemental Oracle database driver.
  */
-class OciDriver implements Nette\Database\ISupplementalDriver
+class OciDriver implements Nette\Database\Driver
 {
 	use Nette\SmartObject;
 

@@ -13,7 +13,7 @@ namespace Nette\Database;
 /**
  * Supplemental PDO database driver.
  */
-interface ISupplementalDriver
+interface Driver
 {
 	public const
 		SUPPORT_SEQUENCE = 'sequence',
@@ -95,3 +95,6 @@ interface ISupplementalDriver
 	 */
 	function isSupported(string $item): bool;
 }
+
+
+interface_exists(ISupplementalDriver::class);

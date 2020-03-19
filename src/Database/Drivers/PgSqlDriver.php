@@ -15,7 +15,7 @@ use Nette;
 /**
  * Supplemental PostgreSQL database driver.
  */
-class PgSqlDriver implements Nette\Database\ISupplementalDriver
+class PgSqlDriver implements Nette\Database\Driver
 {
 	use Nette\SmartObject;
 

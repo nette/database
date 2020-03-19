@@ -33,7 +33,7 @@ class Connection
 	/** @var array */
 	private $options;
 
-	/** @var ISupplementalDriver */
+	/** @var Driver */
 	private $driver;
 
 	/** @var SqlPreprocessor */
@@ -106,7 +106,7 @@ class Connection
 	}
 
 
-	public function getSupplementalDriver(): ISupplementalDriver
+	public function getSupplementalDriver(): Driver
 	{
 		$this->connect();
 		return $this->driver;

@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-use Nette\Database\ISupplementalDriver;
+use Nette\Database\Driver;
 use Tester\Assert;
 
 require __DIR__ . '/../connect.inc.php'; // create $connection
@@ -39,7 +39,7 @@ test('', function () use ($explorer) {
 test('', function () use ($explorer, $driver) {
 	$authorsSelection = $explorer->table('author')->where(':book.translator_id IS NOT NULL')->wherePrimary(12);
 
-	if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
+	if ($driver->isSupported(Driver::SUPPORT_SCHEMA)) {
 		Assert::same(
 			reformat('SELECT [author].* FROM [author] LEFT JOIN [public].[book] [book] ON [author].[id] = [book].[author_id] WHERE ([book].[translator_id] IS NOT NULL) AND ([author].[id] = ?)'),
 			$authorsSelection->getSql()

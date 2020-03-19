@@ -53,7 +53,7 @@ class SqlPreprocessor
 	/** @var Connection */
 	private $connection;
 
-	/** @var ISupplementalDriver */
+	/** @var Driver */
 	private $driver;
 
 	/** @var array of input parameters */
@@ -220,7 +220,7 @@ class SqlPreprocessor
 						}
 						$vx[] = implode(', ', $vx2);
 					}
-					$select = $this->driver->isSupported(ISupplementalDriver::SUPPORT_MULTI_INSERT_AS_SELECT);
+					$select = $this->driver->isSupported(Driver::SUPPORT_MULTI_INSERT_AS_SELECT);
 					return '(' . implode(', ', $kx) . ($select ? ') SELECT ' : ') VALUES (')
 						. implode($select ? ' UNION ALL SELECT ' : '), (', $vx) . ($select ? '' : ')');
 				}

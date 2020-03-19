@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-use Nette\Database\ISupplementalDriver;
+use Nette\Database\Driver;
 use Tester\Assert;
 
 require __DIR__ . '/../connect.inc.php'; // create $connection
@@ -15,7 +15,7 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 $driver = $connection->getSupplementalDriver();
 test('', function () use ($explorer, $driver) {
-	$schema = $driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)
+	$schema = $driver->isSupported(Driver::SUPPORT_SCHEMA)
 		? '[public].'
 		: '';
 	$sql = $explorer->table('book')->joinWhere('translator', 'translator.name', 'Geek')->select('book.*')->getSql();
@@ -34,7 +34,7 @@ test('', function () use ($explorer, $driver) {
 		->where('tag.name', 'PHP')
 		->group('tag.name')
 		->getSql();
-	if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
+	if ($driver->isSupported(Driver::SUPPORT_SCHEMA)) {
 		Assert::same(
 			reformat(
 				'SELECT [tag].[name], COUNT([book].[id]) AS [count_of_next_volume_written_by_younger_author] FROM [tag] ' .

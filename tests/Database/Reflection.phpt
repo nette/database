@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-use Nette\Database\ISupplementalDriver;
+use Nette\Database\Driver;
 use Tester\Assert;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
@@ -20,7 +20,7 @@ $tables = $driver->getTables();
 $tables = array_filter($tables, function ($t) { return in_array($t['name'], ['author', 'book', 'book_tag', 'tag'], true); });
 usort($tables, function ($a, $b) { return strcmp($a['name'], $b['name']); });
 
-if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
+if ($driver->isSupported(Driver::SUPPORT_SCHEMA)) {
 	Assert::same(
 		[
 			['name' => 'author', 'view' => false, 'fullName' => 'public.author'],

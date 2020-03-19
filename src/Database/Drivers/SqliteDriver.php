@@ -15,7 +15,7 @@ use Nette;
 /**
  * Supplemental SQLite3 database driver.
  */
-class SqliteDriver implements Nette\Database\ISupplementalDriver
+class SqliteDriver implements Nette\Database\Driver
 {
 	use Nette\SmartObject;
 

@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace Nette\Database\Table;
 
 use Nette;
+use Nette\Database\Conventions;
 use Nette\Database\Explorer;
-use Nette\Database\IConventions;
 
 
 /**
@@ -38,7 +38,7 @@ class GroupedSelection extends Selection
 	 */
 	public function __construct(
 		Explorer $explorer,
-		IConventions $conventions,
+		Conventions $conventions,
 		string $tableName,
 		string $column,
 		Selection $refTable,

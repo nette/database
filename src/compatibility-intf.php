@@ -14,6 +14,11 @@ if (false) {
 	interface ISupplementalDriver
 	{
 	}
+	/** @deprecated use Nette\Database\Conventions */
+	interface IConventions
+	{
+	}
 } elseif (!interface_exists(ISupplementalDriver::class)) {
 	class_alias(Driver::class, ISupplementalDriver::class);
+	class_alias(Conventions::class, IConventions::class);
 }

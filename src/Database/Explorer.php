@@ -26,7 +26,7 @@ class Explorer
 	/** @var IStructure */
 	private $structure;
 
-	/** @var IConventions */
+	/** @var Conventions */
 	private $conventions;
 
 	/** @var Nette\Caching\IStorage */
@@ -35,8 +35,8 @@ class Explorer
 
 	public function __construct(
 		Connection $connection,
-		IStructure $structure,
-		IConventions $conventions = null,
+		Structure $structure,
+		Conventions $conventions = null,
 		Nette\Caching\IStorage $cacheStorage = null
 	) {
 		$this->connection = $connection;
@@ -112,7 +112,7 @@ class Explorer
 	}
 
 
-	public function getConventions(): IConventions
+	public function getConventions(): Conventions
 	{
 		return $this->conventions;
 	}

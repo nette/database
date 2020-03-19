@@ -58,7 +58,7 @@ test('', function () {
 	Assert::type(Nette\Database\Structure::class, $explorer->getStructure());
 	Assert::same($explorer->getStructure(), $container->getByType(Nette\Database\IStructure::class));
 	Assert::type(Nette\Database\Conventions\DiscoveredConventions::class, $explorer->getConventions());
-	Assert::same($explorer->getConventions(), $container->getByType(Nette\Database\IConventions::class));
+	Assert::same($explorer->getConventions(), $container->getByType(Nette\Database\Conventions::class));
 
 	// aliases
 	Assert::same($connection, $container->getService('nette.database.first'));

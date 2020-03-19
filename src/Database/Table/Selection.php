@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace Nette\Database\Table;
 
 use Nette;
+use Nette\Database\Conventions;
 use Nette\Database\Explorer;
-use Nette\Database\IConventions;
 
 
 /**
@@ -28,7 +28,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/** @var Explorer  back compatibility */
 	protected $context;
 
-	/** @var IConventions */
+	/** @var Conventions */
 	protected $conventions;
 
 	/** @var Nette\Caching\Cache */
@@ -88,7 +88,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function __construct(
 		Explorer $explorer,
-		IConventions $conventions,
+		Conventions $conventions,
 		string $tableName,
 		Nette\Caching\IStorage $cacheStorage = null
 	) {

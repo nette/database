@@ -97,7 +97,6 @@ class SqlPreprocessor
 
 			if (($this->counter === 2 && count($params) === 2) || !is_scalar($param)) {
 				$res[] = $this->formatValue($param, self::MODE_AUTO);
-				$this->arrayMode = null;
 
 			} elseif (is_string($param) && $this->counter > $prev + 1) {
 				$prev = $this->counter;
@@ -197,7 +196,7 @@ class SqlPreprocessor
 		if ($mode && is_array($value)) {
 			$vx = $kx = [];
 			if ($mode === self::MODE_AUTO) {
-				$mode = $this->arrayMode;
+				$mode = $this->arrayMode ?? self::MODE_LIST;
 			}
 
 			if ($mode === self::MODE_VALUES) { // (key, key, ...) VALUES (value, value, ...)
@@ -226,12 +225,10 @@ class SqlPreprocessor
 				}
 				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
-			} elseif (!$mode || $mode === self::MODE_SET) {
+			} elseif ($mode === self::MODE_SET) {
 				foreach ($value as $k => $v) {
-					if (is_int($k)) { // value, value, ... OR (1, 2), (3, 4)
-						$vx[] = is_array($v)
-							? '(' . $this->formatValue($v, self::MODE_LIST) . ')'
-							: $this->formatValue($v);
+					if (is_int($k)) { // value, value, ...
+						$vx[] = $this->formatValue($v);
 					} elseif (substr($k, -1) === '=') { // key+=value, key-=value, ...
 						$k2 = $this->delimite(substr($k, 0, -2));
 						$vx[] = $k2 . '=' . $k2 . ' ' . substr($k, -2, 1) . ' ' . $this->formatValue($v);

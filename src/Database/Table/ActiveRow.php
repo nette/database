@@ -123,7 +123,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 * Returns referenced row.
 	 * @return self|null if the row does not exist
 	 */
-	public function ref(string $key, string $throughColumn = null): ?IRow
+	public function ref(string $key, string $throughColumn = null): ?self
 	{
 		$row = $this->table->getReferencedTable($this, $key, $throughColumn);
 		if ($row === false) {

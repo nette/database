@@ -166,7 +166,7 @@ class SqlPreprocessor
 			} elseif ($value === null) {
 				return 'NULL';
 
-			} elseif ($value instanceof Table\IRow) {
+			} elseif ($value instanceof Table\ActiveRow) {
 				$this->remaining[] = $value->getPrimary();
 				return '?';
 
@@ -195,7 +195,7 @@ class SqlPreprocessor
 			return $this->delimite($value);
 		}
 
-		if ($value instanceof \Traversable && !$value instanceof Table\IRow) {
+		if ($value instanceof \Traversable && !$value instanceof Table\ActiveRow) {
 			$value = iterator_to_array($value);
 		}
 

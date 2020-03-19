@@ -43,10 +43,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/** @var string|bool primary column sequence name, false for autodetection */
 	protected $primarySequence = false;
 
-	/** @var IRow[] data read from database in [primary key => IRow] format */
+	/** @var ActiveRow[] data read from database in [primary key => ActiveRow] format */
 	protected $rows;
 
-	/** @var IRow[] modifiable data in [primary key => IRow] format */
+	/** @var ActiveRow[] modifiable data in [primary key => ActiveRow] format */
 	protected $data;
 
 	/** @var bool */
@@ -64,7 +64,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/** @var string|null */
 	protected $specificCacheKey;
 
-	/** @var array of [conditions => [key => IRow]]; used by GroupedSelection */
+	/** @var array of [conditions => [key => ActiveRow]]; used by GroupedSelection */
 	protected $aggregation = [];
 
 	/** @var array|false|null of touched columns */
@@ -201,9 +201,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Fetches single row object.
-	 * @return ActiveRow|null if there is no such row
 	 */
-	public function fetch(): ?Nette\Database\IRow
+	public function fetch(): ?ActiveRow
 	{
 		$this->execute();
 		$return = current($this->data);
@@ -791,7 +790,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Inserts row in a table.
 	 * @param  array|\Traversable|Selection  $data  [$column => $value]|\Traversable|Selection for INSERT ... SELECT
-	 * @return ActiveRow|int|bool Returns IRow or number of affected rows for Selection or table without primary key
+	 * @return ActiveRow|int|bool Returns ActiveRow or number of affected rows for Selection or table without primary key
 	 */
 	public function insert(iterable $data)
 	{
@@ -1029,7 +1028,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Mimic row.
 	 * @param  string  $key
-	 * @param  IRow  $value
+	 * @param  ActiveRow  $value
 	 */
 	public function offsetSet($key, $value): void
 	{

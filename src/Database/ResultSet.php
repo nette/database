@@ -26,13 +26,13 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @var \PDOStatement|null */
 	private $pdoStatement;
 
-	/** @var IRow|false */
+	/** @var Row|false */
 	private $result;
 
 	/** @var int */
 	private $resultKey = -1;
 
-	/** @var IRow[] */
+	/** @var Row[] */
 	private $results;
 
 	/** @var float */
@@ -223,13 +223,10 @@ class ResultSet implements \Iterator, IRowContainer
 	}
 
 
-	/********************* interface IRowContainer ****************d*g**/
-
-
 	/**
 	 * Fetches single row object.
 	 */
-	public function fetch(): ?IRow
+	public function fetch(): ?Row
 	{
 		$data = $this->pdoStatement ? $this->pdoStatement->fetch() : null;
 		if (!$data) {

@@ -12,12 +12,7 @@ namespace Nette\Database\Table;
 use Nette\Database;
 
 
-/**
- * Container of database result fetched into IRow objects.
- *
- * @method     IRow|null  fetch() Fetches single row object.
- * @method     IRow[]     fetchAll() Fetches all rows.
- */
+/** @deprecated use Selection */
 interface IRowContainer extends Database\IRowContainer
 {
 }

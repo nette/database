@@ -12,33 +12,7 @@ namespace Nette\Database\Table;
 use Nette\Database;
 
 
-/**
- * Row interface.
- */
+/** @deprecated use ActiveRow */
 interface IRow extends Database\IRow
 {
-	function setTable(Selection $name);
-
-	function getTable(): Selection;
-
-	/**
-	 * Returns primary key value.
-	 * @return mixed
-	 */
-	function getPrimary(bool $throw = true);
-
-	/**
-	 * Returns row signature (composition of primary keys)
-	 */
-	function getSignature(bool $throw = true): string;
-
-	/**
-	 * Returns referencing rows.
-	 */
-	function related(string $key, string $throughColumn = null): GroupedSelection;
-
-	/**
-	 * Returns referenced row.
-	 */
-	function ref(string $key, string $throughColumn = null): ?self;
 }

@@ -200,7 +200,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * @inheritDoc
+	 * Fetches single row object.
 	 * @return ActiveRow|null if there is no such row
 	 */
 	public function fetch(): ?Nette\Database\IRow
@@ -233,7 +233,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * @inheritDoc
+	 * Fetches all rows as associative array.
+	 * @param  string|int  $key  column name used for an array key or null for numeric index
+	 * @param  string|int  $value  column name used for an array value or null for the whole row
 	 */
 	public function fetchPairs($key = null, $value = null): array
 	{
@@ -242,7 +244,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * @inheritDoc
+	 * Fetches all rows.
+	 * @return ActiveRow[]
 	 */
 	public function fetchAll(): array
 	{
@@ -251,7 +254,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * @inheritDoc
+	 * Fetches all rows and returns associative tree.
+	 * @param  string  $path  associative descriptor
 	 */
 	public function fetchAssoc(string $path): array
 	{

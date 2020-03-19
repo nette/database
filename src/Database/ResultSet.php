@@ -226,6 +226,9 @@ class ResultSet implements \Iterator, IRowContainer
 	/********************* interface IRowContainer ****************d*g**/
 
 
+	/**
+	 * Fetches single row object.
+	 */
 	public function fetch(): ?IRow
 	{
 		$data = $this->pdoStatement ? $this->pdoStatement->fetch() : null;
@@ -251,7 +254,8 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * @inheritDoc
+	 * Fetches single field.
+	 * @return mixed
 	 */
 	public function fetchField($column = 0)
 	{
@@ -274,7 +278,9 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * @inheritDoc
+	 * Fetches all rows as associative array.
+	 * @param  string|int  $key  column name used for an array key or null for numeric index
+	 * @param  string|int  $value  column name used for an array value or null for the whole row
 	 */
 	public function fetchPairs($key = null, $value = null): array
 	{
@@ -283,7 +289,8 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * @inheritDoc
+	 * Fetches all rows.
+	 * @return Row[]
 	 */
 	public function fetchAll(): array
 	{
@@ -295,7 +302,8 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * @inheritDoc
+	 * Fetches all rows and returns associative tree.
+	 * @param  string  $path  associative descriptor
 	 */
 	public function fetchAssoc(string $path): array
 	{

@@ -25,9 +25,10 @@ class SqlPreprocessor
 		MODE_SET = 'set',       // key=value, key=value, ...
 		MODE_VALUES = 'values', // (key, key, ...) VALUES (value, value, ...)
 		MODE_ORDER = 'order',   // key, key DESC, ...
+		MODE_LIST = 'list',     // value, value, ...  |  (tuple), (tuple), ...
 		MODE_AUTO = 'auto';     // arrayMode for arrays
 
-	private const MODES = [self::MODE_AND, self::MODE_OR, self::MODE_SET, self::MODE_VALUES, self::MODE_ORDER];
+	private const MODES = [self::MODE_AND, self::MODE_OR, self::MODE_SET, self::MODE_VALUES, self::MODE_ORDER, self::MODE_LIST];
 
 	private const ARRAY_MODES = [
 		'INSERT' => self::MODE_VALUES,
@@ -67,7 +68,7 @@ class SqlPreprocessor
 	/** @var bool */
 	private $useParams;
 
-	/** @var string|null values|set|and|order */
+	/** @var string|null values|set|and|order|items */
 	private $arrayMode;
 
 
@@ -237,6 +238,14 @@ class SqlPreprocessor
 					} else { // key=value, key=value, ...
 						$vx[] = $this->delimite($k) . '=' . $this->formatValue($v);
 					}
+				}
+				return implode(', ', $vx);
+
+			} elseif ($mode === self::MODE_LIST) { // value, value, ...  |  (tuple), (tuple), ...
+				foreach ($value as $k => $v) {
+					$vx[] = is_array($v)
+						? '(' . $this->formatValue($v, self::MODE_LIST) . ')'
+						: $this->formatValue($v);
 				}
 				return implode(', ', $vx);
 

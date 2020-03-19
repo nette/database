@@ -29,7 +29,7 @@ class SqlBuilderMock extends SqlBuilder
 	}
 }
 
-$driver = $connection->getSupplementalDriver();
+$driver = $connection->getDriver();
 
 
 test('test duplicated table names throw exception', function () use ($explorer, $driver) {

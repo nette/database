@@ -30,7 +30,7 @@ Nette\Database\Helpers::loadFromFile($connection, Tester\FileMock::create('
 	ALTER TABLE "one"."slave" ADD CONSTRAINT "one_slave_fk" FOREIGN KEY ("one_id") REFERENCES "one"."master"("one_id");
 	ALTER TABLE "two"."slave" ADD CONSTRAINT "two_slave_fk" FOREIGN KEY ("two_id") REFERENCES "two"."master"("two_id");
 '));
-$driver = $connection->getSupplementalDriver();
+$driver = $connection->getDriver();
 
 
 function filter($columns)

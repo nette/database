@@ -70,7 +70,7 @@ class ResultSet implements \Iterator, IRowContainer
 				@$this->pdoStatement->execute(); // @ PHP generates warning when ATTR_ERRMODE = ERRMODE_EXCEPTION bug #73878
 			}
 		} catch (\PDOException $e) {
-			$e = $connection->getSupplementalDriver()->convertException($e);
+			$e = $connection->getDriver()->convertException($e);
 			$e->queryString = $queryString;
 			$e->params = $params;
 			throw $e;
@@ -130,7 +130,7 @@ class ResultSet implements \Iterator, IRowContainer
 	public function normalizeRow(array $row): array
 	{
 		if ($this->types === null) {
-			$this->types = $this->connection->getSupplementalDriver()->getColumnTypes($this->pdoStatement);
+			$this->types = $this->connection->getDriver()->getColumnTypes($this->pdoStatement);
 		}
 
 		foreach ($this->types as $key => $type) {

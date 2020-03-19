@@ -13,7 +13,7 @@ use Tester\Assert;
 require __DIR__ . '/../connect.inc.php'; // create $connection
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
-$driver = $connection->getSupplementalDriver();
+$driver = $connection->getDriver();
 
 
 test('', function () use ($explorer) {

@@ -15,7 +15,7 @@ require __DIR__ . '/connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
 
 
-$driver = $connection->getSupplementalDriver();
+$driver = $connection->getDriver();
 $tables = $driver->getTables();
 $tables = array_filter($tables, function ($t) { return in_array($t['name'], ['author', 'book', 'book_tag', 'tag'], true); });
 usort($tables, function ($a, $b) { return strcmp($a['name'], $b['name']); });

@@ -96,7 +96,7 @@ class SqlBuilder
 	public function __construct(string $tableName, Explorer $explorer)
 	{
 		$this->tableName = $tableName;
-		$this->driver = $explorer->getConnection()->getSupplementalDriver();
+		$this->driver = $explorer->getConnection()->getDriver();
 		$this->conventions = $explorer->getConventions();
 		$this->structure = $explorer->getStructure();
 		$tableNameParts = explode('.', $tableName);

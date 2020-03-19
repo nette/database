@@ -106,6 +106,14 @@ class Connection
 	}
 
 
+	public function getDriver(): Driver
+	{
+		$this->connect();
+		return $this->driver;
+	}
+
+
+	/** @deprecated use getDriver() */
 	public function getSupplementalDriver(): Driver
 	{
 		$this->connect();

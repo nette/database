@@ -20,7 +20,7 @@ test('', function () use ($explorer) {
 });
 
 test('', function () use ($connection) {
-	$driver = $connection->getSupplementalDriver();
+	$driver = $connection->getDriver();
 	$columns = $driver->getColumns('books_view');
 	$columnsNames = array_map(function ($item) {
 		return $item['name'];

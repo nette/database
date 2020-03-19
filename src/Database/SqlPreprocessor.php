@@ -75,7 +75,7 @@ class SqlPreprocessor
 	public function __construct(Connection $connection)
 	{
 		$this->connection = $connection;
-		$this->driver = $connection->getSupplementalDriver();
+		$this->driver = $connection->getDriver();
 	}
 
 

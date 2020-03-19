@@ -33,7 +33,7 @@ class SqlBuilderMock extends SqlBuilder
 
 $conventions = new DiscoveredConventions($structure);
 $sqlBuilder = new SqlBuilderMock('nUsers', $explorer);
-$driver = $connection->getSupplementalDriver();
+$driver = $connection->getDriver();
 
 
 $joins = [];
@@ -42,7 +42,7 @@ $sqlBuilder->parseJoins($joins, $query);
 $join = $sqlBuilder->buildQueryJoins($joins);
 Assert::same('WHERE priorit.id IS NULL', $query);
 
-$tables = $connection->getSupplementalDriver()->getTables();
+$tables = $connection->getDriver()->getTables();
 if (!in_array($tables[0]['name'], ['npriorities', 'ntopics', 'nusers', 'nusers_ntopics', 'nusers_ntopics_alt'], true)) {
 	if ($driver->isSupported(Driver::SUPPORT_SCHEMA)) {
 		Assert::same(

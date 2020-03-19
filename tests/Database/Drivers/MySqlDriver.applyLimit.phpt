@@ -11,7 +11,7 @@ use Tester\Assert;
 require __DIR__ . '/../connect.inc.php'; // create $connection
 
 
-$driver = $connection->getSupplementalDriver();
+$driver = $connection->getDriver();
 
 $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, 10, 20);

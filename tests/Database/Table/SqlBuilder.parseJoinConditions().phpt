@@ -41,7 +41,7 @@ class SqlBuilderMock extends SqlBuilder
 	}
 }
 
-$driver = $connection->getSupplementalDriver();
+$driver = $connection->getDriver();
 
 test('test circular reference', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilderMock('author', $explorer);

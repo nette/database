@@ -100,7 +100,7 @@ class Structure implements IStructure
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
 
-		if (!$this->connection->getSupplementalDriver()->isSupported(Driver::SUPPORT_SEQUENCE)) {
+		if (!$this->connection->getDriver()->isSupported(Driver::SUPPORT_SEQUENCE)) {
 			return null;
 		}
 
@@ -183,7 +183,7 @@ class Structure implements IStructure
 
 	protected function loadStructure(): array
 	{
-		$driver = $this->connection->getSupplementalDriver();
+		$driver = $this->connection->getDriver();
 
 		$structure = [];
 		$structure['tables'] = $driver->getTables();
@@ -241,7 +241,7 @@ class Structure implements IStructure
 	{
 		$lowerTable = strtolower($table);
 
-		$foreignKeys = $this->connection->getSupplementalDriver()->getForeignKeys($table);
+		$foreignKeys = $this->connection->getDriver()->getForeignKeys($table);
 
 		$fksColumnsCounts = [];
 		foreach ($foreignKeys as $foreignKey) {

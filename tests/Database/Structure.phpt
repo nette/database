@@ -51,7 +51,7 @@ class StructureTestCase extends TestCase
 		$this->storage = Mockery::mock(Nette\Caching\IStorage::class);
 
 		$this->connection->shouldReceive('getDsn')->once()->andReturn('');
-		$this->connection->shouldReceive('getSupplementalDriver')->once()->andReturn($this->driver);
+		$this->connection->shouldReceive('getDriver')->once()->andReturn($this->driver);
 		$this->driver->shouldReceive('getTables')->once()->andReturn([
 			['name' => 'authors', 'view' => false],
 			['name' => 'Books', 'view' => false],
@@ -79,7 +79,7 @@ class StructureTestCase extends TestCase
 			['name' => 'id', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
 			['name' => 'title', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
 		]);
-		$this->connection->shouldReceive('getSupplementalDriver')->times(4)->andReturn($this->driver);
+		$this->connection->shouldReceive('getDriver')->times(4)->andReturn($this->driver);
 		$this->driver->shouldReceive('getForeignKeys')->with('authors')->once()->andReturn([]);
 		$this->driver->shouldReceive('getForeignKeys')->with('Books')->once()->andReturn([
 			['local' => 'author_id', 'table' => 'authors', 'foreign' => 'id', 'name' => 'authors_fk1'],
@@ -136,7 +136,7 @@ class StructureTestCase extends TestCase
 
 	public function testGetPrimaryKeySequence()
 	{
-		$this->connection->shouldReceive('getSupplementalDriver')->times(4)->andReturn($this->driver);
+		$this->connection->shouldReceive('getDriver')->times(4)->andReturn($this->driver);
 		$this->driver->shouldReceive('isSupported')->with('sequence')->once()->andReturn(false);
 		$this->driver->shouldReceive('isSupported')->with('sequence')->times(3)->andReturn(true);
 

@@ -19,17 +19,25 @@ class SqlPreprocessor
 {
 	use Nette\SmartObject;
 
-	private const MODE_LIST = ['and', 'or', 'set', 'values', 'order'];
+	private const
+		MODE_AND = 'and',       // (key [operator] value) AND ...
+		MODE_OR = 'or',         // (key [operator] value) OR ...
+		MODE_SET = 'set',       // key=value, key=value, ...
+		MODE_VALUES = 'values', // (key, key, ...) VALUES (value, value, ...)
+		MODE_ORDER = 'order',   // key, key DESC, ...
+		MODE_AUTO = 'auto';     // arrayMode for arrays
+
+	private const MODES = [self::MODE_AND, self::MODE_OR, self::MODE_SET, self::MODE_VALUES, self::MODE_ORDER];
 
 	private const ARRAY_MODES = [
-		'INSERT' => 'values',
-		'REPLACE' => 'values',
-		'KEY UPDATE' => 'set',
-		'SET' => 'set',
-		'WHERE' => 'and',
-		'HAVING' => 'and',
-		'ORDER BY' => 'order',
-		'GROUP BY' => 'order',
+		'INSERT' => self::MODE_VALUES,
+		'REPLACE' => self::MODE_VALUES,
+		'KEY UPDATE' => self::MODE_SET,
+		'SET' => self::MODE_SET,
+		'WHERE' => self::MODE_AND,
+		'HAVING' => self::MODE_AND,
+		'ORDER BY' => self::MODE_ORDER,
+		'GROUP BY' => self::MODE_ORDER,
 	];
 
 	private const PARAMETRIC_COMMANDS = [
@@ -87,7 +95,7 @@ class SqlPreprocessor
 			$param = $params[$this->counter++];
 
 			if (($this->counter === 2 && count($params) === 2) || !is_scalar($param)) {
-				$res[] = $this->formatValue($param, 'auto');
+				$res[] = $this->formatValue($param, self::MODE_AUTO);
 				$this->arrayMode = null;
 
 			} elseif (is_string($param) && $this->counter > $prev + 1) {
@@ -114,7 +122,7 @@ class SqlPreprocessor
 			if ($this->counter >= count($this->params)) {
 				throw new Nette\InvalidArgumentException('There are more placeholders than passed parameters.');
 			}
-			return $this->formatValue($this->params[$this->counter++], substr($m, 1) ?: 'auto');
+			return $this->formatValue($this->params[$this->counter++], substr($m, 1) ?: self::MODE_AUTO);
 
 		} elseif ($m[0] === "'" || $m[0] === '"' || $m[0] === '/' || $m[0] === '-') { // string or comment
 			return $m;
@@ -130,7 +138,7 @@ class SqlPreprocessor
 
 	private function formatValue($value, string $mode = null): string
 	{
-		if (!$mode || $mode === 'auto') {
+		if (!$mode || $mode === self::MODE_AUTO) {
 			if (is_scalar($value) || is_resource($value)) {
 				if ($this->useParams) {
 					$this->remaining[] = $value;
@@ -187,14 +195,14 @@ class SqlPreprocessor
 
 		if (is_array($value)) {
 			$vx = $kx = [];
-			if ($mode === 'auto') {
+			if ($mode === self::MODE_AUTO) {
 				$mode = $this->arrayMode;
 			}
 
-			if ($mode === 'values') { // (key, key, ...) VALUES (value, value, ...)
+			if ($mode === self::MODE_VALUES) { // (key, key, ...) VALUES (value, value, ...)
 				if (array_key_exists(0, $value)) { // multi-insert
 					if (!is_array($value[0]) && !$value[0] instanceof Row) {
-						throw new Nette\InvalidArgumentException('Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?[' . implode('|', self::MODE_LIST) . ']". Mode "' . $mode . '" was used.');
+						throw new Nette\InvalidArgumentException('Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?[' . implode('|', self::MODES) . ']". Mode "' . $mode . '" was used.');
 					}
 					foreach ($value[0] as $k => $v) {
 						$kx[] = $this->delimite($k);
@@ -217,7 +225,7 @@ class SqlPreprocessor
 				}
 				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
-			} elseif (!$mode || $mode === 'set') {
+			} elseif (!$mode || $mode === self::MODE_SET) {
 				foreach ($value as $k => $v) {
 					if (is_int($k)) { // value, value, ... OR (1, 2), (3, 4)
 						$vx[] = is_array($v)
@@ -232,7 +240,7 @@ class SqlPreprocessor
 				}
 				return implode(', ', $vx);
 
-			} elseif ($mode === 'and' || $mode === 'or') { // (key [operator] value) AND ...
+			} elseif ($mode === self::MODE_AND || $mode === self::MODE_OR) { // (key [operator] value) AND ...
 				foreach ($value as $k => $v) {
 					if (is_int($k)) {
 						$vx[] = $this->formatValue($v);
@@ -259,7 +267,7 @@ class SqlPreprocessor
 					? '(' . implode(') ' . strtoupper($mode) . ' (', $vx) . ')'
 					: '1=1';
 
-			} elseif ($mode === 'order') { // key, key DESC, ...
+			} elseif ($mode === self::MODE_ORDER) { // key, key DESC, ...
 				foreach ($value as $k => $v) {
 					$vx[] = $this->delimite($k) . ($v > 0 ? '' : ' DESC');
 				}
@@ -269,11 +277,11 @@ class SqlPreprocessor
 				throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
 			}
 
-		} elseif (in_array($mode, self::MODE_LIST, true)) {
+		} elseif (in_array($mode, self::MODES, true)) {
 			$type = gettype($value);
 			throw new Nette\InvalidArgumentException("Placeholder ?$mode expects array or Traversable object, $type given.");
 
-		} elseif ($mode && $mode !== 'auto') {
+		} elseif ($mode && $mode !== self::MODE_AUTO) {
 			throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
 
 		} else {

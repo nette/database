@@ -194,7 +194,7 @@ class SqlPreprocessor
 			$value = iterator_to_array($value);
 		}
 
-		if (is_array($value)) {
+		if ($mode && is_array($value)) {
 			$vx = $kx = [];
 			if ($mode === self::MODE_AUTO) {
 				$mode = $this->arrayMode;
@@ -229,7 +229,7 @@ class SqlPreprocessor
 			} elseif (!$mode || $mode === self::MODE_SET) {
 				foreach ($value as $k => $v) {
 					if (is_int($k)) { // value, value, ... OR (1, 2), (3, 4)
-						$vx[] = is_array($v) ? '(' . $this->formatValue($v) . ')' : $this->formatValue($v);
+						$vx[] = is_array($v) ? '(' . $this->formatValue($v, self::MODE_LIST) . ')' : $this->formatValue($v);
 					} elseif (substr($k, -1) === '=') { // key+=value, key-=value, ...
 						$k2 = $this->delimite(substr($k, 0, -2));
 						$vx[] = $k2 . '=' . $k2 . ' ' . substr($k, -2, 1) . ' ' . $this->formatValue($v);
@@ -255,7 +255,7 @@ class SqlPreprocessor
 					$k = $this->delimite($k);
 					if (is_array($v)) {
 						if ($v) {
-							$vx[] = $k . ' ' . ($operator ? $operator . ' ' : '') . 'IN (' . $this->formatValue(array_values($v)) . ')';
+							$vx[] = $k . ' ' . ($operator ? $operator . ' ' : '') . 'IN (' . $this->formatValue(array_values($v), self::MODE_LIST) . ')';
 						} elseif ($operator === 'NOT') {
 						} else {
 							$vx[] = '1=0';

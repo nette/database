@@ -96,7 +96,7 @@ class SqlPreprocessor
 				$res[] = Nette\Utils\Strings::replace(
 					$param,
 					'~\'[^\']*+\'|"[^"]*+"|\?[a-z]*|^\s*+(?:\(?\s*SELECT|INSERT|UPDATE|DELETE|REPLACE|EXPLAIN)\b|\b(?:SET|WHERE|HAVING|ORDER BY|GROUP BY|KEY UPDATE)(?=\s*$|\s*\?)|/\*.*?\*/|--[^\n]*~Dsi',
-					[$this, 'callback']
+					\Closure::fromCallable([$this, 'callback'])
 				);
 			} else {
 				throw new Nette\InvalidArgumentException('There are more parameters than placeholders.');
@@ -107,8 +107,7 @@ class SqlPreprocessor
 	}
 
 
-	/** @internal */
-	public function callback(array $m): string
+	private function callback(array $m): string
 	{
 		$m = $m[0];
 		if ($m[0] === '?') { // placeholder

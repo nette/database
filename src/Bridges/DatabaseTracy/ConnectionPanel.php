@@ -49,11 +49,11 @@ class ConnectionPanel implements Tracy\IBarPanel
 
 	public function __construct(Connection $connection)
 	{
-		$connection->onQuery[] = [$this, 'logQuery'];
+		$connection->onQuery[] = \Closure::fromCallable([$this, 'logQuery']);
 	}
 
 
-	public function logQuery(Connection $connection, $result): void
+	private function logQuery(Connection $connection, $result): void
 	{
 		if ($this->disabled) {
 			return;

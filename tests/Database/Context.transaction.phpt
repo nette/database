@@ -24,6 +24,18 @@ test('', function () use ($context) {
 
 
 test('', function () use ($context) {
+	Assert::exception(function () use ($context) {
+		$context->transaction(function () use ($context) {
+			$context->query('DELETE FROM book');
+			throw new Exception('my exception');
+		});
+	}, \Throwable::class, 'my exception');
+
+	Assert::same(3, $context->fetchField('SELECT id FROM book WHERE id = ', 3));
+});
+
+
+test('', function () use ($context) {
 	$context->beginTransaction();
 	$context->query('DELETE FROM book');
 	$context->commit();

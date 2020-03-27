@@ -153,6 +153,23 @@ class Connection
 
 
 	/**
+	 * @return mixed
+	 */
+	public function transaction(callable $callback)
+	{
+		$this->beginTransaction();
+		try {
+			$res = $callback();
+		} catch (\Throwable $e) {
+			$this->rollBack();
+			throw $e;
+		}
+		$this->commit();
+		return $res;
+	}
+
+
+	/**
 	 * Generates and executes SQL query.
 	 */
 	public function query(string $sql, ...$params): ResultSet

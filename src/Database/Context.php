@@ -60,6 +60,15 @@ class Context
 	}
 
 
+	/**
+	 * @return mixed
+	 */
+	public function transaction(callable $callback)
+	{
+		return $this->connection->transaction($callback);
+	}
+
+
 	public function getInsertId(string $sequence = null): string
 	{
 		return $this->connection->getInsertId($sequence);

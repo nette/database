@@ -103,7 +103,7 @@ class SqlPreprocessor
 				$this->arrayMode = null;
 				$res[] = Nette\Utils\Strings::replace(
 					$param,
-					'~\'[^\']*+\'|"[^"]*+"|\?[a-z]*|^\s*+(?:\(?\s*SELECT|INSERT|UPDATE|DELETE|REPLACE|EXPLAIN)\b|\b(?:SET|WHERE|HAVING|ORDER BY|GROUP BY|KEY UPDATE)(?=\s*$|\s*\?)|/\*.*?\*/|--[^\n]*~Dsi',
+					'~\'[^\']*+\'|"[^"]*+"|\?[a-z]*|^\s*+(?:\(?\s*SELECT|INSERT|UPDATE|DELETE|REPLACE|EXPLAIN)\b|\b(?:SET|WHERE|HAVING|ORDER BY|GROUP BY|KEY UPDATE)(?=\s*$|\s*\?)|\bIN\s+\(\?\)|/\*.*?\*/|--[^\n]*~Dsi',
 					\Closure::fromCallable([$this, 'callback'])
 				);
 			} else {
@@ -126,6 +126,12 @@ class SqlPreprocessor
 
 		} elseif ($m[0] === "'" || $m[0] === '"' || $m[0] === '/' || $m[0] === '-') { // string or comment
 			return $m;
+
+		} elseif (preg_match('~^IN\s~i', $m)) { // IN (?)
+			if ($this->counter >= count($this->params)) {
+				throw new Nette\InvalidArgumentException('There are more placeholders than passed parameters.');
+			}
+			return 'IN (' . $this->formatValue($this->params[$this->counter++], self::MODE_LIST) . ')';
 
 		} else { // command
 			$cmd = ltrim(strtoupper($m), "\t\n\r (");

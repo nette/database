@@ -79,6 +79,10 @@ test('IN', function () use ($preprocessor) {
 
 	Assert::same(reformat('SELECT id FROM author WHERE ([a] IN (NULL, ?, ?, ?)) AND (1=0) AND ([c] NOT IN (NULL, ?, ?, ?))'), $sql);
 	Assert::same([1, 2, 3, 1, 2, 3], $params);
+
+	[$sql, $params] = $preprocessor->process(['SELECT * FROM table WHERE ? AND id IN (?) AND ?', ['a' => 111], [3, 4], ['b' => 222]]);
+	Assert::same(reformat('SELECT * FROM table WHERE ([a] = ?) AND id IN (?, ?) AND ([b] = ?)'), $sql);
+	Assert::same([111, 3, 4, 222], $params);
 });
 
 
@@ -343,7 +347,7 @@ test('?values', function () use ($preprocessor) {
 
 test('automatic detection failed', function () use ($preprocessor) {
 	Assert::exception(function () use ($preprocessor) {
-		$preprocessor->process(['INSERT INTO author (name) SELECT name FROM user WHERE id IN (?)', [11, 12]]);
+		dump($preprocessor->process(['INSERT INTO author (name) SELECT name FROM user WHERE id ?', [11, 12]])); // invalid sql
 	}, Nette\InvalidArgumentException::class, 'Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?[and|or|set|values|order|list]". Mode "values" was used.');
 });
 

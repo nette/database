@@ -15,12 +15,6 @@ use Tracy\Helpers;
 	#tracy-debug td.nette-DbConnectionPanel-sql-insert { background: #E7ffE7 !important }
 	#tracy-debug td.nette-DbConnectionPanel-sql-delete { background: #FFE7E7 !important }
 	#tracy-debug td.nette-DbConnectionPanel-sql-update { background: #E7FBFF !important }
-	#tracy-debug td.nette-DbConnectionPanel-queryTime-500 { background: #f30808 !important; color: white }
-	#tracy-debug td.nette-DbConnectionPanel-queryTime-300 { background: #ff5f17 !important; color: white }
-	#tracy-debug td.nette-DbConnectionPanel-queryTime-150 { background: #fb834d !important; color: white }
-	#tracy-debug td.nette-DbConnectionPanel-queryTime-75 { background: #fb9567 !important; color: white }
-	#tracy-debug td.nette-DbConnectionPanel-queryTime-15 { background: #ffae89 !important; color: black }
-	#tracy-debug td.nette-DbConnectionPanel-queryTime-5 { background: #fbccb7 !important; color: black }
 </style>
 
 <h1 title="<?= Helpers::escapeHtml($connection->getDsn()) ?>">Queries: <?php
@@ -35,7 +29,7 @@ use Tracy\Helpers;
 			[$connection, $sql, $params, $source, $time, $rows, $error, $command, $explain] = $query;
 		?>
 		<tr>
-		<td<?= ($durationColor = DbHelpers::queryTimeClass($time * 1000)) !== null ? ' class="' . Helpers::escapeHtml('nette-DbConnectionPanel-queryTime-' . $durationColor) . '"' : '' ?>>
+		<td style="background:rgba(255, 95, 23, <?= DbHelpers::queryPerformanceOpacity($time * 1000) ?>)">
 		<?php if ($error): ?>
 			<span title="<?= Helpers::escapeHtml($error) ?>">ERROR</span>
 		<?php elseif ($time !== null): echo sprintf('%0.3f', $time * 1000); endif ?>

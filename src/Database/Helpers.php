@@ -35,6 +35,9 @@ class Helpers
 		'BYTEA|(TINY|MEDIUM|LONG|)BLOB|(LONG )?(VAR)?BINARY|IMAGE' => IStructure::FIELD_BINARY,
 	];
 
+	/** @var int[] (millisecond => percentage) */
+	public static $queryPerformanceScale = [10 => 10, 30 => 25, 50 => 50, 100 => 75, 200 => 90, 300 => 100];
+
 
 	/**
 	 * Displays complete result set as HTML table for debug purposes.
@@ -301,18 +304,20 @@ class Helpers
 	}
 
 
-	public static function queryTimeClass(float $time): ?string
+	public static function queryPerformanceOpacity(float $time): float
 	{
-		if ($time === null || $time < 5) {
-			return null;
+		if ($time < (array_keys(self::$queryPerformanceScale)[0] ?? 0)) {
+			return 0;
 		}
 
-		foreach ([500, 300, 150, 75, 15, 5] as $durationClass) {
-			if ($durationClass <= $time) {
-				return (string) $durationClass;
+		$matchedPercentage = 100;
+		foreach (self::$queryPerformanceScale as $timeItem => $percentage) {
+			if ($timeItem >= $time) {
+				$matchedPercentage = $percentage;
+				break;
 			}
 		}
 
-		return null;
+		return (($matchedPercentage + ($timeItem ?? 0)) / 2) / 100;
 	}
 }

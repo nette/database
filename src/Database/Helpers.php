@@ -34,9 +34,10 @@ class Helpers
 		'(SMALL)?DATETIME(OFFSET)?\d*|TIME(STAMP.*)?' => IStructure::FIELD_DATETIME,
 		'BYTEA|(TINY|MEDIUM|LONG|)BLOB|(LONG )?(VAR)?BINARY|IMAGE' => IStructure::FIELD_BINARY,
 	];
+	
 
-	/** @var int[] (millisecond => percentage) */
-	public static $queryPerformanceScale = [10 => 10, 30 => 25, 50 => 50, 100 => 75, 200 => 90, 300 => 100];
+	/** @var float */
+	public static $queryPerformanceScale = 0.25;
 
 
 	/**
@@ -301,23 +302,5 @@ class Helpers
 			}
 		}
 		return implode(', ', $duplicates);
-	}
-
-
-	public static function queryPerformanceOpacity(float $time): float
-	{
-		if ($time < (array_keys(self::$queryPerformanceScale)[0] ?? 0)) {
-			return 0;
-		}
-
-		$matchedPercentage = 100;
-		foreach (self::$queryPerformanceScale as $timeItem => $percentage) {
-			if ($timeItem >= $time) {
-				$matchedPercentage = $percentage;
-				break;
-			}
-		}
-
-		return (($matchedPercentage + ($timeItem ?? 0)) / 2) / 100;
 	}
 }

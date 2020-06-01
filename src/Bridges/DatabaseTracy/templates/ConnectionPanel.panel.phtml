@@ -29,7 +29,7 @@ use Tracy\Helpers;
 			[$connection, $sql, $params, $source, $time, $rows, $error, $command, $explain] = $query;
 		?>
 		<tr>
-		<td style="background:rgba(255, 95, 23, <?= DbHelpers::queryPerformanceOpacity($time * 1000) ?>)">
+		<td style="background:rgba(255, 95, 23, <?= log($time * 1000 + 1, 10) * DbHelpers::$queryPerformanceScale ?>)">
 		<?php if ($error): ?>
 			<span title="<?= Helpers::escapeHtml($error) ?>">ERROR</span>
 		<?php elseif ($time !== null): echo sprintf('%0.3f', $time * 1000); endif ?>

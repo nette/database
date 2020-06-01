@@ -34,7 +34,7 @@ class Helpers
 		'(SMALL)?DATETIME(OFFSET)?\d*|TIME(STAMP.*)?' => IStructure::FIELD_DATETIME,
 		'BYTEA|(TINY|MEDIUM|LONG|)BLOB|(LONG )?(VAR)?BINARY|IMAGE' => IStructure::FIELD_BINARY,
 	];
-	
+
 
 	/** @var float */
 	public static $queryPerformanceScale = 0.25;

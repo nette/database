@@ -299,4 +299,20 @@ class Helpers
 		}
 		return implode(', ', $duplicates);
 	}
+
+
+	public static function queryTimeClass(float $time): ?string
+	{
+		if ($time === null || $time < 5) {
+			return null;
+		}
+
+		foreach ([500, 300, 150, 75, 15, 5] as $durationClass) {
+			if ($durationClass <= $time) {
+				return (string) $durationClass;
+			}
+		}
+
+		return null;
+	}
 }

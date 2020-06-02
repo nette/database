@@ -34,6 +34,9 @@ class ConnectionPanel implements Tracy\IBarPanel
 	/** @var bool */
 	public $disabled = false;
 
+	/** @var float */
+	public $performanceScale = 0.25;
+
 	/** @var float logged time */
 	private $totalTime = 0;
 
@@ -138,6 +141,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 			$name = $this->name;
 			$count = $this->count;
 			$totalTime = $this->totalTime;
+			$performanceScale = $this->performanceScale;
 			require __DIR__ . '/templates/ConnectionPanel.panel.phtml';
 		});
 	}

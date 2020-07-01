@@ -38,6 +38,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				'options' => Expect::array(),
 				'debugger' => Expect::bool(true),
 				'explain' => Expect::bool(true),
+				'connectionTimeout' => Expect::int()->min(0),
 				'reflection' => Expect::string(), // BC
 				'conventions' => Expect::string('discovered'), // Nette\Database\Conventions\DiscoveredConventions
 				'autowired' => Expect::bool(),
@@ -73,6 +74,10 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				unset($config->options[$key]);
 				$config->options[constant($key)] = $value;
 			}
+		}
+
+		if ($config->connectionTimeout !== null) {
+			$config->options[\PDO::ATTR_TIMEOUT] = $config->connectionTimeout;
 		}
 
 		$connection = $builder->addDefinition($this->prefix("$name.connection"))

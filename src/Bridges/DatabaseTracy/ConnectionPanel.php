@@ -112,7 +112,6 @@ class ConnectionPanel implements Tracy\IBarPanel
 
 	public function getPanel(): ?string
 	{
-		$this->disabled = true;
 		if (!$this->count) {
 			return null;
 		}
@@ -125,7 +124,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 			if (!$error && $this->explain && $command === 'select') {
 				try {
 					$cmd = is_string($this->explain) ? $this->explain : 'EXPLAIN';
-					$explain = $connection->queryArgs("$cmd $sql", $params)->fetchAll();
+					$explain = (new Nette\Database\ResultSet($connection, "$cmd $sql", $params))->fetchAll();
 				} catch (\PDOException $e) {
 				}
 			}

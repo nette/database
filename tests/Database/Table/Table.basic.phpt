@@ -14,7 +14,7 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$book = $context->table('book')->where('id = ?', 1)->select('id, title')->fetch()->toArray();  // SELECT `id`, `title` FROM `book` WHERE (`id` = ?)
 	Assert::same([
 		'id' => 1,
@@ -23,7 +23,7 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$book = $context->table('book')->select('id, title')->where('id = ?', 1)->fetch()->toArray();  // SELECT `id`, `title` FROM `book` WHERE (`id` = ?)
 	Assert::same([
 		'id' => 1,
@@ -32,7 +32,7 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$book = $context->table('book')->get(1);
 	Assert::exception(function () use ($book) {
 		$book->unknown_column;
@@ -40,7 +40,7 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$bookTags = [];
 	foreach ($context->table('book') as $book) {  // SELECT * FROM `book`
 		$bookTags[$book->title] = [
@@ -74,7 +74,7 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($connection, $structure) {
+test('', function () use ($connection, $structure) {
 	$context = new Nette\Database\Context(
 		$connection,
 		$structure,

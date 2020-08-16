@@ -18,7 +18,7 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test(function () use ($context) { // test paramateres with null
+test('test paramateres with null', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id ? OR id ?', [1, null]);
 	$sqlBuilder->addWhere('id ? OR id ?', [1, null]); // duplicit condition
@@ -26,7 +26,7 @@ test(function () use ($context) { // test paramateres with null
 });
 
 
-test(function () use ($context) { // ?name
+test('?name', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('?name ?', 'id', 3);
 	$sqlBuilder->addWhere('?name = ?', 'number', 4);
@@ -35,7 +35,7 @@ test(function () use ($context) { // ?name
 });
 
 
-test(function () use ($context) { // test Selection as a parameter
+test('test Selection as a parameter', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id', $context->table('book'));
 	Assert::equal(reformat([
@@ -45,7 +45,7 @@ test(function () use ($context) { // test Selection as a parameter
 });
 
 
-test(function () use ($context) { // test more Selection as a parameter
+test('test more Selection as a parameter', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id', $context->table('book'));
 	$sqlBuilder->addWhere('id', $context->table('book_tag')->select('book_id'));
@@ -56,7 +56,7 @@ test(function () use ($context) { // test more Selection as a parameter
 });
 
 
-test(function () use ($context) { // test more Selection as one of more argument
+test('test more Selection as one of more argument', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id ? AND id ?', $context->table('book')->where('id', 2), $context->table('book_tag')->select('book_id'));
 	Assert::equal(reformat([
@@ -66,7 +66,7 @@ test(function () use ($context) { // test more Selection as one of more argument
 });
 
 
-test(function () use ($context) { // test more ActiveRow as a parameter
+test('test more ActiveRow as a parameter', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$books = $context->table('book')->where('id', [1, 2])->fetchPairs('id');
 	$sqlBuilder->addWhere('id ?', $books[1]);
@@ -77,7 +77,7 @@ test(function () use ($context) { // test more ActiveRow as a parameter
 });
 
 
-test(function () use ($context) { // test Selection with parameters as a parameter
+test('test Selection with parameters as a parameter', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id', $context->table('book')->having('COUNT(:book_tag.tag_id) >', 1));
 	$schemaSupported = $context->getConnection()->getSupplementalDriver()->isSupported(ISupplementalDriver::SUPPORT_SCHEMA);
@@ -89,7 +89,7 @@ test(function () use ($context) { // test Selection with parameters as a paramet
 });
 
 
-test(function () use ($context) { // test Selection with column as a parameter
+test('test Selection with column as a parameter', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id', $context->table('book')->select('id'));
 	Assert::equal(reformat([
@@ -99,7 +99,7 @@ test(function () use ($context) { // test Selection with column as a parameter
 });
 
 
-test(function () use ($context) { // test multiple placeholder parameter
+test('test multiple placeholder parameter', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id ? OR id ?', null, $context->table('book'));
 	Assert::equal(reformat([
@@ -109,21 +109,21 @@ test(function () use ($context) { // test multiple placeholder parameter
 });
 
 
-test(function () use ($context) { // test SqlLiteral
+test('test SqlLiteral', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id IN (?)', new SqlLiteral('1, 2, 3'));
 	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] IN (?))'), $sqlBuilder->buildSelectQuery());
 });
 
 
-test(function () use ($context) { // test auto type detection
+test('test auto type detection', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id ? OR id ? OR id ?', 1, 'test', [1, 2]);
 	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] = ? OR [id] = ? OR [id] IN (?))'), $sqlBuilder->buildSelectQuery());
 });
 
 
-test(function () use ($context) { // test empty array
+test('test empty array', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id', []);
 	$sqlBuilder->addWhere('id NOT', []);
@@ -141,7 +141,7 @@ test(function () use ($context) { // test empty array
 });
 
 
-test(function () use ($context) { // backward compatibility
+test('backward compatibility', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id = ? OR id ? OR id IN ? OR id LIKE ? OR id > ?', 1, 2, [1, 2], '%test', 3);
 	$sqlBuilder->addWhere('name', 'var');
@@ -151,7 +151,7 @@ test(function () use ($context) { // backward compatibility
 });
 
 
-test(function () use ($context) { // auto operator tests
+test('auto operator tests', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('FOO(?)', 1);
 	$sqlBuilder->addWhere('FOO(id, ?)', 1);
@@ -163,14 +163,14 @@ test(function () use ($context) { // auto operator tests
 });
 
 
-test(function () use ($context) { // tests multiline condition
+test('tests multiline condition', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere("\ncol1 ?\nOR col2 ?\n", 1, 1);
 	Assert::same(reformat("SELECT * FROM [book] WHERE ([col1] = ?\nOR [col2] = ?)"), $sqlBuilder->buildSelectQuery());
 });
 
 
-test(function () use ($context) { // tests NOT
+test('tests NOT', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id NOT', [1, 2]);
 	$sqlBuilder->addWhere('id NOT', null);
@@ -182,7 +182,7 @@ test(function () use ($context) { // tests NOT
 });
 
 
-test(function () use ($context) { // tests multi column IN clause
+test('tests multi column IN clause', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book_tag', $context);
 	$sqlBuilder->addWhere(['book_id', 'tag_id'], [[1, 11], [2, 12]]);
 	Assert::equal(reformat([
@@ -193,14 +193,14 @@ test(function () use ($context) { // tests multi column IN clause
 });
 
 
-test(function () use ($context) { // tests operator suffix
+test('tests operator suffix', function () use ($context) {
 	$sqlBuilder = new SqlBuilder('book', $context);
 	$sqlBuilder->addWhere('id <> ? OR id >= ?', 1, 2);
 	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] <> ? OR [id] >= ?)'), $sqlBuilder->buildSelectQuery());
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$books = $context->table('book')->where('id',
 		$context->table('book_tag')->select('book_id')->where('tag_id', 21)
 	);
@@ -233,7 +233,7 @@ Assert::exception(function () use ($context) {
 }, Nette\InvalidArgumentException::class, 'Column operator does not accept array argument.');
 
 
-test(function () use ($driverName, $context, $connection, $structure) {
+test('', function () use ($driverName, $context, $connection, $structure) {
 	switch ($driverName) {
 		case 'mysql':
 			$context->query('CREATE INDEX book_tag_unique ON book_tag (book_id, tag_id)');

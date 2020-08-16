@@ -22,7 +22,7 @@ define('TEMP_DIR', __DIR__ . '/tmp');
 @mkdir(TEMP_DIR);
 
 
-function before(\Closure $function = null)
+function before(Closure $function = null)
 {
 	static $val;
 	if (!func_num_args()) {
@@ -32,7 +32,7 @@ function before(\Closure $function = null)
 }
 
 
-function test(\Closure $function): void
+function test(string $title, Closure $function): void
 {
 	before();
 	$function();

@@ -16,7 +16,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 $driver = $connection->getSupplementalDriver();
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$authorTagsCount = [];
 	$authors = $context
 		->table('author')
@@ -36,7 +36,7 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($context, $driver) {
+test('', function () use ($context, $driver) {
 	$authorsSelection = $context->table('author')->where(':book.translator_id IS NOT NULL')->wherePrimary(12);
 
 	if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
@@ -60,7 +60,7 @@ test(function () use ($context, $driver) {
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$count = $context->table('author')->where(':book(translator).title LIKE ?', '%JUSH%')->count('*'); // by translator_id
 	Assert::same(0, $count);
 });

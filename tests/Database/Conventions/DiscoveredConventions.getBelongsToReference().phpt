@@ -12,8 +12,7 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 
-// basic test
-test(function () {
+test('basic test', function () {
 	$structure = Mockery::mock(Nette\Database\IStructure::class);
 	$structure->shouldReceive('getBelongsToReference')->with('books')->andReturn([
 		'author_id' => 'authors',
@@ -26,8 +25,7 @@ test(function () {
 	Assert::same(['authors', 'translator_id'], $conventions->getBelongsToReference('books', 'translator'));
 });
 
-// basic test
-test(function () {
+test('basic test', function () {
 	$structure = Mockery::mock(Nette\Database\IStructure::class);
 	$structure->shouldReceive('getBelongsToReference')->with('public.books')->andReturn([
 		'author_id' => 'public.authors',
@@ -40,8 +38,7 @@ test(function () {
 	Assert::same(['public.authors', 'translator_id'], $conventions->getBelongsToReference('public.books', 'translator'));
 });
 
-// tests order of table columns with foreign keys
-test(function () {
+test('tests order of table columns with foreign keys', function () {
 	$structure = Mockery::mock(Nette\Database\IStructure::class);
 	$structure->shouldReceive('getBelongsToReference')->with('books')->andReturn([
 		'translator_id' => 'authors',
@@ -54,8 +51,7 @@ test(function () {
 });
 
 
-// tests case insensivity
-test(function () {
+test('tests case insensivity', function () {
 	$structure = Mockery::mock(Nette\Database\IStructure::class);
 	$structure->shouldReceive('getBelongsToReference')->with('books')->andReturn([
 		'author_id' => 'authors',
@@ -68,8 +64,7 @@ test(function () {
 });
 
 
-// tests case insensivity and prefixes
-test(function () {
+test('tests case insensivity and prefixes', function () {
 	$structure = Mockery::mock(Nette\Database\IStructure::class);
 	$structure->shouldReceive('getBelongsToReference')->with('nBooks')->andReturn([
 		'authorId' => 'nAuthors',
@@ -83,8 +78,7 @@ test(function () {
 });
 
 
-// tests rebuilt
-test(function () {
+test('tests rebuilt', function () {
 	$structure = Mockery::mock(Nette\Database\IStructure::class);
 	$structure->shouldReceive('isRebuilt')->andReturn(false);
 	$structure->shouldReceive('rebuild');
@@ -101,8 +95,7 @@ test(function () {
 });
 
 
-// tests already rebuilt structure
-test(function () {
+test('tests already rebuilt structure', function () {
 	$structure = Mockery::mock(Nette\Database\IStructure::class);
 	$structure->shouldReceive('isRebuilt')->andReturn(true);
 	$structure->shouldReceive('getBelongsToReference')->with('books')->andReturn([])->once();

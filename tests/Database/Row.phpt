@@ -12,7 +12,7 @@ use Tester\Assert;
 require __DIR__ . '/connect.inc.php'; // create $connection
 
 
-test(function () use ($connection) { // numeric field
+test('numeric field', function () use ($connection) {
 	$row = $connection->fetch("SELECT 123 AS {$connection->getSupplementalDriver()->delimite('123')}, NULL as nullcol");
 	Assert::same(123, $row->{123});
 	Assert::same(123, $row->{'123'});
@@ -42,7 +42,7 @@ test(function () use ($connection) { // numeric field
 });
 
 
-test(function () use ($connection) { // named field
+test('named field', function () use ($connection) {
 	$row = $connection->fetch('SELECT 123 AS title');
 	Assert::same(123, $row->title);
 	Assert::same(123, $row[0]);

@@ -13,7 +13,7 @@ require __DIR__ . '/../../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-nette_test1.sql");
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$selection = $context->table('book');
 	$selection->get(2)->author->name; //reading via reference
 

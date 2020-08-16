@@ -14,7 +14,7 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$appTags = [];
 	foreach ($context->table('book') as $book) {
 		$appTags[$book->title] = [
@@ -48,7 +48,7 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$books = [];
 	foreach ($context->table('author') as $author) {
 		foreach ($author->related('book') as $book) {
@@ -65,13 +65,13 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$book = $context->table('book')->get(1);
 	Assert::same('Jakub Vrana', $book->translator->name);
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$book = $context->table('book')->get(2);
 	Assert::true(isset($book->author_id));
 	Assert::false(empty($book->author_id));
@@ -87,7 +87,7 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($connection, $context) {
+test('', function () use ($connection, $context) {
 	if (
 		$connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql' &&
 		($lowerCase = $connection->query('SHOW VARIABLES LIKE "lower_case_table_names"')->fetch()) &&
@@ -111,7 +111,7 @@ test(function () use ($connection, $context) {
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$count = $context->table('book')->where('translator.name LIKE ?', '%David%')->count();
 	Assert::same(2, $count);
 	$count = $context->table('book')->where('author.name LIKE ?', '%David%')->count();

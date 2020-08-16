@@ -15,8 +15,7 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test(function () use ($context, $driverName) {
-	// Leave literals lower-cased, also not-delimiting them is tested.
+test('Leave literals lower-cased, also not-delimiting them is tested.', function () use ($context, $driverName) {
 	switch ($driverName) {
 		case 'mysql':
 			$literal = new SqlLiteral('year(now())');
@@ -45,7 +44,7 @@ test(function () use ($context, $driverName) {
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$bookTagsCount = [];
 	$books = $context
 		->table('book')
@@ -65,7 +64,7 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($context, $driverName) {
+test('', function () use ($context, $driverName) {
 	if ($driverName === 'mysql') {
 		$authors = [];
 		$selection = $context->table('author')->order('FIELD(name, ?)', ['Jakub Vrana', 'David Grudl', 'Geek']);
@@ -78,7 +77,7 @@ test(function () use ($context, $driverName) {
 });
 
 
-test(function () use ($context, $driverName) { // Test placeholder for GroupedSelection
+test('Test placeholder for GroupedSelection', function () use ($context, $driverName) {
 	if ($driverName === 'sqlsrv') { // This syntax is not supported on SQL Server
 		return;
 	}

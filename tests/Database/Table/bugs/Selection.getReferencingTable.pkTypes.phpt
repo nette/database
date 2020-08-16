@@ -14,7 +14,7 @@ require __DIR__ . '/../../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-nette_test5.sql");
 
 
-test(function () use ($context) { // referencing table with integer primary key
+test('referencing table with integer primary key', function () use ($context) {
 	$computers = $context->table('room')->get(1000)->related('computer');
 	Assert::count(1, $computers);
 	foreach ($computers as $computer) {
@@ -23,7 +23,7 @@ test(function () use ($context) { // referencing table with integer primary key
 });
 
 
-test(function () use ($context) { // referencing table with string primary key
+test('referencing table with string primary key', function () use ($context) {
 	$computers = $context->table('person')->get('mh')->related('computer');
 	Assert::count(1, $computers);
 	foreach ($computers as $computer) {

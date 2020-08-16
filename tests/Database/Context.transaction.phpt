@@ -14,7 +14,7 @@ require __DIR__ . '/connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$context->beginTransaction();
 	$context->query('DELETE FROM book');
 	$context->rollBack();
@@ -23,7 +23,7 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$context->beginTransaction();
 	$context->query('DELETE FROM book');
 	$context->commit();

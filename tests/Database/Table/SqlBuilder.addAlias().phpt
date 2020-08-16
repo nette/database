@@ -32,7 +32,7 @@ class SqlBuilderMock extends SqlBuilder
 $driver = $connection->getSupplementalDriver();
 
 
-test(function () use ($context, $driver) { // test duplicated table names throw exception
+test('test duplicated table names throw exception', function () use ($context, $driver) {
 	$authorTable = ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA) ? 'public.' : '') . 'author';
 	$sqlBuilder = new SqlBuilderMock($authorTable, $context);
 	$sqlBuilder->addAlias(':book(translator)', 'book1');
@@ -64,7 +64,7 @@ test(function () use ($context, $driver) { // test duplicated table names throw 
 });
 
 
-test(function () use ($context, $driver) { // test same table chain with another alias
+test('test same table chain with another alias', function () use ($context, $driver) {
 	$sqlBuilder = new SqlBuilderMock('author', $context);
 	$sqlBuilder->addAlias(':book(translator)', 'translated_book');
 	$sqlBuilder->addAlias(':book(translator)', 'translated_book2');
@@ -81,7 +81,7 @@ test(function () use ($context, $driver) { // test same table chain with another
 });
 
 
-test(function () use ($context, $driver) { // test nested alias
+test('test nested alias', function () use ($context, $driver) {
 	if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
 		$sqlBuilder = new SqlBuilderMock('public.author', $context);
 	} else {

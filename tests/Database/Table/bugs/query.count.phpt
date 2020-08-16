@@ -17,7 +17,7 @@ $context->query("INSERT INTO book_tag_alt (book_id, tag_id, state) VALUES (1, 24
 $context->query("INSERT INTO book_tag_alt (book_id, tag_id, state) VALUES (2, 24, 'private');");
 $context->query("INSERT INTO book_tag_alt (book_id, tag_id, state) VALUES (2, 22, 'private');");
 
-test(function () use ($connection, $context) {
+test('', function () use ($connection, $context) {
 	$context->table('author')->get(11); // have to build cache first
 
 	$count = 0;

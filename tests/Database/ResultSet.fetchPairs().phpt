@@ -14,7 +14,7 @@ require __DIR__ . '/connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
 
 
-test(function () use ($connection) {
+test('', function () use ($connection) {
 	$res = $connection->query('SELECT * FROM book ORDER BY title');
 	Assert::same([
 		1 => '1001 tipu a triku pro PHP',
@@ -32,7 +32,7 @@ test(function () use ($connection) {
 });
 
 
-test(function () use ($connection) {
+test('', function () use ($connection) {
 	$pairs = $connection->query('SELECT title, id FROM book ORDER BY title')->fetchPairs(1, 0);
 	Assert::same([
 		1 => '1001 tipu a triku pro PHP',
@@ -43,7 +43,7 @@ test(function () use ($connection) {
 });
 
 
-test(function () use ($connection) {
+test('', function () use ($connection) {
 	$pairs = $connection->query('SELECT * FROM book ORDER BY id')->fetchPairs('id', 'id');
 	Assert::same([
 		1 => 1,
@@ -54,7 +54,7 @@ test(function () use ($connection) {
 });
 
 
-test(function () use ($connection) {
+test('', function () use ($connection) {
 	$pairs = $connection->query('SELECT id FROM book ORDER BY id')->fetchPairs('id');
 	Assert::equal([
 		1 => Nette\Database\Row::from(['id' => 1]),
@@ -65,7 +65,7 @@ test(function () use ($connection) {
 });
 
 
-test(function () use ($connection) {
+test('', function () use ($connection) {
 	$pairs = $connection->query('UPDATE author SET born = ? WHERE id = 11', new DateTime('2002-02-20'));
 	$pairs = $connection->query('UPDATE author SET born = ? WHERE id = 12', new DateTime('2002-02-02'));
 	$pairs = $connection->query('SELECT * FROM author WHERE born IS NOT NULL ORDER BY born')->fetchPairs('born', 'name');

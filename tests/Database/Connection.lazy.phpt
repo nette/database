@@ -14,14 +14,14 @@ use Tester\Assert;
 require __DIR__ . '/../bootstrap.php';
 
 
-test(function () { // non lazy
+test('non lazy', function () {
 	Assert::exception(function () {
 		$connection = new Nette\Database\Connection('dsn', 'user', 'password');
 	}, Nette\Database\DriverException::class, 'invalid data source name');
 });
 
 
-test(function () { // lazy
+test('lazy', function () {
 	$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => true]);
 	$context = new Nette\Database\Context($connection, new Structure($connection, new DevNullStorage));
 	Assert::exception(function () use ($context) {
@@ -30,7 +30,7 @@ test(function () { // lazy
 });
 
 
-test(function () {
+test('', function () {
 	$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => true]);
 	Assert::exception(function () use ($connection) {
 		$connection->quote('x');
@@ -38,7 +38,7 @@ test(function () {
 });
 
 
-test(function () { // connect & disconnect
+test('connect & disconnect', function () {
 	$options = Tester\Environment::loadData() + ['user' => null, 'password' => null];
 	$connections = 1;
 

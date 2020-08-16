@@ -14,7 +14,7 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$book = $context->table('book')->get(1);
 	foreach ($book->related('book_tag') as $bookTag) {
 		if ($bookTag->tag->name === 'PHP') {
@@ -33,7 +33,7 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$book = $context->table('book')->get(3);
 	foreach ($related = $book->related('book_tag_alt') as $bookTag) {
 	}
@@ -54,7 +54,7 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$context->table('book_tag')->insert([
 		'book_id' => 1,
 		'tag_id' => 21, // PHP tag

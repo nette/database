@@ -13,8 +13,7 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test4.sql");
 
-// Insert into table with simple primary index (autoincrement)
-test(function () use ($context) {
+test('Insert into table with simple primary index (autoincrement)', function () use ($context) {
 	$simplePkAutoincrementResult = $context->table('simple_pk_autoincrement')->insert([
 		'note' => 'Some note here',
 	]);
@@ -32,8 +31,7 @@ test(function () use ($context) {
 	Assert::equal('Some note here 2', $simplePkAutoincrementResult2->note);
 });
 
-// Insert into table with simple primary index (no autoincrement)
-test(function () use ($context) {
+test('Insert into table with simple primary index (no autoincrement)', function () use ($context) {
 	$simplePkNoAutoincrementResult = $context->table('simple_pk_no_autoincrement')->insert([
 		'identifier1' => 100,
 		'note' => 'Some note here',
@@ -53,8 +51,7 @@ test(function () use ($context) {
 	Assert::equal('Some note here 2', $simplePkNoAutoincrementResult2->note);
 });
 
-// Insert into table with multi column primary index (no autoincrement)
-test(function () use ($context) {
+test('Insert into table with multi column primary index (no autoincrement)', function () use ($context) {
 	$multiPkNoAutoincrementResult = $context->table('multi_pk_no_autoincrement')->insert([
 		'identifier1' => 5,
 		'identifier2' => 10,
@@ -78,8 +75,7 @@ test(function () use ($context) {
 	Assert::equal('Some note here 2', $multiPkNoAutoincrementResult2->note);
 });
 
-// Insert into table with multi column primary index (autoincrement)
-test(function () use ($driverName, $context) {
+test('Insert into table with multi column primary index (autoincrement)', function () use ($driverName, $context) {
 	if (in_array($driverName, ['mysql', 'pgsql'], true)) {
 		$multiPkAutoincrementResult = $context->table('multi_pk_autoincrement')->insert([
 			'identifier2' => 999,
@@ -103,8 +99,7 @@ test(function () use ($driverName, $context) {
 	}
 });
 
-// Insert into table without primary key
-test(function () use ($context) {
+test('Insert into table without primary key', function () use ($context) {
 	$noPkResult1 = $context->table('no_pk')->insert([
 		'note' => 'Some note here',
 	]);

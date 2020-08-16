@@ -14,7 +14,7 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test(function () use ($context) { // Testing Selection caching
+test('Testing Selection caching', function () use ($context) {
 	$sql = [];
 	for ($i = 0; $i < 4; $i += 1) {
 		if ($i !== 2) {
@@ -53,7 +53,7 @@ test(function () use ($context) { // Testing Selection caching
 });
 
 
-test(function () use ($context) { // Testing GroupedSelection reinvalidation caching
+test('Testing GroupedSelection reinvalidation caching', function () use ($context) {
 	foreach ($context->table('author') as $author) {
 		$stack[] = $selection = $author->related('book.author_id')->order('title');
 		foreach ($selection as $book) {
@@ -85,7 +85,7 @@ before(function () use ($cacheMemoryStorage) {
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$selection = $context->table('book');
 	foreach ($selection as $book) {
 		$book->id;
@@ -107,7 +107,7 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$relatedStack = [];
 	foreach ($context->table('author') as $author) {
 		$relatedStack[] = $related = $author->related('book.author_id');
@@ -125,7 +125,7 @@ test(function () use ($context) {
 });
 
 
-test(function () use ($context) { // Test saving joining keys even with 0 rows
+test('Test saving joining keys even with 0 rows', function () use ($context) {
 	$cols = [];
 	for ($i = 0; $i < 2; $i += 1) {
 		$author = $context->table('author')->get(11);
@@ -143,7 +143,7 @@ test(function () use ($context) { // Test saving joining keys even with 0 rows
 });
 
 
-test(function () use ($context) { // Test saving the union of needed cols, the second call is subset
+test('Test saving the union of needed cols, the second call is subset', function () use ($context) {
 	$cols = [];
 	for ($i = 0; $i < 3; $i += 1) {
 		$author = $context->table('author')->get(11);
@@ -166,7 +166,7 @@ test(function () use ($context) { // Test saving the union of needed cols, the s
 });
 
 
-test(function () use ($context) { // Test saving the union of needed cols, the second call is not subset
+test('Test saving the union of needed cols, the second call is not subset', function () use ($context) {
 	$cols = [];
 	for ($i = 0; $i < 3; $i += 1) {
 		$author = $context->table('author')->get(11);
@@ -190,7 +190,7 @@ test(function () use ($context) { // Test saving the union of needed cols, the s
 });
 
 
-test(function () use ($context) { // Test multiple use of same selection
+test('Test multiple use of same selection', function () use ($context) {
 	$sql = [];
 	$context->getConnection()->onQuery[] = function ($_, $result) use (&$sql) {
 		$sql[] = $result->getQueryString();

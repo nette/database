@@ -43,7 +43,7 @@ class SqlBuilderMock extends SqlBuilder
 
 $driver = $connection->getSupplementalDriver();
 
-test(function () use ($context) { // test circular reference
+test('test circular reference', function () use ($context) {
 	$sqlBuilder = new SqlBuilderMock('author', $context);
 	$sqlBuilder->addJoinCondition(':book(translator)', ':book(translator).translator_id = :book(translator).next_volume.translator_id');
 	Assert::exception(function () use ($sqlBuilder) {
@@ -66,7 +66,7 @@ test(function () use ($context) { // test circular reference
 	}, Nette\InvalidArgumentException::class, "Circular reference detected at left join conditions (tables ':book.next_volume' => ':book.translator' => ':book.auth' => ':book.next_volume').");
 });
 
-test(function () use ($context, $driver) {
+test('', function () use ($context, $driver) {
 	$sqlBuilder = new SqlBuilderMock('author', $context);
 	$sqlBuilder->addJoinCondition(':book(translator)', ':book(translator).id > ?', 2);
 	$sqlBuilder->addJoinCondition(':book(translator):book_tag_alt', ':book(translator):book_tag_alt.state ?', 'private');
@@ -90,7 +90,7 @@ test(function () use ($context, $driver) {
 	Assert::same([2, 'private'], $sqlBuilder->getParameters());
 });
 
-test(function () use ($context) {
+test('', function () use ($context) {
 	$sqlBuilder = new SqlBuilderMock('book', $context);
 	$sqlBuilder->addJoinCondition('next_volume.author', 'next_volume.author.born >', '2000-01-01');
 

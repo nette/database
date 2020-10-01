@@ -27,7 +27,7 @@ If you like Nette, **[please make a donation now](https://nette.org/donate)**. T
 Installation
 ------------
 
-The recommended way to install is via Composer:
+Recommended way to install is via Composer:
 
 ```
 composer require nette/database
@@ -45,7 +45,7 @@ This is just a piece of documentation. [Please see our website](https://doc.nett
 Database Core
 -------------
 
-To create a new database connection just create a new instance of `Nette\Database\Connection` class:
+To create a new database connection, just create a new instance of `Nette\Database\Connection` class:
 
 ```php
 $database = new Nette\Database\Connection($dsn, $user, $password); // the same arguments as uses PDO

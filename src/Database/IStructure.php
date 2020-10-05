@@ -25,7 +25,8 @@ interface IStructure
 		FIELD_TIME = 'time',
 		FIELD_DATETIME = 'datetime',
 		FIELD_UNIX_TIMESTAMP = 'timestamp',
-		FIELD_TIME_INTERVAL = 'timeint';
+		FIELD_TIME_INTERVAL = 'timeint',
+		FIELD_TABLENAME = 'regclass';
 
 	/**
 	 * Returns tables list.

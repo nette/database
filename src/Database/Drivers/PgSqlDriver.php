@@ -63,6 +63,13 @@ class PgSqlDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
+	public function undelimite(string $name): string
+	{
+		$name = preg_replace('#(?<!")"(?!")#', '', $name);
+    return str_replace('""', '"', $name);
+	}
+
+
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
 		return $value->format("'Y-m-d H:i:s'");

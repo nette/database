@@ -161,6 +161,9 @@ class ResultSet implements \Iterator, IRowContainer
 
 			} elseif ($type === IStructure::FIELD_UNIX_TIMESTAMP) {
 				$row[$key] = Nette\Utils\DateTime::from($value);
+
+			} elseif ($type === IStructure::FIELD_TABLENAME) {
+				$row[$key] = $this->connection->getSupplementalDriver()->undelimite($value);
 			}
 		}
 

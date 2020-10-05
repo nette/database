@@ -39,6 +39,13 @@ class OdbcDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
+	public function undelimite(string $name): string
+	{
+		$name = preg_replace('#(?<!\])\](?!\])#', '', preg_replace('#(?<!\[)\[(?!\[)#', '', $name));
+		return str_replace(['[[', ']]'], ['[', ']'], $name);
+	}
+
+
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
 		return $value->format('#m/d/Y H:i:s#');

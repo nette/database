@@ -33,6 +33,7 @@ class Helpers
 		'DATE' => IStructure::FIELD_DATE,
 		'(SMALL)?DATETIME(OFFSET)?\d*|TIME(STAMP.*)?' => IStructure::FIELD_DATETIME,
 		'BYTEA|(TINY|MEDIUM|LONG|)BLOB|(LONG )?(VAR)?BINARY|IMAGE' => IStructure::FIELD_BINARY,
+		'REGCLASS' => IStructure::FIELD_TABLENAME,
 	];
 
 

@@ -56,7 +56,7 @@ class Structure implements IStructure
 
 
 	/**
-	 * @return string|array|null
+	 * @return string|string[]|null
 	 */
 	public function getPrimaryKey(string $table)
 	{
@@ -148,7 +148,9 @@ class Structure implements IStructure
 
 		if ($column) {
 			$column = strtolower($column);
-			return $this->structure['belongsTo'][$table][$column] ?? null;
+			return isset($this->structure['belongsTo'][$table][$column])
+				? [$this->structure['belongsTo'][$table][$column], $column]
+				: null;
 
 		} else {
 			return $this->structure['belongsTo'][$table] ?? [];
@@ -175,14 +177,11 @@ class Structure implements IStructure
 			return;
 		}
 
-		$this->structure = $this->cache->load('structure', [$this, 'loadStructure']);
+		$this->structure = $this->cache->load('structure', \Closure::fromCallable([$this, 'loadStructure']));
 	}
 
 
-	/**
-	 * @internal
-	 */
-	public function loadStructure(): array
+	protected function loadStructure(): array
 	{
 		$driver = $this->connection->getSupplementalDriver();
 
@@ -241,7 +240,19 @@ class Structure implements IStructure
 	protected function analyzeForeignKeys(array &$structure, string $table): void
 	{
 		$lowerTable = strtolower($table);
-		foreach ($this->connection->getSupplementalDriver()->getForeignKeys($table) as $row) {
+
+		$foreignKeys = $this->connection->getSupplementalDriver()->getForeignKeys($table);
+
+		$fksColumnsCounts = [];
+		foreach ($foreignKeys as $foreignKey) {
+			$tmp = &$fksColumnsCounts[$foreignKey['name']];
+			$tmp++;
+		}
+		usort($foreignKeys, function ($a, $b) use ($fksColumnsCounts): int {
+			return $fksColumnsCounts[$b['name']] <=> $fksColumnsCounts[$a['name']];
+		});
+
+		foreach ($foreignKeys as $row) {
 			$structure['belongsTo'][$lowerTable][$row['local']] = $row['table'];
 			$structure['hasMany'][strtolower($row['table'])][$table][] = $row['local'];
 		}

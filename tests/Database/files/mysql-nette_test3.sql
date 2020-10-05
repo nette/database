@@ -1,3 +1,5 @@
+SET @@sql_mode = sys.list_drop(@@sql_mode, 'STRICT_TRANS_TABLES');
+
 CREATE DATABASE IF NOT EXISTS nette_test;
 USE nette_test;
 

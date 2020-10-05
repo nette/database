@@ -132,3 +132,16 @@ $avgTime->f = 0.5;
 Assert::equal([
 	'avg_time' => $avgTime,
 ], (array) $res->fetch());
+
+
+$connection->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
+$res = $connection->query('SELECT `int`, `decimal`, `decimal2`, `float`, `double` FROM types');
+
+Assert::equal([
+	'int' => 1,
+	'decimal' => 1.0,
+	'decimal2' => 1.1,
+	'float' => 1.0,
+	'double' => 1.1,
+], (array) $res->fetch());

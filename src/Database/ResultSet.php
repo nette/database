@@ -26,7 +26,7 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @var \PDOStatement|null */
 	private $pdoStatement;
 
-	/** @var IRow */
+	/** @var IRow|false */
 	private $result;
 
 	/** @var int */
@@ -59,7 +59,7 @@ class ResultSet implements \Iterator, IRowContainer
 			if (substr($queryString, 0, 2) === '::') {
 				$connection->getPdo()->{substr($queryString, 2)}();
 			} elseif ($queryString !== null) {
-				static $types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT,
+				static $types = ['boolean' => PHP_VERSION < 70307 ? PDO::PARAM_INT : PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT,
 					'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL, ];
 				$this->pdoStatement = $connection->getPdo()->prepare($queryString);
 				foreach ($params as $key => $value) {
@@ -67,11 +67,12 @@ class ResultSet implements \Iterator, IRowContainer
 					$this->pdoStatement->bindValue(is_int($key) ? $key + 1 : $key, $value, $types[$type] ?? PDO::PARAM_STR);
 				}
 				$this->pdoStatement->setFetchMode(PDO::FETCH_ASSOC);
-				$this->pdoStatement->execute();
+				@$this->pdoStatement->execute(); // @ PHP generates warning when ATTR_ERRMODE = ERRMODE_EXCEPTION bug #73878
 			}
 		} catch (\PDOException $e) {
 			$e = $connection->getSupplementalDriver()->convertException($e);
 			$e->queryString = $queryString;
+			$e->params = $params;
 			throw $e;
 		}
 		$this->time = microtime(true) - $time;
@@ -140,7 +141,7 @@ class ResultSet implements \Iterator, IRowContainer
 				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
 
 			} elseif ($type === IStructure::FIELD_FLOAT) {
-				if (($pos = strpos($value, '.')) !== false) {
+				if (is_string($value) && ($pos = strpos($value, '.')) !== false) {
 					$value = rtrim(rtrim($pos === 0 ? "0$value" : $value, '0'), '.');
 				}
 				$float = (float) $value;
@@ -153,7 +154,7 @@ class ResultSet implements \Iterator, IRowContainer
 				$row[$key] = new Nette\Utils\DateTime($value);
 
 			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
-				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?\z#', $value, $m);
+				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?$#D', $value, $m);
 				$row[$key] = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
 				$row[$key]->f = isset($m[5]) ? (float) $m[5] : 0.0;
 				$row[$key]->invert = (int) (bool) $m[1];

@@ -40,7 +40,7 @@ interface IStructure
 
 	/**
 	 * Returns table primary key.
-	 * @return string|array|null
+	 * @return string|string[]|null
 	 */
 	function getPrimaryKey(string $table);
 

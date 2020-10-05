@@ -82,13 +82,13 @@ class StructureTestCase extends TestCase
 		$this->connection->shouldReceive('getSupplementalDriver')->times(4)->andReturn($this->driver);
 		$this->driver->shouldReceive('getForeignKeys')->with('authors')->once()->andReturn([]);
 		$this->driver->shouldReceive('getForeignKeys')->with('Books')->once()->andReturn([
-			['local' => 'author_id', 'table' => 'authors', 'foreign' => 'id'],
-			['local' => 'translator_id', 'table' => 'authors', 'foreign' => 'id'],
+			['local' => 'author_id', 'table' => 'authors', 'foreign' => 'id', 'name' => 'authors_fk1'],
+			['local' => 'translator_id', 'table' => 'authors', 'foreign' => 'id', 'name' => 'authors_fk2'],
 		]);
 		$this->driver->shouldReceive('getForeignKeys')->with('tags')->once()->andReturn([]);
 		$this->driver->shouldReceive('getForeignKeys')->with('books_x_tags')->once()->andReturn([
-			['local' => 'book_id', 'table' => 'Books', 'foreign' => 'id'],
-			['local' => 'tag_id', 'table' => 'tags', 'foreign' => 'id'],
+			['local' => 'book_id', 'table' => 'Books', 'foreign' => 'id', 'name' => 'books_x_tags_fk1'],
+			['local' => 'tag_id', 'table' => 'tags', 'foreign' => 'id', 'name' => 'books_x_tags_fk2'],
 		]);
 
 		$this->structure = new StructureMock($this->connection, $this->storage);
@@ -173,6 +173,14 @@ class StructureTestCase extends TestCase
 			'tag_id' => 'tags',
 			'book_id' => 'Books',
 		], $this->structure->getBelongsToReference('books_x_tags'));
+
+
+		Assert::same(
+			['Books', 'book_id'],
+			$this->structure->getBelongsToReference('books_x_tags', 'book_id')
+		);
+
+		Assert::null($this->structure->getBelongsToReference('books_x_tags', 'non_exist'));
 	}
 
 

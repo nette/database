@@ -19,8 +19,14 @@ class Row extends Nette\Utils\ArrayHash implements IRow
 {
 	public function __get($key)
 	{
-		$hint = Nette\Utils\ObjectHelpers::getSuggestion(array_map('strval', array_keys((array) $this)), $key);
+		$hint = Nette\Utils\Helpers::getSuggestion(array_map('strval', array_keys((array) $this)), $key);
 		throw new Nette\MemberAccessException("Cannot read an undeclared column '$key'" . ($hint ? ", did you mean '$hint'?" : '.'));
+	}
+
+
+	public function __isset($key)
+	{
+		return isset($this->key);
 	}
 
 

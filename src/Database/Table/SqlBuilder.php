@@ -585,6 +585,9 @@ class SqlBuilder
 			}
 			$finalJoins += $tableJoins[$table];
 			$key = isset($this->aliases[$table]) ? $table : $this->reservedTableNames[$table];
+			if ($key[0] === '.') {
+				$key = substr($key, 1);
+			}
 			$this->parameters['joinConditionSorted'] += isset($this->parameters['joinCondition'][$key])
 				? [$table => $this->parameters['joinCondition'][$key]]
 				: [];
@@ -759,7 +762,7 @@ class SqlBuilder
 
 	protected function tryDelimite(string $s): string
 	{
-		return preg_replace_callback('#(?<=[^\w`"\[?:]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|\z)#i', function (array $m): string {
+		return preg_replace_callback('#(?<=[^\w`"\[?:]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|$)#Di', function (array $m): string {
 			return strtoupper($m[0]) === $m[0] ? $m[0] : $this->driver->delimite($m[0]);
 		}, $s);
 	}

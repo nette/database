@@ -17,12 +17,17 @@ test(function () use ($connection) { // numeric field
 	Assert::same(123, $row->{123});
 	Assert::same(123, $row->{'123'});
 	Assert::true(isset($row->{123}));
+	Assert::same(123, $row->{123} ?? 'default');
 	Assert::false(isset($row->{1}));
+	Assert::same('default', $row->{1} ?? 'default');
+	Assert::same('default', $row->nullcol ?? 'default');
 
 	Assert::same(123, $row[0]);
 	Assert::true(isset($row[0]));
 	Assert::false(isset($row[123]));
-	//Assert::false(isset($row['0'])); // this is buggy since PHP 5.4 (bug #63217)
+	if (PHP_VERSION_ID > 70300) {
+		Assert::false(isset($row['0'])); // this is buggy since PHP 5.4 (bug #63217) to PHP 7.2
+	}
 	Assert::false(isset($row[1])); // null value
 	Assert::false(isset($row[2])); // is not set
 

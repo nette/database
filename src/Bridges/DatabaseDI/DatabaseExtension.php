@@ -66,10 +66,10 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 
 		foreach ($config->options as $key => $value) {
-			if (is_string($value) && preg_match('#^PDO::\w+\z#', $value)) {
+			if (is_string($value) && preg_match('#^PDO::\w+$#D', $value)) {
 				$config->options[$key] = $value = constant($value);
 			}
-			if (preg_match('#^PDO::\w+\z#', $key)) {
+			if (preg_match('#^PDO::\w+$#D', $key)) {
 				unset($config->options[$key]);
 				$config->options[constant($key)] = $value;
 			}
@@ -99,14 +99,14 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 
 		} elseif (is_string($config->conventions)) {
 			$conventions = $builder->addDefinition($this->prefix("$name.$conventionsServiceName"))
-				->setFactory(preg_match('#^[a-z]+\z#i', $config->conventions)
+				->setFactory(preg_match('#^[a-z]+$#Di', $config->conventions)
 					? 'Nette\Database\Conventions\\' . ucfirst($config->conventions) . 'Conventions'
 					: $config->conventions)
 				->setArguments(strtolower($config->conventions) === 'discovered' ? [$structure] : [])
 				->setAutowired($config->autowired);
 
 		} else {
-			$conventions = Nette\DI\Config\Processor::processArguments([$config['conventions']])[0];
+			$conventions = Nette\DI\Helpers::filterArguments([$config->conventions])[0];
 		}
 
 		$builder->addDefinition($this->prefix("$name.context"))

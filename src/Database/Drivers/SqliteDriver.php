@@ -155,7 +155,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 				'size' => isset($type[1]) ? (int) $type[1] : null,
 				'nullable' => $row['notnull'] == '0',
 				'default' => $row['dflt_value'],
-				'autoincrement' => (bool) preg_match($pattern, (string) $meta['sql']),
+				'autoincrement' => $meta && preg_match($pattern, (string) $meta['sql']),
 				'primary' => $row['pk'] > 0,
 				'vendor' => (array) $row,
 			];

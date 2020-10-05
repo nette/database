@@ -3,7 +3,7 @@
 	"description": "💾 Nette Database: layer with a familiar PDO-like API but much more powerful. Building queries, advanced joins, drivers for MySQL, PostgreSQL, SQLite, MS SQL Server and Oracle.",
 	"keywords": ["nette", "database", "notorm", "queries", "pdo", "mysql", "postgresql", "sqlite", "mssql", "oracle"],
 	"homepage": "https://nette.org",
-	"license": ["BSD-3-Clause", "GPL-2.0", "GPL-3.0"],
+	"license": ["BSD-3-Clause", "GPL-2.0-only", "GPL-3.0-only"],
 	"authors": [
 		{
 			"name": "David Grudl",
@@ -15,27 +15,32 @@
 		}
 	],
 	"require": {
-		"php": ">=7.1",
+		"php": ">=7.2",
 		"ext-pdo": "*",
 		"nette/caching": "^3.0",
-		"nette/utils": "^3.0"
+		"nette/utils": "^3.1"
 	},
 	"require-dev": {
 		"nette/tester": "^2.0",
 		"nette/di": "^v3.0",
 		"mockery/mockery": "^1.0.0",
-		"tracy/tracy": "^2.4"
+		"tracy/tracy": "^2.4",
+		"phpstan/phpstan-nette": "^0.12"
 	},
 	"conflict": {
-		"nette/di": "<3.0"
+		"nette/di": "<3.0-stable"
 	},
 	"autoload": {
 		"classmap": ["src/"]
 	},
 	"minimum-stability": "dev",
+	"scripts": {
+		"phpstan": "phpstan analyse --level 5 --configuration tests/phpstan.neon src",
+		"tester": "tester tests -s"
+	},
 	"extra": {
 		"branch-alias": {
-			"dev-master": "3.0-dev"
+			"dev-master": "3.1-dev"
 		}
 	}
 }

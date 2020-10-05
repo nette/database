@@ -2,17 +2,24 @@ DROP DATABASE IF EXISTS nette_test;
 CREATE DATABASE nette_test;
 USE nette_test;
 
-CREATE TABLE `Photo` (
-  `number` int(4) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`number`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_czech_ci;
+CREATE TABLE room (
+	id INTEGER PRIMARY KEY
+) ENGINE=InnoDB;
 
-INSERT INTO `Photo` (`number`) VALUES (1), (2), (3);
+CREATE TABLE person (
+	username VARCHAR(2) PRIMARY KEY
+) ENGINE=InnoDB;
 
-CREATE TABLE `PhotoNonPublic` (
-  `number` int(4) unsigned NOT NULL AUTO_INCREMENT,
-  PRIMARY KEY (`number`),
-  CONSTRAINT `PhotoNonPublic_ibfk_1` FOREIGN KEY (`number`) REFERENCES `Photo` (`number`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_czech_ci;
+CREATE TABLE computer (
+	id INTEGER PRIMARY KEY,
+	room_id INTEGER NOT NULL,
+	owner_id VARCHAR(2) NOT NULL,
+	CONSTRAINT room_id FOREIGN KEY (room_id) REFERENCES room (id),
+	CONSTRAINT owner_id FOREIGN KEY (owner_id) REFERENCES person (username)
+) ENGINE=InnoDB;
 
-INSERT INTO `PhotoNonPublic` (`number`) VALUES (2), (3);
+INSERT INTO room (id) VALUES (1000);
+
+INSERT INTO person (username) VALUES ('mh');
+
+INSERT INTO computer (id, room_id, owner_id) VALUES (1, 1000, 'mh');

@@ -18,6 +18,9 @@ class DriverException extends \PDOException
 	/** @var string */
 	public $queryString;
 
+	/** @var array */
+	public $params;
+
 
 	/**
 	 * @return static
@@ -25,6 +28,8 @@ class DriverException extends \PDOException
 	public static function from(\PDOException $src)
 	{
 		$e = new static($src->message, 0, $src);
+		$e->file = $src->file;
+		$e->line = $src->line;
 		if (!$src->errorInfo && preg_match('#SQLSTATE\[(.*?)\] \[(.*?)\] (.*)#A', $src->message, $m)) {
 			$m[2] = (int) $m[2];
 			$e->errorInfo = array_slice($m, 1);
@@ -55,5 +60,11 @@ class DriverException extends \PDOException
 	public function getQueryString(): ?string
 	{
 		return $this->queryString;
+	}
+
+
+	public function getParameters(): ?array
+	{
+		return $this->params;
 	}
 }

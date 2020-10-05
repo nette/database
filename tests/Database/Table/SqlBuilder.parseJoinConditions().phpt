@@ -89,3 +89,10 @@ test(function () use ($context, $driver) {
 	}
 	Assert::same([2, 'private'], $sqlBuilder->getParameters());
 });
+
+test(function () use ($context) {
+	$sqlBuilder = new SqlBuilderMock('book', $context);
+	$sqlBuilder->addJoinCondition('next_volume.author', 'next_volume.author.born >', '2000-01-01');
+
+	Assert::same(['2000-01-01'], $sqlBuilder->getParameters());
+});

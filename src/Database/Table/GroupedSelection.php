@@ -20,11 +20,11 @@ use Nette\Database\IConventions;
  */
 class GroupedSelection extends Selection
 {
-	/** @var mixed current assigned referencing array */
-	public $refCacheCurrent;
-
 	/** @var Selection referenced table */
 	protected $refTable;
+
+	/** @var  mixed current assigned referencing array */
+	protected $refCacheCurrent;
 
 	/** @var string grouping column name */
 	protected $column;
@@ -47,10 +47,10 @@ class GroupedSelection extends Selection
 	/**
 	 * Sets active group.
 	 * @internal
-	 * @param  int  $active  primary key of grouped rows
+	 * @param  int|string  $active  primary key of grouped rows
 	 * @return static
 	 */
-	public function setActive(int $active)
+	public function setActive($active)
 	{
 		$this->active = $active;
 		return $this;
@@ -92,8 +92,7 @@ class GroupedSelection extends Selection
 	 */
 	public function aggregation(string $function)
 	{
-		$selectQueryHash = $this->sqlBuilder->getSelectQueryHash($this->cache->getPreviousAccessedColumns());
-		$aggregation = &$this->getRefTable($refPath)->aggregation[$refPath . $function . $selectQueryHash];
+		$aggregation = &$this->getRefTable($refPath)->aggregation[$refPath . $function . $this->sqlBuilder->getSelectQueryHash($this->getPreviousAccessedColumns())];
 
 		if ($aggregation === null) {
 			$aggregation = [];
@@ -131,16 +130,16 @@ class GroupedSelection extends Selection
 	protected function execute(): void
 	{
 		if ($this->rows !== null) {
-			$this->cache->setObserveCache($this);
+			$this->observeCache = $this;
 			return;
 		}
 
-		$accessedColumns = $this->cache->getAccessedColumns();
+		$accessedColumns = $this->accessedColumns;
 		$this->loadRefCache();
 
 		if (!isset($this->refCacheCurrent['data'])) {
 			// we have not fetched any data yet => init accessedColumns by cached accessedColumns
-			$this->cache->setAccessedColumns($accessedColumns);
+			$this->accessedColumns = $accessedColumns;
 
 			$limit = $this->sqlBuilder->getLimit();
 			$rows = count($this->refTable->rows);
@@ -168,7 +167,7 @@ class GroupedSelection extends Selection
 			$this->data = &$this->refCacheCurrent['data'][$this->active];
 		}
 
-		$this->cache->setObserveCache($this);
+		$this->observeCache = $this;
 		if ($this->data === null) {
 			$this->data = [];
 		} else {
@@ -195,9 +194,12 @@ class GroupedSelection extends Selection
 
 	protected function loadRefCache(): void
 	{
-		$referencing = &$this->refCache->getReferencing($this->cache->getGeneralCacheKey());
-		$hash = $this->cache->loadFromRefCache($referencing);
+		$hash = $this->getSpecificCacheKey();
+		$referencing = &$this->refCache['referencing'][$this->getGeneralCacheKey()];
+		$this->observeCache = &$referencing['observeCache'];
 		$this->refCacheCurrent = &$referencing[$hash];
+		$this->accessedColumns = &$referencing[$hash]['accessed'];
+		$this->specificCacheKey = &$referencing[$hash]['specificCacheKey'];
 		$this->rows = &$referencing[$hash]['rows'];
 
 		if (isset($referencing[$hash]['data'][$this->active])) {

@@ -60,6 +60,15 @@ class Context
 	}
 
 
+	/**
+	 * @return mixed
+	 */
+	public function transaction(callable $callback)
+	{
+		return $this->connection->transaction($callback);
+	}
+
+
 	public function getInsertId(string $sequence = null): string
 	{
 		return $this->connection->getInsertId($sequence);
@@ -111,7 +120,7 @@ class Context
 	/**
 	 * Shortcut for query()->fetch()
 	 */
-	public function fetch(string $sql, ...$params): ?Row
+	public function fetch(string $sql, ...$params): ?IRow
 	{
 		return $this->connection->query($sql, ...$params)->fetch();
 	}

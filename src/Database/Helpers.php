@@ -138,6 +138,9 @@ class Helpers
 				return '<i' . (isset($info['uri']) ? ' title="' . htmlspecialchars($info['uri'], ENT_NOQUOTES, 'UTF-8') . '"' : null)
 					. '>&lt;' . htmlspecialchars($type, ENT_NOQUOTES, 'UTF-8') . ' resource&gt;</i> ';
 
+			} elseif (is_bool($param)) {
+				return (string) (int) $param;
+
 			} else {
 				return htmlspecialchars((string) $param, ENT_NOQUOTES, 'UTF-8');
 			}
@@ -185,7 +188,7 @@ class Helpers
 
 	/**
 	 * Import SQL dump from file - extremely fast.
-	 * @param  callable  $onProgress  function (int $count, ?float $percent): void
+	 * @param  callable&callable(int $count, ?float $percent): void  $onProgress
 	 * @return int  count of commands
 	 */
 	public static function loadFromFile(Connection $connection, string $file, callable $onProgress = null): int

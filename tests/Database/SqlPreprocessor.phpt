@@ -22,6 +22,20 @@ test(function () use ($preprocessor) { // basic
 });
 
 
+test(function () use ($preprocessor) { // no parameters
+	[$sql, $params] = $preprocessor->process(['UNKNOWN a = ?, b = ?, c = ?, d = ?, e = ?', 123, 'abc', true, false, null]);
+	Assert::same("UNKNOWN a = 123, b = 'abc', c = 1, d = 0, e = NULL", $sql);
+	Assert::same([], $params);
+});
+
+
+test(function () use ($preprocessor) { // recognizes command in braces
+	[$sql, $params] = $preprocessor->process(['(SELECT ?) UNION (SELECT ?)', 1, 2]);
+	Assert::same('(SELECT ?) UNION (SELECT ?)', $sql);
+	Assert::same([1, 2], $params);
+});
+
+
 test(function () use ($preprocessor) { // arg without placeholder
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id =', 11]);
 	Assert::same('SELECT id FROM author WHERE id = ?', $sql);
@@ -66,6 +80,11 @@ test(function () use ($preprocessor) { // IN
 
 	Assert::same(reformat('SELECT id FROM author WHERE ([a] IN (NULL, ?, ?, ?)) AND (1=0) AND ([c] NOT IN (NULL, ?, ?, ?))'), $sql);
 	Assert::same([1, 2, 3, 1, 2, 3], $params);
+
+
+	[$sql, $params] = $preprocessor->process(['SELECT * FROM table WHERE ? AND id IN (?) AND ?', ['a' => 111], [3, 4], ['b' => 222]]);
+	Assert::same(reformat('SELECT * FROM table WHERE ([a] = ?) AND id IN (?, ?) AND ([b] = ?)'), $sql);
+	Assert::same([111, 3, 4, 222], $params);
 });
 
 
@@ -102,14 +121,23 @@ test(function () use ($preprocessor) { // where
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE', [
 		'id' => null,
 		'x.name <>' => 'a',
+		'born NOT' => null,
 		'born' => [null, 1, 2, 3],
 		'web' => [],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NULL) AND ([x].[name] <> ?) AND ([born] IN (NULL, ?, ?, ?)) AND (1=0)'), $sql);
+	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NULL) AND ([x].[name] <> ?) AND ([born] IS NOT NULL) AND ([born] IN (NULL, ?, ?, ?)) AND (1=0)'), $sql);
 	Assert::same(['a', 1, 2, 3], $params);
 });
 
+test(function () use ($preprocessor) { // where is not null
+	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE', [
+		'id NOT' => null,
+	]]);
+
+	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NOT NULL)'), $sql);
+	Assert::same([], $params);
+});
 
 test(function () use ($preprocessor) { // tuples
 	[$sql, $params] = $preprocessor->process(['SELECT * FROM book_tag WHERE (book_id, tag_id) IN (?)', [
@@ -309,7 +337,7 @@ test(function () use ($preprocessor) { // insert
 	[$sql, $params] = $preprocessor->process(['/* comment */  INSERT INTO author',
 		['name' => 'Catelyn Stark'],
 	]);
-	Assert::same(reformat("/* comment */  INSERT INTO author [name]='Catelyn Stark'"), $sql); // autodetection not used
+	Assert::same(reformat("/* comment */  INSERT INTO author 'Catelyn Stark'"), $sql); // autodetection not used
 	Assert::same([], $params);
 });
 
@@ -324,10 +352,10 @@ test(function () use ($preprocessor) { // ?values
 });
 
 
-test(function () use ($preprocessor) { // automatic detection faild
+test(function () use ($preprocessor) { // automatic detection failed
 	Assert::exception(function () use ($preprocessor) {
-		$preprocessor->process(['INSERT INTO author (name) SELECT name FROM user WHERE id IN (?)', [11, 12]]);
-	}, Nette\InvalidArgumentException::class, 'Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?[and|or|set|values|order]". Mode "values" was used.');
+		dump($preprocessor->process(['INSERT INTO author (name) SELECT name FROM user WHERE id ?', [11, 12]])); // invalid sql
+	}, Nette\InvalidArgumentException::class, 'Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?[and|or|set|values|order|list]". Mode "values" was used.');
 });
 
 
@@ -335,6 +363,36 @@ test(function () use ($preprocessor) { // multi insert
 	[$sql, $params] = $preprocessor->process(['INSERT INTO author', [
 		['name' => 'Catelyn Stark', 'born' => new DateTime('2011-11-11')],
 		['name' => 'Sansa Stark', 'born' => new DateTime('2021-11-11')],
+	]]);
+
+	Assert::same(reformat([
+		'sqlite' => 'INSERT INTO author ([name], [born]) SELECT ?, 1320966000 UNION ALL SELECT ?, 1636585200',
+		'sqlsrv' => "INSERT INTO author ([name], [born]) VALUES (?, '2011-11-11T00:00:00'), (?, '2021-11-11T00:00:00')",
+		"INSERT INTO author ([name], [born]) VALUES (?, '2011-11-11 00:00:00'), (?, '2021-11-11 00:00:00')",
+	]), $sql);
+	Assert::same(['Catelyn Stark', 'Sansa Stark'], $params);
+});
+
+
+test(function () use ($preprocessor) { // multi insert & Rows
+	[$sql, $params] = $preprocessor->process(['INSERT INTO author', [
+		Nette\Database\Row::from(['name' => 'Catelyn Stark', 'born' => new DateTime('2011-11-11')]),
+		Nette\Database\Row::from(['name' => 'Sansa Stark', 'born' => new DateTime('2021-11-11')]),
+	]]);
+
+	Assert::same(reformat([
+		'sqlite' => 'INSERT INTO author ([name], [born]) SELECT ?, 1320966000 UNION ALL SELECT ?, 1636585200',
+		'sqlsrv' => "INSERT INTO author ([name], [born]) VALUES (?, '2011-11-11T00:00:00'), (?, '2021-11-11T00:00:00')",
+		"INSERT INTO author ([name], [born]) VALUES (?, '2011-11-11 00:00:00'), (?, '2021-11-11 00:00:00')",
+	]), $sql);
+	Assert::same(['Catelyn Stark', 'Sansa Stark'], $params);
+});
+
+
+test(function () use ($preprocessor) { // multi insert respects keys
+	[$sql, $params] = $preprocessor->process(['INSERT INTO author', [
+		['name' => 'Catelyn Stark', 'born' => new DateTime('2011-11-11')],
+		['born' => new DateTime('2021-11-11'), 'name' => 'Sansa Stark'],
 	]]);
 
 	Assert::same(reformat([
@@ -387,10 +445,10 @@ test(function () use ($preprocessor) { // update
 	Assert::same([12, 'John Doe'], $params);
 
 
-	[$sql, $params] = $preprocessor->process(['UPDATE author SET a=1,',
+	[$sql, $params] = $preprocessor->process(['UPDATE author SET a=1,', // autodetection not used
 		['id' => 12, 'name' => 'John Doe'],
 	]);
-	Assert::same(reformat('UPDATE author SET a=1, [id]=?, [name]=?'), $sql);
+	Assert::same(reformat('UPDATE author SET a=1, ?, ?'), $sql);
 	Assert::same([12, 'John Doe'], $params);
 });
 

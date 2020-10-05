@@ -14,10 +14,9 @@ use Nette\Database\Conventions\AmbiguousReferenceKeyException;
 
 interface IConventions
 {
-
 	/**
 	 * Returns primary key for table.
-	 * @return string|array|null
+	 * @return string|string[]|null
 	 */
 	function getPrimary(string $table);
 

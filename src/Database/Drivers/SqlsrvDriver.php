@@ -49,6 +49,13 @@ class SqlsrvDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
+	public function undelimite(string $name): string
+	{
+		$name = preg_replace('#(?:^|\.)\[#', '', $name);
+		return str_replace(']]', ']', $name);
+	}
+
+
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
 		/** @see https://msdn.microsoft.com/en-us/library/ms187819.aspx */

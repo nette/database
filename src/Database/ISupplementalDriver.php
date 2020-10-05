@@ -39,6 +39,11 @@ interface ISupplementalDriver
 	function delimite(string $name): string;
 
 	/**
+	 * Undelimites identifier as reverse operation for delimite (for example to get not delimited table name).
+	 */
+	function undelimite(string $name): string;
+
+	/**
 	 * Formats date-time for use in a SQL statement.
 	 */
 	function formatDateTime(\DateTimeInterface $value): string;

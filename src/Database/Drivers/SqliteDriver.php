@@ -74,6 +74,14 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 	}
 
 
+	public function undelimite(string $name): string
+	{
+		$name = preg_replace('#(?:^|\.)\[#', '', $name);
+		// Can not be fully undelimited due to ambigious delimite() - was delimited "[x  x]" name originally "x  x" or "x[]x"?
+		return $name;
+	}
+
+
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
 		return $value->format($this->fmtDateTime);

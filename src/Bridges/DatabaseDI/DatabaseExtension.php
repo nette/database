@@ -36,7 +36,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				'user' => Expect::string()->nullable()->dynamic(),
 				'password' => Expect::string()->nullable()->dynamic(),
 				'options' => Expect::array(),
-				'debugger' => Expect::bool(true),
+				'debugger' => Expect::bool(),
 				'explain' => Expect::bool(true),
 				'reflection' => Expect::string(), // BC
 				'conventions' => Expect::string('discovered'), // Nette\Database\Conventions\DiscoveredConventions
@@ -113,7 +113,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			->setFactory(Nette\Database\Context::class, [$connection, $structure, $conventions])
 			->setAutowired($config->autowired);
 
-		if ($config->debugger) {
+		if ($config->debugger ?? $builder->getByType(\Tracy\BlueScreen::class)) {
 			$connection->addSetup('@Tracy\BlueScreen::addPanel', [
 				[Nette\Bridges\DatabaseTracy\ConnectionPanel::class, 'renderException'],
 			]);

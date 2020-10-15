@@ -59,7 +59,7 @@ test(function () use ($context) { //less items than $itemsPerPage
 });
 
 // SQL Server throw PDOException 'The number of rows provided for a FETCH clause must be greater then zero.'
-if ($driverName !== 'sqlsrv') {
+if ($driverName !== 'sqlsrv' && PHP_VERSION_ID < 80000) {
 	Assert::error(function () use ($context) { //invalid params
 		$tags = $context->table('tag')->page('foo', 'bar');
 		Assert::equal(0, count($tags)); //no items

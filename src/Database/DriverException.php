@@ -37,6 +37,7 @@ class DriverException extends \PDOException
 		} else {
 			$e->errorInfo = $src->errorInfo;
 			$e->code = $src->code;
+			$e->code = $e->errorInfo[0] ?? $src->code;
 		}
 		return $e;
 	}

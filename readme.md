@@ -16,3 +16,5 @@ The [Nette Database Core](https://doc.nette.org/database-core) is a wrapper arou
 The [Nette Database Explorer](https://doc.nette.org/database-explorer) layer helps you to fetch database data more easily and in a more optimized way.
 
 [Please see documentation on our website](https://doc.nette.org/database).
+
+It requires PHP version 5.6 and supports PHP up to 8.0.

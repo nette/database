@@ -33,8 +33,12 @@ class Context
 	private $cacheStorage;
 
 
-	public function __construct(Connection $connection, IStructure $structure, IConventions $conventions = null, Nette\Caching\IStorage $cacheStorage = null)
-	{
+	public function __construct(
+		Connection $connection,
+		IStructure $structure,
+		IConventions $conventions = null,
+		Nette\Caching\IStorage $cacheStorage = null
+	) {
 		$this->connection = $connection;
 		$this->structure = $structure;
 		$this->conventions = $conventions ?: new StaticConventions;

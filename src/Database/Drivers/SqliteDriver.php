@@ -99,7 +99,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
 
 		} elseif ($limit !== null || $offset) {
-			$sql .= ' LIMIT ' . ($limit === null ? '-1' : $limit)
+			$sql .= ' LIMIT ' . ($limit ?? '-1')
 				. ($offset ? ' OFFSET ' . $offset : '');
 		}
 	}
@@ -138,7 +138,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 		$columns = [];
 		foreach ($this->connection->query("PRAGMA table_info({$this->delimite($table)})") as $row) {
 			$column = $row['name'];
-			$pattern = "/(\"$column\"|`$column`|\[$column\]|$column)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";
+			$pattern = "/(\"$column\"|`$column`|\\[$column\\]|$column)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";
 			$type = explode('(', $row['type']);
 			$columns[] = [
 				'name' => $column,
@@ -224,11 +224,9 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 		for ($col = 0; $col < $count; $col++) {
 			$meta = $statement->getColumnMeta($col);
 			if (isset($meta['sqlite:decl_type'])) {
-				if (in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], true)) {
-					$types[$meta['name']] = Nette\Database\IStructure::FIELD_UNIX_TIMESTAMP;
-				} else {
-					$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['sqlite:decl_type']);
-				}
+				$types[$meta['name']] = in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], true)
+					? Nette\Database\IStructure::FIELD_UNIX_TIMESTAMP
+					: Nette\Database\Helpers::detectType($meta['sqlite:decl_type']);
 			} elseif (isset($meta['native_type'])) {
 				$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['native_type']);
 			}

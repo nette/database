@@ -70,7 +70,6 @@ test('IN', function () use ($preprocessor) {
 	Assert::same('SELECT id FROM author WHERE (id, name) IN ((?, ?), (?, ?))', $sql);
 	Assert::same([10, 'a', 11, 'b'], $params);
 
-
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE', [
 		'a' => [null, 1, 2, 3],
 		'b' => [],
@@ -283,14 +282,12 @@ test('date time', function () use ($preprocessor, $driverName) {
 	]), $sql);
 	Assert::same([], $params);
 
-
 	if ($driverName === 'mysql') {
 		$interval = new DateInterval('PT26H8M10S');
 		$interval->invert = true;
 		[$sql, $params] = $preprocessor->process(['SELECT ?', [$interval]]);
 		Assert::same(reformat("SELECT '-26:08:10'"), $sql);
 	}
-
 
 	Assert::same([], $params);
 	[$sql, $params] = $preprocessor->process(['SELECT ?', [new DateTimeImmutable('2011-11-11')]]);
@@ -314,20 +311,17 @@ test('insert', function () use ($preprocessor) {
 	]), $sql);
 	Assert::same(['Catelyn Stark'], $params);
 
-
 	[$sql, $params] = $preprocessor->process(["\r\n  INSERT INTO author",
 		['name' => 'Catelyn Stark'],
 	]);
 	Assert::same(reformat("\r\n  INSERT INTO author ([name]) VALUES (?)"), $sql);
 	Assert::same(['Catelyn Stark'], $params);
 
-
 	[$sql, $params] = $preprocessor->process(['REPLACE author ?',
 		['name' => 'Catelyn Stark'],
 	]);
 	Assert::same(reformat('REPLACE author ([name]) VALUES (?)'), $sql);
 	Assert::same(['Catelyn Stark'], $params);
-
 
 	[$sql, $params] = $preprocessor->process(['/* comment */  INSERT INTO author',
 		['name' => 'Catelyn Stark'],
@@ -425,20 +419,17 @@ test('update', function () use ($preprocessor) {
 	Assert::same(reformat('UPDATE author SET [id]=?, [name]=UPPER(?), UPPER(?) = ?'), $sql);
 	Assert::same([12, 'John Doe', 'John', 'DOE'], $params);
 
-
 	[$sql, $params] = $preprocessor->process(["UPDATE author SET \n",
 		['id' => 12, 'name' => 'John Doe'],
 	]);
 	Assert::same(reformat("UPDATE author SET \n [id]=?, [name]=?"), $sql);
 	Assert::same([12, 'John Doe'], $params);
 
-
 	[$sql, $params] = $preprocessor->process(['UPDATE author SET',
 		['id' => 12, 'name' => 'John Doe'],
 	]);
 	Assert::same(reformat('UPDATE author SET [id]=?, [name]=?'), $sql);
 	Assert::same([12, 'John Doe'], $params);
-
 
 	[$sql, $params] = $preprocessor->process(['UPDATE author SET a=1,',
 		['id' => 12, 'name' => 'John Doe'],

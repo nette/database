@@ -105,7 +105,7 @@ class MySqlDriver implements Nette\Database\ISupplementalDriver
 
 		} elseif ($limit !== null || $offset) {
 			// see http://dev.mysql.com/doc/refman/5.0/en/select.html
-			$sql .= ' LIMIT ' . ($limit === null ? '18446744073709551615' : $limit)
+			$sql .= ' LIMIT ' . ($limit ?? '18446744073709551615')
 				. ($offset ? ' OFFSET ' . $offset : '');
 		}
 	}

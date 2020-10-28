@@ -120,7 +120,13 @@ class Helpers
 				return '?';
 			}
 			$param = $params[$i++];
-			if (is_string($param) && (preg_match('#[^\x09\x0A\x0D\x20-\x7E\xA0-\x{10FFFF}]#u', $param) || preg_last_error())) {
+			if (
+				is_string($param)
+				&& (
+					preg_match('#[^\x09\x0A\x0D\x20-\x7E\xA0-\x{10FFFF}]#u', $param)
+					|| preg_last_error()
+				)
+			) {
 				return '<i title="Length ' . strlen($param) . ' bytes">&lt;binary&gt;</i>';
 
 			} elseif (is_string($param)) {
@@ -234,8 +240,11 @@ class Helpers
 	}
 
 
-	public static function createDebugPanel($connection, bool $explain = true, string $name = null): Nette\Bridges\DatabaseTracy\ConnectionPanel
-	{
+	public static function createDebugPanel(
+		$connection,
+		bool $explain = true,
+		string $name = null
+	): Nette\Bridges\DatabaseTracy\ConnectionPanel {
 		$panel = new Nette\Bridges\DatabaseTracy\ConnectionPanel($connection);
 		$panel->explain = $explain;
 		$panel->name = $name;

@@ -327,7 +327,9 @@ class SqlBuilder
 		while (count($params)) {
 			$arg = array_shift($params);
 			preg_match('#(?:.*?\?.*?){' . $placeholderNum . '}(((?:&|\||^|~|\+|-|\*|/|%|\(|,|<|>|=|(?<=\W|^)(?:REGEXP|ALL|AND|ANY|BETWEEN|EXISTS|IN|[IR]?LIKE|OR|NOT|SOME|INTERVAL))\s*)?(?:\(\?\)|\?))#s', $condition, $match, PREG_OFFSET_CAPTURE);
-			$hasOperator = ($match[1][0] === '?' && $match[1][1] === 0) ? true : !empty($match[2][0]);
+			$hasOperator = ($match[1][0] === '?' && $match[1][1] === 0)
+				? true
+				: !empty($match[2][0]);
 
 			if ($arg === null) {
 				$replace = 'IS NULL';
@@ -383,11 +385,9 @@ class SqlBuilder
 						if (!$hasBrackets && ($hasOperators || ($hasNot && !$hasPrefixNot))) {
 							throw new Nette\InvalidArgumentException('Possible SQL query corruption. Add parentheses around operators.');
 						}
-						if ($hasPrefixNot) {
-							$replace = 'IS NULL OR TRUE';
-						} else {
-							$replace = 'IS NULL AND FALSE';
-						}
+						$replace = $hasPrefixNot
+							? 'IS NULL OR TRUE'
+							: 'IS NULL AND FALSE';
 						$arg = null;
 					} else {
 						$replace = $match[2][0] . '(?)';
@@ -584,7 +584,9 @@ class SqlBuilder
 				}
 			}
 			$finalJoins += $tableJoins[$table];
-			$key = isset($this->aliases[$table]) ? $table : $this->reservedTableNames[$table];
+			$key = isset($this->aliases[$table])
+				? $table
+				: $this->reservedTableNames[$table];
 			if ($key[0] === '.') {
 				$key = substr($key, 1);
 			}
@@ -629,7 +631,10 @@ class SqlBuilder
 		// join schema keyMatch and table keyMatch to schema.table keyMatch
 		if ($this->driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA) && count($keyMatches) > 1) {
 			$tables = $this->getCachedTableList();
-			if (!isset($tables[$keyMatches[0]['key']]) && isset($tables[$keyMatches[0]['key'] . '.' . $keyMatches[1]['key']])) {
+			if (
+				!isset($tables[$keyMatches[0]['key']])
+				&& isset($tables[$keyMatches[0]['key'] . '.' . $keyMatches[1]['key']])
+			) {
 				$keyMatch = array_shift($keyMatches);
 				$keyMatches[0]['key'] = $keyMatch['key'] . '.' . $keyMatches[0]['key'];
 				$keyMatches[0]['del'] = $keyMatch['del'];
@@ -639,7 +644,11 @@ class SqlBuilder
 		// do not make a join when referencing to the current table column - inner conditions
 		// check it only when not making backjoin on itself - outer condition
 		if ($keyMatches[0]['del'] === '.') {
-			if (count($keyMatches) > 1 && ($parent === $keyMatches[0]['key'] || $parentAlias === $keyMatches[0]['key'])) {
+			if (
+				count($keyMatches) > 1
+				&& ($parent === $keyMatches[0]['key']
+					|| $parentAlias === $keyMatches[0]['key'])
+			) {
 				throw new Nette\InvalidArgumentException("Do not prefix table chain with origin table name '{$keyMatches[0]['key']}'. If you want to make self reference, please add alias.");
 			}
 			if ($parent === $keyMatches[0]['key']) {
@@ -654,17 +663,17 @@ class SqlBuilder
 			if (!$index && isset($this->aliases[$keyMatch['key']])) {
 				if ($keyMatch['del'] === ':') {
 					throw new Nette\InvalidArgumentException("You are using has many syntax with alias (':{$keyMatch['key']}'). You have to move it to alias definition.");
-				} else {
-					$previousAlias = $this->currentAlias;
-					$this->currentAlias = $keyMatch['key'];
-					$requiredJoins = [];
-					$query = $this->aliases[$keyMatch['key']] . '.foo';
-					$this->parseJoins($requiredJoins, $query);
-					$aliasJoin = array_pop($requiredJoins);
-					$joins += $requiredJoins;
-					[$table, , $parentAlias, $column, $primary] = $aliasJoin;
-					$this->currentAlias = $previousAlias;
 				}
+				$previousAlias = $this->currentAlias;
+				$this->currentAlias = $keyMatch['key'];
+				$requiredJoins = [];
+				$query = $this->aliases[$keyMatch['key']] . '.foo';
+				$this->parseJoins($requiredJoins, $query);
+				$aliasJoin = array_pop($requiredJoins);
+				$joins += $requiredJoins;
+				[$table, , $parentAlias, $column, $primary] = $aliasJoin;
+				$this->currentAlias = $previousAlias;
+
 			} elseif ($keyMatch['del'] === ':') {
 				if (isset($keyMatch['throughColumn'])) {
 					$table = $keyMatch['key'];
@@ -740,7 +749,9 @@ class SqlBuilder
 
 	protected function buildConditions(): string
 	{
-		return $this->where ? ' WHERE (' . implode(') AND (', $this->where) . ')' : '';
+		return $this->where
+			? ' WHERE (' . implode(') AND (', $this->where) . ')'
+			: '';
 	}
 
 
@@ -763,13 +774,19 @@ class SqlBuilder
 	protected function tryDelimite(string $s): string
 	{
 		return preg_replace_callback('#(?<=[^\w`"\[?:]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|$)#Di', function (array $m): string {
-			return strtoupper($m[0]) === $m[0] ? $m[0] : $this->driver->delimite($m[0]);
+			return strtoupper($m[0]) === $m[0]
+				? $m[0]
+				: $this->driver->delimite($m[0]);
 		}, $s);
 	}
 
 
-	protected function addConditionComposition(array $columns, array $parameters, array &$conditions, array &$conditionsParameters): bool
-	{
+	protected function addConditionComposition(
+		array $columns,
+		array $parameters,
+		array &$conditions,
+		array &$conditionsParameters
+	): bool {
 		if ($this->driver->isSupported(ISupplementalDriver::SUPPORT_MULTI_COLUMN_AS_OR_COND)) {
 			$conditionFragment = '(' . implode(' = ? AND ', $columns) . ' = ?) OR ';
 			$condition = substr(str_repeat($conditionFragment, count($parameters)), 0, -4);

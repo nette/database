@@ -29,7 +29,6 @@ test('', function () use ($context) {
 	$count = $context->table('book_tag_alt')->where('book_id', 3)->count();  // SELECT * FROM `book_tag_alt` WHERE (`book_id` = ?)
 	Assert::same(3, $count);
 
-
 	$book->delete();  // DELETE FROM `book` WHERE (`id` = ?)
 	Assert::count(0, $context->table('book')->wherePrimary(3));  // SELECT * FROM `book` WHERE (`id` = ?)
 });

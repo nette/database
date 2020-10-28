@@ -87,11 +87,9 @@ Assert::same(
 );
 
 
-if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
-	$sqlBuilder = new SqlBuilderMock('public.book', $context);
-} else {
-	$sqlBuilder = new SqlBuilderMock('book', $context);
-}
+$sqlBuilder = $driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)
+	? new SqlBuilderMock('public.book', $context)
+	: new SqlBuilderMock('book', $context);
 
 $joins = [];
 $query = 'WHERE :book.translator_id IS NULL AND :book:book.translator_id IS NULL';

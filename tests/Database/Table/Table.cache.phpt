@@ -16,7 +16,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 test('Testing Selection caching', function () use ($context) {
 	$sql = [];
-	for ($i = 0; $i < 4; $i += 1) {
+	for ($i = 0; $i < 4; ++$i) {
 		if ($i !== 2) {
 			$bookSelection = $context->table('book')->wherePrimary(2);
 		}
@@ -62,7 +62,6 @@ test('Testing GroupedSelection reinvalidation caching', function () use ($contex
 	}
 
 	reset($stack)->__destruct();
-
 
 	$books = [];
 	foreach ($context->table('author') as $author) {
@@ -127,7 +126,7 @@ test('', function () use ($context) {
 
 test('Test saving joining keys even with 0 rows', function () use ($context) {
 	$cols = [];
-	for ($i = 0; $i < 2; $i += 1) {
+	for ($i = 0; $i < 2; ++$i) {
 		$author = $context->table('author')->get(11);
 		$books = $author->related('book')->where('translator_id', 99); // 0 rows
 		$cols[] = $books->getPreviousAccessedColumns();
@@ -145,7 +144,7 @@ test('Test saving joining keys even with 0 rows', function () use ($context) {
 
 test('Test saving the union of needed cols, the second call is subset', function () use ($context) {
 	$cols = [];
-	for ($i = 0; $i < 3; $i += 1) {
+	for ($i = 0; $i < 3; ++$i) {
 		$author = $context->table('author')->get(11);
 		$books = $author->related('book');
 		$cols[] = $books->getPreviousAccessedColumns();
@@ -168,7 +167,7 @@ test('Test saving the union of needed cols, the second call is subset', function
 
 test('Test saving the union of needed cols, the second call is not subset', function () use ($context) {
 	$cols = [];
-	for ($i = 0; $i < 3; $i += 1) {
+	for ($i = 0; $i < 3; ++$i) {
 		$author = $context->table('author')->get(11);
 		$books = $author->related('book');
 		$cols[] = $books->getPreviousAccessedColumns();
@@ -196,7 +195,7 @@ test('Test multiple use of same selection', function () use ($context) {
 		$sql[] = $result->getQueryString();
 	};
 
-	for ($i = 0; $i < 3; $i += 1) {
+	for ($i = 0; $i < 3; ++$i) {
 		$bookSelection = $context->table('book');
 		count($bookSelection);
 

@@ -150,7 +150,11 @@ class ResultSet implements \Iterator, IRowContainer
 			} elseif ($type === IStructure::FIELD_BOOL) {
 				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
 
-			} elseif ($type === IStructure::FIELD_DATETIME || $type === IStructure::FIELD_DATE || $type === IStructure::FIELD_TIME) {
+			} elseif (
+				$type === IStructure::FIELD_DATETIME
+				|| $type === IStructure::FIELD_DATE
+				|| $type === IStructure::FIELD_TIME
+			) {
 				$row[$key] = new Nette\Utils\DateTime($value);
 
 			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
@@ -186,7 +190,7 @@ class ResultSet implements \Iterator, IRowContainer
 	public function rewind(): void
 	{
 		if ($this->result === false) {
-			throw new Nette\InvalidStateException(__CLASS__ . ' implements only one way iterator.');
+			throw new Nette\InvalidStateException(self::class . ' implements only one way iterator.');
 		}
 	}
 
@@ -222,9 +226,6 @@ class ResultSet implements \Iterator, IRowContainer
 	/********************* interface IRowContainer ****************d*g**/
 
 
-	/**
-	 * @inheritDoc
-	 */
 	public function fetch(): ?IRow
 	{
 		$data = $this->pdoStatement ? $this->pdoStatement->fetch() : null;

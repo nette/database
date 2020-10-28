@@ -15,11 +15,9 @@ require __DIR__ . '/../../connect.inc.php';
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-bug187.sql");
 
 foreach ([true, false] as $published) {
-	if ($published) {
-		$where = '(:PhotoNonPublic.number IS NULL)';
-	} else {
-		$where = '(:PhotoNonPublic.number IS NOT NULL)';
-	}
+	$where = $published
+		? '(:PhotoNonPublic.number IS NULL)'
+		: '(:PhotoNonPublic.number IS NOT NULL)';
 
 	$result = $context->table('Photo')->where($where);
 

@@ -23,7 +23,6 @@ test('', function () use ($context) {
 		'translator_id' => 12,
 	]);
 
-
 	$book = $context->table('book')->get(1);
 	Assert::same('David Grudl', $book->ref('author', 'translator_id')->name);
 	Assert::same('Jakub Vrana', $book->ref('author', 'author_id')->name);

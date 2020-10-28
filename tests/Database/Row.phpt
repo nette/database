@@ -31,7 +31,6 @@ test('numeric field', function () use ($connection) {
 	Assert::false(isset($row[1])); // null value
 	Assert::false(isset($row[2])); // is not set
 
-
 	Assert::error(function () use ($row) {
 		$row->{2};
 	}, Nette\MemberAccessException::class, "Cannot read an undeclared column '2'.");

@@ -28,7 +28,7 @@ $driverName = $connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME);
 $cacheMemoryStorage = new Nette\Caching\Storages\MemoryStorage;
 
 $structure = new Nette\Database\Structure($connection, $cacheMemoryStorage);
-$conventions = new Nette\Database\Conventions\StaticConventions();
+$conventions = new Nette\Database\Conventions\StaticConventions;
 $context = new Nette\Database\Context($connection, $structure, $conventions, $cacheMemoryStorage);
 
 //Testing

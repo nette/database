@@ -82,11 +82,9 @@ test('test same table chain with another alias', function () use ($context, $dri
 
 
 test('test nested alias', function () use ($context, $driver) {
-	if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
-		$sqlBuilder = new SqlBuilderMock('public.author', $context);
-	} else {
-		$sqlBuilder = new SqlBuilderMock('author', $context);
-	}
+	$sqlBuilder = $driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)
+		? new SqlBuilderMock('public.author', $context)
+		: new SqlBuilderMock('author', $context);
 	$sqlBuilder->addAlias(':book(translator)', 'translated_book');
 	$sqlBuilder->addAlias('translated_book.next_volume', 'next');
 	$query = 'WHERE next.translator_id IS NULL';

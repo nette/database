@@ -227,7 +227,10 @@ class SqlsrvDriver implements Nette\Database\ISupplementalDriver
 		$count = $statement->columnCount();
 		for ($col = 0; $col < $count; $col++) {
 			$meta = $statement->getColumnMeta($col);
-			if (isset($meta['sqlsrv:decl_type']) && $meta['sqlsrv:decl_type'] !== 'timestamp') { // timestamp does not mean time in sqlsrv
+			if (
+				isset($meta['sqlsrv:decl_type'])
+				&& $meta['sqlsrv:decl_type'] !== 'timestamp'
+			) { // timestamp does not mean time in sqlsrv
 				$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['sqlsrv:decl_type']);
 			} elseif (isset($meta['native_type'])) {
 				$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['native_type']);

@@ -19,7 +19,6 @@ class SqlPreprocessor
 {
 	use Nette\SmartObject;
 
-	/** @var array */
 	private const MODE_LIST = ['and', 'or', 'set', 'values', 'order'];
 
 	private const ARRAY_MODES = [
@@ -222,7 +221,9 @@ class SqlPreprocessor
 			} elseif (!$mode || $mode === 'set') {
 				foreach ($value as $k => $v) {
 					if (is_int($k)) { // value, value, ... OR (1, 2), (3, 4)
-						$vx[] = is_array($v) ? '(' . $this->formatValue($v) . ')' : $this->formatValue($v);
+						$vx[] = is_array($v)
+							? '(' . $this->formatValue($v) . ')'
+							: $this->formatValue($v);
 					} elseif (substr($k, -1) === '=') { // key+=value, key-=value, ...
 						$k2 = $this->delimite(substr($k, 0, -2));
 						$vx[] = $k2 . '=' . $k2 . ' ' . substr($k, -2, 1) . ' ' . $this->formatValue($v);
@@ -255,7 +256,9 @@ class SqlPreprocessor
 						$vx[] = $k . ' ' . $operator . ' ' . $v;
 					}
 				}
-				return $value ? '(' . implode(') ' . strtoupper($mode) . ' (', $vx) . ')' : '1=1';
+				return $value
+					? '(' . implode(') ' . strtoupper($mode) . ' (', $vx) . ')'
+					: '1=1';
 
 			} elseif ($mode === 'order') { // key, key DESC, ...
 				foreach ($value as $k => $v) {

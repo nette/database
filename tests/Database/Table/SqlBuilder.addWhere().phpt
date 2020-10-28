@@ -201,7 +201,8 @@ test('tests operator suffix', function () use ($context) {
 
 
 test('', function () use ($context) {
-	$books = $context->table('book')->where('id',
+	$books = $context->table('book')->where(
+		'id',
 		$context->table('book_tag')->select('book_id')->where('tag_id', 21)
 	);
 	Assert::same(3, $books->count());
@@ -209,7 +210,8 @@ test('', function () use ($context) {
 
 
 Assert::exception(function () use ($context) {
-	$context->table('book')->where('id',
+	$context->table('book')->where(
+		'id',
 		$context->table('book_tag')->where('tag_id', 21)
 	);
 }, Nette\InvalidArgumentException::class, 'Selection argument must have defined a select column.');
@@ -268,7 +270,8 @@ test('', function () use ($driverName, $context, $connection, $structure) {
 	$dao = new Nette\Database\Context($connection, $structure, $conventions);
 
 	$e = Assert::exception(function () use ($dao) {
-		$books = $dao->table('book')->where('id',
+		$books = $dao->table('book')->where(
+			'id',
 			$dao->table('book_tag')->where('tag_id', 21)
 		);
 		$books->fetch();

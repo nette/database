@@ -21,13 +21,15 @@ $tables = array_filter($tables, function ($t) { return in_array($t['name'], ['au
 usort($tables, function ($a, $b) { return strcmp($a['name'], $b['name']); });
 
 if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
-	Assert::same([
-		['name' => 'author', 'view' => false, 'fullName' => 'public.author'],
-		['name' => 'book', 'view' => false, 'fullName' => 'public.book'],
-		['name' => 'book_tag', 'view' => false, 'fullName' => 'public.book_tag'],
-		['name' => 'tag', 'view' => false, 'fullName' => 'public.tag'],
-	],
-	$tables);
+	Assert::same(
+		[
+			['name' => 'author', 'view' => false, 'fullName' => 'public.author'],
+			['name' => 'book', 'view' => false, 'fullName' => 'public.book'],
+			['name' => 'book_tag', 'view' => false, 'fullName' => 'public.book_tag'],
+			['name' => 'tag', 'view' => false, 'fullName' => 'public.tag'],
+		],
+		$tables
+	);
 } else {
 	Assert::same([
 		['name' => 'author', 'view' => false],

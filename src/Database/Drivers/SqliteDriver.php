@@ -145,7 +145,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 				'table' => $table,
 				'nativetype' => strtoupper($type[0]),
 				'size' => isset($type[1]) ? (int) $type[1] : null,
-				'nullable' => $row['notnull'] == '0',
+				'nullable' => $row['notnull'] === 0,
 				'default' => $row['dflt_value'],
 				'autoincrement' => $meta && preg_match($pattern, (string) $meta['sql']),
 				'primary' => $row['pk'] > 0,
@@ -176,7 +176,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 		foreach ($indexes as $index => $values) {
 			$column = $indexes[$index]['columns'][0];
 			foreach ($columns as $info) {
-				if ($column == $info['name']) {
+				if ($column === $info['name']) {
 					$indexes[$index]['primary'] = (bool) $info['primary'];
 					break;
 				}

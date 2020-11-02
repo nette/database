@@ -86,7 +86,7 @@ class Structure implements IStructure
 
 		// Search for autoincrement key from simple primary key
 		foreach ($this->getColumns($table) as $column) {
-			if ($column['name'] == $primaryKey) {
+			if ($column['name'] === $primaryKey) {
 				return $column['autoincrement'] ? $column['name'] : null;
 			}
 		}

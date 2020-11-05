@@ -14,11 +14,11 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 $driver = $connection->getSupplementalDriver();
-test('', function () use ($context, $driver) {
+test('', function () use ($explorer, $driver) {
 	$schema = $driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)
 		? '[public].'
 		: '';
-	$sql = $context->table('book')->joinWhere('translator', 'translator.name', 'Geek')->select('book.*')->getSql();
+	$sql = $explorer->table('book')->joinWhere('translator', 'translator.name', 'Geek')->select('book.*')->getSql();
 
 	Assert::same(reformat(
 		'SELECT [book].* FROM [book] ' .
@@ -26,8 +26,8 @@ test('', function () use ($context, $driver) {
 	), $sql);
 });
 
-test('', function () use ($context, $driver) {
-	$sql = $context->table('tag')
+test('', function () use ($explorer, $driver) {
+	$sql = $explorer->table('tag')
 		->select('tag.name, COUNT(:book_tag.book.id) AS count_of_next_volume_written_by_younger_author')
 		->joinWhere(':book_tag.book.author', ':book_tag.book.author.born < next_volume_author.born')
 		->alias(':book_tag.book.next_volume.author', 'next_volume_author')

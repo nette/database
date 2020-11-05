@@ -32,9 +32,9 @@ class SqlBuilderMock extends SqlBuilder
 $driver = $connection->getSupplementalDriver();
 
 
-test('test duplicated table names throw exception', function () use ($context, $driver) {
+test('test duplicated table names throw exception', function () use ($explorer, $driver) {
 	$authorTable = ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA) ? 'public.' : '') . 'author';
-	$sqlBuilder = new SqlBuilderMock($authorTable, $context);
+	$sqlBuilder = new SqlBuilderMock($authorTable, $explorer);
 	$sqlBuilder->addAlias(':book(translator)', 'book1');
 	$sqlBuilder->addAlias(':book:book_tag', 'book2');
 	Assert::exception(function () use ($sqlBuilder) {
@@ -64,8 +64,8 @@ test('test duplicated table names throw exception', function () use ($context, $
 });
 
 
-test('test same table chain with another alias', function () use ($context, $driver) {
-	$sqlBuilder = new SqlBuilderMock('author', $context);
+test('test same table chain with another alias', function () use ($explorer, $driver) {
+	$sqlBuilder = new SqlBuilderMock('author', $explorer);
 	$sqlBuilder->addAlias(':book(translator)', 'translated_book');
 	$sqlBuilder->addAlias(':book(translator)', 'translated_book2');
 	$query = 'WHERE translated_book.translator_id IS NULL AND translated_book2.id IS NULL';
@@ -81,10 +81,10 @@ test('test same table chain with another alias', function () use ($context, $dri
 });
 
 
-test('test nested alias', function () use ($context, $driver) {
+test('test nested alias', function () use ($explorer, $driver) {
 	$sqlBuilder = $driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)
-		? new SqlBuilderMock('public.author', $context)
-		: new SqlBuilderMock('author', $context);
+		? new SqlBuilderMock('public.author', $explorer)
+		: new SqlBuilderMock('author', $explorer);
 	$sqlBuilder->addAlias(':book(translator)', 'translated_book');
 	$sqlBuilder->addAlias('translated_book.next_volume', 'next');
 	$query = 'WHERE next.translator_id IS NULL';

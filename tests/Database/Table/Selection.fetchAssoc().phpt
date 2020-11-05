@@ -15,8 +15,8 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($context) {
-	$apps = $context->table('book')->order('title')->fetchAssoc('id=title');  // SELECT * FROM `book` ORDER BY `title`
+test('', function () use ($explorer) {
+	$apps = $explorer->table('book')->order('title')->fetchAssoc('id=title');  // SELECT * FROM `book` ORDER BY `title`
 	Assert::same([
 		1 => '1001 tipu a triku pro PHP',
 		4 => 'Dibi',

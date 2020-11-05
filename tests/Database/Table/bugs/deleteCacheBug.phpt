@@ -12,9 +12,9 @@ require __DIR__ . '/../../connect.inc.php'; // create $connection
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-nette_test1.sql");
 
-test('', function () use ($context) {
+test('', function () use ($explorer) {
 	for ($i = 0; $i < 2; $i++) {
-		$booksSelection = $context->table('book')->wherePrimary(1);
+		$booksSelection = $explorer->table('book')->wherePrimary(1);
 		$book = $booksSelection->fetch();
 		$book->id;
 
@@ -29,9 +29,9 @@ test('', function () use ($context) {
 	}
 });
 
-test('', function () use ($context) {
+test('', function () use ($explorer) {
 	for ($i = 0; $i < 2; $i++) {
-		$booksSelection = $context->table('book')->wherePrimary(2);
+		$booksSelection = $explorer->table('book')->wherePrimary(2);
 		$book = $booksSelection->fetch();
 		$book->id;
 
@@ -49,15 +49,15 @@ test('', function () use ($context) {
 	}
 });
 
-test('', function () use ($context) {
+test('', function () use ($explorer) {
 	$books = [];
 	for ($i = 0; $i < 2; $i++) {
-		$booksSelection = $context->table('book')->where('id IN ?', [3, 4])->order('id');
+		$booksSelection = $explorer->table('book')->where('id IN ?', [3, 4])->order('id');
 		foreach ($booksSelection as $book) {
 			$books[] = $book->id;
 
 			if ($i === 1) {
-				$context->query('DELETE FROM book WHERE id = 4'); //After refetch second row is skipped
+				$explorer->query('DELETE FROM book WHERE id = 4'); //After refetch second row is skipped
 				$book->title; // cause refetch
 			}
 
@@ -71,14 +71,14 @@ test('', function () use ($context) {
 	], $books);
 });
 
-test('', function () use ($context) {
+test('', function () use ($explorer) {
 	for ($i = 0; $i < 2; $i++) {
-		$booksSelection = $context->table('book')->wherePrimary(3);
+		$booksSelection = $explorer->table('book')->wherePrimary(3);
 		$book = $booksSelection->fetch();
 		$book->id;
 
 		if ($i === 1) {
-			$context->query('DELETE FROM book WHERE id = 3');
+			$explorer->query('DELETE FROM book WHERE id = 3');
 			Assert::exception(function () use ($book) {
 				$book->title;
 			}, Nette\InvalidStateException::class, "Database refetch failed; row with signature '3' does not exist!");

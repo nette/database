@@ -16,9 +16,9 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 $driver = $connection->getSupplementalDriver();
 
 
-test('', function () use ($context) {
+test('', function () use ($explorer) {
 	$authorTagsCount = [];
-	$authors = $context
+	$authors = $explorer
 		->table('author')
 		->select('author.name, COUNT(DISTINCT :book:book_tag.tag_id) AS tagsCount')
 		->group('author.name')
@@ -36,8 +36,8 @@ test('', function () use ($context) {
 });
 
 
-test('', function () use ($context, $driver) {
-	$authorsSelection = $context->table('author')->where(':book.translator_id IS NOT NULL')->wherePrimary(12);
+test('', function () use ($explorer, $driver) {
+	$authorsSelection = $explorer->table('author')->where(':book.translator_id IS NOT NULL')->wherePrimary(12);
 
 	if ($driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)) {
 		Assert::same(
@@ -60,7 +60,7 @@ test('', function () use ($context, $driver) {
 });
 
 
-test('', function () use ($context) {
-	$count = $context->table('author')->where(':book(translator).title LIKE ?', '%JUSH%')->count('*'); // by translator_id
+test('', function () use ($explorer) {
+	$count = $explorer->table('author')->where(':book(translator).title LIKE ?', '%JUSH%')->count('*'); // by translator_id
 	Assert::same(0, $count);
 });

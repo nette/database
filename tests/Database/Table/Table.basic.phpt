@@ -14,8 +14,8 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($context) {
-	$book = $context->table('book')->where('id = ?', 1)->select('id, title')->fetch()->toArray();  // SELECT `id`, `title` FROM `book` WHERE (`id` = ?)
+test('', function () use ($explorer) {
+	$book = $explorer->table('book')->where('id = ?', 1)->select('id, title')->fetch()->toArray();  // SELECT `id`, `title` FROM `book` WHERE (`id` = ?)
 	Assert::same([
 		'id' => 1,
 		'title' => '1001 tipu a triku pro PHP',
@@ -23,8 +23,8 @@ test('', function () use ($context) {
 });
 
 
-test('', function () use ($context) {
-	$book = $context->table('book')->select('id, title')->where('id = ?', 1)->fetch()->toArray();  // SELECT `id`, `title` FROM `book` WHERE (`id` = ?)
+test('', function () use ($explorer) {
+	$book = $explorer->table('book')->select('id, title')->where('id = ?', 1)->fetch()->toArray();  // SELECT `id`, `title` FROM `book` WHERE (`id` = ?)
 	Assert::same([
 		'id' => 1,
 		'title' => '1001 tipu a triku pro PHP',
@@ -32,17 +32,17 @@ test('', function () use ($context) {
 });
 
 
-test('', function () use ($context) {
-	$book = $context->table('book')->get(1);
+test('', function () use ($explorer) {
+	$book = $explorer->table('book')->get(1);
 	Assert::exception(function () use ($book) {
 		$book->unknown_column;
 	}, Nette\MemberAccessException::class, "Cannot read an undeclared column 'unknown_column'.");
 });
 
 
-test('', function () use ($context) {
+test('', function () use ($explorer) {
 	$bookTags = [];
-	foreach ($context->table('book') as $book) {  // SELECT * FROM `book`
+	foreach ($explorer->table('book') as $book) {  // SELECT * FROM `book`
 		$bookTags[$book->title] = [
 			'author' => $book->author->name,  // SELECT * FROM `author` WHERE (`author`.`id` IN (11, 12))
 			'tags' => [],
@@ -75,13 +75,13 @@ test('', function () use ($context) {
 
 
 test('', function () use ($connection, $structure) {
-	$context = new Nette\Database\Explorer(
+	$explorer = new Nette\Database\Explorer(
 		$connection,
 		$structure,
 		new Nette\Database\Conventions\DiscoveredConventions($structure)
 	);
 
-	$book = $context->table('book')->get(1);
+	$book = $explorer->table('book')->get(1);
 	Assert::exception(function () use ($book) {
 		$book->test;
 	}, Nette\MemberAccessException::class, "Cannot read an undeclared column 'test'.");

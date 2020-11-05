@@ -14,9 +14,9 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($context) {
+test('', function () use ($explorer) {
 	$appTags = [];
-	foreach ($context->table('book') as $book) {
+	foreach ($explorer->table('book') as $book) {
 		$appTags[$book->title] = [
 			'author' => $book->author->name,
 			'tags' => [],
@@ -48,9 +48,9 @@ test('', function () use ($context) {
 });
 
 
-test('', function () use ($context) {
+test('', function () use ($explorer) {
 	$books = [];
-	foreach ($context->table('author') as $author) {
+	foreach ($explorer->table('author') as $author) {
 		foreach ($author->related('book') as $book) {
 			$books[$book->title] = $author->name;
 		}
@@ -65,14 +65,14 @@ test('', function () use ($context) {
 });
 
 
-test('', function () use ($context) {
-	$book = $context->table('book')->get(1);
+test('', function () use ($explorer) {
+	$book = $explorer->table('book')->get(1);
 	Assert::same('Jakub Vrana', $book->translator->name);
 });
 
 
-test('', function () use ($context) {
-	$book = $context->table('book')->get(2);
+test('', function () use ($explorer) {
+	$book = $explorer->table('book')->get(2);
 	Assert::true(isset($book->author_id));
 	Assert::false(empty($book->author_id));
 
@@ -87,7 +87,7 @@ test('', function () use ($context) {
 });
 
 
-test('', function () use ($connection, $context) {
+test('', function () use ($connection, $explorer) {
 	if (
 		$connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME) === 'mysql' &&
 		($lowerCase = $connection->query('SHOW VARIABLES LIKE "lower_case_table_names"')->fetch()) &&
@@ -95,7 +95,7 @@ test('', function () use ($connection, $context) {
 	) {
 		// tests case-insensitive reflection
 		$books = [];
-		foreach ($context->table('Author') as $author) {
+		foreach ($explorer->table('Author') as $author) {
 			foreach ($author->related('book') as $book) {
 				$books[$book->title] = $author->name;
 			}
@@ -111,9 +111,9 @@ test('', function () use ($connection, $context) {
 });
 
 
-test('', function () use ($context) {
-	$count = $context->table('book')->where('translator.name LIKE ?', '%David%')->count();
+test('', function () use ($explorer) {
+	$count = $explorer->table('book')->where('translator.name LIKE ?', '%David%')->count();
 	Assert::same(2, $count);
-	$count = $context->table('book')->where('author.name LIKE ?', '%David%')->count();
+	$count = $explorer->table('book')->where('author.name LIKE ?', '%David%')->count();
 	Assert::same(2, $count);
 });

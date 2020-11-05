@@ -16,14 +16,14 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 $res = [];
 
 for ($i = 1; $i <= 2; ++$i) {
-	foreach ($context->table('author') as $author) {
+	foreach ($explorer->table('author') as $author) {
 		$res[] = (string) $author->name;
 		foreach ($author->related('book', 'author_id') as $book) {
 			$res[] = (string) $book->title;
 		}
 	}
 
-	foreach ($context->table('author')->where('id', 13) as $author) {
+	foreach ($explorer->table('author')->where('id', 13) as $author) {
 		$res[] = (string) $author->name;
 		foreach ($author->related('book', 'author_id') as $book) {
 			$res[] = (string) $book->title;

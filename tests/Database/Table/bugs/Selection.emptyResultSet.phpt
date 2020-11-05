@@ -13,12 +13,12 @@ require __DIR__ . '/../../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($context) {
-	$selection = $context->table('book');
+test('', function () use ($explorer) {
+	$selection = $explorer->table('book');
 	$selection->get(2)->author->name; //reading via reference
 
-	$context->table('book')->get(2)->author->update(['name' => 'New name']);
-	$context->table('book')->get(2)->update(['title' => 'New book title']);
+	$explorer->table('book')->get(2)->author->update(['name' => 'New name']);
+	$explorer->table('book')->get(2)->update(['title' => 'New book title']);
 
 	$selection->limit(1); //should invalidate cache of data and references
 	$book = $selection->get(2);

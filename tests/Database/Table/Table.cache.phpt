@@ -14,11 +14,11 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('Testing Selection caching', function () use ($context) {
+test('Testing Selection caching', function () use ($explorer) {
 	$sql = [];
 	for ($i = 0; $i < 4; ++$i) {
 		if ($i !== 2) {
-			$bookSelection = $context->table('book')->wherePrimary(2);
+			$bookSelection = $explorer->table('book')->wherePrimary(2);
 		}
 
 		$sql[] = $bookSelection->getSql();
@@ -53,8 +53,8 @@ test('Testing Selection caching', function () use ($context) {
 });
 
 
-test('Testing GroupedSelection reinvalidation caching', function () use ($context) {
-	foreach ($context->table('author') as $author) {
+test('Testing GroupedSelection reinvalidation caching', function () use ($explorer) {
+	foreach ($explorer->table('author') as $author) {
 		$stack[] = $selection = $author->related('book.author_id')->order('title');
 		foreach ($selection as $book) {
 			$book->title;
@@ -64,7 +64,7 @@ test('Testing GroupedSelection reinvalidation caching', function () use ($contex
 	reset($stack)->__destruct();
 
 	$books = [];
-	foreach ($context->table('author') as $author) {
+	foreach ($explorer->table('author') as $author) {
 		foreach ($author->related('book.author_id')->order('title') as $book) {
 			if ($book->author_id == 12) {
 				$books[$book->title] = $book->translator_id; // translator_id is new used column in the second loop
@@ -84,15 +84,15 @@ before(function () use ($cacheMemoryStorage) {
 });
 
 
-test('', function () use ($context) {
-	$selection = $context->table('book');
+test('', function () use ($explorer) {
+	$selection = $explorer->table('book');
 	foreach ($selection as $book) {
 		$book->id;
 	}
 	$selection->__destruct();
 
 	$authors = [];
-	foreach ($context->table('book') as $book) {
+	foreach ($explorer->table('book') as $book) {
 		$authors[$book->author->name] = 1;
 	}
 
@@ -106,9 +106,9 @@ test('', function () use ($context) {
 });
 
 
-test('', function () use ($context) {
+test('', function () use ($explorer) {
 	$relatedStack = [];
-	foreach ($context->table('author') as $author) {
+	foreach ($explorer->table('author') as $author) {
 		$relatedStack[] = $related = $author->related('book.author_id');
 		foreach ($related as $book) {
 			$book->id;
@@ -124,10 +124,10 @@ test('', function () use ($context) {
 });
 
 
-test('Test saving joining keys even with 0 rows', function () use ($context) {
+test('Test saving joining keys even with 0 rows', function () use ($explorer) {
 	$cols = [];
 	for ($i = 0; $i < 2; ++$i) {
-		$author = $context->table('author')->get(11);
+		$author = $explorer->table('author')->get(11);
 		$books = $author->related('book')->where('translator_id', 99); // 0 rows
 		$cols[] = $books->getPreviousAccessedColumns();
 		foreach ($books as $book) {
@@ -142,10 +142,10 @@ test('Test saving joining keys even with 0 rows', function () use ($context) {
 });
 
 
-test('Test saving the union of needed cols, the second call is subset', function () use ($context) {
+test('Test saving the union of needed cols, the second call is subset', function () use ($explorer) {
 	$cols = [];
 	for ($i = 0; $i < 3; ++$i) {
-		$author = $context->table('author')->get(11);
+		$author = $explorer->table('author')->get(11);
 		$books = $author->related('book');
 		$cols[] = $books->getPreviousAccessedColumns();
 		foreach ($books as $book) {
@@ -165,10 +165,10 @@ test('Test saving the union of needed cols, the second call is subset', function
 });
 
 
-test('Test saving the union of needed cols, the second call is not subset', function () use ($context) {
+test('Test saving the union of needed cols, the second call is not subset', function () use ($explorer) {
 	$cols = [];
 	for ($i = 0; $i < 3; ++$i) {
-		$author = $context->table('author')->get(11);
+		$author = $explorer->table('author')->get(11);
 		$books = $author->related('book');
 		$cols[] = $books->getPreviousAccessedColumns();
 		foreach ($books as $book) {
@@ -189,14 +189,14 @@ test('Test saving the union of needed cols, the second call is not subset', func
 });
 
 
-test('Test multiple use of same selection', function () use ($context) {
+test('Test multiple use of same selection', function () use ($explorer) {
 	$sql = [];
-	$context->getConnection()->onQuery[] = function ($_, $result) use (&$sql) {
+	$explorer->getConnection()->onQuery[] = function ($_, $result) use (&$sql) {
 		$sql[] = $result->getQueryString();
 	};
 
 	for ($i = 0; $i < 3; ++$i) {
-		$bookSelection = $context->table('book');
+		$bookSelection = $explorer->table('book');
 		count($bookSelection);
 
 		foreach ($bookSelection->where('author_id = ?', 11) as $book) {

@@ -13,8 +13,8 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
-test('without question mark', function () use ($context) {
-	$count = $context->table('book')->whereOr([
+test('without question mark', function () use ($explorer) {
+	$count = $explorer->table('book')->whereOr([
 		'author_id' => 12,
 		'title' => 'JUSH',
 	])->count();
@@ -22,8 +22,8 @@ test('without question mark', function () use ($context) {
 });
 
 
-test('full condition', function () use ($context) {
-	$count = $context->table('book')->whereOr([
+test('full condition', function () use ($explorer) {
+	$count = $explorer->table('book')->whereOr([
 		'translator_id IS NULL',
 		'title' => 'Dibi',
 	])->count();
@@ -31,8 +31,8 @@ test('full condition', function () use ($context) {
 });
 
 
-test('with question mark', function () use ($context) {
-	$count = $context->table('book')->whereOr([
+test('with question mark', function () use ($explorer) {
+	$count = $explorer->table('book')->whereOr([
 		'id > ?' => 3,
 		'translator_id' => 11,
 	])->count();
@@ -40,16 +40,16 @@ test('with question mark', function () use ($context) {
 });
 
 
-test('just one condition', function () use ($context) {
-	$count = $context->table('book')->whereOr([
+test('just one condition', function () use ($explorer) {
+	$count = $explorer->table('book')->whereOr([
 		'id > ?' => 3,
 	])->count();
 	Assert::same(1, $count);
 });
 
 
-test('with question mark', function () use ($context) {
-	$count = $context->table('book')->whereOr([
+test('with question mark', function () use ($explorer) {
+	$count = $explorer->table('book')->whereOr([
 		'id ?' => [3, 4],
 		'translator_id' => 11,
 	])->count();
@@ -57,8 +57,8 @@ test('with question mark', function () use ($context) {
 });
 
 
-test('multiple values for one key', function () use ($context) {
-	$count = $context->table('author')->whereOr([
+test('multiple values for one key', function () use ($explorer) {
+	$count = $explorer->table('author')->whereOr([
 		'id > ?' => 12,
 		'ROUND(id, ?) = ?' => [5, 3],
 	])->count();
@@ -66,8 +66,8 @@ test('multiple values for one key', function () use ($context) {
 });
 
 
-test('nested condition', function () use ($context) {
-	$books = $context->table('book')->whereOr([
+test('nested condition', function () use ($explorer) {
+	$books = $explorer->table('book')->whereOr([
 		'id = ?' => 4,
 		'author_id = ? AND translator_id ?' => [11, null],
 	]);
@@ -75,9 +75,9 @@ test('nested condition', function () use ($context) {
 });
 
 
-test('invalid param count', function () use ($context) {
-	$f = function () use ($context) {
-		$context->table('author')->whereOr([
+test('invalid param count', function () use ($explorer) {
+	$f = function () use ($explorer) {
+		$explorer->table('author')->whereOr([
 			'id > ?' => 3,
 			'ROUND(id, ?) = ?' => [5],
 		])->count();
@@ -86,9 +86,9 @@ test('invalid param count', function () use ($context) {
 });
 
 
-test('invalid param count', function () use ($context) {
-	$f = function () use ($context) {
-		$context->table('author')->whereOr([
+test('invalid param count', function () use ($explorer) {
+	$f = function () use ($explorer) {
+		$explorer->table('author')->whereOr([
 			'id > ?' => 3,
 			'ROUND(id, ?) = ?' => 5,
 		])->count();

@@ -32,7 +32,7 @@ class SqlBuilderMock extends SqlBuilder
 }
 
 $conventions = new DiscoveredConventions($structure);
-$sqlBuilder = new SqlBuilderMock('nUsers', $context);
+$sqlBuilder = new SqlBuilderMock('nUsers', $explorer);
 $driver = $connection->getSupplementalDriver();
 
 
@@ -74,7 +74,7 @@ if (!in_array($tables[0]['name'], ['npriorities', 'ntopics', 'nusers', 'nusers_n
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 $structure->rebuild();
 
-$sqlBuilder = new SqlBuilderMock('author', $context);
+$sqlBuilder = new SqlBuilderMock('author', $explorer);
 
 $joins = [];
 $query = 'WHERE :book(translator).next_volume IS NULL';
@@ -88,8 +88,8 @@ Assert::same(
 
 
 $sqlBuilder = $driver->isSupported(ISupplementalDriver::SUPPORT_SCHEMA)
-	? new SqlBuilderMock('public.book', $context)
-	: new SqlBuilderMock('book', $context);
+	? new SqlBuilderMock('public.book', $explorer)
+	: new SqlBuilderMock('book', $explorer);
 
 $joins = [];
 $query = 'WHERE :book.translator_id IS NULL AND :book:book.translator_id IS NULL';

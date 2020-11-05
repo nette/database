@@ -14,8 +14,8 @@ require __DIR__ . '/../connect.inc.php'; // create $connection
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($context) {
-	$books = $context->table('book');
+test('', function () use ($explorer) {
+	$books = $explorer->table('book');
 	foreach ($books as $book) {
 		foreach ($book->related('book_tag') as $bookTag) {
 			$bookTag->tag;
@@ -38,8 +38,8 @@ test('', function () use ($context) {
 });
 
 
-test('', function () use ($context) {
-	$authors = $context->table('author')->where('id', 11);
+test('', function () use ($explorer) {
+	$authors = $explorer->table('author')->where('id', 11);
 	$books = [];
 	foreach ($authors as $author) {
 		foreach ($author->related('book')->where('translator_id', null) as $book) {
@@ -61,9 +61,9 @@ test('', function () use ($context) {
 });
 
 
-test('', function () use ($context) {
-	$context->query('UPDATE book SET translator_id = 12 WHERE id = 2');
-	$author = $context->table('author')->get(11);
+test('', function () use ($explorer) {
+	$explorer->query('UPDATE book SET translator_id = 12 WHERE id = 2');
+	$author = $explorer->table('author')->get(11);
 
 	foreach ($author->related('book')->limit(1) as $book) {
 		$book->ref('author', 'translator_id')->name;
@@ -83,8 +83,8 @@ test('', function () use ($context) {
 
 
 
-test('cache can\'t be affected by inner query!', function () use ($context) {
-	$author = $context->table('author')->get(11);
+test('cache can\'t be affected by inner query!', function () use ($explorer) {
+	$author = $explorer->table('author')->get(11);
 	$secondBookTagRels = null;
 	foreach ($author->related('book')->order('id') as $book) {
 		if (!isset($secondBookTagRels)) {

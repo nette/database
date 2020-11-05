@@ -19,7 +19,7 @@ foreach ([true, false] as $published) {
 		? '(:PhotoNonPublic.number IS NULL)'
 		: '(:PhotoNonPublic.number IS NOT NULL)';
 
-	$result = $context->table('Photo')->where($where);
+	$result = $explorer->table('Photo')->where($where);
 
 	foreach ($result as $photoRow) {
 		/** @var ActiveRow $photoRow */

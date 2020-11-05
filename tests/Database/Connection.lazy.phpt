@@ -23,9 +23,9 @@ test('non lazy', function () {
 
 test('lazy', function () {
 	$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => true]);
-	$context = new Nette\Database\Explorer($connection, new Structure($connection, new DevNullStorage));
-	Assert::exception(function () use ($context) {
-		$context->query('SELECT ?', 10);
+	$explorer = new Nette\Database\Explorer($connection, new Structure($connection, new DevNullStorage));
+	Assert::exception(function () use ($explorer) {
+		$explorer->query('SELECT ?', 10);
 	}, Nette\Database\DriverException::class, '%a%valid data source %a%');
 });
 

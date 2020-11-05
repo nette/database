@@ -15,7 +15,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 
 $selections = [];
-foreach ($selections[] = $context->table('book') as $book) {
+foreach ($selections[] = $explorer->table('book') as $book) {
 	$book->author->name;
 	$selections[] = $book->author->getTable();
 }
@@ -24,7 +24,7 @@ foreach ($selections as $selection) {
 }
 
 $authors = [];
-foreach ($context->table('book') as $book) {
+foreach ($explorer->table('book') as $book) {
 	$authors[] = $book->author;
 }
 
@@ -39,12 +39,12 @@ Assert::same([
 ], array_keys($webs));
 
 
-$bookSelection = $context->table('book')->order('id');
+$bookSelection = $explorer->table('book')->order('id');
 $book = $bookSelection->fetch();
 $book->author_id;
 $bookSelection->__destruct();
 
-$bookSelection = $context->table('book')->order('id');
+$bookSelection = $explorer->table('book')->order('id');
 $books = [];
 $books[] = $bookSelection->fetch();
 $books[] = $bookSelection->fetch()->toArray();
@@ -54,7 +54,7 @@ Assert::same(2, $books[1]['id']);
 Assert::same(3, $books[2]['id']);
 
 
-$row = $context->table('author')->insert([
+$row = $explorer->table('author')->insert([
 	'name' => 'Eddard Stark',
 	'web' => 'http://example.com',
 ]);  // INSERT INTO `author` (`name`, `web`) VALUES ('Eddard Stark', 'http://example.com')
@@ -62,5 +62,5 @@ Assert::true(is_array($row->toArray()));
 // id = 14
 
 
-$row = $context->table('author')->where('id', 14)->fetch();
+$row = $explorer->table('author')->where('id', 14)->fetch();
 Assert::true(is_array($row->toArray()));

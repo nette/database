@@ -11,9 +11,9 @@ use Tester\Assert;
 
 require __DIR__ . '/../../connect.inc.php';
 
-$context->query('DROP SCHEMA IF EXISTS public CASCADE');
-$context->query('CREATE SCHEMA public');
-$context->query('
+$explorer->query('DROP SCHEMA IF EXISTS public CASCADE');
+$explorer->query('CREATE SCHEMA public');
+$explorer->query('
 	CREATE TABLE "public"."bug1342" (
 		"a1" int2 NOT NULL,
 		"a2" int2 NOT NULL,
@@ -22,7 +22,7 @@ $context->query('
 ');
 
 
-$insertedRows = $context->table('bug1342')->insert([
+$insertedRows = $explorer->table('bug1342')->insert([
 	'a1' => 1,
 	'a2' => 2,
 ]);
@@ -30,7 +30,7 @@ $insertedRows = $context->table('bug1342')->insert([
 Assert::same($insertedRows->a1, 1);
 Assert::same($insertedRows->a2, 2);
 
-$insertedRows = $context->table('bug1342')->insert([
+$insertedRows = $explorer->table('bug1342')->insert([
 	'a1' => 24,
 	'a2' => 48,
 ]);

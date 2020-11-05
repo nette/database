@@ -71,17 +71,17 @@ Nette Database Explorer layer helps you to fetch database data more easily and i
 
 Let's take a look at common use-case. You need to fetch books and their authors. It is common 1:N relationship. The often used implementation fetches data by one SQL query with table joins. The second possibility is to fetch data separately, run one query for getting books and then get an author for each book by another query (e.g. in your foreach cycle). This could be easily optimized to run only two queries, one for books, and another for the needed authors - and this is just the way how Nette Database Explorer does it.
 
-Selecting data starts with the table, just call `$context->table()` on the `Nette\Database\Explorer` object. The easiest way to get it is [described here](https://doc.nette.org/database-core#toc-configuration), but if we use Nette Database Explorer alone, it can be [manually created](https://doc.nette.org/database-explorer#toc-manual-creating-nette-database-context).
+Selecting data starts with the table, just call `$explorer->table()` on the `Nette\Database\Explorer` object. The easiest way to get it is [described here](https://doc.nette.org/database-core#toc-configuration), but if we use Nette Database Explorer alone, it can be [manually created](https://doc.nette.org/database-explorer#toc-manual-creating-nette-database-context).
 
 
 ```php
-$selection = $context->table('book'); // db table name is "book"
+$selection = $explorer->table('book'); // db table name is "book"
 ```
 
 We can simply iterate over the selection and pass through all the books. The rows are fetched as ActiveRow instances; you can read row data from their properties.
 
 ```php
-$books = $context->table('book');
+$books = $explorer->table('book');
 foreach ($books as $book) {
 	echo $book->title;
 	echo $book->author_id;
@@ -91,7 +91,7 @@ foreach ($books as $book) {
 Getting just one specific row is done by `get()` method, which directly returns an ActiveRow instance.
 
 ```php
-$book = $context->table('book')->get(2); // returns book with id 2
+$book = $explorer->table('book')->get(2); // returns book with id 2
 echo $book->title;
 echo $book->author_id;
 ```
@@ -100,7 +100,7 @@ Working with relationships
 --------------------------
 
 ```php
-$books = $context->table('book');
+$books = $explorer->table('book');
 
 foreach ($books as $book) {
 	echo 'title:      ' . $book->title;

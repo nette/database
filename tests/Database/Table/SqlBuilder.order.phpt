@@ -13,8 +13,8 @@ use Tester\Assert;
 require __DIR__ . '/../connect.inc.php'; // create $connection
 
 
-test('', function () use ($context) {
-	$sqlBuilder = new SqlBuilder('book', $context);
+test('', function () use ($explorer) {
+	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addOrder('id');
 	$sqlBuilder->addOrder('title DESC');
 	$sqlBuilder->addOrder('FIELD(title, ?, ?)', 'a', 'b');
@@ -24,8 +24,8 @@ test('', function () use ($context) {
 });
 
 
-test('', function () use ($context) {
-	$sqlBuilder = new SqlBuilder('book', $context);
+test('', function () use ($explorer) {
+	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addOrder('id');
 	$sqlBuilder->addOrder('title DESC');
 	$sqlBuilder->setOrder(['FIELD(title, ?, ?)'], ['a', 'b']);

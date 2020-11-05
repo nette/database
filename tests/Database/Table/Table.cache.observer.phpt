@@ -20,7 +20,7 @@ $cacheStorage->shouldReceive('read')->withAnyArgs()->once()->andReturn(['id' => 
 $cacheStorage->shouldReceive('read')->withAnyArgs()->times(4)->andReturn(['id' => true, 'author_id' => true]);
 $cacheStorage->shouldReceive('write')->with(Mockery::any(), ['id' => true, 'author_id' => true, 'title' => true], []);
 
-$context = new Nette\Database\Explorer($connection, $structure, $conventions, $cacheStorage);
+$explorer = new Nette\Database\Explorer($connection, $structure, $conventions, $cacheStorage);
 
 $queries = 0;
 $connection->onQuery[] = function ($dao, ResultSet $result) use (&$queries) {
@@ -29,7 +29,7 @@ $connection->onQuery[] = function ($dao, ResultSet $result) use (&$queries) {
 	}
 };
 
-$authors = $context->table('author');
+$authors = $explorer->table('author');
 $stack = [];
 foreach ($authors as $author) {
 	foreach ($stack[] = $author->related('book') as $book) {

@@ -26,7 +26,7 @@ $cacheMemoryStorage = new Nette\Caching\Storages\MemoryStorage;
 
 $structure = new Nette\Database\Structure($connection, $cacheMemoryStorage);
 $conventions = new Nette\Database\Conventions\DiscoveredConventions($structure);
-$context = new Nette\Database\Explorer($connection, $structure, $conventions, $cacheMemoryStorage);
+$explorer = new Nette\Database\Explorer($connection, $structure, $conventions, $cacheMemoryStorage);
 
 
 /** Replaces [] with driver-specific quotes */

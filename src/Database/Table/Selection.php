@@ -23,6 +23,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	use Nette\SmartObject;
 
 	/** @var Explorer */
+	protected $explorer;
+
+	/** @var Explorer  back compatibility */
 	protected $context;
 
 	/** @var IConventions */
@@ -89,7 +92,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		string $tableName,
 		Nette\Caching\IStorage $cacheStorage = null
 	) {
-		$this->context = $explorer;
+		$this->explorer = $this->context = $explorer;
 		$this->conventions = $conventions;
 		$this->name = $tableName;
 
@@ -135,7 +138,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	public function getPrimarySequence(): ?string
 	{
 		if ($this->primarySequence === false) {
-			$this->primarySequence = $this->context->getStructure()->getPrimaryKeySequence($this->name);
+			$this->primarySequence = $this->explorer->getStructure()->getPrimaryKeySequence($this->name);
 		}
 
 		return $this->primarySequence;
@@ -579,19 +582,19 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	public function createSelectionInstance(string $table = null): self
 	{
-		return new self($this->context, $this->conventions, $table ?: $this->name, $this->cache ? $this->cache->getStorage() : null);
+		return new self($this->explorer, $this->conventions, $table ?: $this->name, $this->cache ? $this->cache->getStorage() : null);
 	}
 
 
 	protected function createGroupedSelectionInstance(string $table, string $column): GroupedSelection
 	{
-		return new GroupedSelection($this->context, $this->conventions, $table, $column, $this, $this->cache ? $this->cache->getStorage() : null);
+		return new GroupedSelection($this->explorer, $this->conventions, $table, $column, $this, $this->cache ? $this->cache->getStorage() : null);
 	}
 
 
 	protected function query(string $query): Nette\Database\ResultSet
 	{
-		return $this->context->queryArgs($query, $this->sqlBuilder->getParameters());
+		return $this->explorer->queryArgs($query, $this->sqlBuilder->getParameters());
 	}
 
 
@@ -796,16 +799,16 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	{
 		//should be called before query for not to spoil PDO::lastInsertId
 		$primarySequenceName = $this->getPrimarySequence();
-		$primaryAutoincrementKey = $this->context->getStructure()->getPrimaryAutoincrementKey($this->name);
+		$primaryAutoincrementKey = $this->explorer->getStructure()->getPrimaryAutoincrementKey($this->name);
 
 		if ($data instanceof self) {
-			$return = $this->context->queryArgs($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), $data->getSqlBuilder()->getParameters());
+			$return = $this->explorer->queryArgs($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), $data->getSqlBuilder()->getParameters());
 
 		} else {
 			if ($data instanceof \Traversable) {
 				$data = iterator_to_array($data);
 			}
-			$return = $this->context->query($this->sqlBuilder->buildInsertQuery() . ' ?values', $data);
+			$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ?values', $data);
 		}
 
 		$this->loadRefCache();
@@ -824,11 +827,11 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 		// First check sequence
 		if (!empty($primarySequenceName) && $primaryAutoincrementKey) {
-			$primaryKey[$primaryAutoincrementKey] = $this->context->getInsertId($this->context->getConnection()->getSupplementalDriver()->delimite($primarySequenceName));
+			$primaryKey[$primaryAutoincrementKey] = $this->explorer->getInsertId($this->explorer->getConnection()->getSupplementalDriver()->delimite($primarySequenceName));
 
 		// Autoincrement primary without sequence
 		} elseif ($primaryAutoincrementKey) {
-			$primaryKey[$primaryAutoincrementKey] = $this->context->getInsertId($primarySequenceName);
+			$primaryKey[$primaryAutoincrementKey] = $this->explorer->getInsertId($primarySequenceName);
 
 		// Multi column primary without autoincrement
 		} elseif (is_array($this->primary)) {
@@ -885,7 +888,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			return 0;
 		}
 
-		return $this->context->queryArgs(
+		return $this->explorer->queryArgs(
 			$this->sqlBuilder->buildUpdateQuery(),
 			array_merge([$data], $this->sqlBuilder->getParameters())
 		)->getRowCount();

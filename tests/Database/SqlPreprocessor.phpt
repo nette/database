@@ -83,6 +83,10 @@ test('IN', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT * FROM table WHERE ? AND id IN (?) AND ?', ['a' => 111], [3, 4], ['b' => 222]]);
 	Assert::same(reformat('SELECT * FROM table WHERE ([a] = ?) AND id IN (?, ?) AND ([b] = ?)'), $sql);
 	Assert::same([111, 3, 4, 222], $params);
+
+	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id IN ?', [10, 11]]); // without ()
+	Assert::same('SELECT id FROM author WHERE id IN (?, ?)', $sql);
+	Assert::same([10, 11], $params);
 });
 
 

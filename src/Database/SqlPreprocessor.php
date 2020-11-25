@@ -103,7 +103,7 @@ class SqlPreprocessor
 				$this->arrayMode = null;
 				$res[] = Nette\Utils\Strings::replace(
 					$param,
-					'~\'[^\']*+\'|"[^"]*+"|\?[a-z]*|^\s*+(?:\(?\s*SELECT|INSERT|UPDATE|DELETE|REPLACE|EXPLAIN)\b|\b(?:SET|WHERE|HAVING|ORDER BY|GROUP BY|KEY UPDATE)(?=\s*$|\s*\?)|\bIN\s+\(\?\)|/\*.*?\*/|--[^\n]*~Dsi',
+					'~\'[^\']*+\'|"[^"]*+"|\?[a-z]*|^\s*+(?:\(?\s*SELECT|INSERT|UPDATE|DELETE|REPLACE|EXPLAIN)\b|\b(?:SET|WHERE|HAVING|ORDER BY|GROUP BY|KEY UPDATE)(?=\s*$|\s*\?)|\bIN\s+(?:\?|\(\?\))|/\*.*?\*/|--[^\n]*~Dsi',
 					\Closure::fromCallable([$this, 'callback'])
 				);
 			} else {

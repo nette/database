@@ -46,10 +46,14 @@ class ConnectionPanel implements Tracy\IBarPanel
 	/** @var array */
 	private $queries = [];
 
+	/** @var Tracy\BlueScreen */
+	private $blueScreen;
 
-	public function __construct(Connection $connection)
+
+	public function __construct(Connection $connection, Tracy\BlueScreen $blueScreen)
 	{
 		$connection->onQuery[] = \Closure::fromCallable([$this, 'logQuery']);
+		$this->blueScreen = $blueScreen;
 	}
 
 
@@ -66,7 +70,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 			: debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		foreach ($trace as $row) {
 			if (
-				(isset($row['file']) && is_file($row['file']) && !Tracy\Debugger::getBluescreen()->isCollapsed($row['file']))
+				(isset($row['file']) && is_file($row['file']) && !$this->blueScreen->isCollapsed($row['file']))
 				&& ($row['class'] ?? '') !== self::class
 				&& !is_a($row['class'] ?? '', Connection::class, true)
 			) {

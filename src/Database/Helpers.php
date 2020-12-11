@@ -242,13 +242,15 @@ class Helpers
 
 	public static function createDebugPanel(
 		$connection,
-		bool $explain = true,
-		string $name = null
+		bool $explain,
+		string $name,
+		Tracy\Bar $bar,
+		Tracy\BlueScreen $blueScreen
 	): Nette\Bridges\DatabaseTracy\ConnectionPanel {
-		$panel = new Nette\Bridges\DatabaseTracy\ConnectionPanel($connection);
+		$panel = new Nette\Bridges\DatabaseTracy\ConnectionPanel($connection, $blueScreen);
 		$panel->explain = $explain;
 		$panel->name = $name;
-		Tracy\Debugger::getBar()->addPanel($panel);
+		$bar->addPanel($panel);
 		return $panel;
 	}
 

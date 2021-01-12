@@ -211,7 +211,7 @@ class SqlPreprocessor
 		if ($mode && is_array($value)) {
 			$vx = $kx = [];
 			if ($mode === self::MODE_AUTO) {
-				$mode = $this->arrayMode ?? self::MODE_LIST;
+				$mode = $this->arrayMode ?? self::MODE_SET;
 			}
 
 			if ($mode === self::MODE_VALUES) { // (key, key, ...) VALUES (value, value, ...)

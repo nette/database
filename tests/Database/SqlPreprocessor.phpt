@@ -61,6 +61,13 @@ test('', function () use ($preprocessor) {
 });
 
 
+test('content after WHERE', function () use ($preprocessor) {
+	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id = ? AND ?', 12, ['a' => 2]]);
+	Assert::same(reformat('SELECT id FROM author WHERE id = ? AND [a]=?'), $sql);
+	Assert::same([12, 2], $params);
+});
+
+
 test('IN', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id IN (?)', [10, 11]]);
 	Assert::same('SELECT id FROM author WHERE id IN (?, ?)', $sql);
@@ -334,7 +341,7 @@ test('insert', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['/* comment */  INSERT INTO author',
 		['name' => 'Catelyn Stark'],
 	]);
-	Assert::same(reformat("/* comment */  INSERT INTO author 'Catelyn Stark'"), $sql); // autodetection not used
+	Assert::same(reformat("/* comment */  INSERT INTO author [name]='Catelyn Stark'"), $sql); // autodetection not used
 	Assert::same([], $params);
 });
 
@@ -439,10 +446,10 @@ test('update', function () use ($preprocessor) {
 	Assert::same(reformat('UPDATE author SET [id]=?, [name]=?'), $sql);
 	Assert::same([12, 'John Doe'], $params);
 
-	[$sql, $params] = $preprocessor->process(['UPDATE author SET a=1,', // autodetection not used
+	[$sql, $params] = $preprocessor->process(['UPDATE author SET a=1,',
 		['id' => 12, 'name' => 'John Doe'],
 	]);
-	Assert::same(reformat('UPDATE author SET a=1, ?, ?'), $sql);
+	Assert::same(reformat('UPDATE author SET a=1, [id]=?, [name]=?'), $sql);
 	Assert::same([12, 'John Doe'], $params);
 });
 

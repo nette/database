@@ -102,8 +102,17 @@ class SqlPreprocessor
 				$prev = $this->counter;
 				$this->arrayMode = null;
 				$res[] = Nette\Utils\Strings::replace(
-					$param,
-					'~\'[^\']*+\'|"[^"]*+"|\?[a-z]*|^\s*+(?:\(?\s*SELECT|INSERT|UPDATE|DELETE|REPLACE|EXPLAIN)\b|\b(?:SET|WHERE|HAVING|ORDER BY|GROUP BY|KEY UPDATE)(?=\s*$|\s*\?)|\bIN\s+(?:\?|\(\?\))|/\*.*?\*/|--[^\n]*~Dsi',
+					$param, /** @lang RegExp */
+					'~
+						\'[^\']*+\'
+						|"[^"]*+"
+						|\?[a-z]*
+						|^\s*+(?:\(?\s*SELECT|INSERT|UPDATE|DELETE|REPLACE|EXPLAIN)\b
+						|\b(?:SET|WHERE|HAVING|ORDER\ BY|GROUP\ BY|KEY\ UPDATE)(?=\s*$|\s*\?)
+						|\bIN\s+(?:\?|\(\?\))
+						|/\*.*?\*/
+						|--[^\n]*
+					~Dsix',
 					\Closure::fromCallable([$this, 'callback'])
 				);
 			} else {
@@ -208,7 +217,10 @@ class SqlPreprocessor
 			if ($mode === self::MODE_VALUES) { // (key, key, ...) VALUES (value, value, ...)
 				if (array_key_exists(0, $value)) { // multi-insert
 					if (!is_array($value[0]) && !$value[0] instanceof Row) {
-						throw new Nette\InvalidArgumentException('Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?[' . implode('|', self::MODES) . ']". Mode "' . $mode . '" was used.');
+						throw new Nette\InvalidArgumentException(
+							'Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?['
+							. implode('|', self::MODES) . ']". Mode "' . $mode . '" was used.'
+						);
 					}
 					foreach ($value[0] as $k => $v) {
 						$kx[] = $this->delimite($k);

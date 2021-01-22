@@ -11,11 +11,11 @@ namespace Nette\Database;
 
 if (false) {
 	/** @deprecated use Nette\Database\Driver */
-	interface ISupplementalDriver
+	interface ISupplementalDriver extends Driver
 	{
 	}
 	/** @deprecated use Nette\Database\Conventions */
-	interface IConventions
+	interface IConventions extends Conventions
 	{
 	}
 } elseif (!interface_exists(ISupplementalDriver::class)) {

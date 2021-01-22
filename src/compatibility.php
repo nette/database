@@ -11,11 +11,7 @@ namespace Nette\Database;
 
 if (false) {
 	/** @deprecated use Nette\Database\Explorer */
-	class Context
-	{
-	}
-
-	class Context
+	class Context extends Explorer
 	{
 	}
 } elseif (!class_exists(Context::class)) {

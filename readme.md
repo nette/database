@@ -2,7 +2,7 @@ Nette Database
 ==============
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/nette/database.svg)](https://packagist.org/packages/nette/database)
-[![Build Status](https://travis-ci.org/nette/database.svg?branch=master)](https://travis-ci.org/nette/database)
+[![Tests](https://github.com/nette/database/workflows/Tests/badge.svg?branch=master)](https://github.com/nette/database/actions)
 [![Build Status Windows](https://ci.appveyor.com/api/projects/status/github/nette/database?branch=master&svg=true)](https://ci.appveyor.com/project/dg/database/branch/master)
 [![Latest Stable Version](https://poser.pugx.org/nette/database/v/stable)](https://github.com/nette/database/releases)
 [![License](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://github.com/nette/database/blob/master/license.md)

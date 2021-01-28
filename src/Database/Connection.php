@@ -161,6 +161,12 @@ class Connection
 	}
 
 
+	public function inTransaction(): bool
+	{
+		return $this->pdo && $this->pdo->inTransaction();
+	}
+
+
 	/**
 	 * @return mixed
 	 */

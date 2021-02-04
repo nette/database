@@ -309,7 +309,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Adds where condition, more calls appends with AND.
-	 * @param  string|string[]  $condition  possibly containing ?
+	 * @param  string|array  $condition  possibly containing ?
 	 * @return static
 	 */
 	public function where($condition, ...$params)

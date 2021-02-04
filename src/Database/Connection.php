@@ -22,10 +22,10 @@ class Connection
 {
 	use Nette\SmartObject;
 
-	/** @var callable[]&(callable(Connection $connection): void)[]; Occurs after connection is established */
+	/** @var array<callable(self): void>  Occurs after connection is established */
 	public $onConnect = [];
 
-	/** @var callable[]&(callable(Connection $connection, ResultSet|DriverException $result): void)[]; Occurs after query is executed */
+	/** @var array<callable(self, ResultSet|DriverException): void>  Occurs after query is executed */
 	public $onQuery = [];
 
 	/** @var array */

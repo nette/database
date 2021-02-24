@@ -404,8 +404,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Sets limit clause, more calls rewrite old values.
-     * @phpstan-param positive-int|null $limit
-     * @phpstan-param positive-int|null $offset
+     * @phpstan-param positive-int|0|null $limit
+     * @phpstan-param positive-int|0|null $offset
 	 * @return static
 	 */
 	public function limit(?int $limit, int $offset = null)
@@ -418,8 +418,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Sets offset using page number, more calls rewrite old values.
-     * @phpstan-param positive-int $page
-     * @phpstan-param positive-int $itemsPerPage
+     * @phpstan-param positive-int|0 $page
+     * @phpstan-param positive-int|0 $itemsPerPage
 	 * @return static
 	 */
 	public function page(int $page, int $itemsPerPage, &$numOfPages = null)

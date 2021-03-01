@@ -15,5 +15,5 @@ $res = $connection->fetch('SELECT ?::bool AS c1, ? AS c2, ?::int AS c3', true, n
 
 Assert::same(
 	['c1' => true, 'c2' => null, 'c3' => 123],
-	(array) $res
+	(array) $res,
 );

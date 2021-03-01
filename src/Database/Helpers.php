@@ -289,7 +289,7 @@ class Helpers
 		bool $explain,
 		string $name,
 		Tracy\Bar $bar,
-		Tracy\BlueScreen $blueScreen
+		Tracy\BlueScreen $blueScreen,
 	): ?ConnectionPanel {
 		return self::initializeTracy($connection, true, $name, $explain, $bar, $blueScreen);
 	}
@@ -301,16 +301,16 @@ class Helpers
 		string $name = '',
 		bool $explain = true,
 		Tracy\Bar $bar = null,
-		Tracy\BlueScreen $blueScreen = null
+		Tracy\BlueScreen $blueScreen = null,
 	): ?ConnectionPanel {
-		$blueScreen = $blueScreen ?? Tracy\Debugger::getBlueScreen();
+		$blueScreen ??= Tracy\Debugger::getBlueScreen();
 		$blueScreen->addPanel([ConnectionPanel::class, 'renderException']);
 
 		if ($addBarPanel) {
 			$panel = new ConnectionPanel($connection, $blueScreen);
 			$panel->explain = $explain;
 			$panel->name = $name;
-			$bar = $bar ?? Tracy\Debugger::getBar();
+			$bar ??= Tracy\Debugger::getBar();
 			$bar->addPanel($panel);
 		}
 		return $panel ?? null;

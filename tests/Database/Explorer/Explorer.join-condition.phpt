@@ -22,7 +22,7 @@ test('', function () use ($explorer, $driver) {
 
 	Assert::same(reformat(
 		'SELECT [book].* FROM [book] ' .
-		"LEFT JOIN {$schema}[author] [translator] ON [book].[translator_id] = [translator].[id] AND ([translator].[name] = ?)"
+		"LEFT JOIN {$schema}[author] [translator] ON [book].[translator_id] = [translator].[id] AND ([translator].[name] = ?)",
 	), $sql);
 });
 
@@ -44,9 +44,9 @@ test('', function () use ($explorer, $driver) {
 				'LEFT JOIN [public].[author] [next_volume_author] ON [book_ref].[author_id] = [next_volume_author].[id] ' .
 				'LEFT JOIN [public].[author] [author] ON [book].[author_id] = [author].[id] AND ([author].[born] < [next_volume_author].[born]) ' .
 				'WHERE ([tag].[name] = ?) ' .
-				'GROUP BY [tag].[name]'
+				'GROUP BY [tag].[name]',
 			),
-			$sql
+			$sql,
 		);
 	} else {
 		Assert::same(
@@ -58,9 +58,9 @@ test('', function () use ($explorer, $driver) {
 				'LEFT JOIN [author] [next_volume_author] ON [book_ref].[author_id] = [next_volume_author].[id] ' .
 				'LEFT JOIN [author] ON [book].[author_id] = [author].[id] AND ([author].[born] < [next_volume_author].[born]) ' .
 				'WHERE ([tag].[name] = ?) ' .
-				'GROUP BY [tag].[name]'
+				'GROUP BY [tag].[name]',
 			),
-			$sql
+			$sql,
 		);
 	}
 });

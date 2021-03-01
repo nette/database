@@ -42,12 +42,12 @@ test('', function () use ($explorer, $driver) {
 	if ($driver->isSupported(Driver::SUPPORT_SCHEMA)) {
 		Assert::same(
 			reformat('SELECT [author].* FROM [author] LEFT JOIN [public].[book] [book] ON [author].[id] = [book].[author_id] WHERE ([book].[translator_id] IS NOT NULL) AND ([author].[id] = ?)'),
-			$authorsSelection->getSql()
+			$authorsSelection->getSql(),
 		);
 	} else {
 		Assert::same(
 			reformat('SELECT [author].* FROM [author] LEFT JOIN [book] ON [author].[id] = [book].[author_id] WHERE ([book].[translator_id] IS NOT NULL) AND ([author].[id] = ?)'),
-			$authorsSelection->getSql()
+			$authorsSelection->getSql(),
 		);
 	}
 

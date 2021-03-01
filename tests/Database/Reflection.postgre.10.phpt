@@ -37,13 +37,11 @@ $driver = $connection->getDriver();
 
 function filter(array $columns): array
 {
-	return array_map(function (array $col): array {
-		return [
-			'name' => $col['name'],
-			'autoincrement' => $col['autoincrement'],
-			'sequence' => $col['vendor']['sequence'],
-		];
-	}, $columns);
+	return array_map(fn(array $col): array => [
+		'name' => $col['name'],
+		'autoincrement' => $col['autoincrement'],
+		'sequence' => $col['vendor']['sequence'],
+	], $columns);
 }
 
 

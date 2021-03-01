@@ -155,7 +155,7 @@ class StructureTestCase extends TestCase
 
 		Assert::same(
 			['author_id', 'translator_id'],
-			$this->structure->getHasManyReference('authors', 'books')
+			$this->structure->getHasManyReference('authors', 'books'),
 		);
 	}
 
@@ -176,7 +176,7 @@ class StructureTestCase extends TestCase
 
 		Assert::same(
 			['Books', 'book_id'],
-			$this->structure->getBelongsToReference('books_x_tags', 'book_id')
+			$this->structure->getBelongsToReference('books_x_tags', 'book_id'),
 		);
 
 		Assert::null($this->structure->getBelongsToReference('books_x_tags', 'non_exist'));

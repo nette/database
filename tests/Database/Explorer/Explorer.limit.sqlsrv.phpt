@@ -19,28 +19,28 @@ Assert::same(
 	$version2008
 		? 'SELECT TOP 2 * FROM [author] ORDER BY [author].[id]'
 		: 'SELECT * FROM [author] ORDER BY [author].[id] OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY',
-	$explorer->table('author')->limit(2)->getSql()
+	$explorer->table('author')->limit(2)->getSql(),
 );
 
 Assert::same(
 	$version2008
 		? 'SELECT TOP 2 * FROM [author] ORDER BY [name]'
 		: 'SELECT * FROM [author] ORDER BY [name] OFFSET 0 ROWS FETCH NEXT 2 ROWS ONLY',
-	$explorer->table('author')->order('name')->limit(2)->getSql()
+	$explorer->table('author')->order('name')->limit(2)->getSql(),
 );
 
 Assert::same(
 	$version2008
 		? 'SELECT TOP 10 * FROM [author] ORDER BY [author].[id]'
 		: 'SELECT * FROM [author] ORDER BY [author].[id] OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY',
-	$explorer->table('author')->page(1, 10)->getSql()
+	$explorer->table('author')->page(1, 10)->getSql(),
 );
 
 Assert::same(
 	$version2008
 		? 'SELECT TOP 0 * FROM [author] ORDER BY [author].[id]'
 		: 'SELECT * FROM [author] ORDER BY [author].[id] OFFSET 0 ROWS FETCH NEXT 0 ROWS ONLY',
-	$explorer->table('author')->page(0, 10)->getSql()
+	$explorer->table('author')->page(0, 10)->getSql(),
 );
 
 if ($version2008) {
@@ -55,13 +55,13 @@ if ($version2008) {
 } else {
 	Assert::same(
 		reformat('SELECT * FROM [author] ORDER BY [author].[id] OFFSET 10 ROWS FETCH NEXT 10 ROWS ONLY'),
-		$explorer->table('author')->page(2, 10, $count)->getSql()
+		$explorer->table('author')->page(2, 10, $count)->getSql(),
 	);
 	Assert::same(1, $count);
 
 	Assert::same(
 		reformat('SELECT * FROM [author] ORDER BY [author].[id] OFFSET 2 ROWS FETCH NEXT 2 ROWS ONLY'),
-		$explorer->table('author')->page(2, 2, $count)->getSql()
+		$explorer->table('author')->page(2, 2, $count)->getSql(),
 	);
 	Assert::same(2, $count);
 }

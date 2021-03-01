@@ -15,5 +15,5 @@ $res = $connection->fetch('SELECT ? AS c1, ? AS c2, ? AS c3, ? as c4', fopen(__F
 
 Assert::same(
 	['c1' => file_get_contents(__FILE__), 'c2' => 1, 'c3' => null, 'c4' => 123],
-	(array) $res
+	(array) $res,
 );

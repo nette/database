@@ -27,7 +27,7 @@ class DiscoveredConventions implements Conventions
 	}
 
 
-	public function getPrimary(string $table)
+	public function getPrimary(string $table): string|array|null
 	{
 		return $this->structure->getPrimaryKey($table);
 	}

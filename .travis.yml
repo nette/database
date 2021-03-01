@@ -1,8 +1,6 @@
 language: php
 php:
-    - 7.2
-    - 7.3
-    - 7.4
+    - 8.0
     - 8.0
 
 services:
@@ -37,7 +35,6 @@ jobs:
 
 
         -   name: Nette Code Checker
-            php: 7.4
             install:
                 - travis_retry composer create-project nette/code-checker temp/code-checker ^3 --no-progress
             script:
@@ -45,7 +42,6 @@ jobs:
 
 
         -   name: Nette Coding Standard
-            php: 7.4
             install:
                 - travis_retry composer create-project nette/coding-standard temp/coding-standard ^3 --no-progress
             script:
@@ -53,13 +49,11 @@ jobs:
 
 
         -   stage: Static Analysis (informative)
-            php: 7.4
             script:
                 - composer run-script phpstan
 
 
         -   stage: Code Coverage
-            php: 7.4
             script:
                 - vendor/bin/tester -p phpdbg tests -s --coverage ./coverage.xml --coverage-src ./src
             after_script:

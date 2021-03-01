@@ -76,7 +76,7 @@ test('test same table chain with another alias', function () use ($explorer, $dr
 	Assert::same(
 		'LEFT JOIN book translated_book ON author.id = translated_book.translator_id ' .
 		'LEFT JOIN book translated_book2 ON author.id = translated_book2.translator_id',
-		trim($join)
+		trim($join),
 	);
 });
 
@@ -95,14 +95,14 @@ test('test nested alias', function () use ($explorer, $driver) {
 		Assert::same(
 			'LEFT JOIN book translated_book ON author.id = translated_book.translator_id ' .
 			'LEFT JOIN public.book next ON translated_book.next_volume = next.id',
-			trim($join)
+			trim($join),
 		);
 
 	} else {
 		Assert::same(
 			'LEFT JOIN book translated_book ON author.id = translated_book.translator_id ' .
 			'LEFT JOIN book next ON translated_book.next_volume = next.id',
-			trim($join)
+			trim($join),
 		);
 	}
 });

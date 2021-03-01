@@ -37,7 +37,7 @@ class Explorer
 		Connection $connection,
 		Structure $structure,
 		Conventions $conventions = null,
-		Nette\Caching\IStorage $cacheStorage = null
+		Nette\Caching\IStorage $cacheStorage = null,
 	) {
 		$this->connection = $connection;
 		$this->structure = $structure;

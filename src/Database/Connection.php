@@ -23,34 +23,21 @@ class Connection
 	use Nette\SmartObject;
 
 	/** @var array<callable(self): void>  Occurs after connection is established */
-	public $onConnect = [];
+	public iterable $onConnect = [];
 
 	/** @var array<callable(self, ResultSet|DriverException): void>  Occurs after query is executed */
-	public $onQuery = [];
+	public iterable $onQuery = [];
 
-	/** @var array */
-	private $params;
-
-	/** @var array */
-	private $options;
-
-	/** @var Driver */
-	private $driver;
-
-	/** @var SqlPreprocessor */
-	private $preprocessor;
-
-	/** @var PDO|null */
-	private $pdo;
+	private array $params;
+	private array $options;
+	private Driver $driver;
+	private SqlPreprocessor $preprocessor;
+	private ?PDO $pdo = null;
 
 	/** @var callable(array, ResultSet): array */
 	private $rowNormalizer = [Helpers::class, 'normalizeRow'];
-
-	/** @var string|null */
-	private $sql;
-
-	/** @var int */
-	private $transactionDepth = 0;
+	private ?string $sql = null;
+	private int $transactionDepth = 0;
 
 
 	public function __construct(string $dsn, ?string $user = null, ?string $password = null, ?array $options = null)

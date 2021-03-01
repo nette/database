@@ -50,26 +50,22 @@ class SqlPreprocessor
 		'EXPLAIN' => 1,
 	];
 
-	/** @var Connection */
-	private $connection;
+	private Connection $connection;
 
-	/** @var Driver */
-	private $driver;
+	private Driver $driver;
 
-	/** @var array of input parameters */
-	private $params;
+	/** input parameters */
+	private array $params;
 
-	/** @var array of parameters to be processed by PDO */
-	private $remaining;
+	/** parameters to be processed by PDO */
+	private array $remaining;
 
-	/** @var int */
-	private $counter;
+	private int $counter;
 
-	/** @var bool */
-	private $useParams;
+	private bool $useParams;
 
-	/** @var string|null values|set|and|order|items */
-	private $arrayMode;
+	/** values|set|and|order|items */
+	private ?string $arrayMode;
 
 
 	public function __construct(Connection $connection)

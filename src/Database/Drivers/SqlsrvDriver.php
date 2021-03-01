@@ -19,11 +19,9 @@ class SqlsrvDriver implements Nette\Database\Driver
 {
 	use Nette\SmartObject;
 
-	/** @var Nette\Database\Connection */
-	private $connection;
+	private Nette\Database\Connection $connection;
 
-	/** @var string */
-	private $version;
+	private string $version;
 
 
 	public function initialize(Nette\Database\Connection $connection, array $options): void

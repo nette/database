@@ -20,17 +20,17 @@ use Nette\Database\Explorer;
  */
 class GroupedSelection extends Selection
 {
-	/** @var Selection referenced table */
-	protected $refTable;
+	/** referenced table */
+	protected Selection $refTable;
 
-	/** @var  mixed current assigned referencing array */
-	protected $refCacheCurrent;
+	/** current assigned referencing array */
+	protected mixed $refCacheCurrent;
 
-	/** @var string grouping column name */
-	protected $column;
+	/** grouping column name */
+	protected string $column;
 
-	/** @var int primary key */
-	protected $active;
+	/** primary key */
+	protected int|string $active;
 
 
 	/**

@@ -21,11 +21,10 @@ class Helpers
 {
 	use Nette\StaticClass;
 
-	/** @var int maximum SQL length */
-	public static $maxLength = 100;
+	/** maximum SQL length */
+	public static int $maxLength = 100;
 
-	/** @var array */
-	public static $typePatterns = [
+	public static array $typePatterns = [
 		'^_' => IStructure::FIELD_TEXT, // PostgreSQL arrays
 		'(TINY|SMALL|SHORT|MEDIUM|BIG|LONG)(INT)?|INT(EGER|\d+| IDENTITY)?|(SMALL|BIG|)SERIAL\d*|COUNTER|YEAR|BYTE|LONGLONG|UNSIGNED BIG INT' => IStructure::FIELD_INTEGER,
 		'(NEW)?DEC(IMAL)?(\(.*)?|NUMERIC|REAL|DOUBLE( PRECISION)?|FLOAT\d*|(SMALL)?MONEY|CURRENCY|NUMBER' => IStructure::FIELD_FLOAT,

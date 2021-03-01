@@ -25,29 +25,24 @@ class SqlBuilder
 {
 	use Nette\SmartObject;
 
-	/** @var string */
-	protected $tableName;
+	protected string $tableName;
 
-	/** @var Conventions */
-	protected $conventions;
+	protected Conventions $conventions;
 
-	/** @var string delimited table name */
-	protected $delimitedTable;
+	protected string $delimitedTable;
 
-	/** @var array of column to select */
-	protected $select = [];
+	/** column to select */
+	protected array $select = [];
 
-	/** @var array of where conditions */
-	protected $where = [];
+	protected array $where = [];
 
-	/** @var array of array of join conditions */
-	protected $joinCondition = [];
+	protected array $joinCondition = [];
 
-	/** @var array of where conditions for caching */
-	protected $conditions = [];
+	/** where conditions for caching */
+	protected array $conditions = [];
 
-	/** @var array of parameters passed to where conditions */
-	protected $parameters = [
+	/** parameters passed to where conditions */
+	protected array $parameters = [
 		'select' => [],
 		'joinCondition' => [],
 		'where' => [],
@@ -56,41 +51,38 @@ class SqlBuilder
 		'order' => [],
 	];
 
-	/** @var array or columns to order by */
-	protected $order = [];
+	/** columns to order by */
+	protected array $order = [];
 
-	/** @var int number of rows to fetch */
-	protected $limit;
+	/** number of rows to fetch */
+	protected ?int $limit = null;
 
-	/** @var int first row to fetch */
-	protected $offset;
+	/** first row to fetch */
+	protected ?int $offset = null;
 
-	/** @var string columns to grouping */
-	protected $group = '';
+	/** columns to grouping */
+	protected string $group = '';
 
-	/** @var string grouping condition */
-	protected $having = '';
+	/** grouping condition */
+	protected string $having = '';
 
-	/** @var array of reserved table names associated with chain */
-	protected $reservedTableNames = [];
+	/** reserved table names associated with chain */
+	protected array $reservedTableNames = [];
 
-	/** @var array of table aliases */
-	protected $aliases = [];
+	/** table aliases */
+	protected array $aliases = [];
 
-	/** @var string currently parsing alias for joins */
-	protected $currentAlias;
+	/** currently parsing alias for joins */
+	protected string $currentAlias = '';
 
-	/** @var Driver */
-	private $driver;
+	private Driver $driver;
 
-	/** @var IStructure */
-	private $structure;
+	private IStructure $structure;
 
-	/** @var array */
-	private $cacheTableList;
+	private array $cacheTableList = [];
 
-	/** @var array of expanding joins */
-	private $expandingJoins = [];
+	/** expanding joins */
+	private array $expandingJoins = [];
 
 
 	public function __construct(string $tableName, Explorer $explorer)

@@ -18,7 +18,7 @@ class StructureMock extends Structure
 {
 	protected function needStructure(): void
 	{
-		if (!$this->structure) {
+		if (!isset($this->structure)) {
 			$this->structure = $this->loadStructure();
 		}
 	}
@@ -30,17 +30,13 @@ class StructureMock extends Structure
  */
 class StructureSchemasTestCase extends TestCase
 {
-	/** @var MockInterface */
-	private $connection;
+	private MockInterface $connection;
 
-	/** @var MockInterface */
-	private $driver;
+	private MockInterface $driver;
 
-	/** @var MockInterface */
-	private $storage;
+	private MockInterface $storage;
 
-	/** @var Structure */
-	private $structure;
+	private Structure $structure;
 
 
 	protected function setUp()

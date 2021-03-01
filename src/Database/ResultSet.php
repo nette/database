@@ -20,35 +20,27 @@ class ResultSet implements \Iterator, IRowContainer
 {
 	use Nette\SmartObject;
 
-	/** @var Connection */
-	private $connection;
+	private Connection $connection;
 
-	/** @var \PDOStatement|null */
-	private $pdoStatement;
+	private ?\PDOStatement $pdoStatement;
 
 	/** @var callable(array, ResultSet): array */
 	private $normalizer;
 
-	/** @var Row|false */
-	private $result;
+	private Row|false|null $result = null;
 
-	/** @var int */
-	private $resultKey = -1;
+	private int $resultKey = -1;
 
 	/** @var Row[] */
-	private $results;
+	private array $results;
 
-	/** @var float */
-	private $time;
+	private float $time;
 
-	/** @var string */
-	private $queryString;
+	private string $queryString;
 
-	/** @var array */
-	private $params;
+	private array $params;
 
-	/** @var array */
-	private $types;
+	private array $types;
 
 
 	public function __construct(Connection $connection, string $queryString, array $params, callable $normalizer = null)
@@ -124,7 +116,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 	public function getColumnTypes(): array
 	{
-		if ($this->types === null) {
+		if (!isset($this->types)) {
 			$this->types = $this->connection->getDriver()->getColumnTypes($this->pdoStatement);
 		}
 		return $this->types;
@@ -207,7 +199,7 @@ class ResultSet implements \Iterator, IRowContainer
 			$this->pdoStatement->closeCursor();
 			return null;
 
-		} elseif ($this->result === null && count($data) !== $this->pdoStatement->columnCount()) {
+		} elseif (!isset($this->result) && count($data) !== $this->pdoStatement->columnCount()) {
 			$duplicates = Helpers::findDuplicates($this->pdoStatement);
 			trigger_error("Found duplicate columns in database result set: $duplicates.", E_USER_NOTICE);
 		}
@@ -265,7 +257,7 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function fetchAll(): array
 	{
-		if ($this->results === null) {
+		if (!isset($this->results)) {
 			$this->results = iterator_to_array($this);
 		}
 		return $this->results;

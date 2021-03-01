@@ -19,8 +19,7 @@ class PgSqlDriver implements Nette\Database\Driver
 {
 	use Nette\SmartObject;
 
-	/** @var Nette\Database\Connection */
-	private $connection;
+	private Nette\Database\Connection $connection;
 
 
 	public function initialize(Nette\Database\Connection $connection, array $options): void

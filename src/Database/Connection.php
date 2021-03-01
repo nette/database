@@ -28,29 +28,22 @@ class Connection
 	/** @var array<callable(self, ResultSet|DriverException): void>  Occurs after query is executed */
 	public $onQuery = [];
 
-	/** @var array */
-	private $params;
+	private array $params;
 
-	/** @var array */
-	private $options;
+	private array $options;
 
-	/** @var Driver */
-	private $driver;
+	private Driver $driver;
 
-	/** @var SqlPreprocessor */
-	private $preprocessor;
+	private SqlPreprocessor $preprocessor;
 
-	/** @var PDO|null */
-	private $pdo;
+	private ?PDO $pdo = null;
 
 	/** @var callable(array, ResultSet): array */
 	private $rowNormalizer = [Helpers::class, 'normalizeRow'];
 
-	/** @var string|null */
-	private $sql;
+	private ?string $sql = null;
 
-	/** @var int */
-	private $transactionDepth = 0;
+	private int $transactionDepth = 0;
 
 
 	public function __construct(string $dsn, string $user = null, string $password = null, array $options = null)

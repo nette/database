@@ -18,8 +18,7 @@ use Nette\Database\IStructure;
  */
 class DiscoveredConventions implements Conventions
 {
-	/** @var IStructure */
-	protected $structure;
+	protected IStructure $structure;
 
 
 	public function __construct(IStructure $structure)

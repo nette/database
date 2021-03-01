@@ -15,11 +15,9 @@ namespace Nette\Database;
  */
 class DriverException extends \PDOException
 {
-	/** @var string */
-	public $queryString;
+	public ?string $queryString = null;
 
-	/** @var array */
-	public $params;
+	public ?array $params = null;
 
 
 	/**

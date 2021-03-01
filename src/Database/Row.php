@@ -33,9 +33,8 @@ class Row extends Nette\Utils\ArrayHash implements IRow
 	/**
 	 * Returns a item.
 	 * @param  string|int  $key  key or index
-	 * @return mixed
 	 */
-	public function offsetGet($key)
+	public function offsetGet($key): mixed
 	{
 		if (is_int($key)) {
 			$arr = array_slice((array) $this, $key, 1);

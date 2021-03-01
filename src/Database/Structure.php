@@ -54,7 +54,7 @@ class Structure implements IStructure
 	/**
 	 * @return string|string[]|null
 	 */
-	public function getPrimaryKey(string $table)
+	public function getPrimaryKey(string $table): string|array|null
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);

@@ -55,7 +55,6 @@ interface Driver
 
 	/**
 	 * Injects LIMIT/OFFSET to the SQL query.
-	 * @param  string  $sql query that will be modified.
 	 */
 	function applyLimit(string &$sql, ?int $limit, ?int $offset): void;
 

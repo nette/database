@@ -60,10 +60,7 @@ class Explorer
 	}
 
 
-	/**
-	 * @return mixed
-	 */
-	public function transaction(callable $callback)
+	public function transaction(callable $callback): mixed
 	{
 		return $this->connection->transaction($callback);
 	}
@@ -128,9 +125,8 @@ class Explorer
 
 	/**
 	 * Shortcut for query()->fetchField()
-	 * @return mixed
 	 */
-	public function fetchField(string $sql, ...$params)
+	public function fetchField(string $sql, ...$params): mixed
 	{
 		return $this->connection->query($sql, ...$params)->fetchField();
 	}

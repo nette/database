@@ -203,7 +203,7 @@ test('tests operator suffix', function () use ($explorer) {
 test('', function () use ($explorer) {
 	$books = $explorer->table('book')->where(
 		'id',
-		$explorer->table('book_tag')->select('book_id')->where('tag_id', 21)
+		$explorer->table('book_tag')->select('book_id')->where('tag_id', 21),
 	);
 	Assert::same(3, $books->count());
 });
@@ -212,7 +212,7 @@ test('', function () use ($explorer) {
 Assert::exception(function () use ($explorer) {
 	$explorer->table('book')->where(
 		'id',
-		$explorer->table('book_tag')->where('tag_id', 21)
+		$explorer->table('book_tag')->where('tag_id', 21),
 	);
 }, Nette\InvalidArgumentException::class, 'Selection argument must have defined a select column.');
 
@@ -272,7 +272,7 @@ test('', function () use ($driverName, $explorer, $connection, $structure) {
 	$e = Assert::exception(function () use ($dao) {
 		$books = $dao->table('book')->where(
 			'id',
-			$dao->table('book_tag')->where('tag_id', 21)
+			$dao->table('book_tag')->where('tag_id', 21),
 		);
 		$books->fetch();
 	}, Nette\InvalidArgumentException::class, 'Selection argument must have defined a select column.');

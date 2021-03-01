@@ -17,8 +17,8 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 
 $driver = $connection->getDriver();
 $tables = $driver->getTables();
-$tables = array_filter($tables, function ($t) { return in_array($t['name'], ['author', 'book', 'book_tag', 'tag'], true); });
-usort($tables, function ($a, $b) { return strcmp($a['name'], $b['name']); });
+$tables = array_filter($tables, fn($t) => in_array($t['name'], ['author', 'book', 'book_tag', 'tag'], true));
+usort($tables, fn($a, $b) => strcmp($a['name'], $b['name']));
 
 if ($driver->isSupported(Driver::SUPPORT_SCHEMA)) {
 	Assert::same(
@@ -28,7 +28,7 @@ if ($driver->isSupported(Driver::SUPPORT_SCHEMA)) {
 			['name' => 'book_tag', 'view' => false, 'fullName' => 'public.book_tag'],
 			['name' => 'tag', 'view' => false, 'fullName' => 'public.tag'],
 		],
-		$tables
+		$tables,
 	);
 } else {
 	Assert::same([

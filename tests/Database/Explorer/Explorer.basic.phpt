@@ -78,7 +78,7 @@ test('', function () use ($connection, $structure) {
 	$explorer = new Nette\Database\Explorer(
 		$connection,
 		$structure,
-		new Nette\Database\Conventions\DiscoveredConventions($structure)
+		new Nette\Database\Conventions\DiscoveredConventions($structure),
 	);
 
 	$book = $explorer->table('book')->get(1);

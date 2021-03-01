@@ -88,7 +88,7 @@ class ResultSet implements \Iterator, IRowContainer
 	/**
 	 * @internal
 	 */
-	public function getPdoStatement(): \PDOStatement
+	public function getPdoStatement(): ?\PDOStatement
 	{
 		return $this->pdoStatement;
 	}

@@ -20,17 +20,13 @@ class Explorer
 {
 	use Nette\SmartObject;
 
-	/** @var Connection */
-	private $connection;
+	private Connection $connection;
 
-	/** @var IStructure */
-	private $structure;
+	private IStructure $structure;
 
-	/** @var Conventions */
-	private $conventions;
+	private Conventions $conventions;
 
-	/** @var Nette\Caching\IStorage */
-	private $cacheStorage;
+	private ?Nette\Caching\IStorage $cacheStorage;
 
 
 	public function __construct(

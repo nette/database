@@ -22,32 +22,23 @@ class ConnectionPanel implements Tracy\IBarPanel
 {
 	use Nette\SmartObject;
 
-	/** @var int */
-	public $maxQueries = 100;
+	public int $maxQueries = 100;
 
-	/** @var string */
-	public $name;
+	public string $name;
 
-	/** @var bool|string explain queries? */
-	public $explain = true;
+	public bool|string $explain = true;
 
-	/** @var bool */
-	public $disabled = false;
+	public bool $disabled = false;
 
-	/** @var float */
-	public $performanceScale = 0.25;
+	public float $performanceScale = 0.25;
 
-	/** @var float logged time */
-	private $totalTime = 0;
+	private float $totalTime = 0;
 
-	/** @var int */
-	private $count = 0;
+	private int $count = 0;
 
-	/** @var array */
-	private $queries = [];
+	private array $queries = [];
 
-	/** @var Tracy\BlueScreen */
-	private $blueScreen;
+	private Tracy\BlueScreen $blueScreen;
 
 
 	public static function initialize(

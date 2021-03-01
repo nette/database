@@ -24,8 +24,7 @@ class MySqlDriver implements Nette\Database\Driver
 		ERROR_DUPLICATE_ENTRY = 1062,
 		ERROR_DATA_TRUNCATED = 1265;
 
-	/** @var Nette\Database\Connection */
-	private $connection;
+	private Nette\Database\Connection $connection;
 
 
 	/**

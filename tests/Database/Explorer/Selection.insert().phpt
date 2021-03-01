@@ -78,7 +78,7 @@ if ($driverName !== 'sqlsrv') {
 $explorer = new Nette\Database\Explorer(
 	$connection,
 	$structure,
-	new Nette\Database\Conventions\DiscoveredConventions($structure)
+	new Nette\Database\Conventions\DiscoveredConventions($structure),
 );
 
 $inserted = $explorer->table('note')->insert([

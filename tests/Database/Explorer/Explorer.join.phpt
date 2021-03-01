@@ -37,12 +37,12 @@ test('', function () use ($explorer, $driver) {
 	if ($driver->isSupported(Driver::SUPPORT_SCHEMA)) {
 		Assert::same(
 			reformat('SELECT [tag].* FROM [book_tag] LEFT JOIN [public].[tag] [tag] ON [book_tag].[tag_id] = [tag].[id] WHERE ([book_id] = ?)'),
-			$joinSql
+			$joinSql,
 		);
 	} else {
 		Assert::same(
 			reformat('SELECT [tag].* FROM [book_tag] LEFT JOIN [tag] ON [book_tag].[tag_id] = [tag].[id] WHERE ([book_id] = ?)'),
-			$joinSql
+			$joinSql,
 		);
 	}
 });
@@ -54,12 +54,12 @@ test('', function () use ($explorer, $driver) {
 	if ($driver->isSupported(Driver::SUPPORT_SCHEMA)) {
 		Assert::same(
 			reformat('SELECT [Tag].[id] FROM [book_tag] LEFT JOIN [public].[tag] [Tag] ON [book_tag].[tag_id] = [Tag].[id] WHERE ([book_id] = ?)'),
-			$joinSql
+			$joinSql,
 		);
 	} else {
 		Assert::same(
 			reformat('SELECT [Tag].[id] FROM [book_tag] LEFT JOIN [tag] [Tag] ON [book_tag].[tag_id] = [Tag].[id] WHERE ([book_id] = ?)'),
-			$joinSql
+			$joinSql,
 		);
 	}
 });
@@ -88,7 +88,7 @@ test('', function () use ($connection, $structure) {
 	$explorer = new Nette\Database\Explorer(
 		$connection,
 		$structure,
-		new Nette\Database\Conventions\DiscoveredConventions($structure)
+		new Nette\Database\Conventions\DiscoveredConventions($structure),
 	);
 
 	$books = $explorer->table('book')->select('book.*, author.name, translator.name');

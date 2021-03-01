@@ -37,7 +37,7 @@ class Explorer
 		Connection $connection,
 		Structure $structure,
 		Conventions $conventions = null,
-		Nette\Caching\IStorage $cacheStorage = null
+		Nette\Caching\IStorage $cacheStorage = null,
 	) {
 		$this->connection = $connection;
 		$this->structure = $structure;
@@ -69,9 +69,7 @@ class Explorer
 	 */
 	public function transaction(callable $callback)
 	{
-		return $this->connection->transaction(function () use ($callback) {
-			return $callback($this);
-		});
+		return $this->connection->transaction(fn() => $callback($this));
 	}
 
 

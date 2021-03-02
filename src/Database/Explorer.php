@@ -26,14 +26,14 @@ class Explorer
 
 	private Conventions $conventions;
 
-	private ?Nette\Caching\IStorage $cacheStorage;
+	private ?Nette\Caching\Storage $cacheStorage;
 
 
 	public function __construct(
 		Connection $connection,
 		Structure $structure,
 		Conventions $conventions = null,
-		Nette\Caching\IStorage $cacheStorage = null,
+		Nette\Caching\Storage $cacheStorage = null,
 	) {
 		$this->connection = $connection;
 		$this->structure = $structure;

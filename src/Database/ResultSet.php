@@ -216,14 +216,10 @@ class ResultSet implements \Iterator, IRowContainer
 	/**
 	 * Fetches single field.
 	 */
-	public function fetchField(int $column = 0): mixed
+	public function fetchField(): mixed
 	{
-		if (func_num_args()) {
-			trigger_error(__METHOD__ . '() argument is deprecated.', E_USER_DEPRECATED);
-		}
-
 		$row = $this->fetch();
-		return $row ? $row[$column] : null;
+		return $row ? $row[0] : null;
 	}
 
 

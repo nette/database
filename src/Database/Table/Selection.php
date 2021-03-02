@@ -82,7 +82,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		Explorer $explorer,
 		Conventions $conventions,
 		string $tableName,
-		Nette\Caching\IStorage $cacheStorage = null,
+		Nette\Caching\Storage $cacheStorage = null,
 	) {
 		$this->explorer = $this->context = $explorer;
 		$this->conventions = $conventions;

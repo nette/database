@@ -11,14 +11,14 @@ require __DIR__ . '/../bootstrap.php';
 date_default_timezone_set('Europe/Prague');
 
 // timestamp
-Assert::same('1978-01-23 11:40:00', (string) new DateTime(254_400_000));
+Assert::same('1978-01-23 11:40:00.000000', (string) new DateTime(254_400_000));
 Assert::same(254_400_000, (new DateTime(254_400_000))->getTimestamp());
 
-Assert::same('2050-08-13 11:40:00', (string) new DateTime(254_400_0000));
+Assert::same('2050-08-13 11:40:00.000000', (string) new DateTime(254_400_0000));
 Assert::same(is_int(2_544_000_000) ? 2_544_000_000 : '2544000000', (new DateTime(2_544_000_000))->getTimestamp()); // 64 bit
 
 // to string
-Assert::same('1978-01-23 11:40:00', (string) new DateTime('1978-01-23 11:40'));
+Assert::same('1978-01-23 11:40:00.000000', (string) new DateTime('1978-01-23 11:40'));
 
 // JSON
 Assert::same('"1978-01-23T11:40:00+01:00"', json_encode(new DateTime('1978-01-23 11:40')));

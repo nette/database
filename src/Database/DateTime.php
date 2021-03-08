@@ -40,10 +40,10 @@ final class DateTime extends \DateTimeImmutable implements \JsonSerializable
 
 
 	/**
-	 * Returns the date and time in the format 'Y-m-d H:i:s'.
+	 * Returns the date and time in the format 'Y-m-d H:i:s.u'.
 	 */
 	public function __toString(): string
 	{
-		return $this->format('Y-m-d H:i:s');
+		return $this->format('Y-m-d H:i:s.u');
 	}
 }

@@ -41,7 +41,7 @@ test('', function () use ($explorer) {
 	$explorer->table('author')->get(12)->update(['born' => new DateTime('2002-02-02')]);
 	$list = $explorer->table('author')->where('born IS NOT NULL')->order('born')->fetchPairs('born', 'name');
 	Assert::same([
-		'2002-02-02 00:00:00' => 'David Grudl',
-		'2002-02-20 00:00:00' => 'Jakub Vrana',
+		'2002-02-02 00:00:00.000000' => 'David Grudl',
+		'2002-02-20 00:00:00.000000' => 'Jakub Vrana',
 	], $list);
 });

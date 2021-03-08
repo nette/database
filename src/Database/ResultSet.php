@@ -147,7 +147,7 @@ class ResultSet implements \Iterator, IRowContainer
 				|| $type === IStructure::FIELD_DATE
 				|| $type === IStructure::FIELD_TIME
 			) {
-				$row[$key] = new Nette\Utils\DateTime($value);
+				$row[$key] = new DateTime($value);
 
 			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?$#D', $value, $m);
@@ -156,7 +156,7 @@ class ResultSet implements \Iterator, IRowContainer
 				$row[$key]->invert = (int) (bool) $m[1];
 
 			} elseif ($type === IStructure::FIELD_UNIX_TIMESTAMP) {
-				$row[$key] = Nette\Utils\DateTime::from($value);
+				$row[$key] = new DateTime($value);
 			}
 		}
 

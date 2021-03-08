@@ -70,8 +70,8 @@ test('', function () use ($connection) {
 	$pairs = $connection->query('UPDATE author SET born = ? WHERE id = 12', new DateTime('2002-02-02'));
 	$pairs = $connection->query('SELECT * FROM author WHERE born IS NOT NULL ORDER BY born')->fetchPairs('born', 'name');
 	Assert::same([
-		'2002-02-02 00:00:00' => 'David Grudl',
-		'2002-02-20 00:00:00' => 'Jakub Vrana',
+		'2002-02-02 00:00:00.000000' => 'David Grudl',
+		'2002-02-20 00:00:00.000000' => 'Jakub Vrana',
 	], $pairs);
 });
 
@@ -125,8 +125,8 @@ $pairs = $connection->query('UPDATE author SET born = ? WHERE id = 11', new Date
 $pairs = $connection->query('UPDATE author SET born = ? WHERE id = 12', new DateTime('2002-02-02'));
 $pairs = $connection->query('SELECT * FROM author WHERE born IS NOT NULL ORDER BY born')->fetchPairs('born', 'name');
 Assert::same([
-	'2002-02-02 00:00:00' => 'David Grudl',
-	'2002-02-20 00:00:00' => 'Jakub Vrana',
+	'2002-02-02 00:00:00.000000' => 'David Grudl',
+	'2002-02-20 00:00:00.000000' => 'Jakub Vrana',
 ], $pairs);
 
 

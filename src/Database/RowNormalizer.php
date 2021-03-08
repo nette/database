@@ -52,7 +52,7 @@ final class RowNormalizer
 			case IStructure::FIELD_DATETIME:
 			case IStructure::FIELD_DATE:
 			case IStructure::FIELD_TIME:
-				return new Nette\Utils\DateTime($value);
+				return new DateTime($value);
 
 			case IStructure::FIELD_TIME_INTERVAL:
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?$#D', $value, $m);
@@ -62,7 +62,7 @@ final class RowNormalizer
 				return $di;
 
 			case IStructure::FIELD_UNIX_TIMESTAMP:
-				return Nette\Utils\DateTime::from($value);
+				return new DateTime($value);
 
 			default:
 				return $value;

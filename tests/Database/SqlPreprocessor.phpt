@@ -94,6 +94,14 @@ test('IN', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id IN ?', [10, 11]]); // without ()
 	Assert::same('SELECT id FROM author WHERE id IN (?, ?)', $sql);
 	Assert::same([10, 11], $params);
+
+	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id IN (?)', 10]); // single item in ()
+	Assert::same('SELECT id FROM author WHERE id IN (?)', $sql);
+	Assert::same([10], $params);
+
+	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id IN (?)', [10, 11]]); // array in ()
+	Assert::same('SELECT id FROM author WHERE id IN (?, ?)', $sql);
+	Assert::same([10, 11], $params);
 });
 
 

@@ -140,7 +140,8 @@ class SqlPreprocessor
 			if ($this->counter >= count($this->params)) {
 				throw new Nette\InvalidArgumentException('There are more placeholders than passed parameters.');
 			}
-			return 'IN (' . $this->formatValue($this->params[$this->counter++], self::MODE_LIST) . ')';
+			$param = $this->params[$this->counter++];
+			return 'IN (' . $this->formatValue($param, is_array($param) ? self::MODE_LIST : null) . ')';
 
 		} else { // command
 			$cmd = ltrim(strtoupper($m), "\t\n\r (");

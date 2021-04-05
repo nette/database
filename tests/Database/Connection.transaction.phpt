@@ -88,3 +88,24 @@ test('nested transaction() call success', function () use ($connection) {
 
 	Assert::same(2, $connection->query('SELECT COUNT(*) FROM author')->fetchField() - $base);
 });
+
+
+test('beginTransaction(), commit() & rollBack() calls are forbidden in transaction()', function () use ($connection) {
+	Assert::exception(function () use ($connection) {
+		$connection->transaction(function (Connection $connection) {
+			$connection->beginTransaction();
+		});
+	}, \LogicException::class, Connection::class . '::beginTransaction() call is forbidden inside a transaction() callback');
+
+	Assert::exception(function () use ($connection) {
+		$connection->transaction(function (Connection $connection) {
+			$connection->commit();
+		});
+	}, \LogicException::class, Connection::class . '::commit() call is forbidden inside a transaction() callback');
+
+	Assert::exception(function () use ($connection) {
+		$connection->transaction(function (Connection $connection) {
+			$connection->rollBack();
+		});
+	}, \LogicException::class, Connection::class . '::rollBack() call is forbidden inside a transaction() callback');
+});

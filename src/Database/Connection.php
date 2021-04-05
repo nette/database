@@ -148,18 +148,30 @@ class Connection
 
 	public function beginTransaction(): void
 	{
+		if ($this->transactionDepth !== 0) {
+			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
+		}
+
 		$this->query('::beginTransaction');
 	}
 
 
 	public function commit(): void
 	{
+		if ($this->transactionDepth !== 0) {
+			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
+		}
+
 		$this->query('::commit');
 	}
 
 
 	public function rollBack(): void
 	{
+		if ($this->transactionDepth !== 0) {
+			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
+		}
+
 		$this->query('::rollBack');
 	}
 

@@ -46,6 +46,9 @@ class Connection
 	/** @var string|null */
 	private $sql;
 
+	/** @var int */
+	private $transactionDepth = 0;
+
 
 	public function __construct(string $dsn, string $user = null, string $password = null, array $options = null)
 	{
@@ -166,14 +169,26 @@ class Connection
 	 */
 	public function transaction(callable $callback)
 	{
-		$this->beginTransaction();
+		if ($this->transactionDepth === 0) {
+			$this->beginTransaction();
+		}
+
+		$this->transactionDepth++;
 		try {
 			$res = $callback($this);
 		} catch (\Throwable $e) {
-			$this->rollBack();
+			$this->transactionDepth--;
+			if ($this->transactionDepth === 0) {
+				$this->rollback();
+			}
 			throw $e;
 		}
-		$this->commit();
+
+		$this->transactionDepth--;
+		if ($this->transactionDepth === 0) {
+			$this->commit();
+		}
+
 		return $res;
 	}
 

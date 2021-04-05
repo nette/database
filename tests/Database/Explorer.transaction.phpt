@@ -7,6 +7,7 @@
 
 declare(strict_types=1);
 
+use Nette\Database\Explorer;
 use Tester\Assert;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
@@ -25,7 +26,7 @@ test('', function () use ($explorer) {
 
 test('', function () use ($explorer) {
 	Assert::exception(function () use ($explorer) {
-		$explorer->transaction(function () use ($explorer) {
+		$explorer->transaction(function (Explorer $explorer) {
 			$explorer->query('DELETE FROM book');
 			throw new Exception('my exception');
 		});

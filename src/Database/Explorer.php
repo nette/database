@@ -69,7 +69,9 @@ class Explorer
 	 */
 	public function transaction(callable $callback)
 	{
-		return $this->connection->transaction($callback);
+		return $this->connection->transaction(function () use ($callback) {
+			return $callback($this);
+		});
 	}
 
 

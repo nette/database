@@ -26,7 +26,7 @@ test('', function () use ($connection) {
 
 test('', function () use ($connection) {
 	Assert::exception(function () use ($connection) {
-		$connection->transaction(function () use ($connection) {
+		$connection->transaction(function (Connection $connection) {
 			$connection->query('DELETE FROM book');
 			throw new Exception('my exception');
 		});

@@ -168,7 +168,7 @@ class Connection
 	{
 		$this->beginTransaction();
 		try {
-			$res = $callback();
+			$res = $callback($this);
 		} catch (\Throwable $e) {
 			$this->rollBack();
 			throw $e;

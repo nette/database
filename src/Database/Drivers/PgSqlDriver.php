@@ -135,9 +135,9 @@ class PgSqlDriver implements Nette\Database\Driver
 				CASE WHEN a.atttypmod = -1 THEN NULL ELSE a.atttypmod -4 END AS size,
 				NOT (a.attnotnull OR t.typtype = 'd' AND t.typnotnull) AS nullable,
 				pg_catalog.pg_get_expr(ad.adbin, 'pg_catalog.pg_attrdef'::regclass)::varchar AS default,
-				coalesce(co.contype = 'p' AND strpos(pg_catalog.pg_get_expr(ad.adbin, ad.adrelid), 'nextval') = 1, FALSE) AS autoincrement,
+				coalesce(co.contype = 'p' AND a.attidentity = ANY (ARRAY['a', 'd']) OR strpos(pg_catalog.pg_get_expr(ad.adbin, ad.adrelid), 'nextval') = 1, FALSE) AS autoincrement,
 				coalesce(co.contype = 'p', FALSE) AS primary,
-				substring(pg_catalog.pg_get_expr(ad.adbin, 'pg_catalog.pg_attrdef'::regclass) from 'nextval[(]''\"?([^''\"]+)') AS sequence
+				coalesce(pg_get_serial_sequence(c.relname, a.attname), substring(pg_catalog.pg_get_expr(ad.adbin, 'pg_catalog.pg_attrdef'::regclass) from 'nextval[(]''\"?([^''\"]+)')) AS sequence
 			FROM
 				pg_catalog.pg_attribute AS a
 				JOIN pg_catalog.pg_class AS c ON a.attrelid = c.oid

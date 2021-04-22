@@ -27,9 +27,6 @@ class MySqlDriver implements Nette\Database\Driver
 	/** @var Nette\Database\Connection */
 	private $connection;
 
-	/** @var string */
-	private $version;
-
 
 	/**
 	 * Driver options:
@@ -39,8 +36,8 @@ class MySqlDriver implements Nette\Database\Driver
 	public function initialize(Nette\Database\Connection $connection, array $options): void
 	{
 		$this->connection = $connection;
-		$this->version = $connection->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION);
-		$charset = $options['charset'] ?? (version_compare($this->version, '5.5.3', '>=') ? 'utf8mb4' : 'utf8');
+		$charset = $options['charset']
+			?? (version_compare($connection->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION), '5.5.3', '>=') ? 'utf8mb4' : 'utf8');
 		if ($charset) {
 			$connection->query('SET NAMES ?', $charset);
 		}
@@ -206,10 +203,7 @@ class MySqlDriver implements Nette\Database\Driver
 		// MULTI_COLUMN_AS_OR_COND due to mysql bugs:
 		// - http://bugs.mysql.com/bug.php?id=31188
 		// - http://bugs.mysql.com/bug.php?id=35819
-		// SUPPORT_SUBSELECT is slow before 5.7
-		// - http://mysqlserverteam.com/derived-tables-in-mysql-5-7/
-		return $item === self::SUPPORT_SELECT_UNGROUPED_COLUMNS
-			|| $item === self::SUPPORT_MULTI_COLUMN_AS_OR_COND
-			|| ($item === self::SUPPORT_SUBSELECT && version_compare($this->version, '5.7', '>='));
+		// and more.
+		return $item === self::SUPPORT_SELECT_UNGROUPED_COLUMNS || $item === self::SUPPORT_MULTI_COLUMN_AS_OR_COND;
 	}
 }

@@ -59,3 +59,17 @@ test('less items than $itemsPerPage', function () use ($explorer) {
 	$tags = $explorer->table('tag')->page(1, 100);
 	Assert::equal(4, count($tags)); //all four items from db
 });
+
+// SQL Server throw PDOException 'The number of rows provided for a FETCH clause must be greater then zero.'
+if ($driverName !== 'sqlsrv') {
+	Assert::error(function () use ($context) { //invalid params
+		$tags = $context->table('tag')->page('foo', 'bar');
+		Assert::equal(0, count($tags)); //no items
+	}, PHP_VERSION_ID >= 70100 ? [[E_WARNING, 'A non-numeric value encountered']] : []);
+}
+
+test(function () use ($context) { // GROUP BY
+	$books = $context->table('book')->group('author_id')->page(2, 1, $numOfPages);
+	Assert::equal(1, count($books));
+	Assert::equal(2, $numOfPages);
+});

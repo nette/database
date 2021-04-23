@@ -17,15 +17,15 @@
 	"require": {
 		"php": ">=8.0 <8.2",
 		"ext-pdo": "*",
-		"nette/caching": "^3.0",
-		"nette/utils": "^3.2.1"
+		"nette/caching": "^4.0",
+		"nette/utils": "^4.0"
 	},
 	"require-dev": {
 		"nette/tester": "^2.4",
-		"nette/di": "^v3.0",
-		"mockery/mockery": "^1.3.4",
-		"tracy/tracy": "^2.4",
-		"phpstan/phpstan-nette": "^0.12"
+		"nette/di": "^v4.0",
+		"mockery/mockery": "^1.4.3",
+		"tracy/tracy": "^2.8",
+		"phpstan/phpstan-nette": "^1.0"
 	},
 	"conflict": {
 		"nette/di": "<3.0-stable"

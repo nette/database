@@ -1,0 +1,138 @@
+name: Tests
+
+on: [push, pull_request]
+
+env:
+    php-extensions: mbstring, intl, pdo_sqlsrv-5.9.0preview1
+    php-tools: "composer:v2, pecl"
+
+jobs:
+    tests:
+        runs-on: ubuntu-latest
+        strategy:
+            matrix:
+                php: ['7.2', '7.3', '7.4', '8.0']
+
+            fail-fast: false
+
+        name: PHP ${{ matrix.php }} tests
+
+        services:
+            mysql57:
+                image: mysql:5.7
+                env:
+                    MYSQL_DATABASE: nette_test
+                    MYSQL_ROOT_PASSWORD: root
+                ports:
+                    - 3306:3306
+                options: >-
+                    --health-cmd "mysqladmin ping -ppass"
+                    --health-interval 10s
+                    --health-start-period 10s
+                    --health-timeout 5s
+                    --health-retries 10
+
+            mysql80:
+                image: mysql:8.0
+                ports:
+                    - 3307:3306
+                options: >-
+                    --health-cmd="mysqladmin ping -ppass"
+                    --health-interval=10s
+                    --health-timeout=5s
+                    --health-retries=5
+                    -e MYSQL_ROOT_PASSWORD=root
+                    -e MYSQL_DATABASE=nette_test
+                    --entrypoint sh mysql:8 -c "exec docker-entrypoint.sh mysqld --default-authentication-plugin=mysql_native_password"
+
+            postgres96:
+                image: postgres:9.6
+                env:
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                    POSTGRES_DB: nette_test
+                ports:
+                    - 5432:5432
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+            postgres13:
+                image: postgres:13
+                env:
+                    POSTGRES_USER: postgres
+                    POSTGRES_PASSWORD: postgres
+                    POSTGRES_DB: nette_test
+                ports:
+                    - 5433:5432
+                options: >-
+                    --health-cmd pg_isready
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+            mssql:
+                image: mcr.microsoft.com/mssql/server:latest
+                env:
+                    ACCEPT_EULA: Y
+                    SA_PASSWORD: YourStrong!Passw0rd
+                    MSSQL_PID: Developer
+                ports:
+                    - 1433:1433
+                options: >-
+                    --name=mssql
+                    --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'"
+                    --health-interval 10s
+                    --health-timeout 5s
+                    --health-retries 5
+
+        steps:
+            - uses: actions/checkout@v2
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: ${{ matrix.php }}
+                  extensions: ${{ env.php-extensions }}
+                  tools: ${{ env.php-tools }}
+                  coverage: none
+
+            - name: Create databases.ini
+              run: cp ./tests/databases.github.ini ./tests/Database/databases.ini
+
+            - name: Create MS SQL Database
+              run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE nette_test'
+
+            - run: composer install --no-progress --prefer-dist
+            - run: vendor/bin/tester -p phpdbg tests -s -C --coverage ./coverage.xml --coverage-src ./src
+            - if: failure()
+              uses: actions/upload-artifact@v2
+              with:
+                  name: output
+                  path: tests/**/output
+
+
+            - name: Save Code Coverage
+              if: ${{ matrix.php == '8.0' }}
+              env:
+                  COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.4.3/php-coveralls.phar
+                  php php-coveralls.phar --verbose --config tests/.coveralls.yml
+
+
+    lowest_dependencies:
+        name: Lowest Dependencies
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - uses: shivammathur/setup-php@v2
+              with:
+                  php-version: 8.0
+                  coverage: none
+
+            - name: Create databases.ini
+              run: cp ./tests/databases.sqlite.ini ./tests/Database/databases.ini
+
+            - run: composer update --no-progress --prefer-dist --prefer-lowest --prefer-stable
+            - run: vendor/bin/tester tests -s -C

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database;
 
 use Nette;
+use Nette\Bridges\DatabaseTracy\ConnectionPanel;
 use Tracy;
 
 
@@ -289,7 +290,7 @@ class Helpers
 		string $name,
 		Tracy\Bar $bar,
 		Tracy\BlueScreen $blueScreen
-	): Nette\Bridges\DatabaseTracy\ConnectionPanel {
+	): ?ConnectionPanel {
 		return self::initializeTracy($connection, true, $name, $explain, $bar, $blueScreen);
 	}
 
@@ -301,19 +302,18 @@ class Helpers
 		bool $explain = true,
 		Tracy\Bar $bar = null,
 		Tracy\BlueScreen $blueScreen = null
-	): Nette\Bridges\DatabaseTracy\ConnectionPanel {
+	): ?ConnectionPanel {
 		$blueScreen = $blueScreen ?? Tracy\Debugger::getBlueScreen();
-		$bar = $bar ?? Tracy\Debugger::getBar();
+		$blueScreen->addPanel([ConnectionPanel::class, 'renderException']);
 
-		$panel = new Nette\Bridges\DatabaseTracy\ConnectionPanel($connection, $blueScreen);
-		$panel->explain = $explain;
-		$panel->name = $name;
-
-		$blueScreen->addPanel([$panel, 'renderException']);
 		if ($addBarPanel) {
+			$panel = new ConnectionPanel($connection, $blueScreen);
+			$panel->explain = $explain;
+			$panel->name = $name;
+			$bar = $bar ?? Tracy\Debugger::getBar();
 			$bar->addPanel($panel);
 		}
-		return $panel;
+		return $panel ?? null;
 	}
 
 

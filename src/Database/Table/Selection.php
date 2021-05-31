@@ -494,7 +494,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			$this->execute();
 			return count($this->data);
 		}
-		return $this->aggregation("COUNT($column)");
+		return (int) $this->aggregation("COUNT($column)");
 	}
 
 

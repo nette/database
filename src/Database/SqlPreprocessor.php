@@ -193,7 +193,7 @@ class SqlPreprocessor
 				$this->remaining[] = $value->value;
 				return '?';
 
-			} elseif (is_object($value) && method_exists($value, '__toString')) {
+			} elseif ($value instanceof \Stringable) {
 				$this->remaining[] = (string) $value;
 				return '?';
 			}
@@ -254,7 +254,7 @@ class SqlPreprocessor
 				foreach ($value as $k => $v) {
 					if (is_int($k)) { // value, value, ...
 						$vx[] = $this->formatValue($v);
-					} elseif (substr($k, -1) === '=') { // key+=value, key-=value, ...
+					} elseif (str_ends_with($k, '=')) { // key+=value, key-=value, ...
 						$k2 = $this->delimite(substr($k, 0, -2));
 						$vx[] = $k2 . '=' . $k2 . ' ' . substr($k, -2, 1) . ' ' . $this->formatValue($v);
 					} else { // key=value, key=value, ...

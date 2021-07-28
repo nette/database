@@ -51,7 +51,7 @@ class ResultSet implements \Iterator, IRowContainer
 		$this->normalizer = $normalizer;
 
 		try {
-			if (substr($queryString, 0, 2) === '::') {
+			if (str_starts_with($queryString, '::')) {
 				$connection->getPdo()->{substr($queryString, 2)}();
 			} elseif ($queryString !== null) {
 				static $types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT,

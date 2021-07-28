@@ -383,10 +383,10 @@ class SqlBuilder
 
 				if ($arg !== null) {
 					if (!$arg) {
-						$hasBrackets = strpos($condition, '(') !== false;
+						$hasBrackets = str_contains($condition, '(');
 						$hasOperators = preg_match('#AND|OR#', $condition);
-						$hasNot = strpos($condition, 'NOT') !== false;
-						$hasPrefixNot = strpos($match[2][0], 'NOT') !== false;
+						$hasNot = str_contains($condition, 'NOT');
+						$hasPrefixNot = str_contains($match[2][0], 'NOT');
 						if (!$hasBrackets && ($hasOperators || ($hasNot && !$hasPrefixNot))) {
 							throw new Nette\InvalidArgumentException('Possible SQL query corruption. Add parentheses around operators.');
 						}
@@ -807,7 +807,7 @@ class SqlBuilder
 				$parameter = $this->getConditionHash($parameter->getSql(), $parameter->getSqlBuilder()->getParameters());
 			} elseif ($parameter instanceof SqlLiteral) {
 				$parameter = $this->getConditionHash($parameter->__toString(), $parameter->getParameters());
-			} elseif (is_object($parameter) && method_exists($parameter, '__toString')) {
+			} elseif ($parameter instanceof \Stringable) {
 				$parameter = $parameter->__toString();
 			} elseif (is_array($parameter) || $parameter instanceof \ArrayAccess) {
 				$parameter = $this->getConditionHash($key, $parameter);

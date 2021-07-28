@@ -20,7 +20,7 @@ try {
 	Tester\Environment::skip("Connection to '$options[dsn]' failed. Reason: " . $e->getMessage());
 }
 
-if (strpos($options['dsn'], 'sqlite::memory:') === false) {
+if (!str_contains($options['dsn'], 'sqlite::memory:')) {
 	Tester\Environment::lock($options['dsn'], getTempDir());
 }
 

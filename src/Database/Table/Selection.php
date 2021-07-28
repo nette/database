@@ -348,7 +348,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		foreach ($parameters as $key => $val) {
 			if (is_int($key)) { // whereOr(['full condition'])
 				$columns[] = $val;
-			} elseif (strpos($key, '?') === false) { // whereOr(['column1' => 1])
+			} elseif (!str_contains($key, '?')) { // whereOr(['column1' => 1])
 				$columns[] = $key . ' ?';
 				$values[] = $val;
 			} else { // whereOr(['column1 > ?' => 1])
@@ -945,7 +945,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		int|string|null $active = null,
 	): ?GroupedSelection
 	{
-		if (strpos($table, '.') !== false) {
+		if (str_contains($table, '.')) {
 			[$table, $column] = explode('.', $table);
 		} elseif (!$column) {
 			$hasMany = $this->conventions->getHasManyReference($this->name, $table);

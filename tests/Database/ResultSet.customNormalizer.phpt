@@ -17,8 +17,9 @@ test('disabled normalization', function () use ($connection) {
 
 	$connection->setRowNormalizer(null);
 	$res = $connection->query('SELECT * FROM author');
+	$asInt = $driverName === 'pgsql' || PHP_VERSION_ID >= 80100;
 	Assert::same([
-		'id' => $driverName === 'pgsql' ? 11 : '11',
+		'id' => $asInt ? 11 : '11',
 		'name' => 'Jakub Vrana',
 		'web' => 'http://www.vrana.cz/',
 		'born' => null,

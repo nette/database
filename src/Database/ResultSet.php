@@ -169,12 +169,14 @@ class ResultSet implements \Iterator, IRowContainer
 	}
 
 
+	#[\ReturnTypeWillChange]
 	public function current()
 	{
 		return $this->result;
 	}
 
 
+	#[\ReturnTypeWillChange]
 	public function key()
 	{
 		return $this->resultKey;

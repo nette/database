@@ -229,6 +229,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 * @param  string  $column
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet($column)
 	{
 		return $this->__get($column);

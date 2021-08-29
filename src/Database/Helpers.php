@@ -197,13 +197,13 @@ class Helpers
 	{
 		foreach ($resultSet->getColumnTypes() as $key => $type) {
 			$value = $row[$key];
-			if ($value === null || $value === false || $type === IStructure::FIELD_TEXT) {
+			if (!is_string($value) || $type === IStructure::FIELD_TEXT) {
 				// do nothing
 			} elseif ($type === IStructure::FIELD_INTEGER) {
 				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
 
 			} elseif ($type === IStructure::FIELD_FLOAT) {
-				if (is_string($value) && ($pos = strpos($value, '.')) !== false) {
+				if (($pos = strpos($value, '.')) !== false) {
 					$value = rtrim(rtrim($pos === 0 ? "0$value" : $value, '0'), '.');
 				}
 				$float = (float) $value;

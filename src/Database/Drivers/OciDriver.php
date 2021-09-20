@@ -15,10 +15,8 @@ use Nette;
 /**
  * Supplemental Oracle database driver.
  */
-class OciDriver implements Nette\Database\Driver
+class OciDriver extends PdoDriver
 {
-	use Nette\SmartObject;
-
 	private Nette\Database\Connection $connection;
 
 	/** Datetime format */

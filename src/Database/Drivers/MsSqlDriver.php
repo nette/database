@@ -15,10 +15,8 @@ use Nette;
 /**
  * Supplemental MS SQL database driver.
  */
-class MsSqlDriver implements Nette\Database\Driver
+class MsSqlDriver extends PdoDriver
 {
-	use Nette\SmartObject;
-
 	private Nette\Database\Connection $connection;
 
 

@@ -15,10 +15,8 @@ use Nette;
 /**
  * Supplemental MySQL database driver.
  */
-class MySqlDriver implements Nette\Database\Driver
+class MySqlDriver extends PdoDriver
 {
-	use Nette\SmartObject;
-
 	public const
 		ERROR_ACCESS_DENIED = 1045,
 		ERROR_DUPLICATE_ENTRY = 1062,

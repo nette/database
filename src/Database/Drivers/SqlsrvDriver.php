@@ -15,10 +15,8 @@ use Nette;
 /**
  * Supplemental SQL Server 2005 and later database driver.
  */
-class SqlsrvDriver implements Nette\Database\Driver
+class SqlsrvDriver extends PdoDriver
 {
-	use Nette\SmartObject;
-
 	private Nette\Database\Connection $connection;
 
 	private string $version;

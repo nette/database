@@ -15,7 +15,7 @@ use Nette;
 /**
  * Supplemental MySQL database driver.
  */
-class MySqlDriver implements Nette\Database\Driver
+class MySqlDriver extends PdoDriver
 {
 	public const
 		ERROR_ACCESS_DENIED = 1045,

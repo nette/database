@@ -11,7 +11,7 @@ namespace Nette\Database;
 
 
 /**
- * Supplemental PDO database driver.
+ * Supplemental database driver.
  */
 interface Driver
 {

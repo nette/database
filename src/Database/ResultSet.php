@@ -83,6 +83,7 @@ class ResultSet implements \Iterator, IRowContainer
 	}
 
 
+	/** @deprecated */
 	public function getConnection(): Connection
 	{
 		return $this->connection;

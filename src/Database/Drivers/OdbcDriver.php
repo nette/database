@@ -15,10 +15,8 @@ use Nette;
 /**
  * Supplemental ODBC database driver.
  */
-class OdbcDriver implements Nette\Database\Driver
+class OdbcDriver extends PdoDriver
 {
-	use Nette\SmartObject;
-
 	public function initialize(Nette\Database\Connection $connection, array $options): void
 	{
 	}

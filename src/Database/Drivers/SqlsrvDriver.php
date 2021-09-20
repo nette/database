@@ -33,12 +33,6 @@ class SqlsrvDriver extends PdoDriver
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
-	{
-		return Nette\Database\DriverException::from($e);
-	}
-
-
 	/********************* SQL ****************d*g**/
 
 

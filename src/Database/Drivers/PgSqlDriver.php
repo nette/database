@@ -17,26 +17,26 @@ use Nette;
  */
 class PgSqlDriver extends PdoDriver
 {
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public function detectExceptionClass(\PDOException $e): ?string
 	{
 		$code = $e->errorInfo[0] ?? null;
 		if ($code === '0A000' && str_contains($e->getMessage(), 'truncate')) {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
+			return Nette\Database\ForeignKeyConstraintViolationException::class;
 
 		} elseif ($code === '23502') {
-			return Nette\Database\NotNullConstraintViolationException::from($e);
+			return Nette\Database\NotNullConstraintViolationException::class;
 
 		} elseif ($code === '23503') {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
+			return Nette\Database\ForeignKeyConstraintViolationException::class;
 
 		} elseif ($code === '23505') {
-			return Nette\Database\UniqueConstraintViolationException::from($e);
+			return Nette\Database\UniqueConstraintViolationException::class;
 
 		} elseif ($code === '08006') {
-			return Nette\Database\ConnectionException::from($e);
+			return Nette\Database\ConnectionException::class;
 
 		} else {
-			return Nette\Database\DriverException::from($e);
+			return null;
 		}
 	}
 

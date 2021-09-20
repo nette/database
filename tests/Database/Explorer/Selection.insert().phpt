@@ -47,7 +47,7 @@ if ($driverName !== 'sqlsrv') {
 			'name' => 'Jon Snow',
 			'web' => 'http://example.com',
 		]),
-		PDOException::class,
+		Nette\Database\DriverException::class,
 	);
 }
 

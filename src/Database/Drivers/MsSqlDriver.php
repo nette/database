@@ -17,15 +17,6 @@ use Nette;
  */
 class MsSqlDriver extends PdoDriver
 {
-	public function convertException(\PDOException $e): Nette\Database\DriverException
-	{
-		return Nette\Database\DriverException::from($e);
-	}
-
-
-	/********************* SQL ****************d*g**/
-
-
 	public function delimite(string $name): string
 	{
 		// @see https://msdn.microsoft.com/en-us/library/ms176027.aspx

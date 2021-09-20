@@ -17,15 +17,6 @@ use Nette;
  */
 class OdbcDriver extends PdoDriver
 {
-	public function convertException(\PDOException $e): Nette\Database\DriverException
-	{
-		return Nette\Database\DriverException::from($e);
-	}
-
-
-	/********************* SQL ****************d*g**/
-
-
 	public function delimite(string $name): string
 	{
 		return '[' . str_replace(['[', ']'], ['[[', ']]'], $name) . ']';

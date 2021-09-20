@@ -16,7 +16,7 @@ use Nette\Database\Type;
 /**
  * Supplemental MySQL database driver.
  */
-class MySqlDriver implements Nette\Database\Driver
+class MySqlDriver extends PdoDriver
 {
 	public const ErrorAccessDenied = 1045;
 	public const ErrorDuplicateEntry = 1062;

@@ -15,7 +15,7 @@ use Nette;
 /**
  * Supplemental SQLite3 database driver.
  */
-class SqliteDriver implements Nette\Database\Driver
+class SqliteDriver extends PdoDriver
 {
 	private Nette\Database\Connection $connection;
 	private string $fmtDateTime;

@@ -15,10 +15,8 @@ use Nette;
 /**
  * Supplemental SQLite3 database driver.
  */
-class SqliteDriver implements Nette\Database\Driver
+class SqliteDriver extends PdoDriver
 {
-	use Nette\SmartObject;
-
 	private Nette\Database\Connection $connection;
 
 	/** Datetime format */

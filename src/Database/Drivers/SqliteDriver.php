@@ -28,34 +28,34 @@ class SqliteDriver extends PdoDriver
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public function detectExceptionClass(\PDOException $e): ?string
 	{
 		$code = $e->errorInfo[1] ?? null;
 		$msg = $e->getMessage();
 		if ($code !== 19) {
-			return Nette\Database\DriverException::from($e);
+			return null;
 
 		} elseif (
 			str_contains($msg, 'must be unique')
 			|| str_contains($msg, 'is not unique')
 			|| str_contains($msg, 'UNIQUE constraint failed')
 		) {
-			return Nette\Database\UniqueConstraintViolationException::from($e);
+			return Nette\Database\UniqueConstraintViolationException::class;
 
 		} elseif (
 			str_contains($msg, 'may not be null')
 			|| str_contains($msg, 'NOT NULL constraint failed')
 		) {
-			return Nette\Database\NotNullConstraintViolationException::from($e);
+			return Nette\Database\NotNullConstraintViolationException::class;
 
 		} elseif (
 			str_contains($msg, 'foreign key constraint failed')
 			|| str_contains($msg, 'FOREIGN KEY constraint failed')
 		) {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
+			return Nette\Database\ForeignKeyConstraintViolationException::class;
 
 		} else {
-			return Nette\Database\ConstraintViolationException::from($e);
+			return Nette\Database\ConstraintViolationException::class;
 		}
 	}
 

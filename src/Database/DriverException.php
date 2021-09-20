@@ -13,41 +13,42 @@ namespace Nette\Database;
 /**
  * Base class for all errors in the driver or SQL server.
  */
-class DriverException extends \PDOException
+class DriverException extends \Exception
 {
 	public ?string $queryString = null;
-
 	public ?array $params = null;
+	private int|string|null $driverCode = null;
+	private string|null $sqlState = null;
 
 
-	public static function from(\PDOException $src): static
+	public function __construct(string $message = '', $code = 0, ?\Throwable $previous = null)
 	{
-		$e = new static($src->message, 0, $src);
-		$e->file = $src->file;
-		$e->line = $src->line;
-		if (!$src->errorInfo && preg_match('#SQLSTATE\[(.*?)\] \[(.*?)\] (.*)#A', $src->message, $m)) {
-			$m[2] = (int) $m[2];
-			$e->errorInfo = array_slice($m, 1);
-			$e->code = $m[1];
-		} else {
-			$e->errorInfo = $src->errorInfo;
-			$e->code = $src->code;
-			$e->code = $e->errorInfo[0] ?? $src->code;
+		parent::__construct($message, 0, $previous);
+		$this->code = $code;
+		if ($previous) {
+			$this->file = $previous->file;
+			$this->line = $previous->line;
 		}
+	}
 
-		return $e;
+
+	/** @internal */
+	public function setDriverCode(string $state, int|string $code): void
+	{
+		$this->sqlState = $state;
+		$this->driverCode = $code;
 	}
 
 
 	public function getDriverCode(): int|string|null
 	{
-		return $this->errorInfo[1] ?? null;
+		return $this->driverCode;
 	}
 
 
 	public function getSqlState(): ?string
 	{
-		return $this->errorInfo[0] ?? null;
+		return $this->sqlState;
 	}
 
 

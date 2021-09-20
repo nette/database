@@ -28,20 +28,20 @@ class OciDriver extends PdoDriver
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public function detectExceptionClass(\PDOException $e): ?string
 	{
 		$code = $e->errorInfo[1] ?? null;
 		if (in_array($code, [1, 2299, 38911], true)) {
-			return Nette\Database\UniqueConstraintViolationException::from($e);
+			return Nette\Database\UniqueConstraintViolationException::class;
 
 		} elseif (in_array($code, [1400], true)) {
-			return Nette\Database\NotNullConstraintViolationException::from($e);
+			return Nette\Database\NotNullConstraintViolationException::class;
 
 		} elseif (in_array($code, [2266, 2291, 2292], true)) {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
+			return Nette\Database\ForeignKeyConstraintViolationException::class;
 
 		} else {
-			return Nette\Database\DriverException::from($e);
+			return null;
 		}
 	}
 

@@ -29,14 +29,14 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @var callable(array, ResultSet): array */
 	private $normalizer;
 
-	/** @var Row|false */
-	private $result;
+	/** @var Row|false|null */
+	private $lastRow;
 
 	/** @var int */
-	private $resultKey = -1;
+	private $lastRowKey = -1;
 
 	/** @var Row[] */
-	private $results;
+	private $rows;
 
 	/** @var float */
 	private $time;
@@ -163,7 +163,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 	public function rewind(): void
 	{
-		if ($this->result === false) {
+		if ($this->lastRow === false) {
 			throw new Nette\InvalidStateException(self::class . ' implements only one way iterator.');
 		}
 	}
@@ -172,26 +172,26 @@ class ResultSet implements \Iterator, IRowContainer
 	#[\ReturnTypeWillChange]
 	public function current()
 	{
-		return $this->result;
+		return $this->lastRow;
 	}
 
 
 	#[\ReturnTypeWillChange]
 	public function key()
 	{
-		return $this->resultKey;
+		return $this->lastRowKey;
 	}
 
 
 	public function next(): void
 	{
-		$this->result = false;
+		$this->lastRow = false;
 	}
 
 
 	public function valid(): bool
 	{
-		if ($this->result) {
+		if ($this->lastRow) {
 			return true;
 		}
 
@@ -209,7 +209,7 @@ class ResultSet implements \Iterator, IRowContainer
 			$this->pdoStatement->closeCursor();
 			return null;
 
-		} elseif ($this->result === null && count($data) !== $this->pdoStatement->columnCount()) {
+		} elseif ($this->lastRow === null && count($data) !== $this->pdoStatement->columnCount()) {
 			$duplicates = Helpers::findDuplicates($this->pdoStatement);
 			trigger_error("Found duplicate columns in database result set: $duplicates.", E_USER_NOTICE);
 		}
@@ -221,8 +221,8 @@ class ResultSet implements \Iterator, IRowContainer
 			}
 		}
 
-		$this->resultKey++;
-		return $this->result = $row;
+		$this->lastRowKey++;
+		return $this->lastRow = $row;
 	}
 
 
@@ -267,10 +267,10 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function fetchAll(): array
 	{
-		if ($this->results === null) {
-			$this->results = iterator_to_array($this);
+		if ($this->rows === null) {
+			$this->rows = iterator_to_array($this);
 		}
-		return $this->results;
+		return $this->rows;
 	}
 
 

@@ -29,11 +29,6 @@ interface Driver
 	 */
 	function connect(string $dsn, string $user = null, string $password = null, array $options = null): void;
 
-	/**
-	 * Converts PDOException to DriverException or its descendant.
-	 */
-	function convertException(\PDOException $e): DriverException;
-
 	function query(string $queryString, array $params): ResultDriver;
 
 	function beginTransaction(): void;

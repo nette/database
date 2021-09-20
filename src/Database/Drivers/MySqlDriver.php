@@ -42,23 +42,23 @@ class MySqlDriver extends PdoDriver
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public function detectExceptionClass(\PDOException $e): ?string
 	{
 		$code = $e->errorInfo[1] ?? null;
 		if (in_array($code, [1216, 1217, 1451, 1452, 1701], true)) {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
+			return Nette\Database\ForeignKeyConstraintViolationException::class;
 
 		} elseif (in_array($code, [1062, 1557, 1569, 1586], true)) {
-			return Nette\Database\UniqueConstraintViolationException::from($e);
+			return Nette\Database\UniqueConstraintViolationException::class;
 
 		} elseif ($code >= 2001 && $code <= 2028) {
-			return Nette\Database\ConnectionException::from($e);
+			return Nette\Database\ConnectionException::class;
 
 		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], true)) {
-			return Nette\Database\NotNullConstraintViolationException::from($e);
+			return Nette\Database\NotNullConstraintViolationException::class;
 
 		} else {
-			return Nette\Database\DriverException::from($e);
+			return null;
 		}
 	}
 

@@ -16,7 +16,7 @@ $options = Tester\Environment::loadData() + ['user' => null, 'password' => null]
 
 try {
 	$connection = new Nette\Database\Connection($options['dsn'], $options['user'], $options['password']);
-} catch (PDOException $e) {
+} catch (Nette\Database\ConnectionException $e) {
 	Tester\Environment::skip("Connection to '$options[dsn]' failed. Reason: " . $e->getMessage());
 }
 

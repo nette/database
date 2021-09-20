@@ -31,7 +31,7 @@ abstract class PdoDriver implements Nette\Database\Driver
 			$this->pdo = new PDO($dsn, $user, $password, $options);
 			$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $e) {
-			throw Nette\Database\ConnectionException::from($e);
+			throw $this->convertException($e, Nette\Database\ConnectionException::class);
 		}
 	}
 
@@ -112,7 +112,30 @@ abstract class PdoDriver implements Nette\Database\Driver
 		try {
 			return $this->pdo->quote($string, $type);
 		} catch (PDOException $e) {
-			throw DriverException::from($e);
+			throw $this->convertException($e);
 		}
+	}
+
+
+	public function convertException(\PDOException $src, string $class = null): DriverException
+	{
+		if ($src->errorInfo) {
+			[$sqlState, $driverCode] = $src->errorInfo;
+		} elseif (preg_match('#SQLSTATE\[(.*?)\] \[(.*?)\] (.*)#A', $src->getMessage(), $m)) {
+			[, $sqlState, $driverCode] = $m;
+		}
+
+		$class = $this->detectExceptionClass($src) ?? $class ?? DriverException::class;
+		$e = new $class($src->getMessage(), $sqlState ?? $src->getCode(), $src);
+		if (isset($sqlState)) {
+			$e->setDriverCode($sqlState, (int) $driverCode);
+		}
+		return $e;
+	}
+
+
+	public function detectExceptionClass(\PDOException $e): ?string
+	{
+		return null;
 	}
 }

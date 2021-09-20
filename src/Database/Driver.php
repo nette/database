@@ -34,8 +34,26 @@ interface Driver
 	 */
 	function convertException(\PDOException $e): DriverException;
 
+	function query(string $queryString, array $params);
+
+	function beginTransaction(): void;
+
+	function commit(): void;
+
+	function rollBack(): void;
+
 	/**
-	 * Delimites identifier for use in a SQL statement.
+	 * Returns the ID of the last inserted row or sequence value.
+	 */
+	function getInsertId(string $sequence = null): string;
+
+	/**
+	 * Delimits string for use in SQL statement.
+	 */
+	function quote(string $string): string;
+
+	/**
+	 * Delimits identifier for use in SQL statement.
 	 */
 	function delimite(string $name): string;
 

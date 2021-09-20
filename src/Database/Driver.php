@@ -34,7 +34,7 @@ interface Driver
 	 */
 	function convertException(\PDOException $e): DriverException;
 
-	function query(string $queryString, array $params);
+	function query(string $queryString, array $params): ResultDriver;
 
 	function beginTransaction(): void;
 
@@ -101,11 +101,6 @@ interface Driver
 	 * As tuples [(string) name, (string) local, (string) table, (string) foreign]
 	 */
 	function getForeignKeys(string $table): array;
-
-	/**
-	 * Returns associative array of detected types (IStructure::FIELD_*) in result set.
-	 */
-	function getColumnTypes(\PDOStatement $statement): array;
 
 	/**
 	 * Cheks if driver supports specific property

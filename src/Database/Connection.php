@@ -200,7 +200,7 @@ class Connection
 		[$this->sql, $params] = $this->preprocess($sql, ...$params);
 		try {
 			$result = new ResultSet($this, $this->sql, $params, $this->rowNormalizer);
-		} catch (\PDOException $e) {
+		} catch (DriverException $e) {
 			Arrays::invoke($this->onQuery, $this, $e);
 			throw $e;
 		}

@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Nette\Database;
 
 use Nette;
-use PDO;
 
 
 /**
@@ -18,7 +17,7 @@ use PDO;
  */
 class ResultSet implements \Iterator, IRowContainer
 {
-	private ?\PDOStatement $pdoStatement = null;
+	private ?ResultDriver $result = null;
 
 	/** @var callable(array, ResultSet): array */
 	private $normalizer;
@@ -44,7 +43,7 @@ class ResultSet implements \Iterator, IRowContainer
 		if (str_starts_with($queryString, '::')) {
 			$driver->{substr($queryString, 2)}();
 		} else {
-			$this->pdoStatement = $driver->query($queryString, $params);
+			$this->result = $driver->query($queryString, $params);
 		}
 
 		$this->time = microtime(true) - $time;
@@ -63,7 +62,7 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function getPdoStatement(): ?\PDOStatement
 	{
-		return $this->pdoStatement;
+		return $this->result->getPDOStatement();
 	}
 
 
@@ -81,19 +80,19 @@ class ResultSet implements \Iterator, IRowContainer
 
 	public function getColumnCount(): ?int
 	{
-		return $this->pdoStatement ? $this->pdoStatement->columnCount() : null;
+		return $this->result?->getColumnCount();
 	}
 
 
 	public function getRowCount(): ?int
 	{
-		return $this->pdoStatement ? $this->pdoStatement->rowCount() : null;
+		return $this->result?->getRowCount();
 	}
 
 
 	public function getColumnTypes(): array
 	{
-		$this->types ??= $this->connection->getDriver()->getColumnTypes($this->pdoStatement);
+		$this->types ??= $this->result->getColumnTypes();
 		return $this->types;
 	}
 
@@ -169,13 +168,12 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function fetch(): ?Row
 	{
-		$data = $this->pdoStatement ? $this->pdoStatement->fetch() : null;
-		if (!$data) {
-			$this->pdoStatement->closeCursor();
+		$data = $this->result?->fetch();
+		if ($data === null) {
 			return null;
 
-		} elseif ($this->lastRow === null && count($data) !== $this->pdoStatement->columnCount()) {
-			$duplicates = Helpers::findDuplicates($this->pdoStatement);
+		} elseif ($this->lastRow === null && count($data) !== $this->result->getColumnCount()) {
+			$duplicates = Helpers::findDuplicates($this->result);
 			trigger_error("Found duplicate columns in database result set: $duplicates.");
 		}
 
@@ -188,6 +186,13 @@ class ResultSet implements \Iterator, IRowContainer
 
 		$this->lastRowKey++;
 		return $this->lastRow = $row;
+	}
+
+
+	/** @internal */
+	public function fetchArray(): ?array
+	{
+		return $this->result?->fetch();
 	}
 
 

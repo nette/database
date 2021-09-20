@@ -89,7 +89,7 @@ class SqliteDriver extends PdoDriver
 
 	public function formatLike(string $value, int $pos): string
 	{
-		$value = addcslashes(substr($this->connection->quote($value), 1, -1), '%_\\');
+		$value = addcslashes(substr($this->pdo->quote($value), 1, -1), '%_\\');
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'") . " ESCAPE '\\'";
 	}
 
@@ -112,15 +112,15 @@ class SqliteDriver extends PdoDriver
 	public function getTables(): array
 	{
 		$tables = [];
-		foreach ($this->connection->query("
+		foreach ($this->pdo->query("
 			SELECT name, type = 'view' as view FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
 			UNION ALL
 			SELECT name, type = 'view' as view FROM sqlite_temp_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
 			ORDER BY name
 		") as $row) {
 			$tables[] = [
-				'name' => $row->name,
-				'view' => (bool) $row->view,
+				'name' => $row['name'],
+				'view' => (bool) $row['view'],
 			];
 		}
 
@@ -130,14 +130,14 @@ class SqliteDriver extends PdoDriver
 
 	public function getColumns(string $table): array
 	{
-		$meta = $this->connection->query("
-			SELECT sql FROM sqlite_master WHERE type = 'table' AND name = {$this->connection->quote($table)}
+		$meta = $this->pdo->query("
+			SELECT sql FROM sqlite_master WHERE type = 'table' AND name = {$this->pdo->quote($table)}
 			UNION ALL
-			SELECT sql FROM sqlite_temp_master WHERE type = 'table' AND name = {$this->connection->quote($table)}
+			SELECT sql FROM sqlite_temp_master WHERE type = 'table' AND name = {$this->pdo->quote($table)}
 		")->fetch();
 
 		$columns = [];
-		foreach ($this->connection->query("PRAGMA table_info({$this->delimite($table)})") as $row) {
+		foreach ($this->pdo->query("PRAGMA table_info({$this->delimite($table)})", \PDO::FETCH_ASSOC) as $row) {
 			$column = $row['name'];
 			$pattern = "/(\"$column\"|`$column`|\\[$column\\]|$column)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";
 			$type = explode('(', $row['type']);
@@ -146,11 +146,11 @@ class SqliteDriver extends PdoDriver
 				'table' => $table,
 				'nativetype' => strtoupper($type[0]),
 				'size' => isset($type[1]) ? (int) $type[1] : null,
-				'nullable' => $row['notnull'] === 0,
+				'nullable' => !$row['notnull'],
 				'default' => $row['dflt_value'],
 				'autoincrement' => $meta && preg_match($pattern, (string) $meta['sql']),
 				'primary' => $row['pk'] > 0,
-				'vendor' => (array) $row,
+				'vendor' => $row,
 			];
 		}
 
@@ -161,7 +161,7 @@ class SqliteDriver extends PdoDriver
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
-		foreach ($this->connection->query("PRAGMA index_list({$this->delimite($table)})") as $row) {
+		foreach ($this->pdo->query("PRAGMA index_list({$this->delimite($table)})") as $row) {
 			$id = $row['name'];
 			$indexes[$id]['name'] = $id;
 			$indexes[$id]['unique'] = (bool) $row['unique'];
@@ -169,8 +169,7 @@ class SqliteDriver extends PdoDriver
 		}
 
 		foreach ($indexes as $index => $values) {
-			$res = $this->connection->query("PRAGMA index_info({$this->delimite($index)})");
-			while ($row = $res->fetch()) {
+			foreach ($this->pdo->query("PRAGMA index_info({$this->delimite($index)})") as $row) {
 				$indexes[$index]['columns'][] = $row['name'];
 			}
 		}
@@ -207,7 +206,7 @@ class SqliteDriver extends PdoDriver
 	public function getForeignKeys(string $table): array
 	{
 		$keys = [];
-		foreach ($this->connection->query("PRAGMA foreign_key_list({$this->delimite($table)})") as $row) {
+		foreach ($this->pdo->query("PRAGMA foreign_key_list({$this->delimite($table)})") as $row) {
 			$id = $row['id'];
 			$keys[$id]['name'] = $id;
 			$keys[$id]['local'] = $row['from'];

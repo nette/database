@@ -95,7 +95,7 @@ class MySqlDriver extends PdoDriver
 	public function formatLike(string $value, int $pos): string
 	{
 		$value = str_replace('\\', '\\\\', $value);
-		$value = addcslashes(substr($this->connection->quote($value), 1, -1), '%_');
+		$value = addcslashes(substr($this->pdo->quote($value), 1, -1), '%_');
 		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
 	}
 
@@ -119,7 +119,7 @@ class MySqlDriver extends PdoDriver
 	public function getTables(): array
 	{
 		$tables = [];
-		foreach ($this->connection->query('SHOW FULL TABLES') as $row) {
+		foreach ($this->pdo->query('SHOW FULL TABLES') as $row) {
 			$tables[] = [
 				'name' => $row[0],
 				'view' => ($row[1] ?? null) === 'VIEW',
@@ -133,8 +133,8 @@ class MySqlDriver extends PdoDriver
 	public function getColumns(string $table): array
 	{
 		$columns = [];
-		foreach ($this->connection->query('SHOW FULL COLUMNS FROM ' . $this->delimite($table)) as $row) {
-			$row = array_change_key_case((array) $row, CASE_LOWER);
+		foreach ($this->pdo->query('SHOW FULL COLUMNS FROM ' . $this->delimite($table), \PDO::FETCH_ASSOC) as $row) {
+			$row = array_change_key_case($row, CASE_LOWER);
 			$type = explode('(', $row['type']);
 			$columns[] = [
 				'name' => $row['field'],
@@ -145,7 +145,7 @@ class MySqlDriver extends PdoDriver
 				'default' => $row['default'],
 				'autoincrement' => $row['extra'] === 'auto_increment',
 				'primary' => $row['key'] === 'PRI',
-				'vendor' => (array) $row,
+				'vendor' => $row,
 			];
 		}
 
@@ -156,7 +156,7 @@ class MySqlDriver extends PdoDriver
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
-		foreach ($this->connection->query('SHOW INDEX FROM ' . $this->delimite($table)) as $row) {
+		foreach ($this->pdo->query('SHOW INDEX FROM ' . $this->delimite($table)) as $row) {
 			$id = $row['Key_name'];
 			$indexes[$id]['name'] = $id;
 			$indexes[$id]['unique'] = !$row['Non_unique'];
@@ -172,9 +172,9 @@ class MySqlDriver extends PdoDriver
 	{
 		$keys = [];
 		$query = 'SELECT CONSTRAINT_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.KEY_COLUMN_USAGE '
-			. 'WHERE TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME IS NOT NULL AND TABLE_NAME = ' . $this->connection->quote($table);
+			. 'WHERE TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME IS NOT NULL AND TABLE_NAME = ' . $this->pdo->quote($table);
 
-		foreach ($this->connection->query($query) as $id => $row) {
+		foreach ($this->pdo->query($query) as $id => $row) {
 			$keys[$id]['name'] = $row['CONSTRAINT_NAME'];
 			$keys[$id]['local'] = $row['COLUMN_NAME'];
 			$keys[$id]['table'] = $row['REFERENCED_TABLE_NAME'];

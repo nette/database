@@ -17,7 +17,7 @@ if (!str_contains($options['dsn'], 'sqlite::memory:')) {
 
 try {
 	$connection = new Nette\Database\Connection($options['dsn'], $options['user'], $options['password'], $options['options']);
-} catch (PDOException $e) {
+} catch (Nette\Database\ConnectionException $e) {
 	Tester\Environment::skip("Connection to '$options[dsn]' failed. Reason: " . $e->getMessage());
 }
 

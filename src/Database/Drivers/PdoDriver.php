@@ -58,9 +58,8 @@ abstract class PdoDriver implements Nette\Database\Driver
 			return new PdoResultDriver($statement, $this);
 
 		} catch (PDOException $e) {
-			$e = $this->convertException($e);
-			$e->queryString = $queryString;
-			$e->params = $params;
+			$e = $this->convertException($e, Nette\Database\QueryException::class);
+			$e->setQueryString($queryString, $params);
 			throw $e;
 		}
 	}

@@ -21,7 +21,7 @@ class ConnectionException extends DriverException
 /**
  * Base class for all constraint violation related exceptions.
  */
-class ConstraintViolationException extends DriverException
+class ConstraintViolationException extends QueryException
 {
 }
 

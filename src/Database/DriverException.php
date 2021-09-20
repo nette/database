@@ -15,8 +15,6 @@ namespace Nette\Database;
  */
 class DriverException extends \Exception
 {
-	public ?string $queryString = null;
-	public ?array $params = null;
 	private int|string|null $driverCode = null;
 	private string|null $sqlState = null;
 
@@ -49,17 +47,5 @@ class DriverException extends \Exception
 	public function getSqlState(): ?string
 	{
 		return $this->sqlState;
-	}
-
-
-	public function getQueryString(): ?string
-	{
-		return $this->queryString;
-	}
-
-
-	public function getParameters(): ?array
-	{
-		return $this->params;
 	}
 }

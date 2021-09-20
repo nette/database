@@ -48,7 +48,7 @@ abstract class PdoDriver implements Nette\Database\Driver
 	}
 
 
-	public function query(string $queryString, array $params)
+	public function query(string $queryString, array $params): PdoResultDriver
 	{
 		try {
 			$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
@@ -61,7 +61,7 @@ abstract class PdoDriver implements Nette\Database\Driver
 
 			$statement->setFetchMode(PDO::FETCH_ASSOC);
 			@$statement->execute(); // @ PHP generates warning when ATTR_ERRMODE = ERRMODE_EXCEPTION bug #73878
-			return $statement;
+			return new PdoResultDriver($statement, $this);
 
 		} catch (PDOException $e) {
 			$e = $this->convertException($e);

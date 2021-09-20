@@ -50,26 +50,11 @@ class ResultSet implements \Iterator, IRowContainer
 		$this->params = $params;
 		$this->normalizer = $normalizer;
 
-		try {
-			if (str_starts_with($queryString, '::')) {
-				$connection->getPdo()->{substr($queryString, 2)}();
-			} elseif ($queryString !== null) {
-				static $types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT,
-					'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL, ];
-				$this->pdoStatement = $connection->getPdo()->prepare($queryString);
-				foreach ($params as $key => $value) {
-					$type = gettype($value);
-					$this->pdoStatement->bindValue(is_int($key) ? $key + 1 : $key, $value, $types[$type] ?? PDO::PARAM_STR);
-				}
-
-				$this->pdoStatement->setFetchMode(PDO::FETCH_ASSOC);
-				@$this->pdoStatement->execute(); // @ PHP generates warning when ATTR_ERRMODE = ERRMODE_EXCEPTION bug #73878
-			}
-		} catch (\PDOException $e) {
-			$e = $connection->getDriver()->convertException($e);
-			$e->queryString = $queryString;
-			$e->params = $params;
-			throw $e;
+		$driver = $connection->getDriver();
+		if (str_starts_with($queryString, '::')) {
+			$driver->{substr($queryString, 2)}();
+		} elseif ($queryString !== null) {
+			$this->pdoStatement = $driver->query($queryString, $params);
 		}
 
 		$this->time = microtime(true) - $time;

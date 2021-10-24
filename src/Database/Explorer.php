@@ -90,6 +90,7 @@ class Explorer
 	}
 
 
+	/** @deprecated  use query() */
 	public function queryArgs(string $sql, array $params): ResultSet
 	{
 		return $this->connection->query($sql, ...$params);

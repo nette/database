@@ -594,7 +594,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	protected function query(string $query): Nette\Database\ResultSet
 	{
-		return $this->explorer->queryArgs($query, $this->sqlBuilder->getParameters());
+		return $this->explorer->query($query, ...$this->sqlBuilder->getParameters());
 	}
 
 
@@ -802,7 +802,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		$primaryAutoincrementKey = $this->explorer->getStructure()->getPrimaryAutoincrementKey($this->name);
 
 		if ($data instanceof self) {
-			$return = $this->explorer->queryArgs($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), $data->getSqlBuilder()->getParameters());
+			$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), ...$data->getSqlBuilder()->getParameters());
 
 		} else {
 			if ($data instanceof \Traversable) {
@@ -888,9 +888,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			return 0;
 		}
 
-		return $this->explorer->queryArgs(
+		return $this->explorer->query(
 			$this->sqlBuilder->buildUpdateQuery(),
-			array_merge([$data], $this->sqlBuilder->getParameters())
+			...array_merge([$data], $this->sqlBuilder->getParameters())
 		)->getRowCount();
 	}
 

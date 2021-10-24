@@ -83,6 +83,7 @@ class Explorer
 
 	/**
 	 * Generates and executes SQL query.
+	 * @param  literal-string  $sql
 	 */
 	public function query(string $sql, ...$params): ResultSet
 	{
@@ -126,6 +127,7 @@ class Explorer
 
 	/**
 	 * Shortcut for query()->fetch()
+	 * @param  literal-string  $sql
 	 */
 	public function fetch(string $sql, ...$params): ?Row
 	{
@@ -135,6 +137,7 @@ class Explorer
 
 	/**
 	 * Shortcut for query()->fetchField()
+	 * @param  literal-string  $sql
 	 * @return mixed
 	 */
 	public function fetchField(string $sql, ...$params)
@@ -145,6 +148,7 @@ class Explorer
 
 	/**
 	 * Shortcut for query()->fetchFields()
+	 * @param  literal-string  $sql
 	 */
 	public function fetchFields(string $sql, ...$params): ?array
 	{
@@ -154,6 +158,7 @@ class Explorer
 
 	/**
 	 * Shortcut for query()->fetchPairs()
+	 * @param  literal-string  $sql
 	 */
 	public function fetchPairs(string $sql, ...$params): array
 	{
@@ -163,6 +168,7 @@ class Explorer
 
 	/**
 	 * Shortcut for query()->fetchAll()
+	 * @param  literal-string  $sql
 	 */
 	public function fetchAll(string $sql, ...$params): array
 	{

@@ -290,6 +290,7 @@ class Helpers
 		Tracy\Bar $bar,
 		Tracy\BlueScreen $blueScreen,
 	): ?ConnectionPanel {
+		trigger_error(__METHOD__ . '() is deprecated, use initializeTracy()', E_USER_DEPRECATED);
 		return self::initializeTracy($connection, true, $name, $explain, $bar, $blueScreen);
 	}
 

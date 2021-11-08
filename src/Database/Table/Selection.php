@@ -485,15 +485,22 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Executes aggregation function.
 	 * @param  string select call in "FUNCTION(column)" format
+	 * @param  string
 	 * @return int
 	 */
-	public function aggregation($function)
+	public function aggregation($function, $groupFunction = null)
 	{
 		$selection = $this->createSelectionInstance();
 		$selection->getSqlBuilder()->importConditions($this->getSqlBuilder());
-		$selection->select($function);
-		foreach ($selection->fetch() as $val) {
-			return $val;
+		if ($groupFunction && $selection->getSqlBuilder()->importGroupConditions($this->getSqlBuilder())) {
+			$selection->select("$function AS aggregate");
+			$query = "SELECT $groupFunction(aggregate) AS groupaggregate FROM (" . $selection->getSql() . ') AS aggregates';
+			return $this->context->query($query, ...$selection->getSqlBuilder()->getParameters())->fetch()->groupaggregate;
+		} else {
+			$selection->select($function);
+			foreach ($selection->fetch() as $val) {
+				return $val;
+			}
 		}
 	}
 
@@ -509,7 +516,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			$this->execute();
 			return count($this->data);
 		}
-		return (int) $this->aggregation("COUNT($column)");
+		return (int) $this->aggregation("COUNT($column)", 'SUM');
 	}
 
 
@@ -520,7 +527,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function min($column)
 	{
-		return $this->aggregation("MIN($column)");
+		return $this->aggregation("MIN($column)", 'MIN');
 	}
 
 
@@ -531,7 +538,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function max($column)
 	{
-		return $this->aggregation("MAX($column)");
+		return $this->aggregation("MAX($column)", 'MAX');
 	}
 
 
@@ -542,7 +549,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function sum($column)
 	{
-		return $this->aggregation("SUM($column)");
+		return $this->aggregation("SUM($column)", 'SUM');
 	}
 
 

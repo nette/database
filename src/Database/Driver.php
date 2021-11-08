@@ -25,8 +25,9 @@ interface Driver
 
 	/**
 	 * Initializes connection.
+	 * @throws ConnectionException
 	 */
-	function initialize(Connection $connection, array $options): void;
+	function connect(string $dsn, string $user = null, string $password = null, array $options = null): void;
 
 	/**
 	 * Converts PDOException to DriverException or its descendant.

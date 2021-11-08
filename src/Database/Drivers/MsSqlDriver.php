@@ -17,15 +17,6 @@ use Nette;
  */
 class MsSqlDriver extends PdoDriver
 {
-	private Nette\Database\Connection $connection;
-
-
-	public function initialize(Nette\Database\Connection $connection, array $options): void
-	{
-		$this->connection = $connection;
-	}
-
-
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		return Nette\Database\DriverException::from($e);

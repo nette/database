@@ -17,15 +17,13 @@ use Nette;
  */
 class SqliteDriver extends PdoDriver
 {
-	private Nette\Database\Connection $connection;
-
 	/** Datetime format */
 	private string $fmtDateTime;
 
 
-	public function initialize(Nette\Database\Connection $connection, array $options): void
+	public function connect(string $dsn, ?string $user = null, ?string $password = null, ?array $options = null): void
 	{
-		$this->connection = $connection;
+		parent::connect($dsn, $user, $password, $options);
 		$this->fmtDateTime = $options['formatDateTime'] ?? 'U';
 	}
 

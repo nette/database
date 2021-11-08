@@ -96,7 +96,7 @@ class GroupedSelection extends Selection
 	/**
 	 * @return mixed
 	 */
-	public function aggregation(string $function)
+	public function aggregation(string $function, string $groupFunction = null)
 	{
 		$aggregation = &$this->getRefTable($refPath)->aggregation[$refPath . $function . $this->sqlBuilder->getSelectQueryHash($this->getPreviousAccessedColumns())];
 
@@ -105,12 +105,21 @@ class GroupedSelection extends Selection
 
 			$selection = $this->createSelectionInstance();
 			$selection->getSqlBuilder()->importConditions($this->getSqlBuilder());
-			$selection->select($function);
-			$selection->select("$this->name.$this->column");
-			$selection->group("$this->name.$this->column");
 
-			foreach ($selection as $row) {
-				$aggregation[$row[$this->column]] = $row;
+			if ($groupFunction && $selection->getSqlBuilder()->importGroupConditions($this->getSqlBuilder())) {
+				$selection->select("$function AS aggregate, $this->name.$this->column AS groupname");
+				$selection->group($selection->getSqlBuilder()->getGroup() . ", $this->name.$this->column");
+				$query = "SELECT $groupFunction(aggregate) AS groupaggregate, groupname FROM (" . $selection->getSql() . ') AS aggregates GROUP BY groupname';
+				foreach ($this->context->query($query, ...$selection->getSqlBuilder()->getParameters()) as $row) {
+					$aggregation[$row->groupname] = $row;
+				}
+			} else {
+				$selection->select($function);
+				$selection->select("$this->name.$this->column");
+				$selection->group("$this->name.$this->column");
+				foreach ($selection as $row) {
+					$aggregation[$row[$this->column]] = $row;
+				}
 			}
 		}
 

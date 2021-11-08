@@ -17,15 +17,19 @@ use Nette;
  */
 class SqlsrvDriver extends PdoDriver
 {
-	private Nette\Database\Connection $connection;
-
 	private string $version;
 
 
-	public function initialize(Nette\Database\Connection $connection, array $options): void
+	public function connect(
+		string $dsn,
+		?string $user = null,
+		#[\SensitiveParameter]
+		?string $password = null,
+		?array $options = null,
+	): void
 	{
-		$this->connection = $connection;
-		$this->version = $connection->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION);
+		parent::connect($dsn, $user, $password, $options);
+		$this->version = $this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION);
 	}
 
 

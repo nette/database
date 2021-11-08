@@ -17,15 +17,6 @@ use Nette;
  */
 class PgSqlDriver extends PdoDriver
 {
-	private Nette\Database\Connection $connection;
-
-
-	public function initialize(Nette\Database\Connection $connection, array $options): void
-	{
-		$this->connection = $connection;
-	}
-
-
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		$code = $e->errorInfo[0] ?? null;

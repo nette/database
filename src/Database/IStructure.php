@@ -41,7 +41,7 @@ interface IStructure
 	 * Returns table primary key.
 	 * @return string|string[]|null
 	 */
-	function getPrimaryKey(string $table);
+	function getPrimaryKey(string $table): string|array|null;
 
 	/**
 	 * Returns autoincrement primary key name.

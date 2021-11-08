@@ -67,7 +67,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 * Returns primary key value.
 	 * @return mixed possible int, string, array, object (Nette\Utils\DateTime)
 	 */
-	public function getPrimary(bool $throw = true)
+	public function getPrimary(bool $throw = true): mixed
 	{
 		$primary = $this->table->getPrimary($throw);
 		if ($primary === null) {
@@ -216,10 +216,8 @@ class ActiveRow implements \IteratorAggregate, IRow
 	/**
 	 * Returns value of column.
 	 * @param  string  $column
-	 * @return mixed
 	 */
-	#[\ReturnTypeWillChange]
-	public function offsetGet($column)
+	public function offsetGet($column): mixed
 	{
 		return $this->__get($column);
 	}
@@ -255,7 +253,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 * @return ActiveRow|mixed
 	 * @throws Nette\MemberAccessException
 	 */
-	public function &__get(string $key)
+	public function &__get(string $key): mixed
 	{
 		if ($this->accessColumn($key)) {
 			return $this->data[$key];

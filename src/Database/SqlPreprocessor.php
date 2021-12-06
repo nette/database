@@ -193,6 +193,10 @@ class SqlPreprocessor
 			} elseif ($value instanceof \DateInterval) {
 				return $this->driver->formatDateInterval($value);
 
+			} elseif ($value instanceof \BackedEnum && is_scalar($value->value)) {
+				$this->remaining[] = $value->value;
+				return '?';
+
 			} elseif (is_object($value) && method_exists($value, '__toString')) {
 				$this->remaining[] = (string) $value;
 				return '?';

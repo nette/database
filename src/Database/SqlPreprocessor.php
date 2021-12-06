@@ -188,6 +188,10 @@ class SqlPreprocessor
 			} elseif ($value instanceof \DateInterval) {
 				return $this->driver->formatDateInterval($value);
 
+			} elseif ($value instanceof \BackedEnum && is_scalar($value->value)) {
+				$this->remaining[] = $value->value;
+				return '?';
+
 			} elseif ($value instanceof \Stringable) {
 				$this->remaining[] = (string) $value;
 				return '?';

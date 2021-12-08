@@ -11,6 +11,7 @@ namespace Nette\Bridges\DatabaseDI;
 
 use Nette;
 use Nette\Schema\Expect;
+use Tracy;
 
 
 /**
@@ -66,7 +67,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 
 		foreach ($this->config as $name => $config) {
-			if ($config->debugger ?? $builder->getByType(\Tracy\BlueScreen::class)) {
+			if ($config->debugger ?? $builder->getByType(Tracy\BlueScreen::class)) {
 				$connection = $builder->getDefinition($this->prefix("$name.connection"));
 				$connection->addSetup([Nette\Database\Helpers::class, 'initializeTracy'], [$connection, $this->debugMode, $name, !empty($config->explain)]);
 			}

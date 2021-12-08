@@ -360,7 +360,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * More calls appends with AND.
 	 * @param  array  $parameters ['column1' => 1, 'column2 > ?' => 2, 'full condition']
 	 * @return static
-	 * @throws \Nette\InvalidArgumentException
+	 * @throws Nette\InvalidArgumentException
 	 */
 	public function whereOr(array $parameters)
 	{

@@ -30,7 +30,7 @@ test('', function () use ($explorer) {
 			$explorer->query('DELETE FROM book');
 			throw new Exception('my exception');
 		});
-	}, \Throwable::class, 'my exception');
+	}, Throwable::class, 'my exception');
 
 	Assert::same(3, $explorer->fetchField('SELECT id FROM book WHERE id = ', 3));
 });

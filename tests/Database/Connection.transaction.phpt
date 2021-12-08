@@ -30,7 +30,7 @@ test('', function () use ($connection) {
 			$connection->query('DELETE FROM book');
 			throw new Exception('my exception');
 		});
-	}, \Throwable::class, 'my exception');
+	}, Throwable::class, 'my exception');
 
 	Assert::same(3, $connection->fetchField('SELECT id FROM book WHERE id = ', 3));
 });
@@ -67,7 +67,7 @@ test('nested transaction() call fail', function () use ($connection) {
 				throw new Exception('my exception');
 			});
 		});
-	}, \Throwable::class, 'my exception');
+	}, Throwable::class, 'my exception');
 
 	Assert::same(0, $connection->query('SELECT COUNT(*) FROM author')->fetchField() - $base);
 });
@@ -99,17 +99,17 @@ test('beginTransaction(), commit() & rollBack() calls are forbidden in transacti
 		$connection->transaction(function (Connection $connection) {
 			$connection->beginTransaction();
 		});
-	}, \LogicException::class, Connection::class . '::beginTransaction() call is forbidden inside a transaction() callback');
+	}, LogicException::class, Connection::class . '::beginTransaction() call is forbidden inside a transaction() callback');
 
 	Assert::exception(function () use ($connection) {
 		$connection->transaction(function (Connection $connection) {
 			$connection->commit();
 		});
-	}, \LogicException::class, Connection::class . '::commit() call is forbidden inside a transaction() callback');
+	}, LogicException::class, Connection::class . '::commit() call is forbidden inside a transaction() callback');
 
 	Assert::exception(function () use ($connection) {
 		$connection->transaction(function (Connection $connection) {
 			$connection->rollBack();
 		});
-	}, \LogicException::class, Connection::class . '::rollBack() call is forbidden inside a transaction() callback');
+	}, LogicException::class, Connection::class . '::rollBack() call is forbidden inside a transaction() callback');
 });

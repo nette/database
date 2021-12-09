@@ -101,7 +101,7 @@ class PgSqlDriver extends PdoDriver
 				pg_catalog.pg_class AS c
 				JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace
 			WHERE
-				c.relkind IN ('r', 'v', 'm')
+				c.relkind IN ('p', 'r', 'v', 'm')
 				AND n.nspname = ANY (pg_catalog.current_schemas(FALSE))
 			ORDER BY
 				c.relname

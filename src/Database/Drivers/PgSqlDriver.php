@@ -115,7 +115,7 @@ class PgSqlDriver implements Nette\Database\Driver
 				pg_catalog.pg_class AS c
 				JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace
 			WHERE
-				c.relkind IN ('r', 'v', 'm')
+				c.relkind IN ('r', 'v', 'm', 'p')
 				AND n.nspname = ANY (pg_catalog.current_schemas(FALSE))
 			ORDER BY
 				c.relname
@@ -150,7 +150,7 @@ class PgSqlDriver implements Nette\Database\Driver
 				LEFT JOIN pg_catalog.pg_attrdef AS ad ON ad.adrelid = c.oid AND ad.adnum = a.attnum
 				LEFT JOIN pg_catalog.pg_constraint AS co ON co.connamespace = c.relnamespace AND contype = 'p' AND co.conrelid = c.oid AND a.attnum = ANY(co.conkey)
 			WHERE
-				c.relkind IN ('r', 'v', 'm')
+				c.relkind IN ('r', 'v', 'm', 'p')
 				AND c.oid = {$this->connection->quote($this->delimiteFQN($table))}::regclass
 				AND a.attnum > 0
 				AND NOT a.attisdropped
@@ -183,7 +183,7 @@ class PgSqlDriver implements Nette\Database\Driver
 				JOIN pg_catalog.pg_class AS c2 ON i.indexrelid = c2.oid
 				LEFT JOIN pg_catalog.pg_attribute AS a ON c1.oid = a.attrelid AND a.attnum = ANY(i.indkey)
 			WHERE
-				c1.relkind = 'r'
+				c1.relkind IN ('r', 'p')
 				AND c1.oid = {$this->connection->quote($this->delimiteFQN($table))}::regclass
 		") as $row) {
 			$indexes[$row['name']]['name'] = $row['name'];

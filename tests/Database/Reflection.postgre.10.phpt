@@ -126,3 +126,37 @@ test('Materialized view columns', function () use ($connection) {
 		array_column($driver->getColumns('source_mt'), 'name')
 	);
 });
+
+
+test('Partitioned table', function () use ($connection) {
+	Nette\Database\Helpers::loadFromFile($connection, Tester\FileMock::create('
+		DROP SCHEMA IF EXISTS "reflection_10" CASCADE;
+		CREATE SCHEMA "reflection_10";
+
+		CREATE TABLE "reflection_10"."parted" (
+			"id" INTEGER PRIMARY KEY,
+			"value" INTEGER
+		) PARTITION BY RANGE (id);
+
+		CREATE TABLE "reflection_10"."part_1" PARTITION OF "reflection_10"."parted" FOR VALUES FROM (1) TO (10);
+	'));
+
+	$driver = $connection->getDriver();
+
+	$connection->query('SET search_path TO reflection_10');
+
+	Assert::same([
+		['name' => 'part_1', 'view' => false, 'fullName' => 'reflection_10.part_1'],
+		['name' => 'parted', 'view' => false, 'fullName' => 'reflection_10.parted'],
+	], $driver->getTables());
+
+	Assert::same(['id', 'value'], array_column($driver->getColumns('parted'), 'name'));
+	Assert::same(['id', 'value'], array_column($driver->getColumns('part_1'), 'name'));
+
+	Assert::same([[
+		'name' => 'parted_pkey',
+		'unique' => true,
+		'primary' => true,
+		'columns' => ['id'],
+	]], $driver->getIndexes('parted'));
+});

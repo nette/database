@@ -135,7 +135,7 @@ class SqlsrvDriver extends PdoDriver
 			WHERE
 				o.type IN ('U', 'V')
 				AND o.name = {$this->pdo->quote($table)}
-		") as $row) {
+		")->fetchAll(\PDO::FETCH_ASSOC) as $row) {
 			$row['vendor'] = $row;
 			$row['nullable'] = (bool) $row['nullable'];
 			$row['autoincrement'] = (bool) $row['autoincrement'];

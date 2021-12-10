@@ -91,8 +91,7 @@ class PgSqlDriver extends PdoDriver
 
 	public function getTables(): array
 	{
-		$tables = [];
-		foreach ($this->pdo->query("
+		return $this->pdo->query("
 			SELECT DISTINCT ON (c.relname)
 				c.relname::varchar AS name,
 				c.relkind IN ('v', 'm') AS view,
@@ -105,11 +104,7 @@ class PgSqlDriver extends PdoDriver
 				AND n.nspname = ANY (pg_catalog.current_schemas(FALSE))
 			ORDER BY
 				c.relname
-		") as $row) {
-			$tables[] = $row;
-		}
-
-		return $tables;
+		")->fetchAll(\PDO::FETCH_ASSOC);
 	}
 
 
@@ -142,7 +137,7 @@ class PgSqlDriver extends PdoDriver
 				AND NOT a.attisdropped
 			ORDER BY
 				a.attnum
-		") as $column) {
+		")->fetchAll(\PDO::FETCH_ASSOC) as $column) {
 			$column['vendor'] = $column;
 			unset($column['sequence']);
 
@@ -183,7 +178,7 @@ class PgSqlDriver extends PdoDriver
 
 	public function getForeignKeys(string $table): array
 	{
-		/* Does't work with multicolumn foreign keys */
+		/* Doesn't work with multi-column foreign keys */
 		return $this->pdo->query("
 			SELECT
 				co.conname::varchar AS name,
@@ -201,7 +196,7 @@ class PgSqlDriver extends PdoDriver
 				co.contype = 'f'
 				AND cl.oid = {$this->pdo->quote($this->delimiteFQN($table))}::regclass
 				AND nf.nspname = ANY (pg_catalog.current_schemas(FALSE))
-		")->fetchAll();
+		")->fetchAll(\PDO::FETCH_ASSOC);
 	}
 
 

@@ -28,6 +28,8 @@ $structure = new Nette\Database\Structure($connection, $cacheMemoryStorage);
 $conventions = new Nette\Database\Conventions\DiscoveredConventions($structure);
 $explorer = new Nette\Database\Explorer($connection, $structure, $conventions, $cacheMemoryStorage);
 
+echo "Driver: $driverName\n";
+
 
 /** Replaces [] with driver-specific quotes */
 function reformat($s): string

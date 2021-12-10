@@ -97,3 +97,32 @@ test('SERIAL and IDENTITY imply autoincrement on primary keys', function () use 
 		]],
 	], $columns);
 });
+
+
+test('Materialized view columns', function () use ($connection) {
+	Nette\Database\Helpers::loadFromFile($connection, Tester\FileMock::create('
+		DROP SCHEMA IF EXISTS "reflection_10" CASCADE;
+		CREATE SCHEMA "reflection_10";
+
+		CREATE TABLE "reflection_10"."source" (
+			"id" INTEGER,
+			"name" TEXT
+		);
+
+		CREATE MATERIALIZED VIEW "reflection_10"."source_mt" AS SELECT "name", "id" FROM "reflection_10"."source";
+	'));
+
+	$driver = $connection->getDriver();
+
+	$connection->query('SET search_path TO reflection_10');
+
+	Assert::same([
+		['name' => 'source', 'view' => false, 'fullName' => 'reflection_10.source'],
+		['name' => 'source_mt', 'view' => true, 'fullName' => 'reflection_10.source_mt'],
+	], $driver->getTables());
+
+	Assert::same(
+		['name', 'id'],
+		array_column($driver->getColumns('source_mt'), 'name')
+	);
+});

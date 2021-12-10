@@ -150,7 +150,7 @@ class PgSqlDriver implements Nette\Database\Driver
 				LEFT JOIN pg_catalog.pg_attrdef AS ad ON ad.adrelid = c.oid AND ad.adnum = a.attnum
 				LEFT JOIN pg_catalog.pg_constraint AS co ON co.connamespace = c.relnamespace AND contype = 'p' AND co.conrelid = c.oid AND a.attnum = ANY(co.conkey)
 			WHERE
-				c.relkind IN ('r', 'v')
+				c.relkind IN ('r', 'v', 'm')
 				AND c.oid = {$this->connection->quote($this->delimiteFQN($table))}::regclass
 				AND a.attnum > 0
 				AND NOT a.attisdropped

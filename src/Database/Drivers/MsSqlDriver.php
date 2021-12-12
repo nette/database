@@ -91,7 +91,7 @@ class MsSqlDriver extends PdoDriver
 		[$table_schema, $table_name] = explode('.', $table);
 		$columns = [];
 
-		$query = "
+		$query = <<<X
 			SELECT
 				COLUMN_NAME,
 				DATA_TYPE,
@@ -104,7 +104,8 @@ class MsSqlDriver extends PdoDriver
 				INFORMATION_SCHEMA.COLUMNS
 			WHERE
 				TABLE_SCHEMA = {$this->pdo->quote($table_schema)}
-				AND TABLE_NAME = {$this->pdo->quote($table_name)}";
+				AND TABLE_NAME = {$this->pdo->quote($table_name)}
+			X;
 
 		foreach ($this->pdo->query($query, \PDO::FETCH_ASSOC) as $row) {
 			$columns[] = [
@@ -130,7 +131,7 @@ class MsSqlDriver extends PdoDriver
 		[, $table_name] = explode('.', $table);
 		$indexes = [];
 
-		$query = "
+		$query = <<<X
 			SELECT
 				 name_index = ind.name,
 				 id_column = ic.index_column_id,
@@ -145,7 +146,8 @@ class MsSqlDriver extends PdoDriver
 			WHERE
 				 t.name = {$this->pdo->quote($table_name)}
 			ORDER BY
-				 t.name, ind.name, ind.index_id, ic.index_column_id";
+				 t.name, ind.name, ind.index_id, ic.index_column_id
+			X;
 
 		foreach ($this->pdo->query($query) as $row) {
 			$id = $row['name_index'];
@@ -164,7 +166,7 @@ class MsSqlDriver extends PdoDriver
 		[$table_schema, $table_name] = explode('.', $table);
 		$keys = [];
 
-		$query = "
+		$query = <<<X
 			SELECT
 				obj.name AS [fk_name],
 				col1.name AS [column],
@@ -185,7 +187,8 @@ class MsSqlDriver extends PdoDriver
 				INNER JOIN sys.columns col2
 				ON col2.column_id = referenced_column_id AND col2.object_id = tab2.object_id
 			WHERE
-				tab1.name = {$this->pdo->quote($table_name)}";
+				tab1.name = {$this->pdo->quote($table_name)}
+			X;
 
 		foreach ($this->pdo->query($query) as $id => $row) {
 			$keys[$id]['name'] = $row['fk_name'];

@@ -45,12 +45,8 @@ test('', function () use ($connection) {
 });
 
 
-if ($driverName === 'sqlsrv') {
-	Tester\Environment::skip("TODO: query('SELECT COUNT(*) FROM author')->fetchField() fails and I don't know why");
-}
-
 test('nested transaction() call fail', function () use ($connection) {
-	$base = (int) $connection->query('SELECT COUNT(*) FROM author')->fetchField();
+	$base = (int) $connection->query('SELECT COUNT(*) AS cnt FROM author')->fetchField();
 
 	Assert::exception(function () use ($connection) {
 		$connection->transaction(function (Connection $connection) {
@@ -69,12 +65,12 @@ test('nested transaction() call fail', function () use ($connection) {
 		});
 	}, Throwable::class, 'my exception');
 
-	Assert::same(0, $connection->query('SELECT COUNT(*) FROM author')->fetchField() - $base);
+	Assert::same(0, $connection->query('SELECT COUNT(*) AS cnt FROM author')->fetchField() - $base);
 });
 
 
 test('nested transaction() call success', function () use ($connection) {
-	$base = (int) $connection->query('SELECT COUNT(*) FROM author')->fetchField();
+	$base = (int) $connection->query('SELECT COUNT(*) AS cnt FROM author')->fetchField();
 
 	$connection->transaction(function (Connection $connection) {
 		$connection->query('INSERT INTO author', [
@@ -90,7 +86,7 @@ test('nested transaction() call success', function () use ($connection) {
 		});
 	});
 
-	Assert::same(2, $connection->query('SELECT COUNT(*) FROM author')->fetchField() - $base);
+	Assert::same(2, $connection->query('SELECT COUNT(*) AS cnt FROM author')->fetchField() - $base);
 });
 
 

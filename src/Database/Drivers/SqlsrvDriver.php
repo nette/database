@@ -99,7 +99,7 @@ class SqlsrvDriver extends PdoDriver
 	public function getTables(): array
 	{
 		$tables = [];
-		foreach ($this->pdo->query("
+		foreach ($this->pdo->query(<<<'X'
 			SELECT
 				name,
 				CASE type
@@ -110,7 +110,7 @@ class SqlsrvDriver extends PdoDriver
 				sys.objects
 			WHERE
 				type IN ('U', 'V')
-		") as $row) {
+			X) as $row) {
 			$tables[] = [
 				'name' => $row['name'],
 				'view' => (bool) $row['view'],
@@ -124,7 +124,7 @@ class SqlsrvDriver extends PdoDriver
 	public function getColumns(string $table): array
 	{
 		$columns = [];
-		foreach ($this->pdo->query("
+		foreach ($this->pdo->query(<<<X
 			SELECT
 				c.name AS name,
 				o.name AS [table],
@@ -146,7 +146,7 @@ class SqlsrvDriver extends PdoDriver
 			WHERE
 				o.type IN ('U', 'V')
 				AND o.name = {$this->pdo->quote($table)}
-		", \PDO::FETCH_ASSOC) as $row) {
+			X, \PDO::FETCH_ASSOC) as $row) {
 			$row['vendor'] = $row;
 			$row['nullable'] = (bool) $row['nullable'];
 			$row['autoincrement'] = (bool) $row['autoincrement'];
@@ -162,7 +162,7 @@ class SqlsrvDriver extends PdoDriver
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
-		foreach ($this->pdo->query("
+		foreach ($this->pdo->query(<<<X
 			SELECT
 				i.name AS name,
 				CASE WHEN i.is_unique = 1 OR i.is_unique_constraint = 1
@@ -181,7 +181,7 @@ class SqlsrvDriver extends PdoDriver
 			ORDER BY
 				i.index_id,
 				ic.index_column_id
-		") as $row) {
+			X) as $row) {
 			$id = $row['name'];
 			$indexes[$id]['name'] = $id;
 			$indexes[$id]['unique'] = (bool) $row['unique'];
@@ -197,7 +197,7 @@ class SqlsrvDriver extends PdoDriver
 	{
 		// Does't work with multicolumn foreign keys
 		$keys = [];
-		foreach ($this->pdo->query("
+		foreach ($this->pdo->query(<<<X
 			SELECT
 				fk.name AS name,
 				cl.name AS local,
@@ -212,7 +212,7 @@ class SqlsrvDriver extends PdoDriver
 				JOIN sys.columns cf ON fkc.referenced_object_id = cf.object_id AND fkc.referenced_column_id = cf.column_id
 			WHERE
 				tl.name = {$this->pdo->quote($table)}
-		", \PDO::FETCH_ASSOC) as $row) {
+			X, \PDO::FETCH_ASSOC) as $row) {
 			$keys[$row['name']] = $row;
 		}
 

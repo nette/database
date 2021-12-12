@@ -112,12 +112,16 @@ class SqliteDriver extends PdoDriver
 	public function getTables(): array
 	{
 		$tables = [];
-		foreach ($this->pdo->query("
-			SELECT name, type = 'view' as view FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
+		foreach ($this->pdo->query(<<<'X'
+			SELECT name, type = 'view' as view
+			FROM sqlite_master
+			WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
 			UNION ALL
-			SELECT name, type = 'view' as view FROM sqlite_temp_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
+			SELECT name, type = 'view' as view
+			FROM sqlite_temp_master
+			WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
 			ORDER BY name
-		") as $row) {
+			X) as $row) {
 			$tables[] = [
 				'name' => $row['name'],
 				'view' => (bool) $row['view'],
@@ -130,11 +134,15 @@ class SqliteDriver extends PdoDriver
 
 	public function getColumns(string $table): array
 	{
-		$meta = $this->pdo->query("
-			SELECT sql FROM sqlite_master WHERE type = 'table' AND name = {$this->pdo->quote($table)}
+		$meta = $this->pdo->query(<<<X
+			SELECT sql
+			FROM sqlite_master
+			WHERE type = 'table' AND name = {$this->pdo->quote($table)}
 			UNION ALL
-			SELECT sql FROM sqlite_temp_master WHERE type = 'table' AND name = {$this->pdo->quote($table)}
-		")->fetch();
+			SELECT sql
+			FROM sqlite_temp_master
+			WHERE type = 'table' AND name = {$this->pdo->quote($table)}
+			X)->fetch();
 
 		$columns = [];
 		foreach ($this->pdo->query("PRAGMA table_info({$this->delimite($table)})", \PDO::FETCH_ASSOC) as $row) {

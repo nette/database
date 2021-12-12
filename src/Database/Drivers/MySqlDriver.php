@@ -171,10 +171,13 @@ class MySqlDriver extends PdoDriver
 	public function getForeignKeys(string $table): array
 	{
 		$keys = [];
-		$query = 'SELECT CONSTRAINT_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.KEY_COLUMN_USAGE '
-			. 'WHERE TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME IS NOT NULL AND TABLE_NAME = ' . $this->pdo->quote($table);
-
-		foreach ($this->pdo->query($query) as $id => $row) {
+		foreach ($this->pdo->query(<<<X
+			SELECT CONSTRAINT_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
+			FROM information_schema.KEY_COLUMN_USAGE
+			WHERE TABLE_SCHEMA = DATABASE()
+			  AND REFERENCED_TABLE_NAME IS NOT NULL
+			  AND TABLE_NAME = {$this->pdo->quote($table)}
+			X) as $id => $row) {
 			$keys[$id]['name'] = $row['CONSTRAINT_NAME'];
 			$keys[$id]['local'] = $row['COLUMN_NAME'];
 			$keys[$id]['table'] = $row['REFERENCED_TABLE_NAME'];

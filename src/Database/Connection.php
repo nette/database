@@ -173,10 +173,7 @@ class Connection
 	}
 
 
-	/**
-	 * @return mixed
-	 */
-	public function transaction(callable $callback)
+	public function transaction(callable $callback): mixed
 	{
 		if ($this->transactionDepth === 0) {
 			$this->beginTransaction();
@@ -264,9 +261,8 @@ class Connection
 	/**
 	 * Shortcut for query()->fetchField()
 	 * @param  literal-string  $sql
-	 * @return mixed
 	 */
-	public function fetchField(string $sql, ...$params)
+	public function fetchField(string $sql, ...$params): mixed
 	{
 		return $this->query($sql, ...$params)->fetchField();
 	}

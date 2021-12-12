@@ -16,9 +16,8 @@ interface Conventions
 {
 	/**
 	 * Returns primary key for table.
-	 * @return string|string[]|null
 	 */
-	function getPrimary(string $table);
+	function getPrimary(string $table): string|array|null;
 
 	/**
 	 * Returns referenced table & referenced column.

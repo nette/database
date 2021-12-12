@@ -81,6 +81,7 @@ class Structure implements IStructure
 					return $column['name'];
 				}
 			}
+
 			return null;
 		}
 
@@ -248,6 +249,7 @@ class Structure implements IStructure
 			$tmp = &$fksColumnsCounts[$foreignKey['name']];
 			$tmp++;
 		}
+
 		usort($foreignKeys, function ($a, $b) use ($fksColumnsCounts): int {
 			return $fksColumnsCounts[$b['name']] <=> $fksColumnsCounts[$a['name']];
 		});

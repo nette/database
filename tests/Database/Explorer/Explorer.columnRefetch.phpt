@@ -18,6 +18,7 @@ $books = $explorer->table('book')->order('id DESC')->limit(2);
 foreach ($books as $book) {
 	$book->title;
 }
+
 $books->__destruct();
 
 $res = [];
@@ -25,6 +26,7 @@ $books = $explorer->table('book')->order('id DESC')->limit(2);
 foreach ($books as $book) {
 	$res[] = (string) $book->title;
 }
+
 Assert::same(['Dibi', 'Nette'], $res);
 
 $explorer->table('book')->insert([
@@ -41,4 +43,5 @@ foreach ($books as $book) {
 	$res[] = (string) $book->title;
 	$res[] = (string) $book->author->name;
 }
+
 Assert::same(['Dibi', 'David Grudl', 'Nette', 'David Grudl'], $res);

@@ -41,6 +41,7 @@ class MySqlDriver implements Nette\Database\Driver
 		if ($charset) {
 			$connection->query('SET NAMES ?', $charset);
 		}
+
 		if (isset($options['sqlmode'])) {
 			$connection->query('SET sql_mode=?', $options['sqlmode']);
 		}
@@ -123,6 +124,7 @@ class MySqlDriver implements Nette\Database\Driver
 				'view' => ($row[1] ?? null) === 'VIEW',
 			];
 		}
+
 		return $tables;
 	}
 
@@ -145,6 +147,7 @@ class MySqlDriver implements Nette\Database\Driver
 				'vendor' => (array) $row,
 			];
 		}
+
 		return $columns;
 	}
 
@@ -159,6 +162,7 @@ class MySqlDriver implements Nette\Database\Driver
 			$indexes[$row['key_name']]['primary'] = $row['key_name'] === 'PRIMARY';
 			$indexes[$row['key_name']]['columns'][$row['seq_in_index'] - 1] = $row['column_name'];
 		}
+
 		return array_values($indexes);
 	}
 
@@ -194,6 +198,7 @@ class MySqlDriver implements Nette\Database\Driver
 				}
 			}
 		}
+
 		return $types;
 	}
 

@@ -47,6 +47,7 @@ test('connect & disconnect', function () {
 	} catch (PDOException $e) {
 		Tester\Environment::skip("Connection to '$options[dsn]' failed. Reason: " . $e->getMessage());
 	}
+
 	$connection->onConnect[] = function () use (&$connections) {
 		$connections++;
 	};

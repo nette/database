@@ -203,6 +203,7 @@ class Connection
 			if ($this->transactionDepth === 0) {
 				$this->rollback();
 			}
+
 			throw $e;
 		}
 
@@ -228,6 +229,7 @@ class Connection
 			Arrays::invoke($this->onQuery, $this, $e);
 			throw $e;
 		}
+
 		Arrays::invoke($this->onQuery, $this, $result);
 		return $result;
 	}

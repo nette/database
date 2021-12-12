@@ -18,6 +18,7 @@ $books = $explorer->table('book')->limit(1);
 foreach ($books as $book) {
 	$book->id;
 }
+
 $books->__destruct();
 
 

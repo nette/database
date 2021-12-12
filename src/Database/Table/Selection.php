@@ -131,6 +131,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		if ($this->primary === null && $throw) {
 			throw new \LogicException("Table '{$this->name}' does not have a primary key.");
 		}
+
 		return $this->primary;
 	}
 
@@ -367,6 +368,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		if (count($parameters) < 2) {
 			return $this->where($parameters);
 		}
+
 		$columns = [];
 		$values = [];
 		foreach ($parameters as $key => $val) {
@@ -380,10 +382,12 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 				if ($qNumber > 1 && (!is_array($val) || $qNumber !== count($val))) {
 					throw new Nette\InvalidArgumentException('Argument count does not match placeholder count.');
 				}
+
 				$columns[] = $key;
 				$values = array_merge($values, $qNumber > 1 ? $val : [$val]);
 			}
 		}
+
 		$columnsString = '(' . implode(') OR (', $columns) . ')';
 		return $this->where($columnsString, $values);
 	}
@@ -423,9 +427,11 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		if (func_num_args() > 2) {
 			$numOfPages = (int) ceil($this->count('*') / $itemsPerPage);
 		}
+
 		if ($page < 1) {
 			$itemsPerPage = 0;
 		}
+
 		return $this->limit($itemsPerPage, ($page - 1) * $itemsPerPage);
 	}
 
@@ -500,6 +506,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			$this->execute();
 			return count($this->data);
 		}
+
 		return (int) $this->aggregation("COUNT($column)", 'SUM');
 	}
 
@@ -570,6 +577,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			$usedPrimary = $usedPrimary && $primary !== '';
 			$this->rows[$usedPrimary ? $primary : $key] = $row;
 		}
+
 		$this->data = $this->rows;
 
 		if ($usedPrimary && $this->accessedColumns !== false) {
@@ -769,6 +777,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 				}
 			}
 		}
+
 		return $this->dataRefreshed;
 	}
 
@@ -814,6 +823,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			if ($data instanceof \Traversable) {
 				$data = iterator_to_array($data);
 			}
+
 			$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ?values', $data);
 		}
 
@@ -925,8 +935,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			if (!$belongsTo) {
 				return false;
 			}
+
 			[$table, $column] = $belongsTo;
 		}
+
 		if (!$row->accessColumn($column)) {
 			return false;
 		}
@@ -973,6 +985,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			if (!$hasMany) {
 				return null;
 			}
+
 			[$table, $column] = $hasMany;
 		}
 

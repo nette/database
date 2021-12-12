@@ -89,6 +89,7 @@ test('', function () use ($explorer) {
 	foreach ($selection as $book) {
 		$book->id;
 	}
+
 	$selection->__destruct();
 
 	$authors = [];
@@ -132,6 +133,7 @@ test('Test saving joining keys even with 0 rows', function () use ($explorer) {
 		$cols[] = $books->getPreviousAccessedColumns();
 		foreach ($books as $book) {
 		}
+
 		$books->__destruct();
 	}
 
@@ -152,8 +154,10 @@ test('Test saving the union of needed cols, the second call is subset', function
 			if ($i === 0) {
 				$book->translator_id;
 			}
+
 			$book->title;
 		}
+
 		$books->__destruct();
 	}
 
@@ -178,6 +182,7 @@ test('Test saving the union of needed cols, the second call is not subset', func
 				$book->title;
 			}
 		}
+
 		$books->__destruct();
 	}
 
@@ -205,6 +210,7 @@ test('Test multiple use of same selection', function () use ($explorer) {
 				$book->translator_id;
 			}
 		}
+
 		$bookSelection->__destruct();
 	}
 

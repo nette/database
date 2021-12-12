@@ -48,6 +48,7 @@ test('', function () use ($explorer) {
 			}
 		}
 	}
+
 	Assert::same(['JavaScript'], $books);
 
 	foreach ($authors as $author) {
@@ -57,6 +58,7 @@ test('', function () use ($explorer) {
 			}
 		}
 	}
+
 	Assert::same(['JavaScript', 'PHP', 'MySQL'], $books);
 });
 
@@ -73,6 +75,7 @@ test('', function () use ($explorer) {
 	foreach ($author->related('book')->limit(2) as $book) {
 		$translators[] = $book->ref('author', 'translator_id')->name;
 	}
+
 	sort($translators);
 
 	Assert::same([
@@ -97,5 +100,6 @@ test('cache can\'t be affected by inner query!', function () use ($explorer) {
 			}
 		}
 	}
+
 	Assert::same(['JavaScript'], $secondBookTagRels);
 });

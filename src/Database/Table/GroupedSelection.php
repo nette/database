@@ -128,6 +128,7 @@ class GroupedSelection extends Selection
 				return $val;
 			}
 		}
+
 		return 0;
 	}
 
@@ -161,6 +162,7 @@ class GroupedSelection extends Selection
 			if ($limit && $rows > 1) {
 				$this->sqlBuilder->setLimit(null, null);
 			}
+
 			parent::execute();
 			$this->sqlBuilder->setLimit($limit, null);
 			$data = [];
@@ -179,6 +181,7 @@ class GroupedSelection extends Selection
 				} else {
 					unset($this->rows[$key]);
 				}
+
 				$skip++;
 				unset($ref, $skip);
 			}
@@ -194,6 +197,7 @@ class GroupedSelection extends Selection
 			foreach ($this->data as $row) {
 				$row->setTable($this); // injects correct parent GroupedSelection
 			}
+
 			reset($this->data);
 		}
 	}

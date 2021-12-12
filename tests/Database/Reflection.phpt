@@ -187,7 +187,6 @@ switch ($driverName) {
 		Assert::fail("Unsupported driver $driverName");
 }
 
-
 $structure->rebuild();
 $primary = $structure->getPrimaryKey('book_tag');
 Assert::same(['book_id', 'tag_id'], $primary);

@@ -43,8 +43,10 @@ class Row extends Nette\Utils\ArrayHash implements IRow
 			if (!$arr) {
 				throw new Nette\MemberAccessException("Cannot read an undeclared column '$key'.");
 			}
+
 			return current($arr);
 		}
+
 		return $this->$key;
 	}
 
@@ -58,6 +60,7 @@ class Row extends Nette\Utils\ArrayHash implements IRow
 		if (is_int($key)) {
 			return (bool) current(array_slice((array) $this, $key, 1));
 		}
+
 		return parent::offsetExists($key);
 	}
 }

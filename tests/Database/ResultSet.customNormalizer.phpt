@@ -34,6 +34,7 @@ test('custom normalization', function () use ($connection) {
 			unset($row[$key]);
 			$row['_' . $key . '_'] = (string) $value;
 		}
+
 		return $row;
 	});
 

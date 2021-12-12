@@ -41,6 +41,7 @@ unset($book, $author);
 foreach ($stack as $selection) {
 	$selection->__destruct();
 }
+
 $authors->__destruct();
 
 Assert::same(3, $queries);

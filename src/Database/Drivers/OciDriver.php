@@ -110,6 +110,7 @@ class OciDriver implements Nette\Database\Driver
 				];
 			}
 		}
+
 		return $tables;
 	}
 

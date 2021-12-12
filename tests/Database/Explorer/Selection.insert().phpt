@@ -69,6 +69,7 @@ if ($driverName !== 'sqlsrv') {
 		default:
 			Assert::fail("Unsupported driver $driverName");
 	}
+
 	$explorer->table('book')->insert($selection);
 	Assert::equal(4, $explorer->table('book')->where('title LIKE', 'Biography%')->count('*'));
 }

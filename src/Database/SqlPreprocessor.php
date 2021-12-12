@@ -131,6 +131,7 @@ class SqlPreprocessor
 			if ($this->counter >= count($this->params)) {
 				throw new Nette\InvalidArgumentException('There are more placeholders than passed parameters.');
 			}
+
 			return $this->formatValue($this->params[$this->counter++], substr($m, 1) ?: self::MODE_AUTO);
 
 		} elseif ($m[0] === "'" || $m[0] === '"' || $m[0] === '/' || $m[0] === '-') { // string or comment
@@ -140,6 +141,7 @@ class SqlPreprocessor
 			if ($this->counter >= count($this->params)) {
 				throw new Nette\InvalidArgumentException('There are more placeholders than passed parameters.');
 			}
+
 			$param = $this->params[$this->counter++];
 			return 'IN (' . $this->formatValue($param, is_array($param) ? self::MODE_LIST : null) . ')';
 
@@ -172,7 +174,6 @@ class SqlPreprocessor
 				} else {
 					return $this->connection->quote((string) $value);
 				}
-
 			} elseif ($value === null) {
 				return 'NULL';
 
@@ -196,12 +197,12 @@ class SqlPreprocessor
 				$this->remaining[] = (string) $value;
 				return '?';
 			}
-
 		} elseif ($mode === 'name') {
 			if (!is_string($value)) {
 				$type = gettype($value);
 				throw new Nette\InvalidArgumentException("Placeholder ?$mode expects string, $type given.");
 			}
+
 			return $this->delimite($value);
 		}
 
@@ -223,16 +224,20 @@ class SqlPreprocessor
 							. implode('|', self::MODES) . ']". Mode "' . $mode . '" was used.'
 						);
 					}
+
 					foreach ($value[0] as $k => $v) {
 						$kx[] = $this->delimite($k);
 					}
+
 					foreach ($value as $val) {
 						$vx2 = [];
 						foreach ($value[0] as $k => $foo) {
 							$vx2[] = $this->formatValue($val[$k]);
 						}
+
 						$vx[] = implode(', ', $vx2);
 					}
+
 					$select = $this->driver->isSupported(Driver::SUPPORT_MULTI_INSERT_AS_SELECT);
 					return '(' . implode(', ', $kx) . ($select ? ') SELECT ' : ') VALUES (')
 						. implode($select ? ' UNION ALL SELECT ' : '), (', $vx) . ($select ? '' : ')');
@@ -242,6 +247,7 @@ class SqlPreprocessor
 					$kx[] = $this->delimite($k);
 					$vx[] = $this->formatValue($v);
 				}
+
 				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
 
 			} elseif ($mode === self::MODE_SET) {
@@ -255,6 +261,7 @@ class SqlPreprocessor
 						$vx[] = $this->delimite($k) . '=' . $this->formatValue($v);
 					}
 				}
+
 				return implode(', ', $vx);
 
 			} elseif ($mode === self::MODE_LIST) { // value, value, ...  |  (tuple), (tuple), ...
@@ -263,6 +270,7 @@ class SqlPreprocessor
 						? '(' . $this->formatValue($v, self::MODE_LIST) . ')'
 						: $this->formatValue($v);
 				}
+
 				return implode(', ', $vx);
 
 			} elseif ($mode === self::MODE_AND || $mode === self::MODE_OR) { // (key [operator] value) AND ...
@@ -271,6 +279,7 @@ class SqlPreprocessor
 						$vx[] = $this->formatValue($v);
 						continue;
 					}
+
 					[$k, $operator] = explode(' ', $k . ' ');
 					$k = $this->delimite($k);
 					if (is_array($v)) {
@@ -288,6 +297,7 @@ class SqlPreprocessor
 						$vx[] = $k . ' ' . $operator . ' ' . $v;
 					}
 				}
+
 				return $value
 					? '(' . implode(') ' . strtoupper($mode) . ' (', $vx) . ')'
 					: '1=1';
@@ -296,12 +306,12 @@ class SqlPreprocessor
 				foreach ($value as $k => $v) {
 					$vx[] = $this->delimite($k) . ($v > 0 ? '' : ' DESC');
 				}
+
 				return implode(', ', $vx);
 
 			} else {
 				throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
 			}
-
 		} elseif (in_array($mode, self::MODES, true)) {
 			$type = gettype($value);
 			throw new Nette\InvalidArgumentException("Placeholder ?$mode expects array or Traversable object, $type given.");

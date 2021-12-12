@@ -28,6 +28,7 @@ test('numeric field', function () use ($connection) {
 	if (PHP_VERSION_ID > 70300) {
 		Assert::false(isset($row['0'])); // this is buggy since PHP 5.4 (bug #63217) to PHP 7.2
 	}
+
 	Assert::false(isset($row[1])); // null value
 	Assert::false(isset($row[2])); // is not set
 

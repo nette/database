@@ -87,6 +87,7 @@ test('', function () use ($explorer, $driver) {
 			trim($join)
 		);
 	}
+
 	Assert::same([2, 'private'], $sqlBuilder->getParameters());
 });
 

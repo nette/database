@@ -64,6 +64,7 @@ test('', function () use ($explorer) {
 			$booksSelection->__destruct();
 		}
 	}
+
 	Assert::same([
 		3,
 		4,

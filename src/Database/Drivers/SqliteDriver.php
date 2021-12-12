@@ -152,6 +152,7 @@ class SqliteDriver implements Nette\Database\Driver
 				'vendor' => (array) $row,
 			];
 		}
+
 		return $columns;
 	}
 
@@ -182,6 +183,7 @@ class SqliteDriver implements Nette\Database\Driver
 				}
 			}
 		}
+
 		if (!$indexes) { // @see http://www.sqlite.org/lang_createtable.html#rowid
 			foreach ($columns as $column) {
 				if ($column['vendor']['pk']) {
@@ -213,6 +215,7 @@ class SqliteDriver implements Nette\Database\Driver
 				$keys[$row['id']]['foreign'] = null;
 			}
 		}
+
 		return array_values($keys);
 	}
 
@@ -231,6 +234,7 @@ class SqliteDriver implements Nette\Database\Driver
 				$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['native_type']);
 			}
 		}
+
 		return $types;
 	}
 

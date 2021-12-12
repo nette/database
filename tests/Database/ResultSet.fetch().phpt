@@ -32,6 +32,7 @@ test('', function () use ($connection, $driverName) {
 		default:
 			Assert::fail("Unsupported driver $driverName");
 	}
+
 	Assert::error(function () use ($res) {
 		$res->fetch();
 	}, E_USER_NOTICE, $message);
@@ -74,6 +75,7 @@ test('', function () use ($connection, $driverName) {
 		default:
 			Assert::fail("Unsupported driver $driverName");
 	}
+
 	Assert::error(function () use ($res) {
 		$res->fetch();
 	}, E_USER_NOTICE, $message);

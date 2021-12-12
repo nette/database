@@ -37,8 +37,10 @@ function reformat($s): string
 		if (isset($s[$driverName])) {
 			return $s[$driverName];
 		}
+
 		$s = $s[0];
 	}
+
 	if ($driverName === 'mysql') {
 		return strtr($s, '[]', '``');
 	} elseif ($driverName === 'pgsql') {

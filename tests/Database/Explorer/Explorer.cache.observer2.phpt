@@ -41,6 +41,7 @@ for ($i = 0; $i < 2; ++$i) {
 		foreach ($authors as $author) {
 			$author->web;
 		}
+
 		$authors->__destruct();
 	} else {
 		$sql = $authors->getSql();

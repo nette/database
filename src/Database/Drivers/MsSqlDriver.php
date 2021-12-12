@@ -93,6 +93,7 @@ class MsSqlDriver implements Nette\Database\Driver
 				'view' => ($row['TABLE_TYPE'] ?? null) === 'VIEW',
 			];
 		}
+
 		return $tables;
 	}
 
@@ -131,6 +132,7 @@ class MsSqlDriver implements Nette\Database\Driver
 				'vendor' => (array) $row,
 			];
 		}
+
 		return $columns;
 	}
 
@@ -163,6 +165,7 @@ class MsSqlDriver implements Nette\Database\Driver
 			$indexes[$row['name_index']]['primary'] = $row['is_primary_key'] !== 'False';
 			$indexes[$row['name_index']]['columns'][$row['id_column'] - 1] = $row['name_column'];
 		}
+
 		return array_values($indexes);
 	}
 

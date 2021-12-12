@@ -19,6 +19,7 @@ foreach ($selections[] = $explorer->table('book') as $book) {
 	$book->author->name;
 	$selections[] = $book->author->getTable();
 }
+
 foreach ($selections as $selection) {
 	$selection->__destruct();
 }
@@ -32,6 +33,7 @@ $webs = [];
 foreach ($authors as $author) {
 	$webs[$author->web] = null;
 }
+
 ksort($webs);
 Assert::same([
 	'http://davidgrudl.com/',

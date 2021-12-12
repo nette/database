@@ -89,9 +89,11 @@ class PgSqlDriver implements Nette\Database\Driver
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
 		}
+
 		if ($limit !== null) {
 			$sql .= ' LIMIT ' . $limit;
 		}
+
 		if ($offset) {
 			$sql .= ' OFFSET ' . $offset;
 		}
@@ -225,6 +227,7 @@ class PgSqlDriver implements Nette\Database\Driver
 		if ($item === null) {
 			$item = Nette\Database\Helpers::detectTypes($statement);
 		}
+
 		return $item;
 	}
 

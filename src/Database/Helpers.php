@@ -47,6 +47,7 @@ class Helpers
 			echo "\t<tr>\n\t\t<th>Affected rows:</th>\n\t\t<td>", $result->getRowCount(), "</td>\n\t</tr>\n</table>\n";
 			return;
 		}
+
 		$i = 0;
 		foreach ($result as $row) {
 			if ($i === 0) {
@@ -54,8 +55,10 @@ class Helpers
 				foreach ($row as $col => $foo) {
 					echo "\t\t<th>" . htmlspecialchars($col, ENT_NOQUOTES, 'UTF-8') . "</th>\n";
 				}
+
 				echo "\t</tr>\n</thead>\n<tbody>\n";
 			}
+
 			echo "\t<tr>\n\t\t<th>", $i, "</th>\n";
 			foreach ($row as $col) {
 				if (is_bool($col)) {
@@ -65,8 +68,10 @@ class Helpers
 				} else {
 					$s = (string) $col;
 				}
+
 				echo "\t\t<td>", htmlspecialchars($s, ENT_NOQUOTES, 'UTF-8'), "</td>\n";
 			}
+
 			echo "\t</tr>\n";
 			$i++;
 		}
@@ -120,6 +125,7 @@ class Helpers
 			if (!isset($params[$i])) {
 				return '?';
 			}
+
 			$param = $params[$i++];
 			if (
 				is_string($param)
@@ -141,6 +147,7 @@ class Helpers
 				if ($type === 'stream') {
 					$info = stream_get_meta_data($param);
 				}
+
 				return '<i' . (isset($info['uri']) ? ' title="' . htmlspecialchars($info['uri'], ENT_NOQUOTES, 'UTF-8') . '"' : null)
 					. '>&lt;' . htmlspecialchars($type, ENT_NOQUOTES, 'UTF-8') . ' resource&gt;</i> ';
 
@@ -169,6 +176,7 @@ class Helpers
 				$types[$meta['name']] = self::detectType($meta['native_type']);
 			}
 		}
+
 		return $types;
 	}
 
@@ -188,6 +196,7 @@ class Helpers
 				}
 			}
 		}
+
 		return $cache[$type];
 	}
 
@@ -206,6 +215,7 @@ class Helpers
 				if (is_string($value) && ($pos = strpos($value, '.')) !== false) {
 					$value = rtrim(rtrim($pos === 0 ? "0$value" : $value, '0'), '.');
 				}
+
 				$float = (float) $value;
 				$row[$key] = (string) $float === $value ? $float : $value;
 
@@ -266,11 +276,11 @@ class Helpers
 				if ($onProgress) {
 					$onProgress($count, isset($stat['size']) ? $size * 100 / $stat['size'] : null);
 				}
-
 			} else {
 				$sql .= $s;
 			}
 		}
+
 		if (rtrim($sql) !== '') {
 			$pdo->exec($sql);
 			$count++;
@@ -278,6 +288,7 @@ class Helpers
 				$onProgress($count, isset($stat['size']) ? 100 : null);
 			}
 		}
+
 		fclose($handle);
 		return $count;
 	}
@@ -313,6 +324,7 @@ class Helpers
 			$bar = $bar ?? Tracy\Debugger::getBar();
 			$bar->addPanel($panel);
 		}
+
 		return $panel ?? null;
 	}
 
@@ -363,6 +375,7 @@ class Helpers
 			$meta = $statement->getColumnMeta($i);
 			$cols[$meta['name']][] = $meta['table'] ?? '';
 		}
+
 		$duplicates = [];
 		foreach ($cols as $name => $tables) {
 			if (count($tables) > 1) {
@@ -370,6 +383,7 @@ class Helpers
 				$duplicates[] = "'$name'" . ($tables ? ' (from ' . implode(', ', $tables) . ')' : '');
 			}
 		}
+
 		return implode(', ', $duplicates);
 	}
 }

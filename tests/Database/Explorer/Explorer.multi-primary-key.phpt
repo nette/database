@@ -37,6 +37,7 @@ test('', function () use ($explorer) {
 	$book = $explorer->table('book')->get(3);
 	foreach ($related = $book->related('book_tag_alt') as $bookTag) {
 	}
+
 	$related->__destruct();
 
 	$states = [];

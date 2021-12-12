@@ -87,7 +87,7 @@ class Helpers
 	/**
 	 * Returns syntax highlighted SQL command.
 	 */
-	public static function dumpSql(string $sql, array $params = null, Connection $connection = null): string
+	public static function dumpSql(string $sql, ?array $params = null, ?Connection $connection = null): string
 	{
 		static $keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
 		static $keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|[RI]?LIKE|REGEXP|TRUE|FALSE';
@@ -249,7 +249,7 @@ class Helpers
 	 * @param  array<callable(int, ?float): void>  $onProgress
 	 * @return int  count of commands
 	 */
-	public static function loadFromFile(Connection $connection, string $file, callable $onProgress = null): int
+	public static function loadFromFile(Connection $connection, string $file, ?callable $onProgress = null): int
 	{
 		@set_time_limit(0); // @ function may be disabled
 
@@ -311,8 +311,8 @@ class Helpers
 		bool $addBarPanel = false,
 		string $name = '',
 		bool $explain = true,
-		Tracy\Bar $bar = null,
-		Tracy\BlueScreen $blueScreen = null
+		?Tracy\Bar $bar = null,
+		?Tracy\BlueScreen $blueScreen = null
 	): ?ConnectionPanel {
 		$blueScreen = $blueScreen ?? Tracy\Debugger::getBlueScreen();
 		$blueScreen->addPanel([ConnectionPanel::class, 'renderException']);

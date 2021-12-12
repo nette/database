@@ -22,7 +22,7 @@ define('TEMP_DIR', __DIR__ . '/tmp');
 @mkdir(TEMP_DIR);
 
 
-function before(Closure $function = null)
+function before(?Closure $function = null)
 {
 	static $val;
 	if (!func_num_args()) {

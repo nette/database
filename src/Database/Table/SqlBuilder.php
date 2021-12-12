@@ -147,7 +147,7 @@ class SqlBuilder
 	/**
 	 * Returns select query hash for caching.
 	 */
-	public function getSelectQueryHash(array $columns = null): string
+	public function getSelectQueryHash(?array $columns = null): string
 	{
 		$parts = [
 			'delimitedTable' => $this->delimitedTable,
@@ -181,7 +181,7 @@ class SqlBuilder
 	 * Returns SQL query.
 	 * @param  string[]  $columns
 	 */
-	public function buildSelectQuery(array $columns = null): string
+	public function buildSelectQuery(?array $columns = null): string
 	{
 		if (!$this->order && ($this->limit !== null || $this->offset)) {
 			$this->order = array_map(

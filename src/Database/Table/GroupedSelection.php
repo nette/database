@@ -42,7 +42,7 @@ class GroupedSelection extends Selection
 		string $tableName,
 		string $column,
 		Selection $refTable,
-		Nette\Caching\IStorage $cacheStorage = null
+		?Nette\Caching\IStorage $cacheStorage = null
 	) {
 		$this->refTable = $refTable;
 		$this->column = $column;
@@ -96,7 +96,7 @@ class GroupedSelection extends Selection
 	/**
 	 * @return mixed
 	 */
-	public function aggregation(string $function, string $groupFunction = null)
+	public function aggregation(string $function, ?string $groupFunction = null)
 	{
 		$aggregation = &$this->getRefTable($refPath)->aggregation[$refPath . $function . $this->sqlBuilder->getSelectQueryHash($this->getPreviousAccessedColumns())];
 
@@ -133,7 +133,7 @@ class GroupedSelection extends Selection
 	}
 
 
-	public function count(string $column = null): int
+	public function count(?string $column = null): int
 	{
 		$return = parent::count($column);
 		return $return ?? 0;

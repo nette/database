@@ -125,7 +125,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 * Returns referenced row.
 	 * @return self|null if the row does not exist
 	 */
-	public function ref(string $key, string $throughColumn = null): ?self
+	public function ref(string $key, ?string $throughColumn = null): ?self
 	{
 		$row = $this->table->getReferencedTable($this, $key, $throughColumn);
 		if ($row === false) {
@@ -139,7 +139,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	/**
 	 * Returns referencing rows.
 	 */
-	public function related(string $key, string $throughColumn = null): GroupedSelection
+	public function related(string $key, ?string $throughColumn = null): GroupedSelection
 	{
 		$groupedSelection = $this->table->getReferencingTable($key, $throughColumn, $this[$this->table->getPrimary()]);
 		if (!$groupedSelection) {

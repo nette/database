@@ -53,7 +53,7 @@ class Connection
 	private $transactionDepth = 0;
 
 
-	public function __construct(string $dsn, string $user = null, string $password = null, array $options = null)
+	public function __construct(string $dsn, ?string $user = null, ?string $password = null, ?array $options = null)
 	{
 		$this->params = [$dsn, $user, $password];
 		$this->options = (array) $options;
@@ -135,7 +135,7 @@ class Connection
 	}
 
 
-	public function getInsertId(string $sequence = null): string
+	public function getInsertId(?string $sequence = null): string
 	{
 		try {
 			$res = $this->getPdo()->lastInsertId($sequence);

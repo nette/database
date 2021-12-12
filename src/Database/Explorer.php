@@ -36,8 +36,8 @@ class Explorer
 	public function __construct(
 		Connection $connection,
 		Structure $structure,
-		Conventions $conventions = null,
-		Nette\Caching\IStorage $cacheStorage = null
+		?Conventions $conventions = null,
+		?Nette\Caching\IStorage $cacheStorage = null
 	) {
 		$this->connection = $connection;
 		$this->structure = $structure;
@@ -75,7 +75,7 @@ class Explorer
 	}
 
 
-	public function getInsertId(string $sequence = null): string
+	public function getInsertId(?string $sequence = null): string
 	{
 		return $this->connection->getInsertId($sequence);
 	}

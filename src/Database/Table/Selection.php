@@ -90,7 +90,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		Explorer $explorer,
 		Conventions $conventions,
 		string $tableName,
-		Nette\Caching\IStorage $cacheStorage = null
+		?Nette\Caching\IStorage $cacheStorage = null
 	) {
 		$this->explorer = $this->context = $explorer;
 		$this->conventions = $conventions;
@@ -220,7 +220,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * @return mixed
 	 * @deprecated
 	 */
-	public function fetchField(string $column = null)
+	public function fetchField(?string $column = null)
 	{
 		if ($column) {
 			$this->select($column);
@@ -410,7 +410,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Sets limit clause, more calls rewrite old values.
 	 * @return static
 	 */
-	public function limit(?int $limit, int $offset = null)
+	public function limit(?int $limit, ?int $offset = null)
 	{
 		$this->emptyResultSet();
 		$this->sqlBuilder->setLimit($limit, $offset);
@@ -479,7 +479,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * @param  string  $function  select call in "FUNCTION(column)" format
 	 * @return mixed
 	 */
-	public function aggregation(string $function, string $groupFunction = null)
+	public function aggregation(string $function, ?string $groupFunction = null)
 	{
 		$selection = $this->createSelectionInstance();
 		$selection->getSqlBuilder()->importConditions($this->getSqlBuilder());
@@ -500,7 +500,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Counts number of rows.
 	 * @param  string  $column  if it is not provided returns count of result rows, otherwise runs new sql counting query
 	 */
-	public function count(string $column = null): int
+	public function count(?string $column = null): int
 	{
 		if (!$column) {
 			$this->execute();
@@ -594,7 +594,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	}
 
 
-	public function createSelectionInstance(string $table = null): self
+	public function createSelectionInstance(?string $table = null): self
 	{
 		return new self($this->explorer, $this->conventions, $table ?: $this->name, $this->cache ? $this->cache->getStorage() : null);
 	}
@@ -928,7 +928,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Returns referenced row.
 	 * @return ActiveRow|false|null  null if the row does not exist, false if the relationship does not exist
 	 */
-	public function getReferencedTable(ActiveRow $row, ?string $table, string $column = null)
+	public function getReferencedTable(ActiveRow $row, ?string $table, ?string $column = null)
 	{
 		if (!$column) {
 			$belongsTo = $this->conventions->getBelongsToReference($this->name, $table);
@@ -976,7 +976,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Returns referencing rows.
 	 * @param  int|string  $active  primary key
 	 */
-	public function getReferencingTable(string $table, string $column = null, $active = null): ?GroupedSelection
+	public function getReferencingTable(string $table, ?string $column = null, $active = null): ?GroupedSelection
 	{
 		if (strpos($table, '.') !== false) {
 			[$table, $column] = explode('.', $table);

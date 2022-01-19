@@ -29,6 +29,20 @@ test('disabled normalization', function () use ($connection) {
 });
 
 
+test('configured RowNormalizer', function () use ($connection) {
+	$driverName = $GLOBALS['driverName'];
+
+	$connection->setRowNormalizer((new Nette\Database\RowNormalizer)->skipDateTime());
+	$res = $connection->query('SELECT * FROM author');
+	Assert::same([
+		'id' => 11,
+		'name' => 'Jakub Vrana',
+		'web' => 'http://www.vrana.cz/',
+		'born' => $driverName === 'sqlite' ? (PHP_VERSION_ID >= 80100 ? 1_642_892_400 : '1642892400') : '2022-01-23',
+	], (array) $res->fetch());
+});
+
+
 test('custom normalization', function () use ($connection) {
 	$driverName = $GLOBALS['driverName'];
 

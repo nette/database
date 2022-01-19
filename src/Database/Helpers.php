@@ -27,7 +27,8 @@ class Helpers
 	public static array $typePatterns = [
 		'^_' => IStructure::FIELD_TEXT, // PostgreSQL arrays
 		'(TINY|SMALL|SHORT|MEDIUM|BIG|LONG)(INT)?|INT(EGER|\d+| IDENTITY)?|(SMALL|BIG|)SERIAL\d*|COUNTER|YEAR|BYTE|LONGLONG|UNSIGNED BIG INT' => IStructure::FIELD_INTEGER,
-		'(NEW)?DEC(IMAL)?(\(.*)?|NUMERIC|REAL|DOUBLE( PRECISION)?|FLOAT\d*|(SMALL)?MONEY|CURRENCY|NUMBER' => IStructure::FIELD_FLOAT,
+		'(NEW)?DEC(IMAL)?(\(.*)?|NUMERIC|(SMALL)?MONEY|CURRENCY|NUMBER' => IStructure::FIELD_DECIMAL,
+		'REAL|DOUBLE( PRECISION)?|FLOAT\d*' => IStructure::FIELD_FLOAT,
 		'BOOL(EAN)?' => IStructure::FIELD_BOOL,
 		'TIME' => IStructure::FIELD_TIME,
 		'DATE' => IStructure::FIELD_DATE,
@@ -210,7 +211,7 @@ class Helpers
 			} elseif ($type === IStructure::FIELD_INTEGER) {
 				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
 
-			} elseif ($type === IStructure::FIELD_FLOAT) {
+			} elseif ($type === IStructure::FIELD_FLOAT || $type === IStructure::FIELD_DECIMAL) {
 				if (is_string($value) && ($pos = strpos($value, '.')) !== false) {
 					$value = rtrim(rtrim($pos === 0 ? "0$value" : $value, '0'), '.');
 				}

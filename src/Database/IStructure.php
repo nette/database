@@ -21,6 +21,7 @@ interface IStructure
 		FIELD_BOOL = 'bool',
 		FIELD_INTEGER = 'int',
 		FIELD_FLOAT = 'float',
+		FIELD_DECIMAL = 'decimal',
 		FIELD_DATE = 'date',
 		FIELD_TIME = 'time',
 		FIELD_DATETIME = 'datetime',

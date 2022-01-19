@@ -207,14 +207,11 @@ class SqliteDriver implements Nette\Database\Driver
 	{
 		$keys = [];
 		foreach ($this->connection->query("PRAGMA foreign_key_list({$this->delimite($table)})") as $row) {
-			$keys[$row['id']]['name'] = $row['id']; // foreign key name
-			$keys[$row['id']]['local'] = $row['from']; // local columns
-			$keys[$row['id']]['table'] = $row['table']; // referenced table
-			$keys[$row['id']]['foreign'] = $row['to']; // referenced columns
-
-			if ($keys[$row['id']]['foreign'][0] == null) {
-				$keys[$row['id']]['foreign'] = null;
-			}
+			$id = $row['id'];
+			$keys[$id]['name'] = $id;
+			$keys[$id]['local'] = $row['from'];
+			$keys[$id]['table'] = $row['table'];
+			$keys[$id]['foreign'] = $row['to'];
 		}
 
 		return array_values($keys);

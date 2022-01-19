@@ -174,11 +174,10 @@ class MySqlDriver implements Nette\Database\Driver
 			. 'WHERE TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME IS NOT NULL AND TABLE_NAME = ' . $this->connection->quote($table);
 
 		foreach ($this->connection->query($query) as $id => $row) {
-			$row = array_change_key_case((array) $row, CASE_LOWER);
-			$keys[$id]['name'] = $row['constraint_name']; // foreign key name
-			$keys[$id]['local'] = $row['column_name']; // local columns
-			$keys[$id]['table'] = $row['referenced_table_name']; // referenced table
-			$keys[$id]['foreign'] = $row['referenced_column_name']; // referenced columns
+			$keys[$id]['name'] = $row['CONSTRAINT_NAME'];
+			$keys[$id]['local'] = $row['COLUMN_NAME'];
+			$keys[$id]['table'] = $row['REFERENCED_TABLE_NAME'];
+			$keys[$id]['foreign'] = $row['REFERENCED_COLUMN_NAME'];
 		}
 
 		return array_values($keys);

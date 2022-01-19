@@ -33,7 +33,7 @@ test('multiple parameters in explorer query', function () use ($explorer) {
 
 
 test('explorer query with array of parameters', function () use ($explorer) {
-	$res = $explorer->queryArgs('SELECT id FROM author WHERE id = ? OR id = ?', [11, 12]);
+	$res = @$explorer->queryArgs('SELECT id FROM author WHERE id = ? OR id = ?', [11, 12]); // is deprecated
 	Assert::same('SELECT id FROM author WHERE id = ? OR id = ?', $res->getQueryString());
 	Assert::same([11, 12], $res->getParameters());
 });

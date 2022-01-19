@@ -176,11 +176,12 @@ class MySqlDriver extends PdoDriver
 			WHERE TABLE_SCHEMA = DATABASE()
 			  AND REFERENCED_TABLE_NAME IS NOT NULL
 			  AND TABLE_NAME = {$this->pdo->quote($table)}
-			X) as $id => $row) {
-			$keys[$id]['name'] = $row['CONSTRAINT_NAME'];
-			$keys[$id]['local'] = $row['COLUMN_NAME'];
+			X) as $row) {
+			$id = $row['CONSTRAINT_NAME'];
+			$keys[$id]['name'] = $id;
+			$keys[$id]['local'][] = $row['COLUMN_NAME'];
 			$keys[$id]['table'] = $row['REFERENCED_TABLE_NAME'];
-			$keys[$id]['foreign'] = $row['REFERENCED_COLUMN_NAME'];
+			$keys[$id]['foreign'][] = $row['REFERENCED_COLUMN_NAME'];
 		}
 
 		return array_values($keys);

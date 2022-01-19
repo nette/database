@@ -238,17 +238,11 @@ class Structure implements IStructure
 
 		$foreignKeys = $this->connection->getDriver()->getForeignKeys($table);
 
-		$fksColumnsCounts = [];
-		foreach ($foreignKeys as $foreignKey) {
-			$tmp = &$fksColumnsCounts[$foreignKey['name']];
-			$tmp++;
-		}
-
-		usort($foreignKeys, fn($a, $b): int => $fksColumnsCounts[$b['name']] <=> $fksColumnsCounts[$a['name']]);
+		usort($foreignKeys, fn($a, $b): int => count($b['local']) <=> count($a['local']));
 
 		foreach ($foreignKeys as $row) {
-			$structure['belongsTo'][$lowerTable][$row['local']] = $row['table'];
-			$structure['hasMany'][strtolower($row['table'])][$table][] = $row['local'];
+			$structure['belongsTo'][$lowerTable][$row['local'][0]] = $row['table'];
+			$structure['hasMany'][strtolower($row['table'])][$table][] = $row['local'][0];
 		}
 
 		if (isset($structure['belongsTo'][$lowerTable])) {

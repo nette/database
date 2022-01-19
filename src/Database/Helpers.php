@@ -330,6 +330,7 @@ class Helpers
 		Tracy\BlueScreen $blueScreen,
 	): ?ConnectionPanel
 	{
+		trigger_error(__METHOD__ . '() is deprecated, use Nette\Bridges\DatabaseTracy\ConnectionPanel::initialize()', E_USER_DEPRECATED);
 		return ConnectionPanel::initialize($connection, true, $name, $explain, $bar, $blueScreen);
 	}
 
@@ -344,6 +345,7 @@ class Helpers
 		?Tracy\BlueScreen $blueScreen = null,
 	): ?ConnectionPanel
 	{
+		trigger_error(__METHOD__ . '() is deprecated, use Nette\Bridges\DatabaseTracy\ConnectionPanel::initialize()', E_USER_DEPRECATED);
 		return ConnectionPanel::initialize($connection, $addBarPanel, $name, $explain, $bar, $blueScreen);
 	}
 

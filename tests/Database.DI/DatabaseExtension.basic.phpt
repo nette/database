@@ -40,9 +40,10 @@ test('', function () {
 	Assert::type(Nette\Database\Connection::class, $connection);
 	Assert::same('sqlite::memory:', $connection->getDsn());
 
-	$explorer = $container->getService('database.default.context');
+	$explorer = $container->getService('database.default.explorer');
 	Assert::type(Nette\Database\Explorer::class, $explorer);
 	Assert::same($connection, $explorer->getConnection());
+	Assert::same($container->getService('database.default.context'), $explorer);
 
 	Assert::type(Nette\Database\Structure::class, $explorer->getStructure());
 	Assert::type(Nette\Database\Conventions\DiscoveredConventions::class, $explorer->getConventions());

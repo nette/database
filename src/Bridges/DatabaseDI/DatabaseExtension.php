@@ -124,14 +124,16 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			$conventions = Nette\DI\Helpers::filterArguments([$config->conventions])[0];
 		}
 
-		$builder->addDefinition($this->prefix("$name.context"))
+		$builder->addDefinition($this->prefix("$name.explorer"))
 			->setFactory(Nette\Database\Explorer::class, [$connection, $structure, $conventions])
 			->setAutowired($config->autowired);
+
+		$builder->addAlias($this->prefix("$name.context"), $this->prefix("$name.explorer"));
 
 		if ($this->name === 'database') {
 			$builder->addAlias($this->prefix($name), $this->prefix("$name.connection"));
 			$builder->addAlias("nette.database.$name", $this->prefix($name));
-			$builder->addAlias("nette.database.$name.context", $this->prefix("$name.context"));
+			$builder->addAlias("nette.database.$name.context", $this->prefix("$name.explorer"));
 		}
 	}
 }

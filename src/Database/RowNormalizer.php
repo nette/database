@@ -19,10 +19,39 @@ final class RowNormalizer
 {
 	use Nette\SmartObject;
 
+	private $skipped = [];
+
+
+	public function skipNumeric(): static
+	{
+		$this->skipped[IStructure::FIELD_FIXED] = true;
+		return $this;
+	}
+
+
+	public function skipDateTime(): static
+	{
+		$this->skipped[IStructure::FIELD_DATETIME] = true;
+		$this->skipped[IStructure::FIELD_DATE] = true;
+		$this->skipped[IStructure::FIELD_TIME] = true;
+		$this->skipped[IStructure::FIELD_UNIX_TIMESTAMP] = true;
+		return $this;
+	}
+
+
+	public function skipInterval(): static
+	{
+		$this->skipped[IStructure::FIELD_TIME_INTERVAL] = true;
+		return $this;
+	}
+
+
 	public function __invoke(array $row, ResultSet $resultSet): array
 	{
 		foreach ($resultSet->getColumnTypes() as $key => $type) {
-			$row[$key] = $this->normalizeField($row[$key], $type);
+			if (!isset($this->skipped[$type])) {
+				$row[$key] = $this->normalizeField($row[$key], $type);
+			}
 		}
 
 		return $row;

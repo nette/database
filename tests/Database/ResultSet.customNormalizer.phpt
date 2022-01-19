@@ -24,7 +24,7 @@ test('disabled normalization', function () use ($connection) {
 		'id' => $asInt ? 11 : '11',
 		'name' => 'Jakub Vrana',
 		'web' => 'http://www.vrana.cz/',
-		'born' => $driverName === 'sqlite' ? ($asInt ? 1642892400 : '1642892400') : '2022-01-23',
+		'born' => $driverName === 'sqlite' ? ($asInt ? 1_642_892_400 : '1642892400') : '2022-01-23',
 	], (array) $res->fetch());
 });
 

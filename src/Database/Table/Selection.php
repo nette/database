@@ -90,7 +90,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		Explorer $explorer,
 		Conventions $conventions,
 		string $tableName,
-		?Nette\Caching\IStorage $cacheStorage = null
+		?Nette\Caching\IStorage $cacheStorage = null,
 	) {
 		$this->explorer = $this->context = $explorer;
 		$this->conventions = $conventions;
@@ -906,7 +906,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 		return $this->explorer->query(
 			$this->sqlBuilder->buildUpdateQuery(),
-			...array_merge([$data], $this->sqlBuilder->getParameters())
+			...array_merge([$data], $this->sqlBuilder->getParameters()),
 		)->getRowCount();
 	}
 

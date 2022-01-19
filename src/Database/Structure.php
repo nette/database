@@ -207,9 +207,7 @@ class Structure implements IStructure
 
 		if (isset($structure['hasMany'])) {
 			foreach ($structure['hasMany'] as &$table) {
-				uksort($table, function ($a, $b): int {
-					return strlen($a) <=> strlen($b);
-				});
+				uksort($table, fn($a, $b): int => strlen($a) <=> strlen($b));
 			}
 		}
 
@@ -250,9 +248,7 @@ class Structure implements IStructure
 			$tmp++;
 		}
 
-		usort($foreignKeys, function ($a, $b) use ($fksColumnsCounts): int {
-			return $fksColumnsCounts[$b['name']] <=> $fksColumnsCounts[$a['name']];
-		});
+		usort($foreignKeys, fn($a, $b): int => $fksColumnsCounts[$b['name']] <=> $fksColumnsCounts[$a['name']]);
 
 		foreach ($foreignKeys as $row) {
 			$structure['belongsTo'][$lowerTable][$row['local']] = $row['table'];
@@ -260,9 +256,7 @@ class Structure implements IStructure
 		}
 
 		if (isset($structure['belongsTo'][$lowerTable])) {
-			uksort($structure['belongsTo'][$lowerTable], function ($a, $b): int {
-				return strlen($a) <=> strlen($b);
-			});
+			uksort($structure['belongsTo'][$lowerTable], fn($a, $b): int => strlen($a) <=> strlen($b));
 		}
 	}
 

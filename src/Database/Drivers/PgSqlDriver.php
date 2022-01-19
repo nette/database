@@ -182,7 +182,8 @@ class PgSqlDriver extends PdoDriver
 	public function getForeignKeys(string $table): array
 	{
 		/* Doesn't work with multi-column foreign keys */
-		return $this->pdo->query(<<<X
+		$keys = [];
+		foreach ($this->pdo->query(<<<X
 			SELECT
 				co.conname::varchar AS name,
 				al.attname::varchar AS local,
@@ -199,7 +200,15 @@ class PgSqlDriver extends PdoDriver
 				co.contype = 'f'
 				AND cl.oid = {$this->pdo->quote($this->delimiteFQN($table))}::regclass
 				AND nf.nspname = ANY (pg_catalog.current_schemas(FALSE))
-			X)->fetchAll(\PDO::FETCH_ASSOC);
+			X) as $row) {
+			$id = $row['name'];
+			$keys[$id]['name'] = $id;
+			$keys[$id]['local'][] = $row['local'];
+			$keys[$id]['table'] = $row['table'];
+			$keys[$id]['foreign'][] = $row['foreign'];
+		}
+
+		return array_values($keys);
 	}
 
 

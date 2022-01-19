@@ -63,9 +63,9 @@ test('Tables in schema', function () use ($connection) {
 	$foreign = $driver->getForeignKeys('one.slave');
 	Assert::same([
 		'name' => 'one_slave_fk',
-		'local' => 'one_id',
+		'local' => ['one_id'],
 		'table' => 'one.master',
-		'foreign' => 'one_id',
+		'foreign' => ['one_id'],
 	], (array) $foreign[0]);
 
 

@@ -75,6 +75,7 @@ class Explorer
 	/** @deprecated  use query() */
 	public function queryArgs(string $sql, array $params): ResultSet
 	{
+		trigger_error(__METHOD__ . '() is deprecated, use query()', E_USER_DEPRECATED);
 		return $this->connection->query($sql, ...$params);
 	}
 

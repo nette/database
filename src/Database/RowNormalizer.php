@@ -52,7 +52,9 @@ final class RowNormalizer
 			case IStructure::FIELD_DATETIME:
 			case IStructure::FIELD_DATE:
 			case IStructure::FIELD_TIME:
-				return new DateTime($value);
+				return $value && !str_starts_with((string) $value, '0000-00')
+					? new DateTime($value)
+					: null;
 
 			case IStructure::FIELD_TIME_INTERVAL:
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?$#D', $value, $m);

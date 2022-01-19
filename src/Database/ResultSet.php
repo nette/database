@@ -68,6 +68,7 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @deprecated */
 	public function getConnection(): Connection
 	{
+		trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
 		return $this->connection;
 	}
 

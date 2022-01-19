@@ -33,7 +33,7 @@ test('', function () use ($explorer) {
 
 
 test('', function () use ($explorer) {
-	$res = $explorer->queryArgs('SELECT id FROM author WHERE id = ? OR id = ?', [11, 12]);
+	$res = @$explorer->queryArgs('SELECT id FROM author WHERE id = ? OR id = ?', [11, 12]); // is deprecated
 	Assert::same('SELECT id FROM author WHERE id = ? OR id = ?', $res->getQueryString());
 	Assert::same([11, 12], $res->getParameters());
 });

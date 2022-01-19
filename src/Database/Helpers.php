@@ -294,7 +294,7 @@ class Helpers
 	}
 
 
-	/** @deprecated  use Helpers::initializeTracy() */
+	/** @deprecated  use Nette\Bridges\DatabaseTracy\ConnectionPanel::initialize() */
 	public static function createDebugPanel(
 		Connection $connection,
 		bool $explain,
@@ -302,10 +302,11 @@ class Helpers
 		Tracy\Bar $bar,
 		Tracy\BlueScreen $blueScreen
 	): ?ConnectionPanel {
-		return self::initializeTracy($connection, true, $name, $explain, $bar, $blueScreen);
+		return ConnectionPanel::initialize($connection, true, $name, $explain, $bar, $blueScreen);
 	}
 
 
+	/** @deprecated  use Nette\Bridges\DatabaseTracy\ConnectionPanel::initialize() */
 	public static function initializeTracy(
 		Connection $connection,
 		bool $addBarPanel = false,
@@ -314,18 +315,7 @@ class Helpers
 		?Tracy\Bar $bar = null,
 		?Tracy\BlueScreen $blueScreen = null
 	): ?ConnectionPanel {
-		$blueScreen = $blueScreen ?? Tracy\Debugger::getBlueScreen();
-		$blueScreen->addPanel([ConnectionPanel::class, 'renderException']);
-
-		if ($addBarPanel) {
-			$panel = new ConnectionPanel($connection, $blueScreen);
-			$panel->explain = $explain;
-			$panel->name = $name;
-			$bar = $bar ?? Tracy\Debugger::getBar();
-			$bar->addPanel($panel);
-		}
-
-		return $panel ?? null;
+		return ConnectionPanel::initialize($connection, $addBarPanel, $name, $explain, $bar, $blueScreen);
 	}
 
 

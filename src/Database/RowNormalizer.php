@@ -40,6 +40,7 @@ final class RowNormalizer
 				return is_float($tmp = $value * 1) ? $value : $tmp;
 
 			case IStructure::FIELD_FLOAT:
+			case IStructure::FIELD_FIXED:
 				if (is_string($value) && ($pos = strpos($value, '.')) !== false) {
 					$value = rtrim(rtrim($pos === 0 ? "0$value" : $value, '0'), '.');
 				}

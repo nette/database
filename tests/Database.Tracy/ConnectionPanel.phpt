@@ -47,7 +47,7 @@ test('Bluescreen Panel', function () {
 
 test('deprecated initialization', function () {
 	$connection = new Connection('sqlite::memory:');
-	$panel = Nette\Database\Helpers::initializeTracy($connection, addBarPanel: true, name: 'foo');
+	$panel = @Nette\Database\Helpers::initializeTracy($connection, addBarPanel: true, name: 'foo'); // deprecated
 
 	$connection->beginTransaction();
 	$connection->query('SELECT 1');

@@ -28,6 +28,9 @@ final class RowNormalizer
 	];
 
 
+	private $skipped = [];
+
+
 	/**
 	 * Heuristic column type detection.
 	 * @return Type::*
@@ -49,10 +52,36 @@ final class RowNormalizer
 	}
 
 
+	public function skipNumeric(): static
+	{
+		$this->skipped[Type::Decimal] = true;
+		return $this;
+	}
+
+
+	public function skipDateTime(): static
+	{
+		$this->skipped[Type::DateTime] = true;
+		$this->skipped[Type::Date] = true;
+		$this->skipped[Type::Time] = true;
+		$this->skipped[Type::UnixTimestamp] = true;
+		return $this;
+	}
+
+
+	public function skipInterval(): static
+	{
+		$this->skipped[Type::TimeInterval] = true;
+		return $this;
+	}
+
+
 	public function __invoke(array $row, ResultSet $resultSet): array
 	{
 		foreach ($resultSet->getColumnTypes() as $key => $type) {
-			$row[$key] = $this->normalizeField($row[$key], $type);
+			if (!isset($this->skipped[$type])) {
+				$row[$key] = $this->normalizeField($row[$key], $type);
+			}
 		}
 
 		return $row;

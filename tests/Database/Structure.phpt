@@ -78,13 +78,13 @@ class StructureTestCase extends TestCase
 		$this->connection->shouldReceive('getDriver')->times(4)->andReturn($this->driver);
 		$this->driver->shouldReceive('getForeignKeys')->with('authors')->once()->andReturn([]);
 		$this->driver->shouldReceive('getForeignKeys')->with('Books')->once()->andReturn([
-			['local' => 'author_id', 'table' => 'authors', 'foreign' => 'id', 'name' => 'authors_fk1'],
-			['local' => 'translator_id', 'table' => 'authors', 'foreign' => 'id', 'name' => 'authors_fk2'],
+			['local' => ['author_id'], 'table' => 'authors', 'foreign' => ['id'], 'name' => 'authors_fk1'],
+			['local' => ['translator_id'], 'table' => 'authors', 'foreign' => ['id'], 'name' => 'authors_fk2'],
 		]);
 		$this->driver->shouldReceive('getForeignKeys')->with('tags')->once()->andReturn([]);
 		$this->driver->shouldReceive('getForeignKeys')->with('books_x_tags')->once()->andReturn([
-			['local' => 'book_id', 'table' => 'Books', 'foreign' => 'id', 'name' => 'books_x_tags_fk1'],
-			['local' => 'tag_id', 'table' => 'tags', 'foreign' => 'id', 'name' => 'books_x_tags_fk2'],
+			['local' => ['book_id'], 'table' => 'Books', 'foreign' => ['id'], 'name' => 'books_x_tags_fk1'],
+			['local' => ['tag_id'], 'table' => 'tags', 'foreign' => ['id'], 'name' => 'books_x_tags_fk2'],
 		]);
 
 		$this->structure = new StructureMock($this->connection, $this->storage);

@@ -299,7 +299,7 @@ class Helpers
 		bool $explain,
 		string $name,
 		Tracy\Bar $bar,
-		Tracy\BlueScreen $blueScreen
+		Tracy\BlueScreen $blueScreen,
 	): ?ConnectionPanel
 	{
 		return ConnectionPanel::initialize($connection, true, $name, $explain, $bar, $blueScreen);
@@ -313,7 +313,7 @@ class Helpers
 		string $name = '',
 		bool $explain = true,
 		?Tracy\Bar $bar = null,
-		?Tracy\BlueScreen $blueScreen = null
+		?Tracy\BlueScreen $blueScreen = null,
 	): ?ConnectionPanel
 	{
 		return ConnectionPanel::initialize($connection, $addBarPanel, $name, $explain, $bar, $blueScreen);

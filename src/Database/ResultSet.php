@@ -55,7 +55,7 @@ class ResultSet implements \Iterator, IRowContainer
 		Connection $connection,
 		string $queryString,
 		array $params,
-		?callable $normalizer = null
+		?callable $normalizer = null,
 	) {
 		$time = microtime(true);
 		$this->connection = $connection;

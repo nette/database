@@ -59,7 +59,7 @@ class Connection
 		?string $user = null,
 		#[\SensitiveParameter]
 		?string $password = null,
-		?array $options = null
+		?array $options = null,
 	) {
 		$this->params = [$dsn, $user, $password];
 		$this->options = (array) $options;

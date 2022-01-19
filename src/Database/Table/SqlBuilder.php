@@ -185,8 +185,8 @@ class SqlBuilder
 	{
 		if (!$this->order && ($this->limit !== null || $this->offset)) {
 			$this->order = array_map(
-				function ($col) { return "$this->tableName.$col"; },
-				(array) $this->conventions->getPrimary($this->tableName)
+				fn($col) => "$this->tableName.$col",
+				(array) $this->conventions->getPrimary($this->tableName),
 			);
 		}
 
@@ -242,7 +242,7 @@ class SqlBuilder
 			$this->parameters['where'],
 			$this->parameters['group'],
 			$this->parameters['having'],
-			$this->parameters['order']
+			$this->parameters['order'],
 		);
 	}
 
@@ -590,7 +590,7 @@ class SqlBuilder
 	protected function getSortedJoins(string $table, &$leftJoinDependency, &$tableJoins, &$finalJoins): void
 	{
 		if (isset($this->expandingJoins[$table])) {
-			$path = implode("' => '", array_map(function (string $value): string { return $this->reservedTableNames[$value]; }, array_merge(array_keys($this->expandingJoins), [$table])));
+			$path = implode("' => '", array_map(fn(string $value): string => $this->reservedTableNames[$value], array_merge(array_keys($this->expandingJoins), [$table])));
 			throw new Nette\InvalidArgumentException("Circular reference detected at left join conditions (tables '$path').");
 		}
 
@@ -820,11 +820,9 @@ class SqlBuilder
 
 	protected function tryDelimite(string $s): string
 	{
-		return preg_replace_callback('#(?<=[^\w`"\[?:]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|$)#Di', function (array $m): string {
-			return strtoupper($m[0]) === $m[0]
+		return preg_replace_callback('#(?<=[^\w`"\[?:]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|$)#Di', fn(array $m): string => strtoupper($m[0]) === $m[0]
 				? $m[0]
-				: $this->driver->delimite($m[0]);
-		}, $s);
+				: $this->driver->delimite($m[0]), $s);
 	}
 
 
@@ -832,7 +830,7 @@ class SqlBuilder
 		array $columns,
 		array $parameters,
 		array &$conditions,
-		array &$conditionsParameters
+		array &$conditionsParameters,
 	): bool
 	{
 		if ($this->driver->isSupported(Driver::SUPPORT_MULTI_COLUMN_AS_OR_COND)) {
@@ -866,9 +864,7 @@ class SqlBuilder
 	private function getCachedTableList(): array
 	{
 		if (!$this->cacheTableList) {
-			$this->cacheTableList = array_flip(array_map(function (array $pair): string {
-				return $pair['fullName'] ?? $pair['name'];
-			}, $this->structure->getTables()));
+			$this->cacheTableList = array_flip(array_map(fn(array $pair): string => $pair['fullName'] ?? $pair['name'], $this->structure->getTables()));
 		}
 
 		return $this->cacheTableList;

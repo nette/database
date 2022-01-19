@@ -79,7 +79,7 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @deprecated */
 	public function getConnection(): Connection
 	{
-		return $this->connection;
+		throw new Nette\DeprecatedException(__METHOD__ . '() is deprecated.');
 	}
 
 

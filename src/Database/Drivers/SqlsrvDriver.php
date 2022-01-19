@@ -99,7 +99,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 	public function getTables(): array
 	{
 		$tables = [];
-		foreach ($this->connection->query("
+		foreach ($this->connection->query(<<<'X'
 			SELECT
 				name,
 				CASE type
@@ -110,7 +110,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 				sys.objects
 			WHERE
 				type IN ('U', 'V')
-		") as $row) {
+			X) as $row) {
 			$tables[] = [
 				'name' => $row->name,
 				'view' => (bool) $row->view,
@@ -124,7 +124,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 	public function getColumns(string $table): array
 	{
 		$columns = [];
-		foreach ($this->connection->query("
+		foreach ($this->connection->query(<<<X
 			SELECT
 				c.name AS name,
 				o.name AS [table],
@@ -146,7 +146,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 			WHERE
 				o.type IN ('U', 'V')
 				AND o.name = {$this->connection->quote($table)}
-		") as $row) {
+			X) as $row) {
 			$row = (array) $row;
 			$row['vendor'] = $row;
 			$row['nullable'] = (bool) $row['nullable'];
@@ -163,7 +163,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
-		foreach ($this->connection->query("
+		foreach ($this->connection->query(<<<X
 			SELECT
 				i.name AS name,
 				CASE WHEN i.is_unique = 1 OR i.is_unique_constraint = 1
@@ -182,7 +182,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 			ORDER BY
 				i.index_id,
 				ic.index_column_id
-		") as $row) {
+			X) as $row) {
 			$id = $row['name'];
 			$indexes[$id]['name'] = $id;
 			$indexes[$id]['unique'] = (bool) $row['unique'];
@@ -198,7 +198,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 	{
 		// Does't work with multicolumn foreign keys
 		$keys = [];
-		foreach ($this->connection->query("
+		foreach ($this->connection->query(<<<X
 			SELECT
 				fk.name AS name,
 				cl.name AS local,
@@ -213,7 +213,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 				JOIN sys.columns cf ON fkc.referenced_object_id = cf.object_id AND fkc.referenced_column_id = cf.column_id
 			WHERE
 				tl.name = {$this->connection->quote($table)}
-		") as $row) {
+			X) as $row) {
 			$keys[$row->name] = (array) $row;
 		}
 

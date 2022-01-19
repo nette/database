@@ -278,7 +278,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 		$referenced = $this->table->getReferencedTable($this, $key);
 		if ($referenced !== false) {
-			$this->accessColumn($key, false);
+			$this->accessColumn($key, selectColumn: false);
 			return $referenced;
 		}
 
@@ -296,7 +296,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 		$referenced = $this->table->getReferencedTable($this, $key);
 		if ($referenced !== false) {
-			$this->accessColumn($key, false);
+			$this->accessColumn($key, selectColumn: false);
 			return (bool) $referenced;
 		}
 

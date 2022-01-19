@@ -42,7 +42,7 @@ class GroupedSelection extends Selection
 		string $tableName,
 		string $column,
 		Selection $refTable,
-		?Nette\Caching\IStorage $cacheStorage = null
+		?Nette\Caching\IStorage $cacheStorage = null,
 	) {
 		$this->refTable = $refTable;
 		$this->column = $column;
@@ -233,7 +233,7 @@ class GroupedSelection extends Selection
 
 	protected function emptyResultSet(bool $clearCache = true, bool $deleteReferencedCache = true): void
 	{
-		parent::emptyResultSet($clearCache, false);
+		parent::emptyResultSet($clearCache, deleteReferencedCache: false);
 	}
 
 

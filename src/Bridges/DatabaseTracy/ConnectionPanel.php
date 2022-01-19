@@ -56,17 +56,17 @@ class ConnectionPanel implements Tracy\IBarPanel
 		string $name = '',
 		bool $explain = true,
 		?Tracy\Bar $bar = null,
-		?Tracy\BlueScreen $blueScreen = null
+		?Tracy\BlueScreen $blueScreen = null,
 	): ?self
 	{
-		$blueScreen = $blueScreen ?? Tracy\Debugger::getBlueScreen();
+		$blueScreen ??= Tracy\Debugger::getBlueScreen();
 		$blueScreen->addPanel([self::class, 'renderException']);
 
 		if ($addBarPanel) {
 			$panel = new self($connection, $blueScreen);
 			$panel->explain = $explain;
 			$panel->name = $name;
-			$bar = $bar ?? Tracy\Debugger::getBar();
+			$bar ??= Tracy\Debugger::getBar();
 			$bar->addPanel($panel);
 		}
 
@@ -99,7 +99,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 				&& preg_match('~\.(php.?|phtml)$~', $row['file'])
 				&& !$this->blueScreen->isCollapsed($row['file']))
 				&& ($row['class'] ?? '') !== self::class
-				&& !is_a($row['class'] ?? '', Connection::class, true)
+				&& !is_a($row['class'] ?? '', Connection::class, allow_string: true)
 			) {
 				$source = [$row['file'], (int) $row['line']];
 				break;
@@ -167,7 +167,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 						? $this->explain
 						: 'EXPLAIN';
 					$explain = (new Nette\Database\ResultSet($connection, "$cmd $sql", $params))->fetchAll();
-				} catch (\PDOException $e) {
+				} catch (\PDOException) {
 				}
 			}
 

@@ -76,7 +76,7 @@ test('Insert into table with multi column primary index (no autoincrement)', fun
 });
 
 test('Insert into table with multi column primary index (autoincrement)', function () use ($driverName, $explorer) {
-	if (in_array($driverName, ['mysql', 'pgsql'], true)) {
+	if (in_array($driverName, ['mysql', 'pgsql'], strict: true)) {
 		$multiPkAutoincrementResult = $explorer->table('multi_pk_autoincrement')->insert([
 			'identifier2' => 999,
 			'note' => 'Some note here',

@@ -78,13 +78,13 @@ test('', function () use ($explorer, $driver) {
 		Assert::same(
 			'LEFT JOIN book ON author.id = book.translator_id AND (book.id > ?) ' .
 			'LEFT JOIN public.book_tag_alt book_tag_alt ON book.id = book_tag_alt.book_id AND (book_tag_alt.state = ?)',
-			trim($join)
+			trim($join),
 		);
 	} else {
 		Assert::same(
 			'LEFT JOIN book ON author.id = book.translator_id AND (book.id > ?) ' .
 			'LEFT JOIN book_tag_alt ON book.id = book_tag_alt.book_id AND (book_tag_alt.state = ?)',
-			trim($join)
+			trim($join),
 		);
 	}
 

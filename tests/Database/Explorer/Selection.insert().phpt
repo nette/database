@@ -53,22 +53,13 @@ if ($driverName !== 'sqlsrv') {
 
 // SQL Server 2008 doesn't know CONCAT()
 if ($driverName !== 'sqlsrv') {
-	switch ($driverName) {
-		case 'mysql':
-			$selection = $explorer->table('author')->select('NULL, id, NULL, CONCAT(?, name), NULL', 'Biography: ');
-			break;
-		case 'pgsql':
-			$selection = $explorer->table('author')->select('nextval(?), id, NULL, ? || name, NULL', 'book_id_seq', 'Biography: ');
-			break;
-		case 'sqlite':
-			$selection = $explorer->table('author')->select('NULL, id, NULL, ? || name, NULL', 'Biography: ');
-			break;
-		case 'sqlsrv':
-			$selection = $explorer->table('author')->select('id, NULL, CONCAT(?, name), NULL', 'Biography: ');
-			break;
-		default:
-			Assert::fail("Unsupported driver $driverName");
-	}
+	$selection = match ($driverName) {
+		'mysql' => $explorer->table('author')->select('NULL, id, NULL, CONCAT(?, name), NULL', 'Biography: '),
+		'pgsql' => $explorer->table('author')->select('nextval(?), id, NULL, ? || name, NULL', 'book_id_seq', 'Biography: '),
+		'sqlite' => $explorer->table('author')->select('NULL, id, NULL, ? || name, NULL', 'Biography: '),
+		//'sqlsrv' => $explorer->table('author')->select('id, NULL, CONCAT(?, name), NULL', 'Biography: '),
+		default => Assert::fail("Unsupported driver $driverName"),
+	};
 
 	$explorer->table('book')->insert($selection);
 	Assert::equal(4, $explorer->table('book')->where('title LIKE', 'Biography%')->count('*'));
@@ -79,7 +70,7 @@ if ($driverName !== 'sqlsrv') {
 $explorer = new Nette\Database\Explorer(
 	$connection,
 	$structure,
-	new Nette\Database\Conventions\DiscoveredConventions($structure)
+	new Nette\Database\Conventions\DiscoveredConventions($structure),
 );
 
 $inserted = $explorer->table('note')->insert([

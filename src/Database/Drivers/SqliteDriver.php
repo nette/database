@@ -111,12 +111,16 @@ class SqliteDriver implements Nette\Database\Driver
 	public function getTables(): array
 	{
 		$tables = [];
-		foreach ($this->connection->query("
-			SELECT name, type = 'view' as view FROM sqlite_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
+		foreach ($this->connection->query(<<<'X'
+			SELECT name, type = 'view' as view
+			FROM sqlite_master
+			WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
 			UNION ALL
-			SELECT name, type = 'view' as view FROM sqlite_temp_master WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
+			SELECT name, type = 'view' as view
+			FROM sqlite_temp_master
+			WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
 			ORDER BY name
-		") as $row) {
+			X) as $row) {
 			$tables[] = [
 				'name' => $row->name,
 				'view' => (bool) $row->view,
@@ -129,11 +133,15 @@ class SqliteDriver implements Nette\Database\Driver
 
 	public function getColumns(string $table): array
 	{
-		$meta = $this->connection->query("
-			SELECT sql FROM sqlite_master WHERE type = 'table' AND name = {$this->connection->quote($table)}
+		$meta = $this->connection->query(<<<X
+			SELECT sql
+			FROM sqlite_master
+			WHERE type = 'table' AND name = {$this->connection->quote($table)}
 			UNION ALL
-			SELECT sql FROM sqlite_temp_master WHERE type = 'table' AND name = {$this->connection->quote($table)}
-		")->fetch();
+			SELECT sql
+			FROM sqlite_temp_master
+			WHERE type = 'table' AND name = {$this->connection->quote($table)}
+			X)->fetch();
 
 		$columns = [];
 		foreach ($this->connection->query("PRAGMA table_info({$this->delimite($table)})") as $row) {
@@ -225,7 +233,7 @@ class SqliteDriver implements Nette\Database\Driver
 		for ($col = 0; $col < $count; $col++) {
 			$meta = $statement->getColumnMeta($col);
 			if (isset($meta['sqlite:decl_type'])) {
-				$types[$meta['name']] = in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], true)
+				$types[$meta['name']] = in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], strict: true)
 					? Nette\Database\IStructure::FIELD_UNIX_TIMESTAMP
 					: Nette\Database\Helpers::detectType($meta['sqlite:decl_type']);
 			} elseif (isset($meta['native_type'])) {

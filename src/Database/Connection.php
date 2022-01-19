@@ -60,7 +60,7 @@ class Connection
 		?string $user = null,
 		#[\SensitiveParameter]
 		?string $password = null,
-		?array $options = null
+		?array $options = null,
 	) {
 		$this->params = [$dsn, $user, $password];
 		$this->options = (array) $options;
@@ -227,12 +227,7 @@ class Connection
 	 * Generates and executes SQL query.
 	 * @param  literal-string  $sql
 	 */
-	public function query(
-		#[Language('SQL')]
-		string $sql,
-		#[Language('GenericSQL')]
-		...$params
-	): ResultSet
+	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ResultSet
 	{
 		[$this->sql, $params] = $this->preprocess($sql, ...$params);
 		try {
@@ -280,12 +275,7 @@ class Connection
 	 * Shortcut for query()->fetch()
 	 * @param  literal-string  $sql
 	 */
-	public function fetch(
-		#[Language('SQL')]
-		string $sql,
-		#[Language('GenericSQL')]
-		...$params
-	): ?Row
+	public function fetch(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?Row
 	{
 		return $this->query($sql, ...$params)->fetch();
 	}
@@ -296,12 +286,8 @@ class Connection
 	 * @param  literal-string  $sql
 	 * @return mixed
 	 */
-	public function fetchField(
-		#[Language('SQL')]
-		string $sql,
-		#[Language('GenericSQL')]
-		...$params
-	) {
+	public function fetchField(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params)
+	{
 		return $this->query($sql, ...$params)->fetchField();
 	}
 
@@ -310,12 +296,7 @@ class Connection
 	 * Shortcut for query()->fetchFields()
 	 * @param  literal-string  $sql
 	 */
-	public function fetchFields(
-		#[Language('SQL')]
-		string $sql,
-		#[Language('GenericSQL')]
-		...$params
-	): ?array
+	public function fetchFields(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
 	{
 		return $this->query($sql, ...$params)->fetchFields();
 	}
@@ -325,12 +306,7 @@ class Connection
 	 * Shortcut for query()->fetchPairs()
 	 * @param  literal-string  $sql
 	 */
-	public function fetchPairs(
-		#[Language('SQL')]
-		string $sql,
-		#[Language('GenericSQL')]
-		...$params
-	): array
+	public function fetchPairs(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
 	{
 		return $this->query($sql, ...$params)->fetchPairs();
 	}
@@ -340,12 +316,7 @@ class Connection
 	 * Shortcut for query()->fetchAll()
 	 * @param  literal-string  $sql
 	 */
-	public function fetchAll(
-		#[Language('SQL')]
-		string $sql,
-		#[Language('GenericSQL')]
-		...$params
-	): array
+	public function fetchAll(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
 	{
 		return $this->query($sql, ...$params)->fetchAll();
 	}

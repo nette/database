@@ -16,5 +16,5 @@ $explorer->query('CREATE TABLE `TABLE 30` (id int)');
 
 Assert::same(
 	reformat('SELECT * FROM `TABLE 30`'),
-	$explorer->table('TABLE 30')->getSql()
+	$explorer->table('TABLE 30')->getSql(),
 );

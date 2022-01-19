@@ -103,17 +103,19 @@ class SqlPreprocessor
 				$this->arrayMode = null;
 				$res[] = Nette\Utils\Strings::replace(
 					$param,
-					'~
-						\'[^\']*+\'
-						|"[^"]*+"
-						|\?[a-z]*
-						|^\s*+(?:\(?\s*SELECT|INSERT|UPDATE|DELETE|REPLACE|EXPLAIN)\b
-						|\b(?:SET|WHERE|HAVING|ORDER\ BY|GROUP\ BY|KEY\ UPDATE)(?=\s*$|\s*\?)
-						|\bIN\s+(?:\?|\(\?\))
-						|/\*.*?\*/
-						|--[^\n]*
-					~Dsix',
-					\Closure::fromCallable([$this, 'callback'])
+					<<<'X'
+						~
+							'[^']*+'
+							|"[^"]*+"
+							|\?[a-z]*
+							|^\s*+(?:\(?\s*SELECT|INSERT|UPDATE|DELETE|REPLACE|EXPLAIN)\b
+							|\b(?:SET|WHERE|HAVING|ORDER\ BY|GROUP\ BY|KEY\ UPDATE)(?=\s*$|\s*\?)
+							|\bIN\s+(?:\?|\(\?\))
+							|/\*.*?\*/
+							|--[^\n]*
+						~Dsix
+						X,
+					\Closure::fromCallable([$this, 'callback']),
 				);
 			} else {
 				throw new Nette\InvalidArgumentException('There are more parameters than placeholders.');
@@ -225,7 +227,7 @@ class SqlPreprocessor
 					if (!is_array($value[0]) && !$value[0] instanceof Row) {
 						throw new Nette\InvalidArgumentException(
 							'Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?['
-							. implode('|', self::Modes) . ']". Mode "' . $mode . '" was used.'
+							. implode('|', self::Modes) . ']". Mode "' . $mode . '" was used.',
 						);
 					}
 
@@ -316,7 +318,7 @@ class SqlPreprocessor
 			} else {
 				throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
 			}
-		} elseif (in_array($mode, self::Modes, true)) {
+		} elseif (in_array($mode, self::Modes, strict: true)) {
 			$type = gettype($value);
 			throw new Nette\InvalidArgumentException("Placeholder ?$mode expects array or Traversable object, $type given.");
 
@@ -324,7 +326,7 @@ class SqlPreprocessor
 			throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
 
 		} else {
-			throw new Nette\InvalidArgumentException('Unexpected type of parameter: ' . (is_object($value) ? get_class($value) : gettype($value)));
+			throw new Nette\InvalidArgumentException('Unexpected type of parameter: ' . (is_object($value) ? $value::class : gettype($value)));
 		}
 	}
 

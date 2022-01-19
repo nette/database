@@ -55,19 +55,19 @@ class ResultSet implements \Iterator, IRowContainer
 		Connection $connection,
 		string $queryString,
 		array $params,
-		?callable $normalizer = null
+		?callable $normalizer = null,
 	) {
 		$time = microtime(true);
 		$this->connection = $connection;
 		$this->queryString = $queryString;
 		$this->params = $params;
 		$this->normalizer = $normalizer;
+		$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 
 		try {
 			if (substr($queryString, 0, 2) === '::') {
 				$connection->getPdo()->{substr($queryString, 2)}();
 			} else {
-				$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 				$this->pdoStatement = $connection->getPdo()->prepare($queryString);
 				foreach ($params as $key => $value) {
 					$type = gettype($value);
@@ -130,10 +130,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 	public function getColumnTypes(): array
 	{
-		if ($this->types === null) {
-			$this->types = $this->connection->getDriver()->getColumnTypes($this->pdoStatement);
-		}
-
+		$this->types ??= $this->connection->getDriver()->getColumnTypes($this->pdoStatement);
 		return $this->types;
 	}
 
@@ -275,10 +272,7 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function fetchAll(): array
 	{
-		if ($this->rows === null) {
-			$this->rows = iterator_to_array($this);
-		}
-
+		$this->rows ??= iterator_to_array($this);
 		return $this->rows;
 	}
 

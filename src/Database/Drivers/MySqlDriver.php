@@ -51,16 +51,16 @@ class MySqlDriver implements Nette\Database\Driver
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		$code = $e->errorInfo[1] ?? null;
-		if (in_array($code, [1216, 1217, 1451, 1452, 1701], true)) {
+		if (in_array($code, [1216, 1217, 1451, 1452, 1701], strict: true)) {
 			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
 
-		} elseif (in_array($code, [1062, 1557, 1569, 1586], true)) {
+		} elseif (in_array($code, [1062, 1557, 1569, 1586], strict: true)) {
 			return Nette\Database\UniqueConstraintViolationException::from($e);
 
 		} elseif ($code >= 2001 && $code <= 2028) {
 			return Nette\Database\ConnectionException::from($e);
 
-		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], true)) {
+		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], strict: true)) {
 			return Nette\Database\NotNullConstraintViolationException::from($e);
 
 		} else {
@@ -170,10 +170,13 @@ class MySqlDriver implements Nette\Database\Driver
 	public function getForeignKeys(string $table): array
 	{
 		$keys = [];
-		$query = 'SELECT CONSTRAINT_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME FROM information_schema.KEY_COLUMN_USAGE '
-			. 'WHERE TABLE_SCHEMA = DATABASE() AND REFERENCED_TABLE_NAME IS NOT NULL AND TABLE_NAME = ' . $this->connection->quote($table);
-
-		foreach ($this->connection->query($query) as $id => $row) {
+		foreach ($this->connection->query(<<<X
+			SELECT CONSTRAINT_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
+			FROM information_schema.KEY_COLUMN_USAGE
+			WHERE TABLE_SCHEMA = DATABASE()
+			  AND REFERENCED_TABLE_NAME IS NOT NULL
+			  AND TABLE_NAME = {$this->connection->quote($table)}
+			X) as $id => $row) {
 			$keys[$id]['name'] = $row['CONSTRAINT_NAME'];
 			$keys[$id]['local'] = $row['COLUMN_NAME'];
 			$keys[$id]['table'] = $row['REFERENCED_TABLE_NAME'];

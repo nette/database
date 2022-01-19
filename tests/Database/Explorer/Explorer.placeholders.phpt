@@ -16,22 +16,13 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 
 test('Leave literals lower-cased, also not-delimiting them is tested.', function () use ($explorer, $driverName) {
-	switch ($driverName) {
-		case 'mysql':
-			$literal = new SqlLiteral('year(now())');
-			break;
-		case 'pgsql':
-			$literal = new SqlLiteral('extract(year from now())::int');
-			break;
-		case 'sqlite':
-			$literal = new SqlLiteral("cast(strftime('%Y', date('now')) as integer)");
-			break;
-		case 'sqlsrv':
-			$literal = new SqlLiteral('year(cast(current_timestamp as datetime))');
-			break;
-		default:
-			Assert::fail("Unsupported driver $driverName");
-	}
+	$literal = match ($driverName) {
+		'mysql' => new SqlLiteral('year(now())'),
+		'pgsql' => new SqlLiteral('extract(year from now())::int'),
+		'sqlite' => new SqlLiteral("cast(strftime('%Y', date('now')) as integer)"),
+		'sqlsrv' => new SqlLiteral('year(cast(current_timestamp as datetime))'),
+		default => Assert::fail("Unsupported driver $driverName"),
+	};
 
 	$selection = $explorer
 		->table('book')

@@ -38,7 +38,7 @@ class Explorer
 		Connection $connection,
 		Structure $structure,
 		?Conventions $conventions = null,
-		?Nette\Caching\IStorage $cacheStorage = null
+		?Nette\Caching\IStorage $cacheStorage = null,
 	) {
 		$this->connection = $connection;
 		$this->structure = $structure;
@@ -70,9 +70,7 @@ class Explorer
 	 */
 	public function transaction(callable $callback)
 	{
-		return $this->connection->transaction(function () use ($callback) {
-			return $callback($this);
-		});
+		return $this->connection->transaction(fn() => $callback($this));
 	}
 
 
@@ -86,12 +84,7 @@ class Explorer
 	 * Generates and executes SQL query.
 	 * @param  literal-string  $sql
 	 */
-	public function query(
-		#[Language('SQL')]
-		string $sql,
-		#[Language('GenericSQL')]
-		...$params
-	): ResultSet
+	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ResultSet
 	{
 		return $this->connection->query($sql, ...$params);
 	}
@@ -135,12 +128,7 @@ class Explorer
 	 * Shortcut for query()->fetch()
 	 * @param  literal-string  $sql
 	 */
-	public function fetch(
-		#[Language('SQL')]
-		string $sql,
-		#[Language('GenericSQL')]
-		...$params
-	): ?Row
+	public function fetch(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?Row
 	{
 		return $this->connection->query($sql, ...$params)->fetch();
 	}
@@ -151,12 +139,8 @@ class Explorer
 	 * @param  literal-string  $sql
 	 * @return mixed
 	 */
-	public function fetchField(
-		#[Language('SQL')]
-		string $sql,
-		#[Language('GenericSQL')]
-		...$params
-	) {
+	public function fetchField(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params)
+	{
 		return $this->connection->query($sql, ...$params)->fetchField();
 	}
 
@@ -165,12 +149,7 @@ class Explorer
 	 * Shortcut for query()->fetchFields()
 	 * @param  literal-string  $sql
 	 */
-	public function fetchFields(
-		#[Language('SQL')]
-		string $sql,
-		#[Language('GenericSQL')]
-		...$params
-	): ?array
+	public function fetchFields(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
 	{
 		return $this->connection->query($sql, ...$params)->fetchFields();
 	}
@@ -180,12 +159,7 @@ class Explorer
 	 * Shortcut for query()->fetchPairs()
 	 * @param  literal-string  $sql
 	 */
-	public function fetchPairs(
-		#[Language('SQL')]
-		string $sql,
-		#[Language('GenericSQL')]
-		...$params
-	): array
+	public function fetchPairs(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
 	{
 		return $this->connection->query($sql, ...$params)->fetchPairs();
 	}
@@ -195,12 +169,7 @@ class Explorer
 	 * Shortcut for query()->fetchAll()
 	 * @param  literal-string  $sql
 	 */
-	public function fetchAll(
-		#[Language('SQL')]
-		string $sql,
-		#[Language('GenericSQL')]
-		...$params
-	): array
+	public function fetchAll(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
 	{
 		return $this->connection->query($sql, ...$params)->fetchAll();
 	}

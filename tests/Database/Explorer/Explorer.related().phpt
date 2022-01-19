@@ -94,5 +94,5 @@ test('', function () use ($explorer) {
 
 	Assert::same('1001 tipu a triku pro PHP', $author->related('book')->fetch()->title);
 
-	Assert::same('JUSH', $author->related('book', null, true)->where('translator_id', null)->fetch()->title);
+	Assert::same('JUSH', $author->related('book', null)->where('translator_id', null)->fetch()->title);
 });

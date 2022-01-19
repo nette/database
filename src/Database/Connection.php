@@ -125,6 +125,7 @@ class Connection
 	/** @deprecated use getDriver() */
 	public function getSupplementalDriver(): Driver
 	{
+		trigger_error(__METHOD__ . '() is deprecated, use getDriver()', E_USER_DEPRECATED);
 		$this->connect();
 		return $this->driver;
 	}
@@ -273,6 +274,7 @@ class Connection
 	 */
 	public function queryArgs(string $sql, array $params): ResultSet
 	{
+		trigger_error(__METHOD__ . '() is deprecated, use query()', E_USER_DEPRECATED);
 		return $this->query($sql, ...$params);
 	}
 

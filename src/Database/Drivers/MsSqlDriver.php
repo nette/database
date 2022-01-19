@@ -182,11 +182,12 @@ class MsSqlDriver extends PdoDriver
 				tab1.name = {$this->pdo->quote($table_name)}
 			X;
 
-		foreach ($this->pdo->query($query) as $id => $row) {
-			$keys[$id]['name'] = $row['fk_name'];
-			$keys[$id]['local'] = $row['column'];
+		foreach ($this->pdo->query($query) as $row) {
+			$id = $row['fk_name'];
+			$keys[$id]['name'] = $id;
+			$keys[$id]['local'][] = $row['column'];
 			$keys[$id]['table'] = $table_schema . '.' . $row['referenced_table'];
-			$keys[$id]['foreign'] = $row['referenced_column'];
+			$keys[$id]['foreign'][] = $row['referenced_column'];
 		}
 
 		return array_values($keys);

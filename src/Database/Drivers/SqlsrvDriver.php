@@ -209,7 +209,11 @@ class SqlsrvDriver extends PdoDriver
 			WHERE
 				tl.name = {$this->pdo->quote($table)}
 			X, \PDO::FETCH_ASSOC) as $row) {
-			$keys[$row['name']] = $row;
+			$id = $row['name'];
+			$keys[$id]['name'] = $id;
+			$keys[$id]['local'][] = $row['local'];
+			$keys[$id]['table'] = $row['table'];
+			$keys[$id]['foreign'][] = $row['column'];
 		}
 
 		return array_values($keys);

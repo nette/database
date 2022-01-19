@@ -221,9 +221,12 @@ class SqliteDriver extends PdoDriver
 		foreach ($this->pdo->query("PRAGMA foreign_key_list({$this->delimite($table)})") as $row) {
 			$id = $row['id'];
 			$keys[$id]['name'] = $id;
-			$keys[$id]['local'] = $row['from'];
+			$keys[$id]['local'][] = $row['from'];
 			$keys[$id]['table'] = $row['table'];
-			$keys[$id]['foreign'] = $row['to'];
+			$keys[$id]['foreign'][] = $row['to'];
+			if ($keys[$id]['foreign'][0] == null) {
+				$keys[$id]['foreign'] = [];
+			}
 		}
 
 		return array_values($keys);

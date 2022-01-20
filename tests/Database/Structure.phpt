@@ -7,6 +7,9 @@
 declare(strict_types=1);
 
 use Mockery\MockInterface;
+use Nette\Database\Reflection\Column;
+use Nette\Database\Reflection\ForeignKey;
+use Nette\Database\Reflection\Table;
 use Nette\Database\Structure;
 use Tester\Assert;
 use Tester\TestCase;
@@ -49,42 +52,42 @@ class StructureTestCase extends TestCase
 		$this->connection->shouldReceive('getDsn')->once()->andReturn('');
 		$this->connection->shouldReceive('getDriver')->once()->andReturn($this->driver);
 		$this->driver->shouldReceive('getTables')->once()->andReturn([
-			['name' => 'authors', 'view' => false],
-			['name' => 'Books', 'view' => false],
-			['name' => 'tags', 'view' => false],
-			['name' => 'books_x_tags', 'view' => false],
-			['name' => 'books_view', 'view' => true],
+			new Table(name: 'authors', view: false),
+			new Table(name: 'Books', view: false),
+			new Table(name: 'tags', view: false),
+			new Table(name: 'books_x_tags', view: false),
+			new Table(name: 'books_view', view: true),
 		]);
 		$this->driver->shouldReceive('getColumns')->with('authors')->once()->andReturn([
-			['name' => 'id', 'primary' => true, 'autoincrement' => true, 'vendor' => ['sequence' => '"public"."authors_id_seq"']],
-			['name' => 'name', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
+			new Column(name: 'id', primary: true, autoIncrement: true, vendor: ['sequence' => '"public"."authors_id_seq"']),
+			new Column(name: 'name', primary: false, autoIncrement: false, vendor: []),
 		]);
 		$this->driver->shouldReceive('getColumns')->with('Books')->once()->andReturn([
-			['name' => 'id', 'primary' => true, 'autoincrement' => true, 'vendor' => ['sequence' => '"public"."Books_id_seq"']],
-			['name' => 'title', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
+			new Column(name: 'id', primary: true, autoIncrement: true, vendor: ['sequence' => '"public"."Books_id_seq"']),
+			new Column(name: 'title', primary: false, autoIncrement: false, vendor: []),
 		]);
 		$this->driver->shouldReceive('getColumns')->with('tags')->once()->andReturn([
-			['name' => 'id', 'primary' => true, 'autoincrement' => false, 'vendor' => []],
-			['name' => 'name', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
+			new Column(name: 'id', primary: true, autoIncrement: false, vendor: []),
+			new Column(name: 'name', primary: false, autoIncrement: false, vendor: []),
 		]);
 		$this->driver->shouldReceive('getColumns')->with('books_x_tags')->once()->andReturn([
-			['name' => 'book_id', 'primary' => true, 'autoincrement' => false, 'vendor' => []],
-			['name' => 'tag_id', 'primary' => true, 'autoincrement' => false, 'vendor' => []],
+			new Column(name: 'book_id', primary: true, autoIncrement: false, vendor: []),
+			new Column(name: 'tag_id', primary: true, autoIncrement: false, vendor: []),
 		]);
 		$this->driver->shouldReceive('getColumns')->with('books_view')->once()->andReturn([
-			['name' => 'id', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
-			['name' => 'title', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
+			new Column(name: 'id', primary: false, autoIncrement: false, vendor: []),
+			new Column(name: 'title', primary: false, autoIncrement: false, vendor: []),
 		]);
 		$this->connection->shouldReceive('getDriver')->times(4)->andReturn($this->driver);
 		$this->driver->shouldReceive('getForeignKeys')->with('authors')->once()->andReturn([]);
 		$this->driver->shouldReceive('getForeignKeys')->with('Books')->once()->andReturn([
-			['local' => ['author_id'], 'table' => 'authors', 'foreign' => ['id'], 'name' => 'authors_fk1'],
-			['local' => ['translator_id'], 'table' => 'authors', 'foreign' => ['id'], 'name' => 'authors_fk2'],
+			new ForeignKey(columns: ['author_id'], targetTable: 'authors', targetColumns: ['id'], name: 'authors_fk1'),
+			new ForeignKey(columns: ['translator_id'], targetTable: 'authors', targetColumns: ['id'], name: 'authors_fk2'),
 		]);
 		$this->driver->shouldReceive('getForeignKeys')->with('tags')->once()->andReturn([]);
 		$this->driver->shouldReceive('getForeignKeys')->with('books_x_tags')->once()->andReturn([
-			['local' => ['book_id'], 'table' => 'Books', 'foreign' => ['id'], 'name' => 'books_x_tags_fk1'],
-			['local' => ['tag_id'], 'table' => 'tags', 'foreign' => ['id'], 'name' => 'books_x_tags_fk2'],
+			new ForeignKey(columns: ['book_id'], targetTable: 'Books', targetColumns: ['id'], name: 'books_x_tags_fk1'),
+			new ForeignKey(columns: ['tag_id'], targetTable: 'tags', targetColumns: ['id'], name: 'books_x_tags_fk2'),
 		]);
 
 		$this->structure = new StructureMock($this->connection, $this->storage);
@@ -93,12 +96,12 @@ class StructureTestCase extends TestCase
 
 	public function testGetTables()
 	{
-		Assert::same([
-			['name' => 'authors', 'view' => false],
-			['name' => 'Books', 'view' => false],
-			['name' => 'tags', 'view' => false],
-			['name' => 'books_x_tags', 'view' => false],
-			['name' => 'books_view', 'view' => true],
+		Assert::equal([
+			new Table(name: 'authors', view: false),
+			new Table(name: 'Books', view: false),
+			new Table(name: 'tags', view: false),
+			new Table(name: 'books_x_tags', view: false),
+			new Table(name: 'books_view', view: true),
 		], $this->structure->getTables());
 	}
 
@@ -106,12 +109,12 @@ class StructureTestCase extends TestCase
 	public function testGetColumns()
 	{
 		$columns = [
-			['name' => 'id', 'primary' => true, 'autoincrement' => false, 'vendor' => []],
-			['name' => 'name', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
+			new Column(name: 'id', primary: true, autoIncrement: false, vendor: []),
+			new Column(name: 'name', primary: false, autoIncrement: false, vendor: []),
 		];
 
-		Assert::same($columns, $this->structure->getColumns('tags'));
-		Assert::same($columns, $this->structure->getColumns('Tags'));
+		Assert::equal($columns, $this->structure->getColumns('tags'));
+		Assert::equal($columns, $this->structure->getColumns('Tags'));
 
 		$structure = $this->structure;
 		Assert::exception(function () use ($structure) {

@@ -75,25 +75,25 @@ interface Driver
 	/********************* reflection ****************d*g**/
 
 	/**
-	 * Returns list of tables as tuples [(string) name, (bool) view, [(string) fullName]]
+	 * @return Reflection\Table[]
 	 */
 	function getTables(): array;
 
 	/**
 	 * Returns metadata for all columns in a table.
-	 * As tuples [(string) name, (string) table, (string) nativetype, (int) size, (bool) nullable, (mixed) default, (bool) autoincrement, (bool) primary, (array) vendor]]
+	 * @return Reflection\Column[]
 	 */
 	function getColumns(string $table): array;
 
 	/**
 	 * Returns metadata for all indexes in a table.
-	 * As tuples [(string) name, (string[]) columns, (bool) unique, (bool) primary]
+	 * @return Reflection\Index[]
 	 */
 	function getIndexes(string $table): array;
 
 	/**
 	 * Returns metadata for all foreign keys in a table.
-	 * As tuples [(string) name, (string) local, (string) table, (string) foreign]
+	 * @return Reflection\ForeignKey[]
 	 */
 	function getForeignKeys(string $table): array;
 

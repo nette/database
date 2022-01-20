@@ -95,9 +95,9 @@ class PgSqlDriver extends PdoDriver
 	{
 		return $this->pdo->query(<<<'X'
 			SELECT DISTINCT ON (c.relname)
-				c.relname::varchar AS name,
-				c.relkind IN ('v', 'm') AS view,
-				n.nspname::varchar || '.' || c.relname::varchar AS "fullName"
+				c.relname::varchar,
+				c.relkind IN ('v', 'm'),
+				n.nspname::varchar || '.' || c.relname::varchar
 			FROM
 				pg_catalog.pg_class AS c
 				JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace
@@ -106,7 +106,10 @@ class PgSqlDriver extends PdoDriver
 				AND n.nspname = ANY (pg_catalog.current_schemas(FALSE))
 			ORDER BY
 				c.relname
-			X)->fetchAll(\PDO::FETCH_ASSOC);
+			X)->fetchAll(
+			\PDO::FETCH_FUNC,
+			fn($name, $view, $full) => new Nette\Database\Reflection\Table($name, $view, $full),
+		);
 	}
 
 
@@ -117,11 +120,11 @@ class PgSqlDriver extends PdoDriver
 			SELECT
 				a.attname::varchar AS name,
 				c.relname::varchar AS table,
-				t.typname AS nativetype,
+				t.typname AS "nativeType",
 				CASE WHEN a.atttypmod = -1 THEN NULL ELSE a.atttypmod -4 END AS size,
 				NOT (a.attnotnull OR t.typtype = 'd' AND t.typnotnull) AS nullable,
 				pg_catalog.pg_get_expr(ad.adbin, 'pg_catalog.pg_attrdef'::regclass)::varchar AS default,
-				coalesce(co.contype = 'p' AND (seq.relname IS NOT NULL OR strpos(pg_catalog.pg_get_expr(ad.adbin, ad.adrelid), 'nextval') = 1), FALSE) AS autoincrement,
+				coalesce(co.contype = 'p' AND (seq.relname IS NOT NULL OR strpos(pg_catalog.pg_get_expr(ad.adbin, ad.adrelid), 'nextval') = 1), FALSE) AS "autoIncrement",
 				coalesce(co.contype = 'p', FALSE) AS primary,
 				coalesce(seq.relname, substring(pg_catalog.pg_get_expr(ad.adbin, 'pg_catalog.pg_attrdef'::regclass) from 'nextval[(]''"?([^''"]+)')) AS sequence
 			FROM
@@ -139,11 +142,11 @@ class PgSqlDriver extends PdoDriver
 				AND NOT a.attisdropped
 			ORDER BY
 				a.attnum
-			X, \PDO::FETCH_ASSOC) as $column) {
-			$column['vendor'] = $column;
-			unset($column['sequence']);
-
-			$columns[] = $column;
+			X, \PDO::FETCH_ASSOC) as $row
+		) {
+			$row['vendor'] = $row;
+			unset($row['sequence']);
+			$columns[] = new Nette\Database\Reflection\Column(...$row);
 		}
 
 		return $columns;
@@ -175,7 +178,7 @@ class PgSqlDriver extends PdoDriver
 			$indexes[$id]['columns'][] = $row['column'];
 		}
 
-		return array_values($indexes);
+		return array_map(fn($data) => new Nette\Database\Reflection\Index(...$data), array_values($indexes));
 	}
 
 
@@ -203,12 +206,12 @@ class PgSqlDriver extends PdoDriver
 			X) as $row) {
 			$id = $row['name'];
 			$keys[$id]['name'] = $id;
-			$keys[$id]['local'][] = $row['local'];
-			$keys[$id]['table'] = $row['table'];
-			$keys[$id]['foreign'][] = $row['foreign'];
+			$keys[$id]['columns'][] = $row['local'];
+			$keys[$id]['targetTable'] = $row['table'];
+			$keys[$id]['targetColumns'][] = $row['foreign'];
 		}
 
-		return array_values($keys);
+		return array_map(fn($data) => new Nette\Database\Reflection\ForeignKey(...$data), array_values($keys));
 	}
 
 

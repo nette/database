@@ -856,7 +856,7 @@ class SqlBuilder
 	private function getCachedTableList(): array
 	{
 		if (!$this->cacheTableList) {
-			$this->cacheTableList = array_flip(array_map(fn(array $pair): string => $pair['fullName'] ?? $pair['name'], $this->structure->getTables()));
+			$this->cacheTableList = array_flip(array_map(fn($pair): string => $pair->fullName ?? $pair->name, $this->structure->getTables()));
 		}
 
 		return $this->cacheTableList;

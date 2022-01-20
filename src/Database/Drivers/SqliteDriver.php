@@ -111,9 +111,8 @@ class SqliteDriver extends PdoDriver
 
 	public function getTables(): array
 	{
-		$tables = [];
-		foreach ($this->pdo->query(<<<'X'
-			SELECT name, type = 'view' as view
+		return $this->pdo->query(<<<'X'
+			SELECT name, type = 'view'
 			FROM sqlite_master
 			WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
 			UNION ALL
@@ -121,14 +120,10 @@ class SqliteDriver extends PdoDriver
 			FROM sqlite_temp_master
 			WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
 			ORDER BY name
-			X) as $row) {
-			$tables[] = [
-				'name' => $row['name'],
-				'view' => (bool) $row['view'],
-			];
-		}
-
-		return $tables;
+			X)->fetchAll(
+			\PDO::FETCH_FUNC,
+			fn($name, $view) => new Nette\Database\Reflection\Table($name, (bool) $view),
+		);
 	}
 
 
@@ -149,17 +144,17 @@ class SqliteDriver extends PdoDriver
 			$column = $row['name'];
 			$pattern = "/(\"$column\"|`$column`|\\[$column\\]|$column)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";
 			$type = explode('(', $row['type']);
-			$columns[] = [
-				'name' => $column,
-				'table' => $table,
-				'nativetype' => strtoupper($type[0]),
-				'size' => isset($type[1]) ? (int) $type[1] : null,
-				'nullable' => !$row['notnull'],
-				'default' => $row['dflt_value'],
-				'autoincrement' => $meta && preg_match($pattern, (string) $meta['sql']),
-				'primary' => $row['pk'] > 0,
-				'vendor' => $row,
-			];
+			$columns[] = new Nette\Database\Reflection\Column(
+				name: $column,
+				table: $table,
+				nativeType: $type[0],
+				size: isset($type[1]) ? (int) $type[1] : null,
+				nullable: !$row['notnull'],
+				default: $row['dflt_value'],
+				autoIncrement: $meta && preg_match($pattern, (string) $meta['sql']),
+				primary: $row['pk'] > 0,
+				vendor: $row,
+			);
 		}
 
 		return $columns;
@@ -186,8 +181,8 @@ class SqliteDriver extends PdoDriver
 		foreach ($indexes as $index => $values) {
 			$column = $indexes[$index]['columns'][0];
 			foreach ($columns as $info) {
-				if ($column === $info['name']) {
-					$indexes[$index]['primary'] = (bool) $info['primary'];
+				if ($column === $info->name) {
+					$indexes[$index]['primary'] = $info->primary;
 					break;
 				}
 			}
@@ -207,7 +202,7 @@ class SqliteDriver extends PdoDriver
 			}
 		}
 
-		return array_values($indexes);
+		return array_map(fn($data) => new Nette\Database\Reflection\Index(...$data), array_values($indexes));
 	}
 
 
@@ -216,16 +211,16 @@ class SqliteDriver extends PdoDriver
 		$keys = [];
 		foreach ($this->pdo->query("PRAGMA foreign_key_list({$this->delimite($table)})") as $row) {
 			$id = $row['id'];
-			$keys[$id]['name'] = $id;
-			$keys[$id]['local'][] = $row['from'];
-			$keys[$id]['table'] = $row['table'];
-			$keys[$id]['foreign'][] = $row['to'];
-			if ($keys[$id]['foreign'][0] == null) {
-				$keys[$id]['foreign'] = [];
+			$keys[$id]['name'] = (string) $id;
+			$keys[$id]['columns'][] = $row['from'];
+			$keys[$id]['targetTable'] = $row['table'];
+			$keys[$id]['targetColumns'][] = $row['to'];
+			if ($keys[$id]['targetColumns'][0] == null) {
+				$keys[$id]['targetColumns'] = [];
 			}
 		}
 
-		return array_values($keys);
+		return array_map(fn($data) => new Nette\Database\Reflection\ForeignKey(...$data), array_values($keys));
 	}
 
 

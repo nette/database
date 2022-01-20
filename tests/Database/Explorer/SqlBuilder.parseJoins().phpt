@@ -43,7 +43,7 @@ $join = $sqlBuilder->buildQueryJoins($joins);
 Assert::same('WHERE priorit.id IS NULL', $query);
 
 $tables = $connection->getDriver()->getTables();
-if (!in_array($tables[0]['name'], ['npriorities', 'ntopics', 'nusers', 'nusers_ntopics', 'nusers_ntopics_alt'], true)) {
+if (!in_array($tables[0]->name, ['npriorities', 'ntopics', 'nusers', 'nusers_ntopics', 'nusers_ntopics_alt'], true)) {
 	if ($driver->isSupported(Driver::SupportSchema)) {
 		Assert::same(
 			'LEFT JOIN public.nUsers_nTopics nusers_ntopics ON nUsers.nUserId = nusers_ntopics.nUserId ' .

@@ -118,15 +118,10 @@ class MySqlDriver extends PdoDriver
 
 	public function getTables(): array
 	{
-		$tables = [];
-		foreach ($this->pdo->query('SHOW FULL TABLES') as $row) {
-			$tables[] = [
-				'name' => $row[0],
-				'view' => ($row[1] ?? null) === 'VIEW',
-			];
-		}
-
-		return $tables;
+		return $this->pdo->query('SHOW FULL TABLES')->fetchAll(
+			\PDO::FETCH_FUNC,
+			fn($name, $type) => new Nette\Database\Reflection\Table($name, $type === 'VIEW'),
+		);
 	}
 
 
@@ -135,17 +130,17 @@ class MySqlDriver extends PdoDriver
 		$columns = [];
 		foreach ($this->pdo->query('SHOW FULL COLUMNS FROM ' . $this->delimite($table), \PDO::FETCH_ASSOC) as $row) {
 			$type = explode('(', $row['Type']);
-			$columns[] = [
-				'name' => $row['Field'],
-				'table' => $table,
-				'nativetype' => $type[0],
-				'size' => isset($type[1]) ? (int) $type[1] : null,
-				'nullable' => $row['Null'] === 'YES',
-				'default' => $row['Default'],
-				'autoincrement' => $row['Extra'] === 'auto_increment',
-				'primary' => $row['Key'] === 'PRI',
-				'vendor' => $row,
-			];
+			$columns[] = new Nette\Database\Reflection\Column(
+				name: $row['Field'],
+				table: $table,
+				nativeType: $type[0],
+				size: isset($type[1]) ? (int) $type[1] : null,
+				nullable: $row['Null'] === 'YES',
+				default: $row['Default'],
+				autoIncrement: $row['Extra'] === 'auto_increment',
+				primary: $row['Key'] === 'PRI',
+				vendor: $row,
+			);
 		}
 
 		return $columns;
@@ -163,7 +158,7 @@ class MySqlDriver extends PdoDriver
 			$indexes[$id]['columns'][$row['Seq_in_index'] - 1] = $row['Column_name'];
 		}
 
-		return array_values($indexes);
+		return array_map(fn($data) => new Nette\Database\Reflection\Index(...$data), array_values($indexes));
 	}
 
 
@@ -179,12 +174,12 @@ class MySqlDriver extends PdoDriver
 			X) as $row) {
 			$id = $row['CONSTRAINT_NAME'];
 			$keys[$id]['name'] = $id;
-			$keys[$id]['local'][] = $row['COLUMN_NAME'];
-			$keys[$id]['table'] = $row['REFERENCED_TABLE_NAME'];
-			$keys[$id]['foreign'][] = $row['REFERENCED_COLUMN_NAME'];
+			$keys[$id]['columns'][] = $row['COLUMN_NAME'];
+			$keys[$id]['targetTable'] = $row['REFERENCED_TABLE_NAME'];
+			$keys[$id]['targetColumns'][] = $row['REFERENCED_COLUMN_NAME'];
 		}
 
-		return array_values($keys);
+		return array_map(fn($data) => new Nette\Database\Reflection\ForeignKey(...$data), array_values($keys));
 	}
 
 

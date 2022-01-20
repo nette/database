@@ -18,10 +18,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/pgsql-nette_
 $connection->query("SET TIMEZONE TO 'UTC'");
 
 $res = $connection->query('SELECT * FROM types');
-
 $row = $res->fetch();
-Assert::type('string', $row->money);
-unset($row->money);
 
 Assert::equal([
 	'smallint' => 1,
@@ -30,6 +27,7 @@ Assert::equal([
 	'numeric' => 1.0,
 	'real' => 1.1,
 	'double' => 1.11,
+	'money' => 0.0,
 	'bool' => true,
 	'date' => new DateTime('2012-10-13'),
 	'time' => new DateTime('10:10:10'),

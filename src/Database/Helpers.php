@@ -216,8 +216,7 @@ class Helpers
 					$value = rtrim(rtrim($pos === 0 ? "0$value" : $value, '0'), '.');
 				}
 
-				$float = (float) $value;
-				$row[$key] = (string) $float === $value ? $float : $value;
+				$row[$key] = (float) $value;
 
 			} elseif ($type === IStructure::FIELD_BOOL) {
 				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';

@@ -102,7 +102,7 @@ class MsSqlDriver extends PdoDriver
 			$columns[] = [
 				'name' => $row['COLUMN_NAME'],
 				'table' => $table,
-				'nativetype' => strtoupper($row['DATA_TYPE']),
+				'nativetype' => $row['DATA_TYPE'],
 				'size' => $row['CHARACTER_MAXIMUM_LENGTH'] ?? ($row['NUMERIC_PRECISION'] ?? null),
 				'unsigned' => false,
 				'nullable' => $row['IS_NULLABLE'] === 'YES',

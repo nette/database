@@ -50,7 +50,7 @@ $expectedColumns = [
 	[
 		'name' => 'id',
 		'table' => 'author',
-		'nativetype' => 'INT',
+		'nativetype' => 'int',
 		'size' => 11,
 		'nullable' => false,
 		'default' => null,
@@ -60,7 +60,7 @@ $expectedColumns = [
 	[
 		'name' => 'name',
 		'table' => 'author',
-		'nativetype' => 'VARCHAR',
+		'nativetype' => 'varchar',
 		'size' => 30,
 		'nullable' => false,
 		'default' => null,
@@ -70,7 +70,7 @@ $expectedColumns = [
 	[
 		'name' => 'web',
 		'table' => 'author',
-		'nativetype' => 'VARCHAR',
+		'nativetype' => 'varchar',
 		'size' => 100,
 		'nullable' => false,
 		'default' => null,
@@ -80,7 +80,7 @@ $expectedColumns = [
 	[
 		'name' => 'born',
 		'table' => 'author',
-		'nativetype' => 'DATE',
+		'nativetype' => 'date',
 		'size' => null,
 		'nullable' => true,
 		'default' => null,
@@ -97,7 +97,7 @@ switch ($driverName) {
 		}
 		break;
 	case 'pgsql':
-		$expectedColumns[0]['nativetype'] = 'INT4';
+		$expectedColumns[0]['nativetype'] = 'int4';
 		$expectedColumns[0]['default'] = "nextval('author_id_seq'::regclass)";
 		$expectedColumns[0]['size'] = null;
 		break;
@@ -108,6 +108,7 @@ switch ($driverName) {
 		$expectedColumns[1]['size'] = null;
 		$expectedColumns[2]['nativetype'] = 'TEXT';
 		$expectedColumns[2]['size'] = null;
+		$expectedColumns[3]['nativetype'] = 'DATE';
 		break;
 	case 'sqlsrv':
 		$expectedColumns[0]['size'] = null;

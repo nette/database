@@ -116,7 +116,7 @@ class SqlsrvDriver extends PdoDriver
 			SELECT
 				c.name AS name,
 				o.name AS [table],
-				UPPER(t.name) AS nativetype,
+				t.name AS nativetype,
 				NULL AS size,
 				c.is_nullable AS nullable,
 				OBJECT_DEFINITION(c.default_object_id) AS [default],

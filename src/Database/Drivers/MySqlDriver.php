@@ -128,17 +128,16 @@ class MySqlDriver extends PdoDriver
 	{
 		$columns = [];
 		foreach ($this->pdo->query('SHOW FULL COLUMNS FROM ' . $this->delimite($table), \PDO::FETCH_ASSOC) as $row) {
-			$row = array_change_key_case($row, CASE_LOWER);
-			$type = explode('(', $row['type']);
+			$type = explode('(', $row['Type']);
 			$columns[] = [
-				'name' => $row['field'],
+				'name' => $row['Field'],
 				'table' => $table,
-				'nativetype' => strtoupper($type[0]),
+				'nativetype' => $type[0],
 				'size' => isset($type[1]) ? (int) $type[1] : null,
-				'nullable' => $row['null'] === 'YES',
-				'default' => $row['default'],
-				'autoincrement' => $row['extra'] === 'auto_increment',
-				'primary' => $row['key'] === 'PRI',
+				'nullable' => $row['Null'] === 'YES',
+				'default' => $row['Default'],
+				'autoincrement' => $row['Extra'] === 'auto_increment',
+				'primary' => $row['Key'] === 'PRI',
 				'vendor' => $row,
 			];
 		}

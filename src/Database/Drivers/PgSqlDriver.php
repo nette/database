@@ -186,10 +186,11 @@ class PgSqlDriver implements Nette\Database\Driver
 				c1.relkind IN ('r', 'p')
 				AND c1.oid = {$this->connection->quote($this->delimiteFQN($table))}::regclass
 		") as $row) {
-			$indexes[$row['name']]['name'] = $row['name'];
-			$indexes[$row['name']]['unique'] = $row['unique'];
-			$indexes[$row['name']]['primary'] = $row['primary'];
-			$indexes[$row['name']]['columns'][] = $row['column'];
+			$id = $row['name'];
+			$indexes[$id]['name'] = $id;
+			$indexes[$id]['unique'] = $row['unique'];
+			$indexes[$id]['primary'] = $row['primary'];
+			$indexes[$id]['columns'][] = $row['column'];
 		}
 
 		return array_values($indexes);

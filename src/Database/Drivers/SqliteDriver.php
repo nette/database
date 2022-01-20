@@ -161,15 +161,16 @@ class SqliteDriver implements Nette\Database\Driver
 	{
 		$indexes = [];
 		foreach ($this->connection->query("PRAGMA index_list({$this->delimite($table)})") as $row) {
-			$indexes[$row['name']]['name'] = $row['name'];
-			$indexes[$row['name']]['unique'] = (bool) $row['unique'];
-			$indexes[$row['name']]['primary'] = false;
+			$id = $row['name'];
+			$indexes[$id]['name'] = $id;
+			$indexes[$id]['unique'] = (bool) $row['unique'];
+			$indexes[$id]['primary'] = false;
 		}
 
 		foreach ($indexes as $index => $values) {
 			$res = $this->connection->query("PRAGMA index_info({$this->delimite($index)})");
 			while ($row = $res->fetch()) {
-				$indexes[$index]['columns'][$row['seqno']] = $row['name'];
+				$indexes[$index]['columns'][] = $row['name'];
 			}
 		}
 

@@ -183,10 +183,11 @@ class SqlsrvDriver implements Nette\Database\Driver
 				i.index_id,
 				ic.index_column_id
 		") as $row) {
-			$indexes[$row->name]['name'] = $row->name;
-			$indexes[$row->name]['unique'] = (bool) $row->unique;
-			$indexes[$row->name]['primary'] = (bool) $row->primary;
-			$indexes[$row->name]['columns'][] = $row->column;
+			$id = $row['name'];
+			$indexes[$id]['name'] = $id;
+			$indexes[$id]['unique'] = (bool) $row['unique'];
+			$indexes[$id]['primary'] = (bool) $row['primary'];
+			$indexes[$id]['columns'][] = $row['column'];
 		}
 
 		return array_values($indexes);

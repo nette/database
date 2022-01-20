@@ -156,11 +156,11 @@ class MySqlDriver implements Nette\Database\Driver
 	{
 		$indexes = [];
 		foreach ($this->connection->query('SHOW INDEX FROM ' . $this->delimite($table)) as $row) {
-			$row = array_change_key_case((array) $row, CASE_LOWER);
-			$indexes[$row['key_name']]['name'] = $row['key_name'];
-			$indexes[$row['key_name']]['unique'] = !$row['non_unique'];
-			$indexes[$row['key_name']]['primary'] = $row['key_name'] === 'PRIMARY';
-			$indexes[$row['key_name']]['columns'][$row['seq_in_index'] - 1] = $row['column_name'];
+			$id = $row['Key_name'];
+			$indexes[$id]['name'] = $id;
+			$indexes[$id]['unique'] = !$row['Non_unique'];
+			$indexes[$id]['primary'] = $row['Key_name'] === 'PRIMARY';
+			$indexes[$id]['columns'][$row['Seq_in_index'] - 1] = $row['Column_name'];
 		}
 
 		return array_values($indexes);

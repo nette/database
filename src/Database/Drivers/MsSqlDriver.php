@@ -65,15 +65,10 @@ class MsSqlDriver extends PdoDriver
 
 	public function getTables(): array
 	{
-		$tables = [];
-		foreach ($this->pdo->query('SELECT TABLE_SCHEMA, TABLE_NAME, TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES') as $row) {
-			$tables[] = [
-				'name' => $row['TABLE_SCHEMA'] . '.' . $row['TABLE_NAME'],
-				'view' => ($row['TABLE_TYPE'] ?? null) === 'VIEW',
-			];
-		}
-
-		return $tables;
+		return $this->pdo->query('SELECT TABLE_SCHEMA, TABLE_NAME, TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES')->fetchAll(
+			\PDO::FETCH_FUNC,
+			fn($schema, $name, $type) => new Nette\Database\Reflection\Table($schema . '.' . $name, $type === 'VIEW'),
+		);
 	}
 
 
@@ -99,18 +94,17 @@ class MsSqlDriver extends PdoDriver
 			X;
 
 		foreach ($this->pdo->query($query, \PDO::FETCH_ASSOC) as $row) {
-			$columns[] = [
-				'name' => $row['COLUMN_NAME'],
-				'table' => $table,
-				'nativetype' => $row['DATA_TYPE'],
-				'size' => $row['CHARACTER_MAXIMUM_LENGTH'] ?? ($row['NUMERIC_PRECISION'] ?? null),
-				'unsigned' => false,
-				'nullable' => $row['IS_NULLABLE'] === 'YES',
-				'default' => $row['COLUMN_DEFAULT'],
-				'autoincrement' => $row['DOMAIN_NAME'] === 'COUNTER',
-				'primary' => $row['COLUMN_NAME'] === 'ID',
-				'vendor' => $row,
-			];
+			$columns[] = new Nette\Database\Reflection\Column(
+				name: $row['COLUMN_NAME'],
+				table: $table,
+				nativeType: $row['DATA_TYPE'],
+				size: $row['CHARACTER_MAXIMUM_LENGTH'] ?? $row['NUMERIC_PRECISION'] ?? null,
+				nullable: $row['IS_NULLABLE'] === 'YES',
+				default: $row['COLUMN_DEFAULT'],
+				autoIncrement: $row['DOMAIN_NAME'] === 'COUNTER',
+				primary: $row['COLUMN_NAME'] === 'ID',
+				vendor: $row,
+			);
 		}
 
 		return $columns;
@@ -148,7 +142,7 @@ class MsSqlDriver extends PdoDriver
 			$indexes[$id]['columns'][$row['id_column'] - 1] = $row['name_column'];
 		}
 
-		return array_values($indexes);
+		return array_map(fn($data) => new Nette\Database\Reflection\Index(...$data), array_values($indexes));
 	}
 
 
@@ -184,12 +178,12 @@ class MsSqlDriver extends PdoDriver
 		foreach ($this->pdo->query($query) as $row) {
 			$id = $row['fk_name'];
 			$keys[$id]['name'] = $id;
-			$keys[$id]['local'][] = $row['column'];
-			$keys[$id]['table'] = $table_schema . '.' . $row['referenced_table'];
-			$keys[$id]['foreign'][] = $row['referenced_column'];
+			$keys[$id]['columns'][] = $row['column'];
+			$keys[$id]['targetTable'] = $table_schema . '.' . $row['referenced_table'];
+			$keys[$id]['targetColumns'][] = $row['referenced_column'];
 		}
 
-		return array_values($keys);
+		return array_map(fn($data) => new Nette\Database\Reflection\ForeignKey(...$data), array_values($keys));
 	}
 
 

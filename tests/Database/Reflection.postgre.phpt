@@ -7,6 +7,7 @@
 
 declare(strict_types=1);
 
+use Nette\Database\Reflection\ForeignKey;
 use Tester\Assert;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
@@ -61,12 +62,12 @@ test('Tables in schema', function () use ($connection) {
 	Assert::same(['one_id'], names($driver->getColumns('one.master')));
 	Assert::same(['one_master_pkey'], names($driver->getIndexes('one.master')));
 	$foreign = $driver->getForeignKeys('one.slave');
-	Assert::same([
-		'name' => 'one_slave_fk',
-		'local' => ['one_id'],
-		'table' => 'one.master',
-		'foreign' => ['one_id'],
-	], (array) $foreign[0]);
+	Assert::equal(new ForeignKey(
+		name: 'one_slave_fk',
+		columns: ['one_id'],
+		targetTable: 'one.master',
+		targetColumns: ['one_id'],
+	), $foreign[0]);
 
 
 	// Limit foreign keys for current schemas only

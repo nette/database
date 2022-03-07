@@ -20,7 +20,7 @@ $tables = $driver->getTables();
 $tables = array_filter($tables, fn($t) => in_array($t['name'], ['author', 'book', 'book_tag', 'tag'], true));
 usort($tables, fn($a, $b) => strcmp($a['name'], $b['name']));
 
-if ($driver->isSupported(Driver::SUPPORT_SCHEMA)) {
+if ($driver->isSupported(Driver::SupportSchema)) {
 	Assert::same(
 		[
 			['name' => 'author', 'view' => false, 'fullName' => 'public.author'],

@@ -39,7 +39,7 @@ test('', function () use ($explorer) {
 test('', function () use ($explorer, $driver) {
 	$authorsSelection = $explorer->table('author')->where(':book.translator_id IS NOT NULL')->wherePrimary(12);
 
-	if ($driver->isSupported(Driver::SUPPORT_SCHEMA)) {
+	if ($driver->isSupported(Driver::SupportSchema)) {
 		Assert::same(
 			reformat('SELECT [author].* FROM [author] LEFT JOIN [public].[book] [book] ON [author].[id] = [book].[author_id] WHERE ([book].[translator_id] IS NOT NULL) AND ([author].[id] = ?)'),
 			$authorsSelection->getSql(),

@@ -34,7 +34,7 @@ test('', function () use ($explorer) {
 test('', function () use ($explorer, $driver) {
 	$joinSql = $explorer->table('book_tag')->where('book_id', 1)->select('tag.*')->getSql();
 
-	if ($driver->isSupported(Driver::SUPPORT_SCHEMA)) {
+	if ($driver->isSupported(Driver::SupportSchema)) {
 		Assert::same(
 			reformat('SELECT [tag].* FROM [book_tag] LEFT JOIN [public].[tag] [tag] ON [book_tag].[tag_id] = [tag].[id] WHERE ([book_id] = ?)'),
 			$joinSql,
@@ -51,7 +51,7 @@ test('', function () use ($explorer, $driver) {
 test('', function () use ($explorer, $driver) {
 	$joinSql = $explorer->table('book_tag')->where('book_id', 1)->select('Tag.id')->getSql();
 
-	if ($driver->isSupported(Driver::SUPPORT_SCHEMA)) {
+	if ($driver->isSupported(Driver::SupportSchema)) {
 		Assert::same(
 			reformat('SELECT [Tag].[id] FROM [book_tag] LEFT JOIN [public].[tag] [Tag] ON [book_tag].[tag_id] = [Tag].[id] WHERE ([book_id] = ?)'),
 			$joinSql,

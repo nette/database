@@ -16,12 +16,12 @@ namespace Nette\Database;
 interface Driver
 {
 	public const
-		SUPPORT_SEQUENCE = 'sequence',
-		SUPPORT_SELECT_UNGROUPED_COLUMNS = 'ungrouped_cols',
-		SUPPORT_MULTI_INSERT_AS_SELECT = 'insert_as_select',
-		SUPPORT_MULTI_COLUMN_AS_OR_COND = 'multi_column_as_or',
-		SUPPORT_SUBSELECT = 'subselect',
-		SUPPORT_SCHEMA = 'schema';
+		SupportSequence = 'sequence',
+		SupportSelectUngroupedColumns = 'ungrouped_cols',
+		SupportMultiInsertAsSelect = 'insert_as_select',
+		SupportMultiColumnAsOrCond = 'multi_column_as_or',
+		SupportSubselect = 'subselect',
+		SupportSchema = 'schema';
 
 	/**
 	 * Initializes connection.

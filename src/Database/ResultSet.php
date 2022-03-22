@@ -67,8 +67,7 @@ class ResultSet implements \Iterator, IRowContainer
 			if (substr($queryString, 0, 2) === '::') {
 				$connection->getPdo()->{substr($queryString, 2)}();
 			} elseif ($queryString !== null) {
-				static $types = ['boolean' => PHP_VERSION < 70307 ? PDO::PARAM_INT : PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT,
-					'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL, ];
+				$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 				$this->pdoStatement = $connection->getPdo()->prepare($queryString);
 				foreach ($params as $key => $value) {
 					$type = gettype($value);

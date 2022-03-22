@@ -57,7 +57,8 @@ class ConnectionPanel implements Tracy\IBarPanel
 		bool $explain = true,
 		?Tracy\Bar $bar = null,
 		?Tracy\BlueScreen $blueScreen = null
-	): ?self {
+	): ?self
+	{
 		$blueScreen = $blueScreen ?? Tracy\Debugger::getBlueScreen();
 		$blueScreen->addPanel([self::class, 'renderException']);
 

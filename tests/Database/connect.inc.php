@@ -34,7 +34,7 @@ echo "Driver: $driverName\n";
 /** Replaces [] with driver-specific quotes */
 function reformat($s): string
 {
-	global $driverName;
+	$driverName = $GLOBALS['driverName'];
 	if (is_array($s)) {
 		if (isset($s[$driverName])) {
 			return $s[$driverName];

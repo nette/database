@@ -15,7 +15,7 @@ $connection->query('UPDATE author SET born=?', new DateTime('2022-01-23'));
 
 
 test('disabled normalization', function () use ($connection) {
-	global $driverName;
+	$driverName = $GLOBALS['driverName'];
 
 	$connection->setRowNormalizer(null);
 	$res = $connection->query('SELECT * FROM author');
@@ -30,7 +30,7 @@ test('disabled normalization', function () use ($connection) {
 
 
 test('custom normalization', function () use ($connection) {
-	global $driverName;
+	$driverName = $GLOBALS['driverName'];
 
 	$connection->setRowNormalizer(function (array $row, Nette\Database\ResultSet $resultSet) {
 		foreach ($row as $key => $value) {

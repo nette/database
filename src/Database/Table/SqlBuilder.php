@@ -321,17 +321,22 @@ class SqlBuilder
 		}
 
 		$this->conditions[$hash] = $condition;
-		$placeholderCount = substr_count($condition, '?');
-		if ($placeholderCount > 1 && count($params) === 1 && is_array($params[0])) {
-			$params = $params[0];
-		}
 
-		$condition = trim($condition);
-		if ($placeholderCount === 0 && count($params) === 1) {
-			$condition .= ' ?';
-		} elseif ($placeholderCount !== count($params)) {
-			throw new Nette\InvalidArgumentException('Argument count does not match placeholder count.');
-		}
+        if ($condition instanceof SqlLiteral) {
+            $params = $condition->getParameters();
+        } else {
+            $placeholderCount = substr_count($condition, '?');
+            if ($placeholderCount > 1 && count($params) === 1 && is_array($params[0])) {
+                $params = $params[0];
+            }
+
+            $condition = trim($condition);
+            if ($placeholderCount === 0 && count($params) === 1) {
+                $condition .= ' ?';
+            } elseif ($placeholderCount !== count($params)) {
+                throw new Nette\InvalidArgumentException('Argument count does not match placeholder count.');
+            }
+        }
 
 		$replace = null;
 		$placeholderNum = 0;

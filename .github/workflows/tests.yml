@@ -89,7 +89,7 @@ jobs:
                     --health-retries 5
 
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
             - uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
@@ -106,7 +106,7 @@ jobs:
             - run: composer install --no-progress --prefer-dist
             - run: vendor/bin/tester -p phpdbg tests -s -C --coverage ./coverage.xml --coverage-src ./src
             - if: failure()
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v3
               with:
                   name: output
                   path: tests/**/output
@@ -125,7 +125,7 @@ jobs:
         name: Lowest Dependencies
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
+            - uses: actions/checkout@v3
             - uses: shivammathur/setup-php@v2
               with:
                   php-version: 8.0

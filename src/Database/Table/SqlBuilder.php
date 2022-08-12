@@ -262,6 +262,7 @@ class SqlBuilder
 	public function importGroupConditions(self $builder): bool
 	{
 		if ($builder->having) {
+            $this->select = $builder->select;
 			$this->group = $builder->group;
 			$this->having = $builder->having;
 			$this->parameters['group'] = $builder->parameters['group'];

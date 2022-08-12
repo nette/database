@@ -92,3 +92,15 @@ test('', function () use ($explorer) {
 		'Geek' => 0,
 	], $bookTags);
 });
+
+
+test('', function () use ($explorer) {
+	$count = $explorer->table('book')->where('author_id >', 11)->count('*');
+	Assert::same(2, $count);
+});
+
+
+test('', function () use ($explorer) {
+	$count = $explorer->table('book')->select('author_id')->group('translator_id')->having('author_id > ?', 11)->count('*');
+	Assert::same(2, $count);
+});

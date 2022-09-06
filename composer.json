@@ -15,7 +15,7 @@
 		}
 	],
 	"require": {
-		"php": ">=7.2 <8.2",
+		"php": ">=7.2 <8.3",
 		"ext-pdo": "*",
 		"nette/caching": "^3.0",
 		"nette/utils": "^3.2.1"

@@ -226,7 +226,7 @@ class SqliteDriver implements Nette\Database\ISupplementalDriver
 			$keys[$row['id']]['onDelete'] = $row['on_delete'];
 			$keys[$row['id']]['onUpdate'] = $row['on_update'];
 
-			if ($keys[$row['id']]['foreign'][0] == null) {
+			if (!isset($keys[$row['id']]['foreign'][0]) || $keys[$row['id']]['foreign'][0] == null) {
 				$keys[$row['id']]['foreign'] = null;
 			}
 		}

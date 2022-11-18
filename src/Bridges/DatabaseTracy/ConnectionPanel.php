@@ -95,7 +95,9 @@ class ConnectionPanel implements Tracy\IBarPanel
 			: debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		foreach ($trace as $row) {
 			if (
-				(isset($row['file']) && is_file($row['file']) && !$this->blueScreen->isCollapsed($row['file']))
+				(isset($row['file'])
+				&& preg_match('~\.(php.?|phtml)$~', $row['file'])
+				&& !$this->blueScreen->isCollapsed($row['file']))
 				&& ($row['class'] ?? '') !== self::class
 				&& !is_a($row['class'] ?? '', Connection::class, true)
 			) {

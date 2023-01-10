@@ -25,7 +25,8 @@
 		"nette/di": "^3.1 || ^4.0",
 		"mockery/mockery": "^1.4.3",
 		"tracy/tracy": "^2.8",
-		"phpstan/phpstan-nette": "^1.0"
+		"phpstan/phpstan-nette": "^1.0",
+		"jetbrains/phpstorm-attributes": "dev-master"
 	},
 	"autoload": {
 		"classmap": ["src/"]

@@ -9,6 +9,7 @@ declare(strict_types=1);
 
 namespace Nette\Database;
 
+use JetBrains\PhpStorm\Language;
 use Nette;
 use Nette\Utils\Arrays;
 use PDO;
@@ -226,7 +227,12 @@ class Connection
 	 * Generates and executes SQL query.
 	 * @param  literal-string  $sql
 	 */
-	public function query(string $sql, ...$params): ResultSet
+	public function query(
+		#[Language('SQL')]
+		string $sql,
+		#[Language('GenericSQL')]
+		...$params
+	): ResultSet
 	{
 		[$this->sql, $params] = $this->preprocess($sql, ...$params);
 		try {
@@ -274,7 +280,12 @@ class Connection
 	 * Shortcut for query()->fetch()
 	 * @param  literal-string  $sql
 	 */
-	public function fetch(string $sql, ...$params): ?Row
+	public function fetch(
+		#[Language('SQL')]
+		string $sql,
+		#[Language('GenericSQL')]
+		...$params
+	): ?Row
 	{
 		return $this->query($sql, ...$params)->fetch();
 	}
@@ -285,8 +296,12 @@ class Connection
 	 * @param  literal-string  $sql
 	 * @return mixed
 	 */
-	public function fetchField(string $sql, ...$params)
-	{
+	public function fetchField(
+		#[Language('SQL')]
+		string $sql,
+		#[Language('GenericSQL')]
+		...$params
+	) {
 		return $this->query($sql, ...$params)->fetchField();
 	}
 
@@ -295,7 +310,12 @@ class Connection
 	 * Shortcut for query()->fetchFields()
 	 * @param  literal-string  $sql
 	 */
-	public function fetchFields(string $sql, ...$params): ?array
+	public function fetchFields(
+		#[Language('SQL')]
+		string $sql,
+		#[Language('GenericSQL')]
+		...$params
+	): ?array
 	{
 		return $this->query($sql, ...$params)->fetchFields();
 	}
@@ -305,7 +325,12 @@ class Connection
 	 * Shortcut for query()->fetchPairs()
 	 * @param  literal-string  $sql
 	 */
-	public function fetchPairs(string $sql, ...$params): array
+	public function fetchPairs(
+		#[Language('SQL')]
+		string $sql,
+		#[Language('GenericSQL')]
+		...$params
+	): array
 	{
 		return $this->query($sql, ...$params)->fetchPairs();
 	}
@@ -315,7 +340,12 @@ class Connection
 	 * Shortcut for query()->fetchAll()
 	 * @param  literal-string  $sql
 	 */
-	public function fetchAll(string $sql, ...$params): array
+	public function fetchAll(
+		#[Language('SQL')]
+		string $sql,
+		#[Language('GenericSQL')]
+		...$params
+	): array
 	{
 		return $this->query($sql, ...$params)->fetchAll();
 	}

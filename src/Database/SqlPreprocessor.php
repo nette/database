@@ -102,7 +102,7 @@ class SqlPreprocessor
 				$prev = $this->counter;
 				$this->arrayMode = null;
 				$res[] = Nette\Utils\Strings::replace(
-					$param, /** @lang RegExp */
+					$param,
 					'~
 						\'[^\']*+\'
 						|"[^"]*+"

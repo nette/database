@@ -79,9 +79,7 @@ test('Testing GroupedSelection reinvalidation caching', function () use ($explor
 });
 
 
-before(function () use ($cacheMemoryStorage) {
-	$cacheMemoryStorage->clean([Nette\Caching\Cache::ALL => true]);
-});
+setUp(fn() => $cacheMemoryStorage->clean([Nette\Caching\Cache::ALL => true]));
 
 
 test('', function () use ($explorer) {

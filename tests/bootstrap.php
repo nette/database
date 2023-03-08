@@ -16,10 +16,12 @@ Tester\Environment::setup();
 date_default_timezone_set('Europe/Prague');
 
 
-// create temporary directory
-define('TEMP_DIR', __DIR__ . '/tmp');
-@mkdir(dirname(TEMP_DIR));
-@mkdir(TEMP_DIR);
+function getTempDir(): string
+{
+	$dir = __DIR__ . '/tmp';
+	@mkdir($dir);
+	return $dir;
+}
 
 
 function before(?Closure $function = null)

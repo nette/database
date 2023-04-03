@@ -104,6 +104,11 @@ test('IN', function () use ($preprocessor) {
 	Assert::same([10, 11], $params);
 });
 
+test('BETWEEN', function () use ($preprocessor) {
+	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id BETWEEN (?, ?)', [10, 11]]);
+	Assert::same('SELECT id FROM author WHERE id BETWEEN (?, ?)', $sql);
+	Assert::same([10, 11], $params);
+});
 
 test('?name', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE ?name = ? OR ?name = ?', 'id', 12, 'table.number', 23]);

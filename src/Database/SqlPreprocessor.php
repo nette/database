@@ -286,7 +286,23 @@ class SqlPreprocessor
 					$k = $this->delimite($k);
 					if (is_array($v)) {
 						if ($v) {
-							$vx[] = $k . ' ' . ($operator ? $operator . ' ' : '') . 'IN (' . $this->formatValue(array_values($v), self::ModeList) . ')';
+							switch ($operator) {
+								case '':
+								case 'IN':
+									$vx[] = $k . ' ' . ($operator ? $operator . ' ' : 'IN') . ' (' . $this->formatValue(array_values($v), self::ModeList) . ')';
+									break;
+
+								case 'NOT':
+									$vx[] = $k . ' ' . $operator . ' IN (' . $this->formatValue(array_values($v), self::ModeList) . ')';
+									break;
+
+								case 'BETWEEN':
+									$vx[] = $k . ' ' . $operator . $this->formatValue(array_values($v), self::ModeAnd);
+									break;
+
+								default:
+									throw new Nette\InvalidArgumentException("unsupported operator {$operator}");
+							}
 						} elseif ($operator === 'NOT') {
 						} else {
 							$vx[] = '1=0';

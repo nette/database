@@ -17,8 +17,6 @@ use Nette;
  */
 class Structure implements IStructure
 {
-	use Nette\SmartObject;
-
 	protected Connection $connection;
 	protected Nette\Caching\Cache $cache;
 	protected array $structure;

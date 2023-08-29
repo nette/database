@@ -17,8 +17,6 @@ use Nette;
  */
 class MySqlDriver implements Nette\Database\Driver
 {
-	use Nette\SmartObject;
-
 	public const
 		ERROR_ACCESS_DENIED = 1045,
 		ERROR_DUPLICATE_ENTRY = 1062,

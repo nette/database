@@ -20,8 +20,6 @@ use Nette\Database\Explorer;
  */
 class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 {
-	use Nette\SmartObject;
-
 	protected Explorer $explorer;
 
 	/** back compatibility */

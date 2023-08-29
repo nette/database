@@ -18,8 +18,6 @@ use PDO;
  */
 class ResultSet implements \Iterator, IRowContainer
 {
-	use Nette\SmartObject;
-
 	private Connection $connection;
 	private ?\PDOStatement $pdoStatement = null;
 

@@ -17,8 +17,6 @@ use Nette;
  */
 class SqlPreprocessor
 {
-	use Nette\SmartObject;
-
 	private const
 		ModeAnd = 'and',       // (key [operator] value) AND ...
 		ModeOr = 'or',         // (key [operator] value) OR ...

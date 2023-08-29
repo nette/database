@@ -17,8 +17,6 @@ use Nette;
  */
 class SqliteDriver implements Nette\Database\Driver
 {
-	use Nette\SmartObject;
-
 	private Nette\Database\Connection $connection;
 	private string $fmtDateTime;
 

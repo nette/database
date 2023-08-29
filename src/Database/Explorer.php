@@ -19,8 +19,6 @@ use Nette\Database\Conventions\StaticConventions;
  */
 class Explorer
 {
-	use Nette\SmartObject;
-
 	private Connection $connection;
 	private IStructure $structure;
 	private Conventions $conventions;

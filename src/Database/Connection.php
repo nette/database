@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Nette\Database;
 
 use JetBrains\PhpStorm\Language;
-use Nette;
 use Nette\Utils\Arrays;
 use PDO;
 use PDOException;
@@ -21,8 +20,6 @@ use PDOException;
  */
 class Connection
 {
-	use Nette\SmartObject;
-
 	/** @var array<callable(self): void>  Occurs after connection is established */
 	public array $onConnect = [];
 

@@ -20,8 +20,6 @@ use Tracy;
  */
 class ConnectionPanel implements Tracy\IBarPanel
 {
-	use Nette\SmartObject;
-
 	public int $maxQueries = 100;
 
 	public string $name;

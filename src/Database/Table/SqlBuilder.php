@@ -23,8 +23,6 @@ use Nette\Database\SqlLiteral;
  */
 class SqlBuilder
 {
-	use Nette\SmartObject;
-
 	protected string $tableName;
 	protected Conventions $conventions;
 	protected string $delimitedTable;

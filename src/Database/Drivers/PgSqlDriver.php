@@ -17,8 +17,6 @@ use Nette;
  */
 class PgSqlDriver implements Nette\Database\Driver
 {
-	use Nette\SmartObject;
-
 	private Nette\Database\Connection $connection;
 
 

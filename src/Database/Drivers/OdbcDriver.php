@@ -17,8 +17,6 @@ use Nette;
  */
 class OdbcDriver implements Nette\Database\Driver
 {
-	use Nette\SmartObject;
-
 	public function initialize(Nette\Database\Connection $connection, array $options): void
 	{
 	}

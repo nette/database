@@ -129,13 +129,17 @@ test('test empty array', function () use ($explorer) {
 	$sqlBuilder->addWhere('id NOT', []);
 	$sqlBuilder->addWhere('NOT (id ?)', []);
 
-	Assert::exception(function () use ($sqlBuilder) {
-		$sqlBuilder->addWhere('TRUE AND id', []);
-	}, Nette\InvalidArgumentException::class, 'Possible SQL query corruption. Add parentheses around operators.');
+	Assert::exception(
+		fn() => $sqlBuilder->addWhere('TRUE AND id', []),
+		Nette\InvalidArgumentException::class,
+		'Possible SQL query corruption. Add parentheses around operators.',
+	);
 
-	Assert::exception(function () use ($sqlBuilder) {
-		$sqlBuilder->addWhere('NOT id', []);
-	}, Nette\InvalidArgumentException::class, 'Possible SQL query corruption. Add parentheses around operators.');
+	Assert::exception(
+		fn() => $sqlBuilder->addWhere('NOT id', []),
+		Nette\InvalidArgumentException::class,
+		'Possible SQL query corruption. Add parentheses around operators.',
+	);
 
 	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] IS NULL AND FALSE) AND ([id] IS NULL OR TRUE) AND (NOT ([id] IS NULL AND FALSE))'), $sqlBuilder->buildSelectQuery());
 });
@@ -209,12 +213,14 @@ test('', function () use ($explorer) {
 });
 
 
-Assert::exception(function () use ($explorer) {
-	$explorer->table('book')->where(
+Assert::exception(
+	fn() => $explorer->table('book')->where(
 		'id',
 		$explorer->table('book_tag')->where('tag_id', 21),
-	);
-}, Nette\InvalidArgumentException::class, 'Selection argument must have defined a select column.');
+	),
+	Nette\InvalidArgumentException::class,
+	'Selection argument must have defined a select column.',
+);
 
 
 Assert::exception(function () use ($explorer) {
@@ -277,7 +283,9 @@ test('', function () use ($driverName, $explorer, $connection, $structure) {
 		$books->fetch();
 	}, Nette\InvalidArgumentException::class, 'Selection argument must have defined a select column.');
 
-	Assert::exception(function () use ($e) {
-		throw $e->getPrevious();
-	}, LogicException::class, "Table 'book_tag' does not have a primary key.");
+	Assert::exception(
+		fn() => throw $e->getPrevious(),
+		LogicException::class,
+		"Table 'book_tag' does not have a primary key.",
+	);
 });

@@ -204,39 +204,53 @@ test('mix of where & order', function () use ($preprocessor) {
 
 
 test('missing parameters', function () use ($preprocessor) {
-	Assert::exception(function () use ($preprocessor) {
-		$preprocessor->process(['SELECT id FROM author WHERE id =? OR id = ?', 11]);
-	}, Nette\InvalidArgumentException::class, 'There are more placeholders than passed parameters.');
+	Assert::exception(
+		fn() => $preprocessor->process(['SELECT id FROM author WHERE id =? OR id = ?', 11]),
+		Nette\InvalidArgumentException::class,
+		'There are more placeholders than passed parameters.',
+	);
 
-	Assert::exception(function () use ($preprocessor) {
-		$preprocessor->process(['SELECT id FROM author WHERE id =', new SqlLiteral('? OR ?name = ?', [11]), 'id', 12]);
-	}, Nette\InvalidArgumentException::class, 'There are more placeholders than passed parameters.');
+	Assert::exception(
+		fn() => $preprocessor->process(['SELECT id FROM author WHERE id =', new SqlLiteral('? OR ?name = ?', [11]), 'id', 12]),
+		Nette\InvalidArgumentException::class,
+		'There are more placeholders than passed parameters.',
+	);
 });
 
 
 test('extra parameters', function () use ($preprocessor) {
-	Assert::exception(function () use ($preprocessor) {
-		$preprocessor->process(['SELECT id FROM author WHERE id =', 11, 12]);
-	}, Nette\InvalidArgumentException::class, 'There are more parameters than placeholders.');
+	Assert::exception(
+		fn() => $preprocessor->process(['SELECT id FROM author WHERE id =', 11, 12]),
+		Nette\InvalidArgumentException::class,
+		'There are more parameters than placeholders.',
+	);
 
-	Assert::exception(function () use ($preprocessor) {
-		$preprocessor->process(['SELECT id FROM author WHERE id =?', 11, 12]);
-	}, Nette\InvalidArgumentException::class, 'There are more parameters than placeholders.');
+	Assert::exception(
+		fn() => $preprocessor->process(['SELECT id FROM author WHERE id =?', 11, 12]),
+		Nette\InvalidArgumentException::class,
+		'There are more parameters than placeholders.',
+	);
 
-	Assert::exception(function () use ($preprocessor) {
-		$preprocessor->process(['SELECT id FROM author WHERE id =', 'a', 'b']);
-	}, Nette\InvalidArgumentException::class, 'There are more parameters than placeholders.');
+	Assert::exception(
+		fn() => $preprocessor->process(['SELECT id FROM author WHERE id =', 'a', 'b']),
+		Nette\InvalidArgumentException::class,
+		'There are more parameters than placeholders.',
+	);
 
-	Assert::exception(function () use ($preprocessor) {
-		$preprocessor->process(['SELECT id FROM author WHERE id =', '?', 11, 'OR id = ?', 12]);
-	}, Nette\InvalidArgumentException::class, 'There are more parameters than placeholders.');
+	Assert::exception(
+		fn() => $preprocessor->process(['SELECT id FROM author WHERE id =', '?', 11, 'OR id = ?', 12]),
+		Nette\InvalidArgumentException::class,
+		'There are more parameters than placeholders.',
+	);
 });
 
 
 test('unknown placeholder', function () use ($preprocessor) {
-	Assert::exception(function () use ($preprocessor) {
-		$preprocessor->process(['SELECT ?test', 11]);
-	}, Nette\InvalidArgumentException::class, 'Unknown placeholder ?test.');
+	Assert::exception(
+		fn() => $preprocessor->process(['SELECT ?test', 11]),
+		Nette\InvalidArgumentException::class,
+		'Unknown placeholder ?test.',
+	);
 });
 
 
@@ -365,9 +379,11 @@ test('?values', function () use ($preprocessor) {
 
 
 test('automatic detection failed', function () use ($preprocessor) {
-	Assert::exception(function () use ($preprocessor) {
-		$preprocessor->process(['INSERT INTO author (name) SELECT name FROM user WHERE id ?', [11, 12]]); // invalid sql
-	}, Nette\InvalidArgumentException::class, 'Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?[and|or|set|values|order|list]". Mode "values" was used.');
+	Assert::exception(
+		fn() => $preprocessor->process(['INSERT INTO author (name) SELECT name FROM user WHERE id ?', [11, 12]]),
+		Nette\InvalidArgumentException::class,
+		'Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?[and|or|set|values|order|list]". Mode "values" was used.',
+	);
 });
 
 
@@ -495,14 +511,18 @@ test('insert & update', function () use ($preprocessor) {
 
 test('invalid usage of ?and, ...', function () use ($preprocessor) {
 	foreach (['?and', '?or', '?set', '?values', '?order'] as $mode) {
-		Assert::exception(function () use ($preprocessor, $mode) {
-			$preprocessor->process([$mode, 'string']);
-		}, Nette\InvalidArgumentException::class, "Placeholder $mode expects array or Traversable object, string given.");
+		Assert::exception(
+			fn() => $preprocessor->process([$mode, 'string']),
+			Nette\InvalidArgumentException::class,
+			"Placeholder $mode expects array or Traversable object, string given.",
+		);
 	}
 
-	Assert::exception(function () use ($preprocessor) {
-		$preprocessor->process(['SELECT ?name', ['id', 'table.id']]);
-	}, Nette\InvalidArgumentException::class, 'Placeholder ?name expects string, array given.');
+	Assert::exception(
+		fn() => $preprocessor->process(['SELECT ?name', ['id', 'table.id']]),
+		Nette\InvalidArgumentException::class,
+		'Placeholder ?name expects string, array given.',
+	);
 });
 
 
@@ -541,9 +561,11 @@ test('object', function () use ($preprocessor) {
 });
 
 
-Assert::exception(function () use ($preprocessor) { // object
-	$preprocessor->process(['SELECT ?', new stdClass]);
-}, Nette\InvalidArgumentException::class, 'Unexpected type of parameter: stdClass');
+Assert::exception(
+	fn() => $preprocessor->process(['SELECT ?', new stdClass]),
+	Nette\InvalidArgumentException::class,
+	'Unexpected type of parameter: stdClass',
+);
 
 
 test('resource', function () use ($preprocessor) {

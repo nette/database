@@ -32,13 +32,17 @@ test('numeric field', function () use ($connection) {
 	Assert::false(isset($row[1])); // null value
 	Assert::false(isset($row[2])); // is not set
 
-	Assert::error(function () use ($row) {
-		$row->{2};
-	}, Nette\MemberAccessException::class, "Cannot read an undeclared column '2'.");
+	Assert::error(
+		fn() => $row->{2},
+		Nette\MemberAccessException::class,
+		"Cannot read an undeclared column '2'.",
+	);
 
-	Assert::error(function () use ($row) {
-		$row[2];
-	}, Nette\MemberAccessException::class, "Cannot read an undeclared column '2'.");
+	Assert::error(
+		fn() => $row[2],
+		Nette\MemberAccessException::class,
+		"Cannot read an undeclared column '2'.",
+	);
 });
 
 
@@ -49,11 +53,15 @@ test('named field', function () use ($connection) {
 	Assert::same(123, $row['title']);
 	Assert::false(isset($row[1])); // null value
 
-	Assert::error(function () use ($row) {
-		$row->tilte;
-	}, Nette\MemberAccessException::class, "Cannot read an undeclared column 'tilte', did you mean 'title'?");
+	Assert::error(
+		fn() => $row->tilte,
+		Nette\MemberAccessException::class,
+		"Cannot read an undeclared column 'tilte', did you mean 'title'?",
+	);
 
-	Assert::error(function () use ($row) {
-		$row[2];
-	}, Nette\MemberAccessException::class, "Cannot read an undeclared column '2'.");
+	Assert::error(
+		fn() => $row[2],
+		Nette\MemberAccessException::class,
+		"Cannot read an undeclared column '2'.",
+	);
 });

@@ -34,9 +34,11 @@ test('', function () use ($explorer) {
 
 test('', function () use ($explorer) {
 	$book = $explorer->table('book')->get(1);
-	Assert::exception(function () use ($book) {
-		$book->unknown_column;
-	}, Nette\MemberAccessException::class, "Cannot read an undeclared column 'unknown_column'.");
+	Assert::exception(
+		fn() => $book->unknown_column,
+		Nette\MemberAccessException::class,
+		"Cannot read an undeclared column 'unknown_column'.",
+	);
 });
 
 
@@ -82,19 +84,27 @@ test('', function () use ($connection, $structure) {
 	);
 
 	$book = $explorer->table('book')->get(1);
-	Assert::exception(function () use ($book) {
-		$book->test;
-	}, Nette\MemberAccessException::class, "Cannot read an undeclared column 'test'.");
+	Assert::exception(
+		fn() => $book->test,
+		Nette\MemberAccessException::class,
+		"Cannot read an undeclared column 'test'.",
+	);
 
-	Assert::exception(function () use ($book) {
-		$book->tilte;
-	}, Nette\MemberAccessException::class, "Cannot read an undeclared column 'tilte', did you mean 'title'?");
+	Assert::exception(
+		fn() => $book->tilte,
+		Nette\MemberAccessException::class,
+		"Cannot read an undeclared column 'tilte', did you mean 'title'?",
+	);
 
-	Assert::exception(function () use ($book) {
-		$book->ref('test');
-	}, Nette\MemberAccessException::class, 'No reference found for $book->ref(test).');
+	Assert::exception(
+		fn() => $book->ref('test'),
+		Nette\MemberAccessException::class,
+		'No reference found for $book->ref(test).',
+	);
 
-	Assert::exception(function () use ($book) {
-		$book->related('test');
-	}, Nette\MemberAccessException::class, 'No reference found for $book->related(test).');
+	Assert::exception(
+		fn() => $book->related('test'),
+		Nette\MemberAccessException::class,
+		'No reference found for $book->related(test).',
+	);
 });

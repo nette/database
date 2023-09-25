@@ -118,9 +118,11 @@ class StructureTestCase extends TestCase
 		Assert::same($columns, $this->structure->getColumns('Tags'));
 
 		$structure = $this->structure;
-		Assert::exception(function () use ($structure) {
-			$structure->getColumns('InvaliD');
-		}, Nette\InvalidArgumentException::class, "Table 'invalid' does not exist.");
+		Assert::exception(
+			fn() => $structure->getColumns('InvaliD'),
+			Nette\InvalidArgumentException::class,
+			"Table 'invalid' does not exist.",
+		);
 	}
 
 
@@ -128,9 +130,11 @@ class StructureTestCase extends TestCase
 	{
 		Assert::same('id', $this->structure->getPrimaryKey('books'));
 		Assert::same(['book_id', 'tag_id'], $this->structure->getPrimaryKey('Books_x_tags'));
-		Assert::exception(function () {
-			$this->structure->getPrimaryKey('invalid');
-		}, Nette\InvalidArgumentException::class, "Table 'invalid' does not exist.");
+		Assert::exception(
+			fn() => $this->structure->getPrimaryKey('invalid'),
+			Nette\InvalidArgumentException::class,
+			"Table 'invalid' does not exist.",
+		);
 	}
 
 

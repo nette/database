@@ -41,13 +41,14 @@ Assert::same('eddard stark', $book2->author->name);  // SELECT * FROM `author` W
 // SQL Server throw PDOException because does not allow insert explicit value for IDENTITY column.
 // This exception is about primary key violation.
 if ($driverName !== 'sqlsrv') {
-	Assert::exception(function () use ($explorer) {
-		$explorer->table('author')->insert([
+	Assert::exception(
+		fn() => $explorer->table('author')->insert([
 			'id' => 14,
 			'name' => 'Jon Snow',
 			'web' => 'http://example.com',
-		]);
-	}, PDOException::class);
+		]),
+		PDOException::class,
+	);
 }
 
 

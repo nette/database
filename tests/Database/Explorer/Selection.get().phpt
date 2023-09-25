@@ -25,7 +25,9 @@ test('', function () use ($explorer) {
 		'next_volume' => null,
 	], $book->toArray());
 
-	Assert::exception(function () use ($explorer) {
-		$explorer->table('not_existing_table')->get(1);
-	}, Nette\InvalidArgumentException::class, "Table 'not_existing_table' does not exist.");
+	Assert::exception(
+		fn() => $explorer->table('not_existing_table')->get(1),
+		Nette\InvalidArgumentException::class,
+		"Table 'not_existing_table' does not exist.",
+	);
 });

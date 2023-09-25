@@ -21,9 +21,10 @@ $connection->query('
 
 $connection->query('INSERT INTO primarykey (prim) VALUES (5)');
 if (PHP_VERSION_ID >= 70016) {
-	Assert::exception(function () use ($connection) {
-		$connection->getInsertId();
-	}, Nette\Database\DriverException::class);
+	Assert::exception(
+		fn() => $connection->getInsertId(),
+		Nette\Database\DriverException::class,
+	);
 } else {
 	Assert::equal('0', $connection->getInsertId());
 }

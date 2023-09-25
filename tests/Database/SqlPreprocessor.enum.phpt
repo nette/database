@@ -38,6 +38,8 @@ Assert::same([1], $params);
 Assert::same('SELECT ?', $sql);
 Assert::same(['one'], $params);
 
-Assert::exception(function () use ($preprocessor) {
-	$preprocessor->process(['SELECT ?', PureEnum::One]);
-}, Nette\InvalidArgumentException::class, 'Unexpected type of parameter: PureEnum');
+Assert::exception(
+	fn() => $preprocessor->process(['SELECT ?', PureEnum::One]),
+	Nette\InvalidArgumentException::class,
+	'Unexpected type of parameter: PureEnum',
+);

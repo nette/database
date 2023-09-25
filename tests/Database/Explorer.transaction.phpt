@@ -25,12 +25,14 @@ test('', function () use ($explorer) {
 
 
 test('', function () use ($explorer) {
-	Assert::exception(function () use ($explorer) {
-		$explorer->transaction(function (Explorer $explorer) {
+	Assert::exception(
+		fn() => $explorer->transaction(function (Explorer $explorer) {
 			$explorer->query('DELETE FROM book');
 			throw new Exception('my exception');
-		});
-	}, Throwable::class, 'my exception');
+		}),
+		Throwable::class,
+		'my exception',
+	);
 
 	Assert::same(3, $explorer->fetchField('SELECT id FROM book WHERE id = ', 3));
 });

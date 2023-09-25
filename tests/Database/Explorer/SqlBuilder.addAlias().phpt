@@ -37,17 +37,23 @@ test('test duplicated table names throw exception', function () use ($explorer, 
 	$sqlBuilder = new SqlBuilderMock($authorTable, $explorer);
 	$sqlBuilder->addAlias(':book(translator)', 'book1');
 	$sqlBuilder->addAlias(':book:book_tag', 'book2');
-	Assert::exception(function () use ($sqlBuilder) {
-		$sqlBuilder->addAlias(':book', 'book1');
-	}, Nette\InvalidArgumentException::class, "Table alias 'book1' from chain ':book' is already in use by chain ':book(translator)'. Please add/change alias for one of them.");
+	Assert::exception(
+		fn() => $sqlBuilder->addAlias(':book', 'book1'),
+		Nette\InvalidArgumentException::class,
+		"Table alias 'book1' from chain ':book' is already in use by chain ':book(translator)'. Please add/change alias for one of them.",
+	);
 
-	Assert::exception(function () use ($sqlBuilder) { // reserved by base table name
-		$sqlBuilder->addAlias(':book', 'author');
-	}, Nette\InvalidArgumentException::class, "Table alias 'author' from chain ':book' is already in use by chain '$authorTable'. Please add/change alias for one of them.");
+	Assert::exception(
+		fn() => $sqlBuilder->addAlias(':book', 'author'),
+		Nette\InvalidArgumentException::class,
+		"Table alias 'author' from chain ':book' is already in use by chain '$authorTable'. Please add/change alias for one of them.",
+	);
 
-	Assert::exception(function () use ($sqlBuilder) {
-		$sqlBuilder->addAlias(':book', 'book1');
-	}, Nette\InvalidArgumentException::class, "Table alias 'book1' from chain ':book' is already in use by chain ':book(translator)'. Please add/change alias for one of them.");
+	Assert::exception(
+		fn() => $sqlBuilder->addAlias(':book', 'book1'),
+		Nette\InvalidArgumentException::class,
+		"Table alias 'book1' from chain ':book' is already in use by chain ':book(translator)'. Please add/change alias for one of them.",
+	);
 
 	$sqlBuilder->addAlias(':book', 'tag');
 	Assert::exception(function () use ($sqlBuilder) {

@@ -44,13 +44,17 @@ Assert::same(
 );
 
 if ($version2008) {
-	Assert::exception(function () use ($explorer) {
-		$explorer->table('author')->page(2, 10, $count)->getSql();
-	}, Nette\NotSupportedException::class, 'Offset is not supported by this database.');
+	Assert::exception(
+		fn() => $explorer->table('author')->page(2, 10, $count)->getSql(),
+		Nette\NotSupportedException::class,
+		'Offset is not supported by this database.',
+	);
 
-	Assert::exception(function () use ($explorer) {
-		$explorer->table('author')->page(2, 2, $count)->getSql();
-	}, Nette\NotSupportedException::class, 'Offset is not supported by this database.');
+	Assert::exception(
+		fn() => $explorer->table('author')->page(2, 2, $count)->getSql(),
+		Nette\NotSupportedException::class,
+		'Offset is not supported by this database.',
+	);
 
 } else {
 	Assert::same(

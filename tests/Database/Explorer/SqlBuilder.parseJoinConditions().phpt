@@ -46,24 +46,30 @@ $driver = $connection->getDriver();
 test('test circular reference', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilderMock('author', $explorer);
 	$sqlBuilder->addJoinCondition(':book(translator)', ':book(translator).translator_id = :book(translator).next_volume.translator_id');
-	Assert::exception(function () use ($sqlBuilder) {
-		$sqlBuilder->buildSelectQuery();
-	}, Nette\InvalidArgumentException::class, "Circular reference detected at left join conditions (tables ':book(translator)' => ':book(translator).next_volume' => ':book(translator)').");
+	Assert::exception(
+		fn() => $sqlBuilder->buildSelectQuery(),
+		Nette\InvalidArgumentException::class,
+		"Circular reference detected at left join conditions (tables ':book(translator)' => ':book(translator).next_volume' => ':book(translator)').",
+	);
 
 	$sqlBuilder = new SqlBuilderMock('author', $explorer);
 	$sqlBuilder->addJoinCondition(':book.next_volume', ':book.next_volume.translator_id = :book.translator.id');
 	$sqlBuilder->addJoinCondition(':book.translator', ':book.translator.id = :book.next_volume.translator_id');
-	Assert::exception(function () use ($sqlBuilder) {
-		$sqlBuilder->buildSelectQuery();
-	}, Nette\InvalidArgumentException::class, "Circular reference detected at left join conditions (tables ':book.next_volume' => ':book.translator' => ':book.next_volume').");
+	Assert::exception(
+		fn() => $sqlBuilder->buildSelectQuery(),
+		Nette\InvalidArgumentException::class,
+		"Circular reference detected at left join conditions (tables ':book.next_volume' => ':book.translator' => ':book.next_volume').",
+	);
 
 	$sqlBuilder = new SqlBuilderMock('author', $explorer);
 	$sqlBuilder->addJoinCondition(':book.next_volume', ':book.next_volume.translator_id = :book.translator.id');
 	$sqlBuilder->addJoinCondition(':book.translator', ':book.translator.id = :book.auth.id');
 	$sqlBuilder->addJoinCondition(':book.auth', ':book.auth.id = :book.next_volume.author_id');
-	Assert::exception(function () use ($sqlBuilder) {
-		$sqlBuilder->buildSelectQuery();
-	}, Nette\InvalidArgumentException::class, "Circular reference detected at left join conditions (tables ':book.next_volume' => ':book.translator' => ':book.auth' => ':book.next_volume').");
+	Assert::exception(
+		fn() => $sqlBuilder->buildSelectQuery(),
+		Nette\InvalidArgumentException::class,
+		"Circular reference detected at left join conditions (tables ':book.next_volume' => ':book.translator' => ':book.auth' => ':book.next_volume').",
+	);
 });
 
 test('', function () use ($explorer, $driver) {

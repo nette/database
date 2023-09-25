@@ -20,7 +20,9 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driv
 
 test('', function () use ($explorer) {
 	$book = $explorer->table('book')->where('id = ?', 1)->fetch();
-	Assert::exception(function () use ($book) {
-		$book->unknown_column;
-	}, Nette\MemberAccessException::class, "Cannot read an undeclared column 'unknown_column'.");
+	Assert::exception(
+		fn() => $book->unknown_column,
+		Nette\MemberAccessException::class,
+		"Cannot read an undeclared column 'unknown_column'.",
+	);
 });

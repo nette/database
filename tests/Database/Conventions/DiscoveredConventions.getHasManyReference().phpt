@@ -32,9 +32,10 @@ test('basic test singular', function () {
 	Assert::same(['book_topics', 'author_id'], $conventions->getHasManyReference('author', 'book_topics'));
 
 	// test too many column candidates
-	Assert::exception(function () use ($conventions) {
-		$conventions->getHasManyReference('author', 'boo');
-	}, Nette\Database\Conventions\AmbiguousReferenceKeyException::class);
+	Assert::exception(
+		fn() => $conventions->getHasManyReference('author', 'boo'),
+		Nette\Database\Conventions\AmbiguousReferenceKeyException::class,
+	);
 
 	// test one column candidate
 	Assert::same(['book', 'author_id'], $conventions->getHasManyReference('author', 'boo'));
@@ -67,14 +68,16 @@ test('basic test singular with schema', function () {
 	Assert::same(['public.book_topics', 'author_id'], $conventions->getHasManyReference('public.author', 'book_topics'));
 
 	// test too many column candidates, ns table name
-	Assert::exception(function () use ($conventions) {
-		$conventions->getHasManyReference('public.author', 'public.boo');
-	}, Nette\Database\Conventions\AmbiguousReferenceKeyException::class);
+	Assert::exception(
+		fn() => $conventions->getHasManyReference('public.author', 'public.boo'),
+		Nette\Database\Conventions\AmbiguousReferenceKeyException::class,
+	);
 
 	// test too many column candidates
-	Assert::exception(function () use ($conventions) {
-		$conventions->getHasManyReference('public.author', 'boo');
-	}, Nette\Database\Conventions\AmbiguousReferenceKeyException::class);
+	Assert::exception(
+		fn() => $conventions->getHasManyReference('public.author', 'boo'),
+		Nette\Database\Conventions\AmbiguousReferenceKeyException::class,
+	);
 
 	// test one column candidate, ns table name
 	Assert::same(['public.book', 'author_id'], $conventions->getHasManyReference('public.author', 'public.boo'));
@@ -101,9 +104,10 @@ test('basic test plural', function () {
 	Assert::same(['book_topics', 'author_id'], $conventions->getHasManyReference('authors', 'topics'));
 
 	// test too many candidates
-	Assert::exception(function () use ($conventions) {
-		$conventions->getHasManyReference('authors', 'boo');
-	}, Nette\Database\Conventions\AmbiguousReferenceKeyException::class);
+	Assert::exception(
+		fn() => $conventions->getHasManyReference('authors', 'boo'),
+		Nette\Database\Conventions\AmbiguousReferenceKeyException::class,
+	);
 });
 
 
@@ -127,9 +131,10 @@ test('tests column match with source table', function () {
 	Assert::same(['book', 'auth_id'], $conventions->getHasManyReference('author', 'book'));
 
 	// no propper match of key and target table name
-	Assert::exception(function () use ($conventions) {
-		$conventions->getHasManyReference('authors', 'book');
-	}, Nette\Database\Conventions\AmbiguousReferenceKeyException::class);
+	Assert::exception(
+		fn() => $conventions->getHasManyReference('authors', 'book'),
+		Nette\Database\Conventions\AmbiguousReferenceKeyException::class,
+	);
 });
 
 

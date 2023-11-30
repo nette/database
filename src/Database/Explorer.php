@@ -30,7 +30,7 @@ class Explorer
 	/** @var Conventions */
 	private $conventions;
 
-	/** @var Nette\Caching\IStorage */
+	/** @var Nette\Caching\Storage */
 	private $cacheStorage;
 
 
@@ -38,7 +38,7 @@ class Explorer
 		Connection $connection,
 		Structure $structure,
 		?Conventions $conventions = null,
-		?Nette\Caching\IStorage $cacheStorage = null,
+		?Nette\Caching\Storage $cacheStorage = null,
 	) {
 		$this->connection = $connection;
 		$this->structure = $structure;

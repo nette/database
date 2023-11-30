@@ -42,7 +42,7 @@ class GroupedSelection extends Selection
 		string $tableName,
 		string $column,
 		Selection $refTable,
-		?Nette\Caching\IStorage $cacheStorage = null,
+		?Nette\Caching\Storage $cacheStorage = null,
 	) {
 		$this->refTable = $refTable;
 		$this->column = $column;

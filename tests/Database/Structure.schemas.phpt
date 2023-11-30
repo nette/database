@@ -48,7 +48,7 @@ class StructureSchemasTestCase extends TestCase
 		parent::setUp();
 		$this->driver = Mockery::mock(Nette\Database\Driver::class);
 		$this->connection = Mockery::mock(Nette\Database\Connection::class);
-		$this->storage = Mockery::mock(Nette\Caching\IStorage::class);
+		$this->storage = Mockery::mock(Nette\Caching\Storage::class);
 
 		$this->connection->shouldReceive('getDsn')->once()->andReturn('');
 		$this->connection->shouldReceive('getDriver')->once()->andReturn($this->driver);

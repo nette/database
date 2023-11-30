@@ -32,7 +32,7 @@ class Structure implements IStructure
 	protected $isRebuilt = false;
 
 
-	public function __construct(Connection $connection, Nette\Caching\IStorage $cacheStorage)
+	public function __construct(Connection $connection, Nette\Caching\Storage $cacheStorage)
 	{
 		$this->connection = $connection;
 		$this->cache = new Nette\Caching\Cache($cacheStorage, 'Nette.Database.Structure.' . md5($this->connection->getDsn()));

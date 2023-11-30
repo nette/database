@@ -191,10 +191,11 @@ class MySqlDriver implements Nette\Database\Driver
 		for ($col = 0; $col < $count; $col++) {
 			$meta = $statement->getColumnMeta($col);
 			if (isset($meta['native_type'])) {
-				$types[$meta['name']] = $type = Nette\Database\Helpers::detectType($meta['native_type']);
-				if ($type === Nette\Database\IStructure::FIELD_TIME) {
-					$types[$meta['name']] = Nette\Database\IStructure::FIELD_TIME_INTERVAL;
-				}
+				$types[$meta['name']] = match (true) {
+					$meta['native_type'] === 'NEWDECIMAL' && $meta['precision'] === 0 => Nette\Database\IStructure::FIELD_INTEGER,
+					$meta['native_type'] === 'TIME' => Nette\Database\IStructure::FIELD_TIME_INTERVAL,
+					default => Nette\Database\Helpers::detectType($meta['native_type']),
+				};
 			}
 		}
 

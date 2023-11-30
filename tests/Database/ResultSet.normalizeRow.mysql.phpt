@@ -25,7 +25,7 @@ Assert::equal([
 	'mediumint' => 1,
 	'bigint' => 1,
 	'bit' => PHP_VERSION_ID < 80100 ? '1' : 1,
-	'decimal' => 1.0,
+	'decimal' => 1,
 	'decimal2' => 1.1,
 	'float' => 1.0,
 	'double' => 1.1,
@@ -58,7 +58,7 @@ Assert::equal([
 	'mediumint' => 0,
 	'bigint' => 0,
 	'bit' => PHP_VERSION_ID < 80100 ? '0' : 0,
-	'decimal' => 0.0,
+	'decimal' => 0,
 	'decimal2' => 0.5,
 	'float' => 0.5,
 	'double' => 0.5,
@@ -136,7 +136,7 @@ Assert::equal([
 
 $res = $connection->query('SELECT SUM(`int`) AS int_sum, AVG(`int`) AS int_avg, SUM(`double`) AS float_sum, AVG(`double`) AS float_avg FROM types WHERE `int` = 1 GROUP BY `int`');
 Assert::equal([
-	'int_sum' => 1.0,
+	'int_sum' => 1,
 	'int_avg' => 1.0,
 	'float_sum' => 1.1,
 	'float_avg' => 1.1,
@@ -147,7 +147,7 @@ $connection->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $res = $connection->query('SELECT `int`, `decimal`, `decimal2`, `float`, `double` FROM types');
 Assert::equal([
 	'int' => 1,
-	'decimal' => 1.0,
+	'decimal' => 1,
 	'decimal2' => 1.1,
 	'float' => 1.0,
 	'double' => 1.1,

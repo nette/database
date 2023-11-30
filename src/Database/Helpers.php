@@ -225,7 +225,9 @@ class Helpers
 				|| $type === IStructure::FIELD_DATE
 				|| $type === IStructure::FIELD_TIME
 			) {
-				$row[$key] = new Nette\Utils\DateTime($value);
+				$row[$key] = str_starts_with($value, '0000-00')
+					? null
+					: new Nette\Utils\DateTime($value);
 
 			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?$#D', $value, $m);

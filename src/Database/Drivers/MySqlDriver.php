@@ -144,7 +144,7 @@ class MySqlDriver implements Nette\Database\Driver
 				'default' => $row['default'],
 				'autoincrement' => $row['extra'] === 'auto_increment',
 				'primary' => $row['key'] === 'PRI',
-				'vendor' => (array) $row,
+				'vendor' => $row,
 			];
 		}
 

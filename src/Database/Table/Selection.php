@@ -272,7 +272,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Adds select clause, more calls appends to the end.
-	 * @param  string|string[]  $columns  for example "column, MD5(column) AS column_md5"
+	 * @param  string  $columns  for example "column, MD5(column) AS column_md5"
 	 * @return static
 	 */
 	public function select($columns, ...$params)
@@ -486,7 +486,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		if ($groupFunction && $selection->getSqlBuilder()->importGroupConditions($this->getSqlBuilder())) {
 			$selection->select("$function AS aggregate");
 			$query = "SELECT $groupFunction(aggregate) AS groupaggregate FROM (" . $selection->getSql() . ') AS aggregates';
-			return $this->context->query($query, ...$selection->getSqlBuilder()->getParameters())->fetch()->groupaggregate;
+			return $this->explorer->query($query, ...$selection->getSqlBuilder()->getParameters())->fetch()->groupaggregate;
 		} else {
 			$selection->select($function);
 			foreach ($selection->fetch() as $val) {
@@ -497,8 +497,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Counts number of rows.
-	 * @param  string  $column  if it is not provided returns count of result rows, otherwise runs new sql counting query
+	 * Counts number of rows. If column is not provided returns count of result rows, otherwise runs new sql counting query.
 	 */
 	public function count(?string $column = null): int
 	{
@@ -612,7 +611,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	}
 
 
-	protected function emptyResultSet(bool $clearCache = true, bool $deleteRererencedCache = true): void
+	protected function emptyResultSet(bool $clearCache = true, bool $deleteReferencedCache = true): void
 	{
 		if ($this->rows !== null && $clearCache) {
 			$this->saveCacheState();
@@ -628,7 +627,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		$this->rows = &$null;
 		$this->specificCacheKey = null;
 		$this->refCache['referencingPrototype'] = [];
-		if ($deleteRererencedCache) {
+		if ($deleteReferencedCache) {
 			$this->refCache['referenced'] = [];
 		}
 	}
@@ -807,7 +806,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Inserts row in a table.
-	 * @param  array|\Traversable|Selection  $data  [$column => $value]|\Traversable|Selection for INSERT ... SELECT
+	 * @param  iterable|Selection  $data  [$column => $value]|\Traversable|Selection for INSERT ... SELECT
 	 * @return ActiveRow|int|bool Returns ActiveRow or number of affected rows for Selection or table without primary key
 	 */
 	public function insert(iterable $data)

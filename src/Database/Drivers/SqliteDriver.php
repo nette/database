@@ -176,7 +176,7 @@ class SqliteDriver implements Nette\Database\Driver
 
 		$columns = $this->getColumns($table);
 		foreach ($indexes as $index => $values) {
-			$column = $indexes[$index]['columns'][0];
+			$column = $values['columns'][0];
 			foreach ($columns as $info) {
 				if ($column === $info['name']) {
 					$indexes[$index]['primary'] = (bool) $info['primary'];

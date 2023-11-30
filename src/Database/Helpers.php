@@ -219,7 +219,7 @@ class Helpers
 				$row[$key] = (float) $value;
 
 			} elseif ($type === IStructure::FIELD_BOOL) {
-				$row[$key] = ((bool) $value) && $value !== 'f' && $value !== 'F';
+				$row[$key] = $value && $value !== 'f' && $value !== 'F';
 
 			} elseif (
 				$type === IStructure::FIELD_DATETIME
@@ -245,7 +245,7 @@ class Helpers
 
 	/**
 	 * Import SQL dump from file - extremely fast.
-	 * @param  array<callable(int, ?float): void>  $onProgress
+	 * @param  ?array<callable(int, ?float): void>  $onProgress
 	 * @return int  count of commands
 	 */
 	public static function loadFromFile(Connection $connection, string $file, ?callable $onProgress = null): int

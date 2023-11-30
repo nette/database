@@ -51,7 +51,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 	}
 
 
-	public function loadConfiguration()
+	public function loadConfiguration(): void
 	{
 		$autowired = true;
 		foreach ($this->config as $name => $config) {
@@ -62,7 +62,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 	}
 
 
-	public function beforeCompile()
+	public function beforeCompile(): void
 	{
 		$builder = $this->getContainerBuilder();
 

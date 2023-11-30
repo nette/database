@@ -269,7 +269,7 @@ class SqlPreprocessor
 				return implode(', ', $vx);
 
 			} elseif ($mode === self::ModeList) { // value, value, ...  |  (tuple), (tuple), ...
-				foreach ($value as $k => $v) {
+				foreach ($value as $v) {
 					$vx[] = is_array($v)
 						? '(' . $this->formatValue($v, self::ModeList) . ')'
 						: $this->formatValue($v);

@@ -346,9 +346,7 @@ class SqlBuilder
 		while (count($params)) {
 			$arg = array_shift($params);
 			preg_match('#(?:.*?\?.*?){' . $placeholderNum . '}(((?:&|\||^|~|\+|-|\*|/|%|\(|,|<|>|=|(?<=\W|^)(?:REGEXP|ALL|AND|ANY|BETWEEN|EXISTS|IN|[IR]?LIKE|OR|NOT|SOME|INTERVAL))\s*)?(?:\(\?\)|\?))#s', $condition, $match, PREG_OFFSET_CAPTURE);
-			$hasOperator = ($match[1][0] === '?' && $match[1][1] === 0)
-				? true
-				: !empty($match[2][0]);
+			$hasOperator = ($match[1][0] === '?' && $match[1][1] === 0) || !empty($match[2][0]);
 
 			if ($arg === null) {
 				$replace = 'IS NULL';
@@ -554,7 +552,7 @@ class SqlBuilder
 	protected function parseJoinConditions(&$joins, $joinConditions): array
 	{
 		$tableJoins = $leftJoinDependency = $finalJoinConditions = [];
-		foreach ($joinConditions as $tableChain => &$joinCondition) {
+		foreach ($joinConditions as $tableChain => $joinCondition) {
 			$fooQuery = $tableChain . '.foo';
 			$requiredJoins = [];
 			$this->parseJoins($requiredJoins, $fooQuery);

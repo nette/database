@@ -66,7 +66,7 @@ class ResultSet implements \Iterator, IRowContainer
 		try {
 			if (substr($queryString, 0, 2) === '::') {
 				$connection->getPdo()->{substr($queryString, 2)}();
-			} elseif ($queryString !== null) {
+			} else {
 				$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 				$this->pdoStatement = $connection->getPdo()->prepare($queryString);
 				foreach ($params as $key => $value) {
@@ -218,7 +218,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 		} elseif ($this->lastRow === null && count($data) !== $this->pdoStatement->columnCount()) {
 			$duplicates = Helpers::findDuplicates($this->pdoStatement);
-			trigger_error("Found duplicate columns in database result set: $duplicates.", E_USER_NOTICE);
+			trigger_error("Found duplicate columns in database result set: $duplicates.");
 		}
 
 		$row = new Row;

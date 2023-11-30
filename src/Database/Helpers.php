@@ -220,14 +220,13 @@ class Helpers
 			} elseif ($type === IStructure::FIELD_BOOL) {
 				$row[$key] = $value && $value !== 'f' && $value !== 'F';
 
-			} elseif (
-				$type === IStructure::FIELD_DATETIME
-				|| $type === IStructure::FIELD_DATE
-				|| $type === IStructure::FIELD_TIME
-			) {
+			} elseif ($type === IStructure::FIELD_DATETIME || $type === IStructure::FIELD_DATE) {
 				$row[$key] = str_starts_with($value, '0000-00')
 					? null
 					: new Nette\Utils\DateTime($value);
+
+			} elseif ($type === IStructure::FIELD_TIME) {
+				$row[$key] = (new Nette\Utils\DateTime($value))->setDate(1, 1, 1);
 
 			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?$#D', $value, $m);

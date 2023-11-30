@@ -99,7 +99,7 @@ class SqlsrvDriver extends PdoDriver
 	public function getTables(): array
 	{
 		$tables = [];
-		foreach ($this->connection->query(<<<'X'
+		foreach ($this->pdo->query(<<<'X'
 			SELECT
 				name,
 				CASE type
@@ -112,8 +112,8 @@ class SqlsrvDriver extends PdoDriver
 				type IN ('U', 'V')
 			X) as $row) {
 			$tables[] = [
-				'name' => $row->name,
-				'view' => (bool) $row->view,
+				'name' => $row['name'],
+				'view' => (bool) $row['view'],
 			];
 		}
 
@@ -124,7 +124,7 @@ class SqlsrvDriver extends PdoDriver
 	public function getColumns(string $table): array
 	{
 		$columns = [];
-		foreach ($this->connection->query(<<<X
+		foreach ($this->pdo->query(<<<X
 			SELECT
 				c.name AS name,
 				o.name AS [table],
@@ -146,9 +146,8 @@ class SqlsrvDriver extends PdoDriver
 				LEFT JOIN sys.index_columns i ON k.parent_object_id = i.object_id AND i.index_id = k.unique_index_id AND i.column_id = c.column_id
 			WHERE
 				o.type IN ('U', 'V')
-				AND o.name = {$this->connection->quote($table)}
-			X) as $row) {
-			$row = (array) $row;
+				AND o.name = {$this->pdo->quote($table)}
+			X, \PDO::FETCH_ASSOC) as $row) {
 			$row['type'] = Nette\Database\Helpers::detectType($row['type']);
 			$row['vendor'] = $row;
 			$row['nullable'] = (bool) $row['nullable'];
@@ -165,7 +164,7 @@ class SqlsrvDriver extends PdoDriver
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
-		foreach ($this->connection->query(<<<X
+		foreach ($this->pdo->query(<<<X
 			SELECT
 				i.name AS name,
 				CASE WHEN i.is_unique = 1 OR i.is_unique_constraint = 1
@@ -180,7 +179,7 @@ class SqlsrvDriver extends PdoDriver
 				JOIN sys.columns c ON ic.object_id = c.object_id AND ic.column_id = c.column_id
 				JOIN sys.tables t ON i.object_id = t.object_id
 			WHERE
-				t.name = {$this->connection->quote($table)}
+				t.name = {$this->pdo->quote($table)}
 			ORDER BY
 				i.index_id,
 				ic.index_column_id
@@ -200,7 +199,7 @@ class SqlsrvDriver extends PdoDriver
 	{
 		// Does't work with multicolumn foreign keys
 		$keys = [];
-		foreach ($this->connection->query(<<<X
+		foreach ($this->pdo->query(<<<X
 			SELECT
 				fk.name AS name,
 				cl.name AS local,
@@ -214,9 +213,9 @@ class SqlsrvDriver extends PdoDriver
 				JOIN sys.tables tf ON fkc.referenced_object_id = tf.object_id
 				JOIN sys.columns cf ON fkc.referenced_object_id = cf.object_id AND fkc.referenced_column_id = cf.column_id
 			WHERE
-				tl.name = {$this->connection->quote($table)}
-			X) as $row) {
-			$keys[$row->name] = (array) $row;
+				tl.name = {$this->pdo->quote($table)}
+			X, \PDO::FETCH_ASSOC) as $row) {
+			$keys[$row['name']] = $row;
 		}
 
 		return array_values($keys);

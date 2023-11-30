@@ -6,7 +6,6 @@
 
 declare(strict_types=1);
 
-use Mockery\MockInterface;
 use Nette\Database\Structure;
 use Tester\Assert;
 use Tester\TestCase;
@@ -18,7 +17,7 @@ class StructureMock extends Structure
 {
 	protected function needStructure(): void
 	{
-		if (!$this->structure) {
+		if (!isset($this->structure)) {
 			$this->structure = $this->loadStructure();
 		}
 	}
@@ -30,17 +29,10 @@ class StructureMock extends Structure
  */
 class StructureTestCase extends TestCase
 {
-	/** @var MockInterface */
-	private $connection;
-
-	/** @var MockInterface */
-	private $driver;
-
-	/** @var MockInterface */
-	private $storage;
-
-	/** @var Structure */
-	private $structure;
+	private Nette\Database\Connection $connection;
+	private Nette\Database\Driver $driver;
+	private Nette\Caching\Storage $storage;
+	private Structure $structure;
 
 
 	protected function setUp()

@@ -20,35 +20,20 @@ class ResultSet implements \Iterator, IRowContainer
 {
 	use Nette\SmartObject;
 
-	/** @var Connection */
-	private $connection;
-
-	/** @var \PDOStatement|null */
-	private $pdoStatement;
+	private Connection $connection;
+	private ?\PDOStatement $pdoStatement = null;
 
 	/** @var callable(array, ResultSet): array */
 	private $normalizer;
-
-	/** @var Row|false|null */
-	private $lastRow;
-
-	/** @var int */
-	private $lastRowKey = -1;
+	private Row|false|null $lastRow = null;
+	private int $lastRowKey = -1;
 
 	/** @var Row[] */
-	private $rows;
-
-	/** @var float */
-	private $time;
-
-	/** @var string */
-	private $queryString;
-
-	/** @var array */
-	private $params;
-
-	/** @var array */
-	private $types;
+	private array $rows;
+	private float $time;
+	private string $queryString;
+	private array $params;
+	private array $types;
 
 
 	public function __construct(

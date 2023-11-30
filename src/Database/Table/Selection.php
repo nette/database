@@ -22,65 +22,48 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 {
 	use Nette\SmartObject;
 
-	/** @var Explorer */
-	protected $explorer;
+	protected Explorer $explorer;
 
-	/** @var Explorer  back compatibility */
-	protected $context;
+	/** back compatibility */
+	protected Explorer $context;
+	protected Conventions $conventions;
+	protected ?Nette\Caching\Cache $cache;
+	protected SqlBuilder $sqlBuilder;
 
-	/** @var Conventions */
-	protected $conventions;
-
-	/** @var Nette\Caching\Cache */
-	protected $cache;
-
-	/** @var SqlBuilder */
-	protected $sqlBuilder;
-
-	/** @var string table name */
-	protected $name;
+	/** table name */
+	protected string $name;
 
 	/** @var string|string[]|null primary key field name */
-	protected $primary;
+	protected string|array|null $primary;
 
-	/** @var string|bool primary column sequence name, false for autodetection */
-	protected $primarySequence = false;
+	/** primary column sequence name, false for autodetection */
+	protected string|bool|null $primarySequence = false;
 
-	/** @var ActiveRow[] data read from database in [primary key => ActiveRow] format */
-	protected $rows;
+	/** @var ActiveRow[]|null data read from database in [primary key => ActiveRow] format */
+	protected ?array $rows = null;
 
-	/** @var ActiveRow[] modifiable data in [primary key => ActiveRow] format */
-	protected $data;
+	/** @var ActiveRow[]|null modifiable data in [primary key => ActiveRow] format */
+	protected ?array $data = null;
 
-	/** @var bool */
-	protected $dataRefreshed = false;
+	protected bool $dataRefreshed = false;
 
-	/** @var mixed cache array of Selection and GroupedSelection prototypes */
-	protected $globalRefCache;
+	/** cache array of Selection and GroupedSelection prototypes */
+	protected mixed $globalRefCache;
 
-	/** @var mixed */
-	protected $refCache;
+	protected mixed $refCache;
+	protected ?string $generalCacheKey = null;
+	protected ?string $specificCacheKey = null;
 
-	/** @var string|null */
-	protected $generalCacheKey;
+	/** of [conditions => [key => ActiveRow]]; used by GroupedSelection */
+	protected array $aggregation = [];
+	protected array|false|null $accessedColumns = null;
+	protected array|false|null $previousAccessedColumns = null;
 
-	/** @var string|null */
-	protected $specificCacheKey;
+	/** should instance observe accessed columns caching */
+	protected ?self $observeCache = null;
 
-	/** @var array of [conditions => [key => ActiveRow]]; used by GroupedSelection */
-	protected $aggregation = [];
-
-	/** @var array|false|null of touched columns */
-	protected $accessedColumns;
-
-	/** @var array|false|null of earlier touched columns */
-	protected $previousAccessedColumns;
-
-	/** @var self|null should instance observe accessed columns caching */
-	protected $observeCache;
-
-	/** @var array of primary key values */
-	protected $keys = [];
+	/** of primary key values */
+	protected array $keys = [];
 
 
 	/**

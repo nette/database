@@ -19,11 +19,8 @@ class OciDriver implements Nette\Database\Driver
 {
 	use Nette\SmartObject;
 
-	/** @var Nette\Database\Connection */
-	private $connection;
-
-	/** @var string  Datetime format */
-	private $fmtDateTime;
+	private Nette\Database\Connection $connection;
+	private string $fmtDateTime;
 
 
 	public function initialize(Nette\Database\Connection $connection, array $options): void

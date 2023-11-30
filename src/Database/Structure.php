@@ -19,17 +19,10 @@ class Structure implements IStructure
 {
 	use Nette\SmartObject;
 
-	/** @var Connection */
-	protected $connection;
-
-	/** @var Nette\Caching\Cache */
-	protected $cache;
-
-	/** @var array */
-	protected $structure;
-
-	/** @var bool */
-	protected $isRebuilt = false;
+	protected Connection $connection;
+	protected Nette\Caching\Cache $cache;
+	protected array $structure;
+	protected bool $isRebuilt = false;
 
 
 	public function __construct(Connection $connection, Nette\Caching\Storage $cacheStorage)
@@ -174,7 +167,7 @@ class Structure implements IStructure
 
 	protected function needStructure(): void
 	{
-		if ($this->structure !== null) {
+		if (isset($this->structure)) {
 			return;
 		}
 

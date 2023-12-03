@@ -25,9 +25,6 @@ class Connection
 
 	/** @var array<callable(self, ResultSet|DriverException): void>  Occurs after query is executed */
 	public array $onQuery = [];
-
-	private array $params;
-	private array $options;
 	private Driver $driver;
 	private SqlPreprocessor $preprocessor;
 	private ?PDO $pdo = null;
@@ -39,16 +36,13 @@ class Connection
 
 
 	public function __construct(
-		string $dsn,
+		private string $dsn,
 		#[\SensitiveParameter]
-		?string $user = null,
+		private ?string $user = null,
 		#[\SensitiveParameter]
-		?string $password = null,
-		?array $options = null,
+		private ?string $password = null,
+		private array $options = [],
 	) {
-		$this->params = [$dsn, $user, $password];
-		$this->options = (array) $options;
-
 		if (empty($options['lazy'])) {
 			$this->connect();
 		}
@@ -62,7 +56,7 @@ class Connection
 		}
 
 		try {
-			$this->pdo = new PDO($this->params[0], $this->params[1], $this->params[2], $this->options);
+			$this->pdo = new PDO($this->dsn, $this->user, $this->password, $this->options);
 			$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $e) {
 			throw ConnectionException::from($e);
@@ -93,7 +87,7 @@ class Connection
 
 	public function getDsn(): string
 	{
-		return $this->params[0];
+		return $this->dsn;
 	}
 
 

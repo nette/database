@@ -32,7 +32,6 @@ class MySqlDriver extends PdoDriver
 	public const ERROR_DATA_TRUNCATED = self::ErrorDataTruncated;
 
 
-	private Nette\Database\Connection $connection;
 	private bool $supportBooleans;
 
 
@@ -42,17 +41,23 @@ class MySqlDriver extends PdoDriver
 	 *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
 	 *   - supportBooleans => converts INT(1) to boolean
 	 */
-	public function initialize(Nette\Database\Connection $connection, array $options): void
+	public function connect(
+		string $dsn,
+		?string $user = null,
+		#[\SensitiveParameter]
+		?string $password = null,
+		?array $options = null,
+	): void
 	{
-		$this->connection = $connection;
+		parent::connect($dsn, $user, $password, $options);
 		$charset = $options['charset']
-			?? (version_compare($connection->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION), '5.5.3', '>=') ? 'utf8mb4' : 'utf8');
+			?? (version_compare($this->pdo->getAttribute(\PDO::ATTR_SERVER_VERSION), '5.5.3', '>=') ? 'utf8mb4' : 'utf8');
 		if ($charset) {
-			$connection->query('SET NAMES ?', $charset);
+			$this->pdo->query('SET NAMES ' . $this->pdo->quote($charset));
 		}
 
 		if (isset($options['sqlmode'])) {
-			$connection->query('SET sql_mode=?', $options['sqlmode']);
+			$this->pdo->query('SET sql_mode=' . $this->pdo->quote($options['sqlmode']));
 		}
 
 		$this->supportBooleans = (bool) ($options['supportBooleans'] ?? false);

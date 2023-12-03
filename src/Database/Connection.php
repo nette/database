@@ -25,9 +25,8 @@ class Connection
 
 	/** @var array<callable(self, ResultSet|DriverException): void>  Occurs after query is executed */
 	public array $onQuery = [];
-	private Driver $driver;
+	private ?Driver $driver = null;
 	private SqlPreprocessor $preprocessor;
-	private ?PDO $pdo = null;
 
 	/** @var callable(array, ResultSet): array */
 	private $rowNormalizer;
@@ -53,23 +52,21 @@ class Connection
 
 	public function connect(): void
 	{
-		if ($this->pdo) {
+		if ($this->driver) {
 			return;
 		}
 
-		try {
-			$this->pdo = new PDO($this->dsn, $this->user, $this->password, $this->options);
-			$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-		} catch (PDOException $e) {
-			throw ConnectionException::from($e);
+		$dsn = explode(':', $this->dsn)[0];
+		$class = empty($this->options['driverClass'])
+			? 'Nette\Database\Drivers\\' . ucfirst(str_replace('sql', 'Sql', $dsn)) . 'Driver'
+			: $this->options['driverClass'];
+		if (!class_exists($class)) {
+			throw new ConnectionException("Invalid data source '$dsn'.");
 		}
 
-		$class = empty($this->options['driverClass'])
-			? 'Nette\Database\Drivers\\' . ucfirst(str_replace('sql', 'Sql', $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) . 'Driver'
-			: $this->options['driverClass'];
 		$this->driver = new $class;
+		$this->driver->connect($this->dsn, $this->user, $this->password, $this->options);
 		$this->preprocessor = new SqlPreprocessor($this);
-		$this->driver->initialize($this, $this->options);
 		Arrays::invoke($this->onConnect, $this);
 	}
 
@@ -83,7 +80,7 @@ class Connection
 
 	public function disconnect(): void
 	{
-		$this->pdo = null;
+		$this->driver = null;
 	}
 
 
@@ -93,10 +90,11 @@ class Connection
 	}
 
 
+	/** deprecated use getDriver()->getPdo() */
 	public function getPdo(): PDO
 	{
 		$this->connect();
-		return $this->pdo;
+		return $this->driver->getPdo();
 	}
 
 

@@ -202,7 +202,11 @@ class Helpers
 
 
 	/** @internal */
-	public static function normalizeRow(array $row, ResultSet $resultSet): array
+	public static function normalizeRow(
+		array $row,
+		ResultSet $resultSet,
+		$dateTimeClass = Nette\Utils\DateTime::class,
+	): array
 	{
 		foreach ($resultSet->getColumnTypes() as $key => $type) {
 			$value = $row[$key];
@@ -224,10 +228,10 @@ class Helpers
 			} elseif ($type === IStructure::FIELD_DATETIME || $type === IStructure::FIELD_DATE) {
 				$row[$key] = str_starts_with($value, '0000-00')
 					? null
-					: new Nette\Utils\DateTime($value);
+					: new $dateTimeClass($value);
 
 			} elseif ($type === IStructure::FIELD_TIME) {
-				$row[$key] = (new Nette\Utils\DateTime($value))->setDate(1, 1, 1);
+				$row[$key] = (new $dateTimeClass($value))->setDate(1, 1, 1);
 
 			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?$#D', $value, $m);
@@ -236,7 +240,7 @@ class Helpers
 				$row[$key]->invert = (int) (bool) $m[1];
 
 			} elseif ($type === IStructure::FIELD_UNIX_TIMESTAMP) {
-				$row[$key] = Nette\Utils\DateTime::from($value);
+				$row[$key] = (new $dateTimeClass)->setTimestamp($value);
 			}
 		}
 

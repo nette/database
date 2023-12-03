@@ -9,8 +9,6 @@ declare(strict_types=1);
 
 namespace Nette\Database;
 
-use Nette;
-
 
 /**
  * Normalizes fields in row.
@@ -114,10 +112,10 @@ final class RowNormalizer
 			case IStructure::FIELD_DATE:
 				return str_starts_with($value, '0000-00')
 					? null
-					: new Nette\Utils\DateTime($value);
+					: new DateTime($value);
 
 			case IStructure::FIELD_TIME:
-				return (new Nette\Utils\DateTime($value))->setDate(1, 1, 1);
+				return (new DateTime($value))->setDate(1, 1, 1);
 
 			case IStructure::FIELD_TIME_INTERVAL:
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?$#D', $value, $m);
@@ -127,7 +125,7 @@ final class RowNormalizer
 				return $di;
 
 			case IStructure::FIELD_UNIX_TIMESTAMP:
-				return Nette\Utils\DateTime::from($value);
+				return new DateTime($value);
 
 			default:
 				return $value;

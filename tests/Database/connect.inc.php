@@ -11,14 +11,14 @@ require __DIR__ . '/../bootstrap.php';
 
 $options = Tester\Environment::loadData() + ['user' => null, 'password' => null];
 
+if (strpos($options['dsn'], 'sqlite::memory:') === false) {
+	Tester\Environment::lock($options['dsn'], getTempDir());
+}
+
 try {
 	$connection = new Nette\Database\Connection($options['dsn'], $options['user'], $options['password']);
 } catch (PDOException $e) {
 	Tester\Environment::skip("Connection to '$options[dsn]' failed. Reason: " . $e->getMessage());
-}
-
-if (strpos($options['dsn'], 'sqlite::memory:') === false) {
-	Tester\Environment::lock($options['dsn'], getTempDir());
 }
 
 $driverName = $connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME);

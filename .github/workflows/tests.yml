@@ -104,21 +104,12 @@ jobs:
               run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE nette_test'
 
             - run: composer install --no-progress --prefer-dist
-            - run: vendor/bin/tester -p phpdbg tests -s -C --coverage ./coverage.xml --coverage-src ./src
+            - run: vendor/bin/tester tests -s -C
             - if: failure()
               uses: actions/upload-artifact@v3
               with:
                   name: output
                   path: tests/**/output
-
-
-            - name: Save Code Coverage
-              if: ${{ matrix.php == '8.0' }}
-              env:
-                  COVERALLS_REPO_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  wget https://github.com/php-coveralls/php-coveralls/releases/download/v2.4.3/php-coveralls.phar
-                  php php-coveralls.phar --verbose --config tests/.coveralls.yml
 
 
     lowest_dependencies:

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @dataProvider? ../databases.ini
+ * @dataProvider? ../../databases.ini
  */
 
 declare(strict_types=1);

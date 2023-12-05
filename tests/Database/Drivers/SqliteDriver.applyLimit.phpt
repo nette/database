@@ -7,7 +7,7 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 
-$driver = new Nette\Database\Drivers\SqliteDriver(new Nette\Database\Connection('', '', '', ['lazy' => true]), []);
+$driver = new Nette\Database\Drivers\SqliteDriver;
 
 $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, 10, 20);

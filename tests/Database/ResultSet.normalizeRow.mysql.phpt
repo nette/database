@@ -134,10 +134,17 @@ Assert::equal([
 ], (array) $res->fetch());
 
 
+$res = $connection->query('SELECT SUM(`int`) AS int_sum, AVG(`int`) AS int_avg, SUM(`double`) AS float_sum, AVG(`double`) AS float_avg FROM types WHERE `int` = 1 GROUP BY `int`');
+Assert::equal([
+	'int_sum' => 1.0,
+	'int_avg' => 1.0,
+	'float_sum' => 1.1,
+	'float_avg' => 1.1,
+], (array) $res->fetch());
+
+
 $connection->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-
 $res = $connection->query('SELECT `int`, `decimal`, `decimal2`, `float`, `double` FROM types');
-
 Assert::equal([
 	'int' => 1,
 	'decimal' => 1.0,

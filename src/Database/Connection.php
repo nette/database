@@ -116,6 +116,12 @@ class Connection
 	}
 
 
+	public function getReflection(): Reflection
+	{
+		return new Reflection($this->getDriver());
+	}
+
+
 	public function setRowNormalizer(?callable $normalizer): static
 	{
 		$this->rowNormalizer = $normalizer;

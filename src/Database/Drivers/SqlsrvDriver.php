@@ -198,7 +198,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 				fk.name AS name,
 				cl.name AS local,
 				tf.name AS [table],
-				cf.name AS [column]
+				cf.name AS [foreign]
 			FROM
 				sys.foreign_keys fk
 				JOIN sys.foreign_key_columns fkc ON fk.object_id = fkc.constraint_object_id

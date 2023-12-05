@@ -66,7 +66,7 @@ class GroupedSelection extends Selection
 	/**
 	 * @return static
 	 */
-	public function select($columns, ...$params)
+	public function select(string $columns, ...$params)
 	{
 		if (!$this->sqlBuilder->getSelect()) {
 			$this->sqlBuilder->addSelect("$this->name.$this->column");

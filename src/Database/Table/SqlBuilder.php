@@ -276,12 +276,8 @@ class SqlBuilder
 	/********************* SQL selectors ****************d*g**/
 
 
-	public function addSelect($columns, ...$params): void
+	public function addSelect(string $columns, ...$params): void
 	{
-		if (is_array($columns)) {
-			throw new Nette\InvalidArgumentException('Select column must be a string.');
-		}
-
 		$this->select[] = $columns;
 		$this->parameters['select'] = array_merge($this->parameters['select'], $params);
 	}
@@ -323,7 +319,7 @@ class SqlBuilder
 			return $this->addConditionComposition($condition, $params[0], $conditions, $conditionsParameters);
 		}
 
-		$hash = $this->getConditionHash($condition, $params);
+		$hash = $this->getConditionHash(is_string($condition) ? $condition : '', $params);
 		if (isset($this->conditions[$hash])) {
 			return false;
 		}
@@ -373,7 +369,7 @@ class SqlBuilder
 					if (!$clone->getSqlBuilder()->select) {
 						try {
 							$clone->select($clone->getPrimary());
-						} catch (\LogicException $e) {
+						} catch (\LogicException | \TypeError $e) {
 							throw new Nette\InvalidArgumentException('Selection argument must have defined a select column.', 0, $e);
 						}
 					}
@@ -527,7 +523,7 @@ class SqlBuilder
 	}
 
 
-	public function setHaving($having, ...$params): void
+	public function setHaving(string $having, ...$params): void
 	{
 		$this->having = $having;
 		$this->parameters['having'] = $params;
@@ -549,7 +545,7 @@ class SqlBuilder
 	}
 
 
-	protected function parseJoinConditions(&$joins, $joinConditions): array
+	protected function parseJoinConditions(array &$joins, array $joinConditions): array
 	{
 		$tableJoins = $leftJoinDependency = $finalJoinConditions = [];
 		foreach ($joinConditions as $tableChain => $joinCondition) {
@@ -585,7 +581,12 @@ class SqlBuilder
 	}
 
 
-	protected function getSortedJoins(string $table, &$leftJoinDependency, &$tableJoins, &$finalJoins): void
+	protected function getSortedJoins(
+		string $table,
+		array &$leftJoinDependency,
+		array &$tableJoins,
+		array &$finalJoins
+	): void
 	{
 		if (isset($this->expandingJoins[$table])) {
 			$path = implode("' => '", array_map(function (string $value): string { return $this->reservedTableNames[$value]; }, array_merge(array_keys($this->expandingJoins), [$table])));
@@ -630,7 +631,7 @@ class SqlBuilder
 	}
 
 
-	protected function parseJoins(&$joins, &$query): void
+	protected function parseJoins(array &$joins, string &$query): void
 	{
 		$query = preg_replace_callback($this->getColumnChainsRegxp(), function (array $match) use (&$joins): string {
 			return $this->parseJoinsCb($joins, $match);
@@ -646,7 +647,7 @@ class SqlBuilder
 	}
 
 
-	public function parseJoinsCb(&$joins, $match): string
+	public function parseJoinsCb(array &$joins, array $match): string
 	{
 		$chain = $match['chain'];
 		if (!empty($chain[0]) && ($chain[0] !== '.' && $chain[0] !== ':')) {
@@ -843,7 +844,7 @@ class SqlBuilder
 	}
 
 
-	private function getConditionHash($condition, array $parameters): string
+	private function getConditionHash(string $condition, array $parameters): string
 	{
 		foreach ($parameters as $key => &$parameter) {
 			if ($parameter instanceof Selection) {
@@ -853,7 +854,7 @@ class SqlBuilder
 			} elseif (is_object($parameter) && method_exists($parameter, '__toString')) {
 				$parameter = $parameter->__toString();
 			} elseif (is_array($parameter) || $parameter instanceof \ArrayAccess) {
-				$parameter = $this->getConditionHash($key, $parameter);
+				$parameter = $this->getConditionHash((string) $key, $parameter);
 			}
 		}
 

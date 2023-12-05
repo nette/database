@@ -275,7 +275,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * @param  string  $columns  for example "column, MD5(column) AS column_md5"
 	 * @return static
 	 */
-	public function select($columns, ...$params)
+	public function select(string $columns, ...$params)
 	{
 		$this->emptyResultSet();
 		$this->sqlBuilder->addSelect($columns, ...$params);
@@ -337,7 +337,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Adds condition, more calls appends with AND.
 	 * @param  string|string[]  $condition  possibly containing ?
 	 */
-	protected function condition($condition, array $params, $tableChain = null): void
+	protected function condition($condition, array $params, ?string $tableChain = null): void
 	{
 		$this->emptyResultSet();
 		if (is_array($condition) && $params === []) { // where(['column1' => 1, 'column2 > ?' => 2])
@@ -894,9 +894,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	{
 		if ($data instanceof \Traversable) {
 			$data = iterator_to_array($data);
-
-		} elseif (!is_array($data)) {
-			throw new Nette\InvalidArgumentException;
 		}
 
 		if (!$data) {

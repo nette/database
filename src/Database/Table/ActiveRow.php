@@ -260,7 +260,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
-	public function __set($column, $value)
+	public function __set(string $column, $value): void
 	{
 		throw new Nette\DeprecatedException('ActiveRow is read-only; use update() method instead.');
 	}
@@ -288,7 +288,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
-	public function __isset($key)
+	public function __isset(string $key): bool
 	{
 		if ($this->accessColumn($key)) {
 			return isset($this->data[$key]);
@@ -305,7 +305,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
-	public function __unset($key)
+	public function __unset(string $key): void
 	{
 		throw new Nette\DeprecatedException('ActiveRow is read-only.');
 	}
@@ -314,7 +314,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	/**
 	 * @internal
 	 */
-	public function accessColumn($key, bool $selectColumn = true): bool
+	public function accessColumn(?string $key, bool $selectColumn = true): bool
 	{
 		if ($this->table->accessColumn($key, $selectColumn) && !$this->dataRefreshed) {
 			if (!isset($this->table[$this->getSignature()])) {

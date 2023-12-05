@@ -11,14 +11,14 @@ require __DIR__ . '/../bootstrap.php';
 
 $options = Tester\Environment::loadData() + ['user' => null, 'password' => null];
 
+if (strpos($options['dsn'], 'sqlite::memory:') === false) {
+	Tester\Environment::lock($options['dsn'], TEMP_DIR);
+}
+
 try {
 	$connection = new Nette\Database\Connection($options['dsn'], $options['user'], $options['password']);
 } catch (PDOException $e) {
 	Tester\Environment::skip("Connection to '$options[dsn]' failed. Reason: " . $e->getMessage());
-}
-
-if (strpos($options['dsn'], 'sqlite::memory:') === false) {
-	Tester\Environment::lock($options['dsn'], TEMP_DIR);
 }
 
 $driverName = $connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME);
@@ -32,7 +32,7 @@ $context = new Nette\Database\Context($connection, $structure, $conventions, $ca
 /** Replaces [] with driver-specific quotes */
 function reformat($s): string
 {
-	global $driverName;
+	$driverName = $GLOBALS['driverName'];
 	if (is_array($s)) {
 		if (isset($s[$driverName])) {
 			return $s[$driverName];

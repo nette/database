@@ -11,8 +11,7 @@ use Tester\Assert;
 
 require __DIR__ . '/../../connect.inc.php';
 
-$context->query('CREATE DATABASE IF NOT EXISTS nette_test');
-$context->query('USE nette_test');
+
 $context->query('CREATE TABLE `TABLE 30` (id int)');
 
 Assert::same(

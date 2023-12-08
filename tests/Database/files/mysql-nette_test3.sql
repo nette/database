@@ -10,6 +10,7 @@ CREATE TEMPORARY TABLE `types` (
   `tinyint` tinyint(4),
   `mediumint` mediumint(9),
   `bigint` bigint(20),
+  `bool` tinyint(1),
   `bit` bit(1),
   `decimal` decimal(10,0),
   `decimal2` decimal(10,2),
@@ -36,10 +37,10 @@ CREATE TEMPORARY TABLE `types` (
   `set` set('a','b')
 ) ENGINE=InnoDB;
 
-INSERT INTO `types` (`unsigned_int`, `int`, `smallint`, `tinyint`, `mediumint`, `bigint`, `bit`, `decimal`, `decimal2`, `float`, `double`, `date`, `time`, `datetime`, `timestamp`, `year`, `char`, `varchar`, `binary`, `varbinary`, `blob`, `tinyblob`, `mediumblob`, `longblob`, `text`, `tinytext`, `mediumtext`, `longtext`, `enum`, `set`) VALUES
-(1,	1,	1,	1,	1,	1,	1,	1,	1.1,	1,	1.1,	'2012-10-13',	'30:10:10',	'2012-10-13 10:10:10',	'2012-10-13 10:10:10',	'2012',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a'),
-(0,	0,	0,	0,	0,	0,	0,	0,	0.5,	0.5,	0.5,	'0000-00-00',	'00:00:00',	'0000-00-00 00:00:00',	'0000-00-00 00:00:00',	'2000',	'',	'',	'\0',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'b',	''),
-(NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL);
+INSERT INTO `types` (`unsigned_int`, `int`, `smallint`, `tinyint`, `mediumint`, `bigint`, `bool`, `bit`, `decimal`, `decimal2`, `float`, `double`, `date`, `time`, `datetime`, `timestamp`, `year`, `char`, `varchar`, `binary`, `varbinary`, `blob`, `tinyblob`, `mediumblob`, `longblob`, `text`, `tinytext`, `mediumtext`, `longtext`, `enum`, `set`) VALUES
+(1,	1,	1,	1,	1,	1,	1,	1,	1,	1.1,	1,	1.1,	'2012-10-13',	'30:10:10',	'2012-10-13 10:10:10',	'2012-10-13 10:10:10',	'2012',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a',	'a'),
+(0,	0,	0,	0,	0,	0,	0,	0,	0,	0.5,	0.5,	0.5,	'0000-00-00',	'00:00:00',	'0000-00-00 00:00:00',	'0000-00-00 00:00:00',	'2000',	'',	'',	'\0',	'',	'',	'',	'',	'',	'',	'',	'',	'',	'b',	''),
+(NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL,	NULL);
 
 CREATE TEMPORARY TABLE `avgs` (
   `time` time

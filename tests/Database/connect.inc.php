@@ -9,14 +9,14 @@ declare(strict_types=1);
 require __DIR__ . '/../bootstrap.php';
 
 
-$options = Tester\Environment::loadData() + ['user' => null, 'password' => null];
+$options = Tester\Environment::loadData() + ['user' => null, 'password' => null, 'options' => []];
 
 if (!str_contains($options['dsn'], 'sqlite::memory:')) {
 	Tester\Environment::lock($options['dsn'], getTempDir());
 }
 
 try {
-	$connection = new Nette\Database\Connection($options['dsn'], $options['user'], $options['password']);
+	$connection = new Nette\Database\Connection($options['dsn'], $options['user'], $options['password'], $options['options']);
 } catch (PDOException $e) {
 	Tester\Environment::skip("Connection to '$options[dsn]' failed. Reason: " . $e->getMessage());
 }

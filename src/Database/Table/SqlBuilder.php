@@ -799,7 +799,8 @@ class SqlBuilder
 		array $parameters,
 		array &$conditions,
 		array &$conditionsParameters
-	): bool {
+	): bool
+	{
 		if ($this->driver->isSupported(ISupplementalDriver::SUPPORT_MULTI_COLUMN_AS_OR_COND)) {
 			$conditionFragment = '(' . implode(' = ? AND ', $columns) . ' = ?) OR ';
 			$condition = substr(str_repeat($conditionFragment, count($parameters)), 0, -4);

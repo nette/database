@@ -11,6 +11,7 @@ namespace Nette\Bridges\DatabaseDI;
 
 use Nette;
 use Nette\Schema\Expect;
+use Tracy\BlueScreen;
 
 
 /**
@@ -66,7 +67,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		$builder = $this->getContainerBuilder();
 
 		foreach ($this->config as $name => $config) {
-			if ($config->debugger ?? $builder->getByType(\Tracy\BlueScreen::class)) {
+			if ($config->debugger ?? $builder->getByType(BlueScreen::class)) {
 				$connection = $builder->getDefinition($this->prefix("$name.connection"));
 				$connection->addSetup('@Tracy\BlueScreen::addPanel', [
 					[Nette\Bridges\DatabaseTracy\ConnectionPanel::class, 'renderException'],

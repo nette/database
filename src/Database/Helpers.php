@@ -244,7 +244,8 @@ class Helpers
 		$connection,
 		bool $explain = true,
 		string $name = null
-	): Nette\Bridges\DatabaseTracy\ConnectionPanel {
+	): Nette\Bridges\DatabaseTracy\ConnectionPanel
+	{
 		$panel = new Nette\Bridges\DatabaseTracy\ConnectionPanel($connection);
 		$panel->explain = $explain;
 		$panel->name = $name;

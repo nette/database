@@ -354,7 +354,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * More calls appends with AND.
 	 * @param  array  $parameters ['column1' => 1, 'column2 > ?' => 2, 'full condition']
 	 * @return static
-	 * @throws \Nette\InvalidArgumentException
+	 * @throws Nette\InvalidArgumentException
 	 */
 	public function whereOr(array $parameters)
 	{
@@ -841,7 +841,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 				}
 			}
 
-			// Primary without autoincrement, try get primary from inserting data
+		// Primary without autoincrement, try get primary from inserting data
 		} elseif ($this->primary && isset($data[$this->primary])) {
 			$primaryKey = $data[$this->primary];
 

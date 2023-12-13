@@ -16,7 +16,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driv
 $book = $context->table('author')->insert([
 	'name' => $context->literal('LOWER(?)', 'Eddard Stark'),
 	'web' => 'http://example.com',
-	'born' => new \DateTime('2011-11-11'),
+	'born' => new DateTime('2011-11-11'),
 ]);  // INSERT INTO `author` (`name`, `web`) VALUES (LOWER('Eddard Stark'), 'http://example.com', '2011-11-11 00:00:00')
 // id = 14
 

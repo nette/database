@@ -126,7 +126,7 @@ Assert::same([
 
 function isTimestamp($str)
 {
-	return is_string($str) && substr($str, 0, 4) === "\x00\x00\x00\x00";
+	return is_string($str) && str_starts_with($str, "\x00\x00\x00\x00");
 }
 
 

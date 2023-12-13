@@ -15,14 +15,10 @@ namespace Nette\Database;
  */
 class SqlLiteral
 {
-	private string $value;
-	private array $parameters;
-
-
-	public function __construct(string $value, array $parameters = [])
-	{
-		$this->value = $value;
-		$this->parameters = $parameters;
+	public function __construct(
+		private string $value,
+		private array $parameters = [],
+	) {
 	}
 
 

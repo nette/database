@@ -49,7 +49,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 	): ?self
 	{
 		$blueScreen ??= Tracy\Debugger::getBlueScreen();
-		$blueScreen->addPanel([self::class, 'renderException']);
+		$blueScreen->addPanel(self::renderException(...));
 
 		if ($addBarPanel) {
 			$panel = new self($connection, $blueScreen);
@@ -65,7 +65,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 
 	public function __construct(Connection $connection, Tracy\BlueScreen $blueScreen)
 	{
-		$connection->onQuery[] = \Closure::fromCallable([$this, 'logQuery']);
+		$connection->onQuery[] = $this->logQuery(...);
 		$this->blueScreen = $blueScreen;
 	}
 

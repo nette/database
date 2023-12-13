@@ -266,7 +266,7 @@ class Helpers
 			if (!strncasecmp($s, 'DELIMITER ', 10)) {
 				$delimiter = trim(substr($s, 10));
 
-			} elseif (substr($ts = rtrim($s), -strlen($delimiter)) === $delimiter) {
+			} elseif (str_ends_with($ts = rtrim($s), $delimiter)) {
 				$sql .= substr($ts, 0, -strlen($delimiter));
 				$pdo->exec($sql);
 				$sql = '';

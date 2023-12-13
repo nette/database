@@ -18,7 +18,6 @@ use PDO;
  */
 class ResultSet implements \Iterator, IRowContainer
 {
-	private Connection $connection;
 	private ?\PDOStatement $pdoStatement = null;
 
 	/** @var callable(array, ResultSet): array */
@@ -29,26 +28,21 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @var Row[] */
 	private array $rows;
 	private float $time;
-	private string $queryString;
-	private array $params;
 	private array $types;
 
 
 	public function __construct(
-		Connection $connection,
-		string $queryString,
-		array $params,
+		private Connection $connection,
+		private string $queryString,
+		private array $params,
 		?callable $normalizer = null,
 	) {
 		$time = microtime(true);
-		$this->connection = $connection;
-		$this->queryString = $queryString;
-		$this->params = $params;
 		$this->normalizer = $normalizer;
 		$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 
 		try {
-			if (substr($queryString, 0, 2) === '::') {
+			if (str_starts_with($queryString, '::')) {
 				$connection->getPdo()->{substr($queryString, 2)}();
 			} else {
 				$this->pdoStatement = $connection->getPdo()->prepare($queryString);

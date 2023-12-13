@@ -102,7 +102,7 @@ class SqlPreprocessor
 							|--[^\n]*
 						~Dsix
 						X,
-					\Closure::fromCallable([$this, 'callback']),
+					$this->callback(...),
 				);
 			} else {
 				throw new Nette\InvalidArgumentException('There are more parameters than placeholders.');
@@ -186,13 +186,13 @@ class SqlPreprocessor
 				$this->remaining[] = $value->value;
 				return '?';
 
-			} elseif (is_object($value) && method_exists($value, '__toString')) {
+			} elseif ($value instanceof \Stringable) {
 				$this->remaining[] = (string) $value;
 				return '?';
 			}
 		} elseif ($mode === 'name') {
 			if (!is_string($value)) {
-				$type = gettype($value);
+				$type = get_debug_type($value);
 				throw new Nette\InvalidArgumentException("Placeholder ?$mode expects string, $type given.");
 			}
 
@@ -247,7 +247,7 @@ class SqlPreprocessor
 				foreach ($value as $k => $v) {
 					if (is_int($k)) { // value, value, ...
 						$vx[] = $this->formatValue($v);
-					} elseif (substr($k, -1) === '=') { // key+=value, key-=value, ...
+					} elseif (str_ends_with($k, '=')) { // key+=value, key-=value, ...
 						$k2 = $this->delimite(substr($k, 0, -2));
 						$vx[] = $k2 . '=' . $k2 . ' ' . substr($k, -2, 1) . ' ' . $this->formatValue($v);
 					} else { // key=value, key=value, ...
@@ -306,20 +306,20 @@ class SqlPreprocessor
 				throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
 			}
 		} elseif (in_array($mode, self::Modes, strict: true)) {
-			$type = gettype($value);
+			$type = get_debug_type($value);
 			throw new Nette\InvalidArgumentException("Placeholder ?$mode expects array or Traversable object, $type given.");
 
 		} elseif ($mode && $mode !== self::ModeAuto) {
 			throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
 
 		} else {
-			throw new Nette\InvalidArgumentException('Unexpected type of parameter: ' . (is_object($value) ? $value::class : gettype($value)));
+			throw new Nette\InvalidArgumentException('Unexpected type of parameter: ' . get_debug_type($value));
 		}
 	}
 
 
 	private function delimite(string $name): string
 	{
-		return implode('.', array_map([$this->driver, 'delimite'], explode('.', $name)));
+		return implode('.', array_map($this->driver->delimite(...), explode('.', $name)));
 	}
 }

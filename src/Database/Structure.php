@@ -169,7 +169,7 @@ class Structure implements IStructure
 			return;
 		}
 
-		$this->structure = $this->cache->load('structure', \Closure::fromCallable([$this, 'loadStructure']));
+		$this->structure = $this->cache->load('structure', $this->loadStructure(...));
 	}
 
 

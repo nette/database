@@ -338,7 +338,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		foreach ($parameters as $key => $val) {
 			if (is_int($key)) { // whereOr(['full condition'])
 				$columns[] = $val;
-			} elseif (strpos($key, '?') === false) { // whereOr(['column1' => 1])
+			} elseif (!str_contains($key, '?')) { // whereOr(['column1' => 1])
 				$columns[] = $key . ' ?';
 				$values[] = $val;
 			} else { // whereOr(['column1 > ?' => 1])
@@ -550,13 +550,13 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	public function createSelectionInstance(?string $table = null): self
 	{
-		return new self($this->explorer, $this->conventions, $table ?: $this->name, $this->cache ? $this->cache->getStorage() : null);
+		return new self($this->explorer, $this->conventions, $table ?: $this->name, $this->cache?->getStorage());
 	}
 
 
 	protected function createGroupedSelectionInstance(string $table, string $column): GroupedSelection
 	{
-		return new GroupedSelection($this->explorer, $this->conventions, $table, $column, $this, $this->cache ? $this->cache->getStorage() : null);
+		return new GroupedSelection($this->explorer, $this->conventions, $table, $column, $this, $this->cache?->getStorage());
 	}
 
 
@@ -930,7 +930,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		int|string|null $active = null,
 	): ?GroupedSelection
 	{
-		if (strpos($table, '.') !== false) {
+		if (str_contains($table, '.')) {
 			[$table, $column] = explode('.', $table);
 		} elseif (!$column) {
 			$hasMany = $this->conventions->getHasManyReference($this->name, $table);

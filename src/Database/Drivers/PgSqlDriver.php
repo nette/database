@@ -29,7 +29,7 @@ class PgSqlDriver implements Nette\Database\Driver
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		$code = $e->errorInfo[0] ?? null;
-		if ($code === '0A000' && strpos($e->getMessage(), 'truncate') !== false) {
+		if ($code === '0A000' && str_contains($e->getMessage(), 'truncate')) {
 			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
 
 		} elseif ($code === '23502') {

@@ -11,7 +11,7 @@ require __DIR__ . '/../bootstrap.php';
 
 $options = Tester\Environment::loadData() + ['user' => null, 'password' => null];
 
-if (strpos($options['dsn'], 'sqlite::memory:') === false) {
+if (!str_contains($options['dsn'], 'sqlite::memory:')) {
 	Tester\Environment::lock($options['dsn'], getTempDir());
 }
 

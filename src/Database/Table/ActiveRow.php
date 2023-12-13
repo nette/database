@@ -18,15 +18,13 @@ use Nette;
  */
 class ActiveRow implements \IteratorAggregate, IRow
 {
-	private Selection $table;
-	private array $data;
 	private bool $dataRefreshed = false;
 
 
-	public function __construct(array $data, Selection $table)
-	{
-		$this->data = $data;
-		$this->table = $table;
+	public function __construct(
+		private array $data,
+		private Selection $table,
+	) {
 	}
 
 

@@ -19,14 +19,14 @@ use Nette\Database\Conventions\StaticConventions;
  */
 class Explorer
 {
-	private Conventions $conventions;
+	private readonly Conventions $conventions;
 
 
 	public function __construct(
-		private Connection $connection,
-		private IStructure $structure,
+		private readonly Connection $connection,
+		private readonly IStructure $structure,
 		?Conventions $conventions = null,
-		private ?Nette\Caching\Storage $cacheStorage = null,
+		private readonly ?Nette\Caching\Storage $cacheStorage = null,
 	) {
 		$this->conventions = $conventions ?: new StaticConventions;
 	}

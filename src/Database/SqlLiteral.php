@@ -16,8 +16,8 @@ namespace Nette\Database;
 class SqlLiteral
 {
 	public function __construct(
-		private string $value,
-		private array $parameters = [],
+		private readonly string $value,
+		private readonly array $parameters = [],
 	) {
 	}
 

@@ -32,9 +32,9 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	public function __construct(
-		private Connection $connection,
-		private string $queryString,
-		private array $params,
+		private readonly Connection $connection,
+		private readonly string $queryString,
+		private readonly array $params,
 		?callable $normalizer = null,
 	) {
 		$time = microtime(true);

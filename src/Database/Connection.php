@@ -36,12 +36,12 @@ class Connection
 
 
 	public function __construct(
-		private string $dsn,
+		private readonly string $dsn,
 		#[\SensitiveParameter]
-		private ?string $user = null,
+		private readonly ?string $user = null,
 		#[\SensitiveParameter]
-		private ?string $password = null,
-		private array $options = [],
+		private readonly ?string $password = null,
+		private readonly array $options = [],
 	) {
 		if (empty($options['lazy'])) {
 			$this->connect();

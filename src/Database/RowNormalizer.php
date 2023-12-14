@@ -52,41 +52,55 @@ final class RowNormalizer
 	public function __invoke(array $row, ResultSet $resultSet): array
 	{
 		foreach ($resultSet->getColumnTypes() as $key => $type) {
-			$value = $row[$key];
-			if ($value === null || $value === false || $type === IStructure::FIELD_TEXT) {
-				// do nothing
-			} elseif ($type === IStructure::FIELD_FLOAT || $type === IStructure::FIELD_DECIMAL) {
-				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
+			$row[$key] = $this->normalizeField($row[$key], $type);
+		}
 
-			} elseif ($type === IStructure::FIELD_FLOAT) {
+		return $row;
+	}
+
+
+	private function normalizeField(mixed $value, string $type): mixed
+	{
+		if ($value === null || $value === false) {
+			return $value;
+		}
+
+		switch ($type) {
+			case Type::Integer:
+				return is_float($tmp = $value * 1) ? $value : $tmp;
+
+			case Type::Float:
+			case Type::Decimal:
 				if (is_string($value) && ($pos = strpos($value, '.')) !== false) {
 					$value = rtrim(rtrim($pos === 0 ? "0$value" : $value, '0'), '.');
 				}
 
-				$row[$key] = (float) $value;
+				return (float) $value;
 
-			} elseif ($type === IStructure::FIELD_BOOL) {
-				$row[$key] = $value && $value !== 'f' && $value !== 'F';
+			case Type::Bool:
+				return $value && $value !== 'f' && $value !== 'F';
 
-			} elseif ($type === IStructure::FIELD_DATETIME || $type === IStructure::FIELD_DATE) {
-				$row[$key] = str_starts_with($value, '0000-00')
+			case Type::DateTime:
+			case Type::Date:
+				return str_starts_with($value, '0000-00')
 					? null
 					: new DateTime($value);
 
-			} elseif ($type === IStructure::FIELD_TIME) {
-				$row[$key] = (new DateTime($value))->setDate(1, 1, 1);
+			case Type::Time:
+				return (new DateTime($value))->setDate(1, 1, 1);
 
-			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
+			case Type::TimeInterval:
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?$#D', $value, $m);
-				$row[$key] = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
-				$row[$key]->f = isset($m[5]) ? (float) $m[5] : 0.0;
-				$row[$key]->invert = (int) (bool) $m[1];
+				$di = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
+				$di->f = isset($m[5]) ? (float) $m[5] : 0.0;
+				$di->invert = (int) (bool) $m[1];
+				return $di;
 
-			} elseif ($type === IStructure::FIELD_UNIX_TIMESTAMP) {
-				$row[$key] = (new DateTime)->setTimestamp($value);
-			}
+			case Type::UnixTimestamp:
+				return (new DateTime)->setTimestamp($value);
+
+			default:
+				return $value;
 		}
-
-		return $row;
 	}
 }

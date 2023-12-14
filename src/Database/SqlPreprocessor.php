@@ -145,7 +145,7 @@ class SqlPreprocessor
 	}
 
 
-	private function formatValue($value, ?string $mode = null): string
+	private function formatValue(mixed $value, ?string $mode = null): string
 	{
 		if (!$mode || $mode === self::ModeAuto) {
 			if (is_scalar($value) || is_resource($value)) {

@@ -65,7 +65,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 * Returns primary key value.
 	 * @return mixed possible int, string, array, object (Nette\Utils\DateTime)
 	 */
-	public function getPrimary(bool $throw = true)
+	public function getPrimary(bool $throw = true): mixed
 	{
 		$primary = $this->table->getPrimary($throw);
 		if ($primary === null) {
@@ -217,10 +217,8 @@ class ActiveRow implements \IteratorAggregate, IRow
 	/**
 	 * Returns value of column.
 	 * @param  string  $column
-	 * @return mixed
 	 */
-	#[\ReturnTypeWillChange]
-	public function offsetGet($column)
+	public function offsetGet($column): mixed
 	{
 		return $this->__get($column);
 	}
@@ -246,7 +244,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
-	public function __set(string $column, $value): void
+	public function __set(string $column, mixed $value): never
 	{
 		throw new Nette\DeprecatedException('ActiveRow is read-only; use update() method instead.');
 	}
@@ -256,7 +254,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 * @return ActiveRow|mixed
 	 * @throws Nette\MemberAccessException
 	 */
-	public function &__get(string $key)
+	public function &__get(string $key): mixed
 	{
 		if ($this->accessColumn($key)) {
 			return $this->data[$key];
@@ -291,7 +289,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
-	public function __unset(string $key): void
+	public function __unset(string $key): never
 	{
 		throw new Nette\DeprecatedException('ActiveRow is read-only.');
 	}

@@ -322,7 +322,7 @@ class Helpers
 	/**
 	 * Reformat source to key -> value pairs.
 	 */
-	public static function toPairs(array $rows, $key = null, $value = null): array
+	public static function toPairs(array $rows, string|int|null $key = null, string|int|null $value = null): array
 	{
 		if (!$rows) {
 			return [];

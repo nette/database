@@ -19,10 +19,7 @@ class DriverException extends \PDOException
 	public ?array $params = null;
 
 
-	/**
-	 * @return static
-	 */
-	public static function from(\PDOException $src)
+	public static function from(\PDOException $src): static
 	{
 		$e = new static($src->message, 0, $src);
 		$e->file = $src->file;
@@ -41,10 +38,7 @@ class DriverException extends \PDOException
 	}
 
 
-	/**
-	 * @return int|string|null  Driver-specific error code
-	 */
-	public function getDriverCode()
+	public function getDriverCode(): int|string|null
 	{
 		return $this->errorInfo[1] ?? null;
 	}

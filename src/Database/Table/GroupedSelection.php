@@ -54,19 +54,15 @@ class GroupedSelection extends Selection
 	 * Sets active group.
 	 * @internal
 	 * @param  int|string  $active  primary key of grouped rows
-	 * @return static
 	 */
-	public function setActive($active)
+	public function setActive(int|string $active): static
 	{
 		$this->active = $active;
 		return $this;
 	}
 
 
-	/**
-	 * @return static
-	 */
-	public function select(string $columns, ...$params)
+	public function select(string $columns, ...$params): static
 	{
 		if (!$this->sqlBuilder->getSelect()) {
 			$this->sqlBuilder->addSelect("$this->name.$this->column");
@@ -76,10 +72,7 @@ class GroupedSelection extends Selection
 	}
 
 
-	/**
-	 * @return static
-	 */
-	public function order(string $columns, ...$params)
+	public function order(string $columns, ...$params): static
 	{
 		if (!$this->sqlBuilder->getOrder()) {
 			// improve index utilization
@@ -93,10 +86,7 @@ class GroupedSelection extends Selection
 	/********************* aggregations ****************d*g**/
 
 
-	/**
-	 * @return mixed
-	 */
-	public function aggregation(string $function, ?string $groupFunction = null)
+	public function aggregation(string $function, ?string $groupFunction = null): mixed
 	{
 		$aggregation = &$this->getRefTable($refPath)->aggregation[$refPath . $function . $this->sqlBuilder->getSelectQueryHash($this->getPreviousAccessedColumns())];
 
@@ -240,7 +230,7 @@ class GroupedSelection extends Selection
 	/********************* manipulation ****************d*g**/
 
 
-	public function insert(iterable $data)
+	public function insert(iterable $data): ActiveRow|array|int|bool
 	{
 		if ($data instanceof \Traversable && !$data instanceof Selection) {
 			$data = iterator_to_array($data);

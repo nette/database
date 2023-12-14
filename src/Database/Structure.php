@@ -51,7 +51,7 @@ class Structure implements IStructure
 	/**
 	 * @return string|string[]|null
 	 */
-	public function getPrimaryKey(string $table)
+	public function getPrimaryKey(string $table): string|array|null
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
@@ -210,7 +210,7 @@ class Structure implements IStructure
 	}
 
 
-	protected function analyzePrimaryKey(array $columns)
+	protected function analyzePrimaryKey(array $columns): string|array|null
 	{
 		$primary = [];
 		foreach ($columns as $column) {

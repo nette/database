@@ -257,13 +257,13 @@ class SqlBuilder
 	}
 
 
-	public function addWhere($condition, ...$params): bool
+	public function addWhere(string|array $condition, ...$params): bool
 	{
 		return $this->addCondition($condition, $params, $this->where, $this->parameters['where']);
 	}
 
 
-	public function addJoinCondition(string $tableChain, $condition, ...$params): bool
+	public function addJoinCondition(string $tableChain, string|array $condition, ...$params): bool
 	{
 		$this->parameters['joinConditionSorted'] = null;
 		if (!isset($this->joinCondition[$tableChain])) {
@@ -274,7 +274,12 @@ class SqlBuilder
 	}
 
 
-	protected function addCondition($condition, array $params, array &$conditions, array &$conditionsParameters): bool
+	protected function addCondition(
+		string|array $condition,
+		array $params,
+		array &$conditions,
+		array &$conditionsParameters,
+	): bool
 	{
 		if (is_array($condition) && !empty($params[0]) && is_array($params[0])) {
 			return $this->addConditionComposition($condition, $params[0], $conditions, $conditionsParameters);
@@ -437,7 +442,7 @@ class SqlBuilder
 	}
 
 
-	public function addOrder($columns, ...$params): void
+	public function addOrder(string|array $columns, ...$params): void
 	{
 		$this->order[] = $columns;
 		$this->parameters['order'] = array_merge($this->parameters['order'], $params);
@@ -476,7 +481,7 @@ class SqlBuilder
 	}
 
 
-	public function setGroup($columns, ...$params): void
+	public function setGroup(string|array $columns, ...$params): void
 	{
 		$this->group = $columns;
 		$this->parameters['group'] = $params;

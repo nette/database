@@ -122,7 +122,7 @@ class Connection
 	}
 
 
-	public function setRowNormalizer(?callable $normalizer): self
+	public function setRowNormalizer(?callable $normalizer): static
 	{
 		$this->rowNormalizer = $normalizer;
 		return $this;
@@ -180,10 +180,7 @@ class Connection
 	}
 
 
-	/**
-	 * @return mixed
-	 */
-	public function transaction(callable $callback)
+	public function transaction(callable $callback): mixed
 	{
 		if ($this->transactionDepth === 0) {
 			$this->beginTransaction();
@@ -271,9 +268,8 @@ class Connection
 	/**
 	 * Shortcut for query()->fetchField()
 	 * @param  literal-string  $sql
-	 * @return mixed
 	 */
-	public function fetchField(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params)
+	public function fetchField(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): mixed
 	{
 		return $this->query($sql, ...$params)->fetchField();
 	}

@@ -158,15 +158,13 @@ class ResultSet implements \Iterator, IRowContainer
 	}
 
 
-	#[\ReturnTypeWillChange]
-	public function current()
+	public function current(): Row|false|null
 	{
 		return $this->lastRow;
 	}
 
 
-	#[\ReturnTypeWillChange]
-	public function key()
+	public function key(): int
 	{
 		return $this->lastRowKey;
 	}
@@ -217,9 +215,8 @@ class ResultSet implements \Iterator, IRowContainer
 
 	/**
 	 * Fetches single field.
-	 * @return mixed
 	 */
-	public function fetchField($column = 0)
+	public function fetchField(int $column = 0): mixed
 	{
 		if (func_num_args()) {
 			trigger_error(__METHOD__ . '() argument is deprecated.', E_USER_DEPRECATED);
@@ -242,10 +239,8 @@ class ResultSet implements \Iterator, IRowContainer
 
 	/**
 	 * Fetches all rows as associative array.
-	 * @param  string|int  $key  column name used for an array key or null for numeric index
-	 * @param  string|int  $value  column name used for an array value or null for the whole row
 	 */
-	public function fetchPairs($key = null, $value = null): array
+	public function fetchPairs(string|int|null $key = null, string|int|null $value = null): array
 	{
 		return Helpers::toPairs($this->fetchAll(), $key, $value);
 	}
@@ -264,7 +259,6 @@ class ResultSet implements \Iterator, IRowContainer
 
 	/**
 	 * Fetches all rows and returns associative tree.
-	 * @param  string  $path  associative descriptor
 	 */
 	public function fetchAssoc(string $path): array
 	{

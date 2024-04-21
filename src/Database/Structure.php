@@ -19,6 +19,8 @@ class Structure implements IStructure
 {
 	protected Connection $connection;
 	protected Nette\Caching\Cache $cache;
+
+	/** @var array{tables: array, columns: array, primary: array, aliases: array, hasMany: array, belongsTo: array} */
 	protected array $structure;
 	protected bool $isRebuilt = false;
 

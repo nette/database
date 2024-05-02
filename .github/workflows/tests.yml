@@ -43,7 +43,6 @@ jobs:
                     --health-retries=5
                     -e MYSQL_ROOT_PASSWORD=root
                     -e MYSQL_DATABASE=nette_test
-                    --entrypoint sh mysql:8 -c "exec docker-entrypoint.sh mysqld --default-authentication-plugin=mysql_native_password"
 
             postgres96:
                 image: postgres:9.6
@@ -89,7 +88,7 @@ jobs:
                     --health-retries 5
 
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
@@ -116,7 +115,7 @@ jobs:
         name: Lowest Dependencies
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - uses: shivammathur/setup-php@v2
               with:
                   php-version: 8.1

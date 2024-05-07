@@ -56,8 +56,8 @@ INSERT INTO types VALUES
 	1.1, --numeric
 	1.1, --decimal_10_5
 	1, --boolean
-	'2012-10-13', --date
-	'2012-10-13 10:10:10' --datetime
+	1350079200, --date
+	1350115810 --datetime
 );
 
 
@@ -87,8 +87,8 @@ INSERT INTO types VALUES (
 	0.5, --numeric
 	0.5, --decimal_10_5
 	0, --boolean
-	'1970-01-01', --date
-	'1970-01-01 00:00:00' --datetime
+	-3600, --date
+	-3600 --datetime
 );
 
 

@@ -29,4 +29,10 @@ class Connection extends Drivers\PDO\Connection
 			$this->engine->formatDateTime = $options['formatDateTime'];
 		}
 	}
+
+
+	public function getMetaTypeKey(): string
+	{
+		return 'sqlite:decl_type';
+	}
 }

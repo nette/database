@@ -12,6 +12,7 @@ namespace Nette\Database\Drivers\Engines;
 use Nette;
 use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
+use Nette\Database\TypeConverter;
 
 
 /**
@@ -213,9 +214,9 @@ class MSSQLEngine implements Engine
 	}
 
 
-	public function getColumnTypes(\PDOStatement $statement): array
+	public function resolveColumnConverter(array $meta, TypeConverter $converter): ?\Closure
 	{
-		return Nette\Database\Helpers::detectTypes($statement);
+		return $converter->resolve($meta['nativeType']);
 	}
 
 

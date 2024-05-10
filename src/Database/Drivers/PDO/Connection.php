@@ -91,4 +91,10 @@ abstract class Connection implements Drivers\Connection
 	{
 		return $this->pdo;
 	}
+
+
+	public function getMetaTypeKey(): string
+	{
+		return 'native_type';
+	}
 }

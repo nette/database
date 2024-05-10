@@ -27,7 +27,7 @@ class ResultSet implements \Iterator
 	/** @var Row[] */
 	private array $rows;
 	private float $time;
-	private array $types;
+	private array $converters;
 
 
 	public function __construct(
@@ -95,13 +95,6 @@ class ResultSet implements \Iterator
 	public function getRowCount(): ?int
 	{
 		return $this->pdoStatement ? $this->pdoStatement->rowCount() : null;
-	}
-
-
-	public function getColumnTypes(): array
-	{
-		$this->types ??= $this->connection->getDatabaseEngine()->getColumnTypes($this->pdoStatement);
-		return $this->types;
 	}
 
 
@@ -244,5 +237,30 @@ class ResultSet implements \Iterator
 	public function fetchAssoc(string $path): array
 	{
 		return Nette\Utils\Arrays::associate($this->fetchAll(), $path);
+	}
+
+
+	public function resolveColumnConverters(): array
+	{
+		if (isset($this->converters)) {
+			return $this->converters;
+		}
+
+		$res = [];
+		$engine = $this->connection->getDatabaseEngine();
+		$converter = $this->connection->getTypeConverter();
+		$metaTypeKey = $this->connection->getConnectionDriver()->getMetaTypeKey();
+		$count = $this->pdoStatement->columnCount();
+		for ($i = 0; $i < $count; $i++) {
+			$meta = $this->pdoStatement->getColumnMeta($i);
+			if (isset($meta[$metaTypeKey])) {
+				$res[$meta['name']] = $engine->resolveColumnConverter([
+					'nativeType' => $meta[$metaTypeKey],
+					'length' => $meta['len'],
+					'precision' => $meta['precision'],
+				], $converter);
+			}
+		}
+		return $this->converters = $res;
 	}
 }

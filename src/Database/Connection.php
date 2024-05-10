@@ -28,6 +28,7 @@ class Connection
 	private ?Drivers\Connection $connection = null;
 	private ?Drivers\Engine $engine;
 	private ?SqlPreprocessor $preprocessor;
+	private TypeConverter $typeConverter;
 
 	/** @var callable(array, ResultSet): array */
 	private $rowNormalizer = [Helpers::class, 'normalizeRow'];
@@ -45,7 +46,9 @@ class Connection
 		$lazy = $options['lazy'] ?? false;
 		unset($options['newDateTime'], $options['lazy']);
 
-		$this->connector = (new Factory)->createConnectorFromDsn($dsn, $user, $password, $options);
+		$factory = new Factory;
+		$this->typeConverter = $factory->createTypeConverter($options);
+		$this->connector = $factory->createConnectorFromDsn($dsn, $user, $password, $options);
 		if (!$lazy) {
 			$this->connect();
 		}
@@ -118,6 +121,12 @@ class Connection
 	public function getReflection(): Reflection
 	{
 		return new Reflection($this->getDatabaseEngine());
+	}
+
+
+	public function getTypeConverter(): TypeConverter
+	{
+		return $this->typeConverter;
 	}
 
 

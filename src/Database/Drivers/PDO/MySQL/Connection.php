@@ -39,9 +39,5 @@ class Connection extends Drivers\PDO\Connection
 		if (isset($options['sqlmode'])) {
 			$this->query('SET sql_mode=' . $this->quote($options['sqlmode']));
 		}
-
-		if (isset($options['convertBoolean'])) {
-			$this->engine->convertBoolean = (bool) $options['convertBoolean'];
-		}
 	}
 }

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\DateTime;
 use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
 use Nette\Database\TypeConverter;
@@ -228,22 +229,11 @@ class SQLiteEngine implements Engine
 	}
 
 
-	public function getColumnTypes(\PDOStatement $statement): array
+	public function resolveColumnConverter(array $meta, TypeConverter $converter): ?\Closure
 	{
-		$types = [];
-		$count = $statement->columnCount();
-		for ($col = 0; $col < $count; $col++) {
-			$meta = $statement->getColumnMeta($col);
-			if (isset($meta['sqlite:decl_type'])) {
-				$types[$meta['name']] = $this->formatDateTime === 'U' && in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], strict: true)
-					? Nette\Database\IStructure::FIELD_UNIX_TIMESTAMP
-					: TypeConverter::detectType($meta['sqlite:decl_type']);
-			} elseif (isset($meta['native_type'])) {
-				$types[$meta['name']] = TypeConverter::detectType($meta['native_type']);
-			}
-		}
-
-		return $types;
+		return $converter->convertDateTime && in_array($meta['nativeType'], ['DATE', 'DATETIME'], true)
+			? (fn($value): DateTime => is_int($value) ? (new DateTime)->setTimestamp($value) : new DateTime($value))
+			: $converter->resolve($meta['nativeType']);
 	}
 
 

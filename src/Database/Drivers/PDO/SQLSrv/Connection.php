@@ -21,4 +21,10 @@ class Connection extends Drivers\PDO\Connection
 	{
 		return new Drivers\Engines\SQLServerEngine($this);
 	}
+
+
+	public function getMetaTypeKey(): string
+	{
+		return 'sqlsrv:decl_type';
+	}
 }

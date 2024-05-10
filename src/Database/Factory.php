@@ -47,4 +47,17 @@ final class Factory
 
 		return fn() => new $class($dsn, $username, $password, $options);
 	}
+
+
+	public function createTypeConverter(array &$options): TypeConverter
+	{
+		$converter = new TypeConverter;
+		foreach (['convertBoolean', 'convertDateTime', 'convertDecimal'] as $opt) {
+			if (isset($options[$opt])) {
+				$converter->$opt = (bool) $options[$opt];
+				unset($options[$opt]);
+			}
+		}
+		return $converter;
+	}
 }

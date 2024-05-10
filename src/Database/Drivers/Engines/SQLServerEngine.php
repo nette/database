@@ -218,23 +218,14 @@ class SQLServerEngine implements Engine
 	}
 
 
-	public function getColumnTypes(\PDOStatement $statement): array
+	public function resolveColumnConverter(array $meta, TypeConverter $converter): ?\Closure
 	{
-		$types = [];
-		$count = $statement->columnCount();
-		for ($col = 0; $col < $count; $col++) {
-			$meta = $statement->getColumnMeta($col);
-			if (
-				isset($meta['sqlsrv:decl_type'])
-				&& $meta['sqlsrv:decl_type'] !== 'timestamp'
-			) { // timestamp does not mean time in sqlsrv
-				$types[$meta['name']] = TypeConverter::detectType($meta['sqlsrv:decl_type']);
-			} elseif (isset($meta['native_type'])) {
-				$types[$meta['name']] = TypeConverter::detectType($meta['native_type']);
-			}
-		}
-
-		return $types;
+		return match ($meta['nativeType']) {
+			'timestamp' => null, // timestamp does not mean time in sqlsrv
+			'decimal', 'numeric',
+			'double', 'double precision', 'float', 'real', 'money', 'smallmoney' => fn($value): float => (float) (is_string($value) && str_starts_with($value, '.') ? '0' . $value : $value),
+			default => $converter->resolve($meta['nativeType']),
+		};
 	}
 
 

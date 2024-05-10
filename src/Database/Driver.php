@@ -23,15 +23,6 @@ interface Driver
 		SupportSubselect = 'subselect',
 		SupportSchema = 'schema';
 
-	/** @deprecated use Driver::Support* */
-	public const
-		SUPPORT_SEQUENCE = 'sequence',
-		SUPPORT_SELECT_UNGROUPED_COLUMNS = 'ungrouped_cols',
-		SUPPORT_MULTI_INSERT_AS_SELECT = 'insert_as_select',
-		SUPPORT_MULTI_COLUMN_AS_OR_COND = 'multi_column_as_or',
-		SUPPORT_SUBSELECT = 'subselect',
-		SUPPORT_SCHEMA = 'schema';
-
 	/**
 	 * Initializes connection.
 	 */

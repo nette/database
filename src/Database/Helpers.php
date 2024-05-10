@@ -26,7 +26,7 @@ class Helpers
 
 	public static array $typePatterns = [
 		'^_' => Type::Text, // PostgreSQL arrays
-		'(TINY|SMALL|SHORT|MEDIUM|BIG|LONG)(INT)?|INT(EGER|\d+| IDENTITY)?|(SMALL|BIG|)SERIAL\d*|COUNTER|YEAR|BYTE|LONGLONG|UNSIGNED BIG INT' => Type::Integer,
+		'(TINY|SMALL|SHORT|MEDIUM|BIG|LONG)(INT)?|INT(EGER|\d+| IDENTITY| UNSIGNED)?|(SMALL|BIG|)SERIAL\d*|COUNTER|YEAR|BYTE|LONGLONG|UNSIGNED BIG INT' => Type::Integer,
 		'(NEW)?DEC(IMAL)?(\(.*)?|NUMERIC|(SMALL)?MONEY|CURRENCY|NUMBER' => Type::Decimal,
 		'REAL|DOUBLE( PRECISION)?|FLOAT\d*' => Type::Float,
 		'BOOL(EAN)?' => Type::Bool,

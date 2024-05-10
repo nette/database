@@ -19,7 +19,7 @@ final class Column
 	public function __construct(
 		public readonly string $name,
 		public readonly ?Table $table = null,
-		public readonly string $nativeType = '',
+		public readonly string $type = '',
 		public readonly ?int $size = null,
 		public readonly bool $nullable = false,
 		public readonly mixed $default = null,

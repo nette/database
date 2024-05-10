@@ -49,7 +49,7 @@ final class Table
 	{
 		$res = [];
 		foreach ($this->reflection->getDriver()->getColumns($this->name) as $row) {
-			$res[$row['name']] = new Column($row['name'], $this, $row['nativetype'], $row['size'], $row['nullable'], $row['default'], $row['autoincrement'], $row['primary'], $row['vendor']);
+			$res[$row['name']] = new Column($row['name'], $this, $row['type'], $row['size'], $row['nullable'], $row['default'], $row['autoincrement'], $row['primary'], $row['vendor']);
 		}
 		$this->columns = $res;
 	}

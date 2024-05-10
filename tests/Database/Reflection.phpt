@@ -8,6 +8,7 @@
 declare(strict_types=1);
 
 use Nette\Database\Driver;
+use Nette\Database\Type;
 use Tester\Assert;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
@@ -72,7 +73,7 @@ $expectedColumns = [
 	'id' => [
 		'name' => 'id',
 		'table' => 'author',
-		'nativeType' => 'INT',
+		'type' => Type::Integer,
 		'size' => 11,
 		'nullable' => false,
 		'default' => null,
@@ -82,7 +83,7 @@ $expectedColumns = [
 	'name' => [
 		'name' => 'name',
 		'table' => 'author',
-		'nativeType' => 'VARCHAR',
+		'type' => Type::Text,
 		'size' => 30,
 		'nullable' => false,
 		'default' => null,
@@ -92,7 +93,7 @@ $expectedColumns = [
 	'web' => [
 		'name' => 'web',
 		'table' => 'author',
-		'nativeType' => 'VARCHAR',
+		'type' => Type::Text,
 		'size' => 100,
 		'nullable' => false,
 		'default' => null,
@@ -102,7 +103,7 @@ $expectedColumns = [
 	'born' => [
 		'name' => 'born',
 		'table' => 'author',
-		'nativeType' => 'DATE',
+		'type' => Type::Date,
 		'size' => null,
 		'nullable' => true,
 		'default' => null,
@@ -119,17 +120,14 @@ switch ($driverName) {
 		}
 		break;
 	case 'pgsql':
-		$expectedColumns['id']['nativeType'] = 'INT4';
 		$expectedColumns['id']['default'] = "nextval('author_id_seq'::regclass)";
 		$expectedColumns['id']['size'] = null;
 		break;
 	case 'sqlite':
-		$expectedColumns['id']['nativeType'] = 'INTEGER';
 		$expectedColumns['id']['size'] = null;
-		$expectedColumns['name']['nativeType'] = 'TEXT';
 		$expectedColumns['name']['size'] = null;
-		$expectedColumns['web']['nativeType'] = 'TEXT';
 		$expectedColumns['web']['size'] = null;
+		$expectedColumns['born']['type'] = Type::UnixTimestamp;
 		break;
 	case 'sqlsrv':
 		$expectedColumns['id']['size'] = null;
@@ -146,7 +144,7 @@ Assert::same(
 	array_map(fn($c) => [
 		'name' => $c->name,
 		'table' => $c->table->name,
-		'nativeType' => $c->nativeType,
+		'type' => $c->type,
 		'size' => $c->size,
 		'nullable' => $c->nullable,
 		'default' => $c->default,

@@ -22,7 +22,7 @@ final class Reflection
 	public function __construct(
 		private readonly Driver $driver,
 	) {
-		$this->schema = $this->driver->isSupported(Driver::SUPPORT_SCHEMA) ? 'public' : null;
+		$this->schema = $this->driver->isSupported(Driver::SupportSchema) ? 'public' : null;
 		unset($this->tables);
 	}
 

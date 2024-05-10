@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers;
 
 use Nette;
+use Nette\Database\Type;
 
 
 /**
@@ -205,9 +206,9 @@ class MySqlDriver implements Nette\Database\Driver
 			$meta = $statement->getColumnMeta($col);
 			if (isset($meta['native_type'])) {
 				$types[$meta['name']] = match (true) {
-					$meta['native_type'] === 'NEWDECIMAL' && $meta['precision'] === 0 => Nette\Database\IStructure::FIELD_INTEGER,
-					$meta['native_type'] === 'TINY' && $meta['len'] === 1 && $this->supportBooleans => Nette\Database\IStructure::FIELD_BOOL,
-					$meta['native_type'] === 'TIME' => Nette\Database\IStructure::FIELD_TIME_INTERVAL,
+					$meta['native_type'] === 'NEWDECIMAL' && $meta['precision'] === 0 => Type::Integer,
+					$meta['native_type'] === 'TINY' && $meta['len'] === 1 && $this->supportBooleans => Type::Bool,
+					$meta['native_type'] === 'TIME' => Type::TimeInterval,
 					default => Nette\Database\Helpers::detectType($meta['native_type']),
 				};
 			}

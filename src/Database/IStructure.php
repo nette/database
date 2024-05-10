@@ -15,6 +15,7 @@ namespace Nette\Database;
  */
 interface IStructure
 {
+	/** @deprecated use Type::* */
 	public const
 		FIELD_TEXT = 'string',
 		FIELD_BINARY = 'bin',

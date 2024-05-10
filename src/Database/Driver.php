@@ -82,8 +82,8 @@ interface Driver
 	function getForeignKeys(string $table): array;
 
 	/**
-	 * Returns associative array of detected types (IStructure::FIELD_*) in result set.
-	 * @return array<string, string>
+	 * Returns associative array of detected types in result set.
+	 * @return array<string, Type::*>
 	 */
 	function getColumnTypes(\PDOStatement $statement): array;
 

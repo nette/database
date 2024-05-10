@@ -17,6 +17,9 @@ use Nette\Database\Explorer;
 /**
  * Filtered table representation.
  * Selection is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
+ * @template T of ActiveRow
+ * @implements \Iterator<T>
+ * @implements \ArrayAccess<T>
  */
 class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 {
@@ -169,6 +172,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns row specified by primary key.
+	 * @return T
 	 */
 	public function get(mixed $key): ?ActiveRow
 	{
@@ -179,6 +183,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Fetches single row object.
+	 * @return T
 	 */
 	public function fetch(): ?ActiveRow
 	{
@@ -219,7 +224,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Fetches all rows.
-	 * @return ActiveRow[]
+	 * @return T[]
 	 */
 	public function fetchAll(): array
 	{
@@ -761,6 +766,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Inserts row in a table. Returns ActiveRow or number of affected rows for Selection or table without primary key.
 	 * @param  iterable|Selection  $data  [$column => $value]|\Traversable|Selection for INSERT ... SELECT
+	 * @return T|array|int|bool
 	 */
 	public function insert(iterable $data): ActiveRow|array|int|bool
 	{
@@ -964,6 +970,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	}
 
 
+	/** @return T|false */
 	public function current(): ActiveRow|false
 	{
 		return ($key = current($this->keys)) !== false
@@ -1010,6 +1017,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Returns specified row.
 	 * @param  string  $key
+	 * @return ?T
 	 */
 	public function offsetGet($key): ?ActiveRow
 	{

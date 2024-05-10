@@ -16,7 +16,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 
 
 $reflection = $connection->getReflection();
-$schemaSupported = $connection->getDriver()->isSupported(Driver::SUPPORT_SCHEMA);
+$schemaSupported = $connection->getDriver()->isSupported(Driver::SupportSchema);
 
 // table names
 $tableNames = array_keys($reflection->tables);

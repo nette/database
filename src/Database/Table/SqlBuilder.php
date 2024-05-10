@@ -119,7 +119,7 @@ class SqlBuilder
 			$parts[] = $this->select;
 		} elseif ($columns) {
 			$parts[] = [$this->delimitedTable, $columns];
-		} elseif ($this->group && !$this->driver->isSupported(Driver::SUPPORT_SELECT_UNGROUPED_COLUMNS)) {
+		} elseif ($this->group && !$this->driver->isSupported(Driver::SupportSelectUngroupedColumns)) {
 			$parts[] = [$this->group];
 		} else {
 			$parts[] = "{$this->delimitedTable}.*";
@@ -171,7 +171,7 @@ class SqlBuilder
 
 			$querySelect = $this->buildSelect($cols);
 
-		} elseif ($this->group && !$this->driver->isSupported(Driver::SUPPORT_SELECT_UNGROUPED_COLUMNS)) {
+		} elseif ($this->group && !$this->driver->isSupported(Driver::SupportSelectUngroupedColumns)) {
 			$querySelect = $this->buildSelect([$this->group]);
 			$this->parseJoins($joins, $querySelect);
 
@@ -343,7 +343,7 @@ class SqlBuilder
 						}
 					}
 
-					if ($this->driver->isSupported(Driver::SUPPORT_SUBSELECT)) {
+					if ($this->driver->isSupported(Driver::SupportSubselect)) {
 						$arg = null;
 						$subSelectPlaceholderCount = substr_count($clone->getSql(), '?');
 						$replace = $match[2][0] . '(' . $clone->getSql() . (!$subSelectPlaceholderCount && count($clone->getSqlBuilder()->getParameters()) === 1 ? ' ?' : '') . ')';
@@ -634,7 +634,7 @@ class SqlBuilder
 		$parentAlias = preg_replace('#^(.*\.)?(.*)$#', '$2', $this->tableName);
 
 		// join schema keyMatch and table keyMatch to schema.table keyMatch
-		if ($this->driver->isSupported(Driver::SUPPORT_SCHEMA) && count($keyMatches) > 1) {
+		if ($this->driver->isSupported(Driver::SupportSchema) && count($keyMatches) > 1) {
 			$tables = $this->getCachedTableList();
 			if (
 				!isset($tables[$keyMatches[0]['key']])
@@ -808,7 +808,7 @@ class SqlBuilder
 		array &$conditionsParameters,
 	): bool
 	{
-		if ($this->driver->isSupported(Driver::SUPPORT_MULTI_COLUMN_AS_OR_COND)) {
+		if ($this->driver->isSupported(Driver::SupportMultiColumnAsOrCond)) {
 			$conditionFragment = '(' . implode(' = ? AND ', $columns) . ' = ?) OR ';
 			$condition = substr(str_repeat($conditionFragment, count($parameters)), 0, -4);
 			return $this->addCondition($condition, [Nette\Utils\Arrays::flatten($parameters)], $conditions, $conditionsParameters);

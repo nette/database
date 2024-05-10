@@ -17,10 +17,19 @@ use Nette;
  */
 class MySqlDriver implements Nette\Database\Driver
 {
-	public const
-		ERROR_ACCESS_DENIED = 1045,
-		ERROR_DUPLICATE_ENTRY = 1062,
-		ERROR_DATA_TRUNCATED = 1265;
+	public const ErrorAccessDenied = 1045;
+	public const ErrorDuplicateEntry = 1062;
+	public const ErrorDataTruncated = 1265;
+
+	/** @deprecated use MySqlDriver::ErrorAccessDenied */
+	public const ERROR_ACCESS_DENIED = self::ErrorAccessDenied;
+
+	/** @deprecated use MySqlDriver::ErrorDuplicateEntry */
+	public const ERROR_DUPLICATE_ENTRY = self::ErrorDuplicateEntry;
+
+	/** @deprecated use MySqlDriver::ErrorDataTruncated */
+	public const ERROR_DATA_TRUNCATED = self::ErrorDataTruncated;
+
 
 	private Nette\Database\Connection $connection;
 	private bool $supportBooleans;
@@ -214,6 +223,6 @@ class MySqlDriver implements Nette\Database\Driver
 		// - http://bugs.mysql.com/bug.php?id=31188
 		// - http://bugs.mysql.com/bug.php?id=35819
 		// and more.
-		return $item === self::SUPPORT_SELECT_UNGROUPED_COLUMNS || $item === self::SUPPORT_MULTI_COLUMN_AS_OR_COND;
+		return $item === self::SupportSelectUngroupedColumns || $item === self::SupportMultiColumnAsOrCond;
 	}
 }

@@ -16,6 +16,15 @@ namespace Nette\Database;
 interface Driver
 {
 	public const
+		SupportSequence = 'sequence',
+		SupportSelectUngroupedColumns = 'ungrouped_cols',
+		SupportMultiInsertAsSelect = 'insert_as_select',
+		SupportMultiColumnAsOrCond = 'multi_column_as_or',
+		SupportSubselect = 'subselect',
+		SupportSchema = 'schema';
+
+	/** @deprecated use Driver::Support* */
+	public const
 		SUPPORT_SEQUENCE = 'sequence',
 		SUPPORT_SELECT_UNGROUPED_COLUMNS = 'ungrouped_cols',
 		SUPPORT_MULTI_INSERT_AS_SELECT = 'insert_as_select',
@@ -80,7 +89,7 @@ interface Driver
 
 	/**
 	 * Cheks if driver supports specific property
-	 * @param  string  $item  self::SUPPORT_* property
+	 * @param  self::Support*  $item
 	 */
 	function isSupported(string $item): bool;
 }

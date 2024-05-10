@@ -34,7 +34,7 @@ interface Driver
 	 */
 	function convertException(\PDOException $e): DriverException;
 
-	function query(string $queryString, array $params);
+	function query(string $queryString, array $params): ResultDriver;
 
 	function beginTransaction(): void;
 
@@ -90,12 +90,6 @@ interface Driver
 
 	/** @return list<array{name: string, local: string, table: string, foreign: string}> */
 	function getForeignKeys(string $table): array;
-
-	/**
-	 * Returns associative array of detected types in result set.
-	 * @return array<string, Type::*>
-	 */
-	function getColumnTypes(\PDOStatement $statement): array;
 
 	/**
 	 * Cheks if driver supports specific property

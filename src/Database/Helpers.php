@@ -303,11 +303,11 @@ class Helpers
 	/**
 	 * Finds duplicate columns in select statement
 	 */
-	public static function findDuplicates(\PDOStatement $statement): string
+	public static function findDuplicates(ResultDriver $result): string
 	{
 		$cols = [];
-		for ($i = 0; $i < $statement->columnCount(); $i++) {
-			$meta = $statement->getColumnMeta($i);
+		for ($i = 0; $i < $result->getColumnCount(); $i++) {
+			$meta = $result->getColumnMeta($i);
 			$cols[$meta['name']][] = $meta['table'] ?? '';
 		}
 

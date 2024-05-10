@@ -17,11 +17,6 @@ use Nette;
  */
 class MySqlDriver implements Nette\Database\Driver
 {
-	public const
-		ERROR_ACCESS_DENIED = 1045,
-		ERROR_DUPLICATE_ENTRY = 1062,
-		ERROR_DATA_TRUNCATED = 1265;
-
 	private Nette\Database\Connection $connection;
 	private bool $convertBoolean;
 

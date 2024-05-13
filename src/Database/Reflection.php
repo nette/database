@@ -16,13 +16,11 @@ final class Reflection
 {
 	/** @var array<string, Table> */
 	public readonly array $tables;
-	private ?string $schema;
 
 
 	public function __construct(
 		private readonly Driver $driver,
 	) {
-		$this->schema = $this->driver->isSupported(Driver::SupportSchema) ? 'public' : null;
 		unset($this->tables);
 	}
 
@@ -50,9 +48,7 @@ final class Reflection
 
 	private function getFullName(string $name): string
 	{
-		return $this->schema !== null && !str_contains($name, '.')
-			? $this->schema . '.' . $name
-			: $name;
+		return $name;
 	}
 
 

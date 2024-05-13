@@ -145,12 +145,19 @@ class MySqlDriver implements Nette\Database\Driver
 		$columns = [];
 		foreach ($this->connection->query('SHOW FULL COLUMNS FROM ' . $this->delimite($table)) as $row) {
 			$row = array_change_key_case((array) $row, CASE_LOWER);
-			$type = explode('(', $row['type']);
+			$pair = explode('(', $row['type']);
+			$type = match (true) {
+				$pair[0] === 'decimal' && str_ends_with($pair[1], ',0)') => Type::Integer,
+				$row['type'] === 'tinyint(1)' && $this->supportBooleans => Type::Bool,
+				$row['type'] === 'time' => Type::TimeInterval,
+				default => Nette\Database\Helpers::detectType($pair[0]),
+			};
 			$columns[] = [
 				'name' => $row['field'],
 				'table' => $table,
-				'nativetype' => strtoupper($type[0]),
-				'size' => isset($type[1]) ? (int) $type[1] : null,
+				'type' => $type,
+				'nativetype' => strtoupper($pair[0]),
+				'size' => isset($pair[1]) ? (int) $pair[1] : null,
 				'nullable' => $row['null'] === 'YES',
 				'default' => $row['default'],
 				'autoincrement' => $row['extra'] === 'auto_increment',

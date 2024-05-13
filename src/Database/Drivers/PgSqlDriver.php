@@ -131,6 +131,7 @@ class PgSqlDriver implements Nette\Database\Driver
 			SELECT
 				a.attname::varchar AS name,
 				c.relname::varchar AS table,
+				t.typname AS type,
 				upper(t.typname) AS nativetype,
 				CASE WHEN a.atttypmod = -1 THEN NULL ELSE a.atttypmod -4 END AS size,
 				NOT (a.attnotnull OR t.typtype = 'd' AND t.typnotnull) AS nullable,
@@ -155,6 +156,7 @@ class PgSqlDriver implements Nette\Database\Driver
 				a.attnum
 			X) as $row) {
 			$column = (array) $row;
+			$column['type'] = Nette\Database\Helpers::detectType($column['type']);
 			$column['vendor'] = $column;
 			unset($column['sequence']);
 

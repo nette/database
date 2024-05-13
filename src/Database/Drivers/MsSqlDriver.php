@@ -120,6 +120,7 @@ class MsSqlDriver implements Nette\Database\Driver
 			$columns[] = [
 				'name' => $row['COLUMN_NAME'],
 				'table' => $table,
+				'type' => Nette\Database\Helpers::detectType($row['DATA_TYPE']),
 				'nativetype' => strtoupper($row['DATA_TYPE']),
 				'size' => $row['CHARACTER_MAXIMUM_LENGTH'] ?? ($row['NUMERIC_PRECISION'] ?? null),
 				'unsigned' => false,

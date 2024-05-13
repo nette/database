@@ -8,6 +8,7 @@
 declare(strict_types=1);
 
 use Nette\Database\Driver;
+use Nette\Database\Type;
 use Tester\Assert;
 
 require __DIR__ . '/connect.inc.php'; // create $connection
@@ -50,6 +51,7 @@ $expectedColumns = [
 	[
 		'name' => 'id',
 		'table' => 'author',
+		'type' => Type::Integer,
 		'nativetype' => 'INT',
 		'size' => 11,
 		'nullable' => false,
@@ -60,6 +62,7 @@ $expectedColumns = [
 	[
 		'name' => 'name',
 		'table' => 'author',
+		'type' => Type::Text,
 		'nativetype' => 'VARCHAR',
 		'size' => 30,
 		'nullable' => false,
@@ -70,6 +73,7 @@ $expectedColumns = [
 	[
 		'name' => 'web',
 		'table' => 'author',
+		'type' => Type::Text,
 		'nativetype' => 'VARCHAR',
 		'size' => 100,
 		'nullable' => false,
@@ -80,6 +84,7 @@ $expectedColumns = [
 	[
 		'name' => 'born',
 		'table' => 'author',
+		'type' => Type::Date,
 		'nativetype' => 'DATE',
 		'size' => null,
 		'nullable' => true,
@@ -108,6 +113,7 @@ switch ($driverName) {
 		$expectedColumns[1]['size'] = null;
 		$expectedColumns[2]['nativetype'] = 'TEXT';
 		$expectedColumns[2]['size'] = null;
+		$expectedColumns[3]['type'] = Type::UnixTimestamp;
 		break;
 	case 'sqlsrv':
 		$expectedColumns[0]['size'] = null;

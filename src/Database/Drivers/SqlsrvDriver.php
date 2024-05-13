@@ -123,6 +123,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 			SELECT
 				c.name AS name,
 				o.name AS [table],
+				t.name AS type,
 				UPPER(t.name) AS nativetype,
 				NULL AS size,
 				c.is_nullable AS nullable,
@@ -143,6 +144,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 				AND o.name = {$this->connection->quote($table)}
 			X) as $row) {
 			$row = (array) $row;
+			$row['type'] = Nette\Database\Helpers::detectType($row['type']);
 			$row['vendor'] = $row;
 			$row['nullable'] = (bool) $row['nullable'];
 			$row['autoincrement'] = (bool) $row['autoincrement'];

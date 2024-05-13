@@ -16,13 +16,12 @@ final class Reflection
 {
 	/** @var array<string, Table> */
 	public array $tables;
-	private ?string $schema;
+	private ?string $schema = null;
 
 
 	public function __construct(
 		private readonly Driver $driver,
 	) {
-		$this->schema = $this->driver->isSupported(Driver::SupportSchema) ? 'public' : null;
 		unset($this->tables);
 	}
 

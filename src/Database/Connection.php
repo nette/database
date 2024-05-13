@@ -30,7 +30,7 @@ class Connection
 	private ?PDO $pdo = null;
 
 	/** @var callable(array, ResultSet): array */
-	private $rowNormalizer = [Helpers::class, 'normalizeRow'];
+	private $rowNormalizer;
 	private ?string $sql = null;
 	private int $transactionDepth = 0;
 
@@ -43,6 +43,8 @@ class Connection
 		private readonly ?string $password = null,
 		private readonly array $options = [],
 	) {
+		$this->rowNormalizer = new RowNormalizer;
+
 		if (empty($options['lazy'])) {
 			$this->connect();
 		}

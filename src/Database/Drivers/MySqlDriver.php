@@ -216,7 +216,7 @@ class MySqlDriver implements Nette\Database\Driver
 					$meta['native_type'] === 'NEWDECIMAL' && $meta['precision'] === 0 => Type::Integer,
 					$meta['native_type'] === 'TINY' && $meta['len'] === 1 && $this->supportBooleans => Type::Bool,
 					$meta['native_type'] === 'TIME' => Type::TimeInterval,
-					default => Nette\Database\Helpers::detectType($meta['native_type']),
+					default => Nette\Database\RowNormalizer::detectType($meta['native_type']),
 				};
 			}
 		}

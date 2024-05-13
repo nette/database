@@ -23,18 +23,7 @@ class Helpers
 
 	/** maximum SQL length */
 	public static int $maxLength = 100;
-
-	public static array $typePatterns = [
-		'^_' => Type::Text, // PostgreSQL arrays
-		'(TINY|SMALL|SHORT|MEDIUM|BIG|LONG)(INT)?|INT(EGER|\d+| IDENTITY| UNSIGNED)?|(SMALL|BIG|)SERIAL\d*|COUNTER|YEAR|BYTE|LONGLONG|UNSIGNED BIG INT' => Type::Integer,
-		'(NEW)?DEC(IMAL)?(\(.*)?|NUMERIC|(SMALL)?MONEY|CURRENCY|NUMBER' => Type::Decimal,
-		'REAL|DOUBLE( PRECISION)?|FLOAT\d*' => Type::Float,
-		'BOOL(EAN)?' => Type::Bool,
-		'TIME' => Type::Time,
-		'DATE' => Type::Date,
-		'(SMALL)?DATETIME(OFFSET)?\d*|TIME(STAMP.*)?' => Type::DateTime,
-		'BYTEA|(TINY|MEDIUM|LONG|)BLOB|(LONG )?(VAR)?BINARY|IMAGE' => Type::Binary,
-	];
+	public static array $typePatterns = [];
 
 
 	/**
@@ -174,7 +163,7 @@ class Helpers
 		for ($col = 0; $col < $count; $col++) {
 			$meta = $statement->getColumnMeta($col);
 			if (isset($meta['native_type'])) {
-				$types[$meta['name']] = self::detectType($meta['native_type']);
+				$types[$meta['name']] = RowNormalizer::detectType($meta['native_type']);
 			}
 		}
 
@@ -182,67 +171,17 @@ class Helpers
 	}
 
 
-	/**
-	 * Heuristic column type detection.
-	 * @return Type::*
-	 * @internal
-	 */
+	/** @deprecated  use RowNormalizer::detectType() */
 	public static function detectType(string $type): string
 	{
-		static $cache;
-		if (!isset($cache[$type])) {
-			$cache[$type] = 'string';
-			foreach (self::$typePatterns as $s => $val) {
-				if (preg_match("#^($s)$#i", $type)) {
-					return $cache[$type] = $val;
-				}
-			}
-		}
-
-		return $cache[$type];
+		return RowNormalizer::detectType($type);
 	}
 
 
-	/** @internal */
+	/** @deprecated  use RowNormalizer */
 	public static function normalizeRow(array $row, ResultSet $resultSet): array
 	{
-		foreach ($resultSet->getColumnTypes() as $key => $type) {
-			$value = $row[$key];
-			if ($value === null || $value === false || $type === Type::Text) {
-				// do nothing
-			} elseif ($type === Type::Integer) {
-				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
-
-			} elseif ($type === Type::Float || $type === Type::Decimal) {
-				if (is_string($value) && ($pos = strpos($value, '.')) !== false) {
-					$value = rtrim(rtrim($pos === 0 ? "0$value" : $value, '0'), '.');
-				}
-
-				$row[$key] = (float) $value;
-
-			} elseif ($type === Type::Bool) {
-				$row[$key] = $value && $value !== 'f' && $value !== 'F';
-
-			} elseif ($type === Type::DateTime || $type === Type::Date) {
-				$row[$key] = str_starts_with($value, '0000-00')
-					? null
-					: new DateTime($value);
-
-			} elseif ($type === Type::Time) {
-				$row[$key] = (new DateTime($value))->setDate(1, 1, 1);
-
-			} elseif ($type === Type::TimeInterval) {
-				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?$#D', $value, $m);
-				$row[$key] = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
-				$row[$key]->f = isset($m[5]) ? (float) $m[5] : 0.0;
-				$row[$key]->invert = (int) (bool) $m[1];
-
-			} elseif ($type === Type::UnixTimestamp) {
-				$row[$key] = (new DateTime)->setTimestamp($value);
-			}
-		}
-
-		return $row;
+		return (new RowNormalizer)($row, $resultSet);
 	}
 
 

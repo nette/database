@@ -235,9 +235,9 @@ class SqliteDriver implements Nette\Database\Driver
 			if (isset($meta['sqlite:decl_type'])) {
 				$types[$meta['name']] = $this->fmtDateTime === 'U' && in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], strict: true)
 					? Nette\Database\Type::UnixTimestamp
-					: Nette\Database\Helpers::detectType($meta['sqlite:decl_type']);
+					: Nette\Database\RowNormalizer::detectType($meta['sqlite:decl_type']);
 			} elseif (isset($meta['native_type'])) {
-				$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['native_type']);
+				$types[$meta['name']] = Nette\Database\RowNormalizer::detectType($meta['native_type']);
 			}
 		}
 

@@ -228,9 +228,9 @@ class SqlsrvDriver implements Nette\Database\Driver
 				isset($meta['sqlsrv:decl_type'])
 				&& $meta['sqlsrv:decl_type'] !== 'timestamp'
 			) { // timestamp does not mean time in sqlsrv
-				$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['sqlsrv:decl_type']);
+				$types[$meta['name']] = Nette\Database\RowNormalizer::detectType($meta['sqlsrv:decl_type']);
 			} elseif (isset($meta['native_type'])) {
-				$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['native_type']);
+				$types[$meta['name']] = Nette\Database\RowNormalizer::detectType($meta['native_type']);
 			}
 		}
 

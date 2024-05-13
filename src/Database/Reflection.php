@@ -15,7 +15,7 @@ use Nette\Database\Reflection\Table;
 final class Reflection
 {
 	/** @var array<string, Table> */
-	public readonly array $tables;
+	public array $tables;
 	private ?string $schema;
 
 
@@ -37,7 +37,17 @@ final class Reflection
 	public function getTable(string $name): Table
 	{
 		$name = $this->getFullName($name);
-		return $this->tables[$name] ?? throw new \InvalidArgumentException("Table '$name' not found.");
+		if (isset($this->tables[$name])) {
+			return $this->tables[$name];
+		}
+
+		try {
+			$this->driver->getColumns($name);
+			return $this->tables[$name] = new Table($this, $name);
+		} catch (DriverException) {
+		}
+
+		throw new \InvalidArgumentException("Table '$name' not found.");
 	}
 
 

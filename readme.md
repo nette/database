@@ -1,25 +1,26 @@
-Nette Database
-==============
+[![Nette Database](https://github.com/nette/database/assets/194960/97d8f31b-096c-466c-a76f-f5b9e511ea8d)](https://doc.nette.org/database)
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/nette/database.svg)](https://packagist.org/packages/nette/database)
 [![Tests](https://github.com/nette/database/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/nette/database/actions)
 [![Latest Stable Version](https://poser.pugx.org/nette/database/v/stable)](https://github.com/nette/database/releases)
 [![License](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://github.com/nette/database/blob/master/license.md)
 
+ <!---->
 
 Introduction
 ------------
 
 Nette provides a powerful layer for accessing your database easily.
 
-- composes SQL queries with ease
-- easily fetches data
-- uses efficient queries and does not transmit unnecessary data
+✅ composes SQL queries with ease<br>
+✅ significantly simplifies retrieving data without writing SQL queries<br>
+✅ uses efficient queries and does not transmit unnecessary data
 
-The [Nette Database Core](https://doc.nette.org/database-core) is a wrapper around the PDO and provides core functionality.
+The [Nette Database Core](https://doc.nette.org/en/database/core) is a wrapper around the PDO and provides core functionality.
 
-The [Nette Database Explorer](https://doc.nette.org/database-explorer) layer helps you to fetch database data more easily and in a more optimized way.
+The [Nette Database Explorer](https://doc.nette.org/en/database/explorer) layer helps you to fetch database data more easily and in a more optimized way.
 
+ <!---->
 
 [Support Me](https://github.com/sponsors/dg)
 --------------------------------------------
@@ -30,6 +31,7 @@ Do you like Nette Database? Are you looking forward to the new features?
 
 Thank you!
 
+ <!---->
 
 Installation
 ------------
@@ -42,12 +44,14 @@ composer require nette/database
 
 It requires PHP version 8.1 and supports PHP up to 8.3.
 
+ <!---->
 
 Usage
 -----
 
 This is just a piece of documentation. [Please see our website](https://doc.nette.org/database).
 
+ <!---->
 
 Database Core
 -------------
@@ -70,6 +74,8 @@ $database->query('INSERT INTO users', [ // an array can be a parameter
 $database->query('UPDATE users SET ? WHERE id=?', $data, $id);
 $database->query('SELECT * FROM categories WHERE id=?', 123)->dump();
 ```
+
+ <!---->
 
 Database Explorer
 -----------------

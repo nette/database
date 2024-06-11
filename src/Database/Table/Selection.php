@@ -78,7 +78,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		$this->name = $tableName;
 
 		$this->cache = $cacheStorage
-			? new Nette\Caching\Cache($cacheStorage, 'Nette.Database.' . md5($explorer->getConnection()->getDsn()))
+			? new Nette\Caching\Cache($cacheStorage, 'Nette.Database.' . hash('xxh128', $explorer->getConnection()->getDsn()))
 			: null;
 		$this->primary = $conventions->getPrimary($tableName);
 		$this->sqlBuilder = new SqlBuilder($tableName, $explorer);
@@ -649,7 +649,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		}
 
 		$key[] = $trace;
-		return $this->generalCacheKey = md5(serialize($key));
+		return $this->generalCacheKey = hash('xxh128', serialize($key));
 	}
 
 

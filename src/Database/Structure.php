@@ -28,7 +28,7 @@ class Structure implements IStructure
 	public function __construct(Connection $connection, Nette\Caching\Storage $cacheStorage)
 	{
 		$this->connection = $connection;
-		$this->cache = new Nette\Caching\Cache($cacheStorage, 'Nette.Database.Structure.' . md5($this->connection->getDsn()));
+		$this->cache = new Nette\Caching\Cache($cacheStorage, 'Nette.Database.Structure.' . hash('xxh128', $connection->getDsn()));
 	}
 
 

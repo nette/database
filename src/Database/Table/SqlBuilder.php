@@ -832,7 +832,7 @@ class SqlBuilder
 			}
 		}
 
-		return md5($condition . json_encode($parameters));
+		return hash('xxh128', $condition . json_encode($parameters));
 	}
 
 

@@ -37,7 +37,7 @@ class Connection
 		#[\SensitiveParameter]
 		private readonly ?string $user = null,
 		#[\SensitiveParameter]
-		private readonly ?string $password = null,
+		private readonly string|CredentialProvider|null $password = null,
 		private readonly array $options = [],
 	) {
 		$this->rowNormalizer = new RowNormalizer;
@@ -62,8 +62,12 @@ class Connection
 			throw new ConnectionException("Invalid data source '$dsn'.");
 		}
 
+		$password = $this->password instanceof CredentialProvider
+			? $this->password->getPassword($this)
+			: $this->password;
+
 		$this->driver = new $class;
-		$this->driver->connect($this->dsn, $this->user, $this->password, $this->options);
+		$this->driver->connect($this->dsn, $this->user, $password, $this->options);
 		$this->preprocessor = new SqlPreprocessor($this);
 		Arrays::invoke($this->onConnect, $this);
 	}

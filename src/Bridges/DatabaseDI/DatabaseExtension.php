@@ -34,7 +34,10 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			Expect::structure([
 				'dsn' => Expect::string()->required()->dynamic(),
 				'user' => Expect::string()->nullable()->dynamic(),
-				'password' => Expect::string()->nullable()->dynamic(),
+				'password' => Expect::anyOf(
+					Expect::string()->nullable()->dynamic(),
+					Expect::type(Nette\Database\CredentialProvider::class)->nullable(),
+				),
 				'options' => Expect::array(),
 				'debugger' => Expect::bool(),
 				'explain' => Expect::bool(true),

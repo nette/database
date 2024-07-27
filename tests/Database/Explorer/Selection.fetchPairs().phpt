@@ -45,3 +45,22 @@ test('', function () use ($explorer) {
 		'2002-02-20 00:00:00.000000' => 'Jakub Vrana',
 	], $list);
 });
+
+
+test('with callback', function () use ($explorer) {
+	$pairs = $explorer->table('book')->order('title')->fetchPairs(fn($row) => [$row->id, substr($row->title, 0, 4)]);
+	Assert::same([
+		1 => '1001',
+		4 => 'Dibi',
+		2 => 'JUSH',
+		3 => 'Nett',
+	], $pairs);
+
+	$pairs = $explorer->table('book')->order('title')->fetchPairs(fn($row) => [substr($row->title, 0, 4)]);
+	Assert::same([
+		'1001',
+		'Dibi',
+		'JUSH',
+		'Nett',
+	], $pairs);
+});

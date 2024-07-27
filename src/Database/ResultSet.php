@@ -228,9 +228,9 @@ class ResultSet implements \Iterator, IRowContainer
 	/**
 	 * Fetches all rows as associative array.
 	 */
-	public function fetchPairs(string|int|null $key = null, string|int|null $value = null): array
+	public function fetchPairs(string|int|\Closure|null $keyOrCallback = null, string|int|null $value = null): array
 	{
-		return Helpers::toPairs($this->fetchAll(), $key, $value);
+		return Helpers::toPairs($this->fetchAll(), $keyOrCallback, $value);
 	}
 
 

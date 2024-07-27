@@ -134,3 +134,22 @@ $pairs = $connection->query('SELECT 1.5 AS k, 1 AS v')->fetchPairs();
 Assert::equal([
 	'1.5' => 1,
 ], $pairs);
+
+
+test('with callback', function () use ($connection) {
+	$pairs = $connection->query('SELECT title, id FROM book ORDER BY title')->fetchPairs(fn($row) => [$row->id, substr($row->title, 0, 4)]);
+	Assert::same([
+		1 => '1001',
+		4 => 'Dibi',
+		2 => 'JUSH',
+		3 => 'Nett',
+	], $pairs);
+
+	$pairs = $connection->query('SELECT title, id FROM book ORDER BY title')->fetchPairs(fn($row) => [substr($row->title, 0, 4)]);
+	Assert::same([
+		'1001',
+		'Dibi',
+		'JUSH',
+		'Nett',
+	], $pairs);
+});

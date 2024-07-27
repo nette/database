@@ -328,17 +328,16 @@ class Helpers
 	/**
 	 * Reformat source to key -> value pairs.
 	 */
-	public static function toPairs(array $rows, string|int|null $key = null, string|int|null $value = null): array
+	public static function toPairs(array $rows, string|int|\Closure|null $key, string|int|null $value): array
 	{
-		if (!$rows) {
-			return [];
-		}
-
-		$keys = array_keys((array) reset($rows));
-		if (!count($keys)) {
-			throw new \LogicException('Result set does not contain any column.');
-
-		} elseif ($key === null && $value === null) {
+		if ($key === null && $value === null) {
+			if (!$rows) {
+				return [];
+			}
+			$keys = array_keys((array) reset($rows));
+			if (!count($keys)) {
+				throw new \LogicException('Result set does not contain any column.');
+			}
 			if (count($keys) === 1) {
 				[$value] = $keys;
 			} else {
@@ -350,6 +349,15 @@ class Helpers
 		if ($key === null) {
 			foreach ($rows as $row) {
 				$return[] = ($value === null ? $row : $row[$value]);
+			}
+		} elseif ($key instanceof \Closure) {
+			foreach ($rows as $row) {
+				$tuple = $key($row);
+				if (count($tuple) === 1) {
+					$return[] = $tuple[0];
+				} else {
+					$return[$tuple[0]] = $tuple[1];
+				}
 			}
 		} else {
 			foreach ($rows as $row) {

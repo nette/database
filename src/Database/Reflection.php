@@ -35,7 +35,21 @@ final class Reflection
 	public function getTable(string $name): Table
 	{
 		$name = $this->getFullName($name);
-		return $this->tables[$name] ?? throw new \InvalidArgumentException("Table '$name' not found.");
+		return $this->tables[$name]
+			?? $this->tryGetTable($name)
+			?? throw new \InvalidArgumentException("Table '$name' not found.");
+	}
+
+
+	private function tryGetTable(string $name): ?Table
+	{
+		try {
+			$table = new Table($this, $name);
+			$table->columns;
+			return $table;
+		} catch (DriverException) {
+		}
+		return null;
 	}
 
 

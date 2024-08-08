@@ -82,7 +82,7 @@ jobs:
                     - 1433:1433
                 options: >-
                     --name=mssql
-                    --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'"
+                    --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1' -N -C"
                     --health-interval 10s
                     --health-timeout 5s
                     --health-retries 5
@@ -100,7 +100,7 @@ jobs:
               run: cp ./tests/databases.github.ini ./tests/Database/databases.ini
 
             - name: Create MS SQL Database
-              run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE nette_test'
+              run: docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE nette_test' -N -C
 
             - run: composer install --no-progress --prefer-dist
             - run: vendor/bin/tester tests -s -C

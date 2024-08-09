@@ -216,10 +216,9 @@ class Helpers
 				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
 
 			} elseif ($type === IStructure::FIELD_FLOAT || $type === IStructure::FIELD_DECIMAL) {
-				if (is_string($value) && ($pos = strpos($value, '.')) !== false) {
-					$value = rtrim(rtrim($pos === 0 ? "0$value" : $value, '0'), '.');
+				if (is_string($value) && str_starts_with($value, '.')) {
+					$value = '0' . $value;
 				}
-
 				$row[$key] = (float) $value;
 
 			} elseif ($type === IStructure::FIELD_BOOL) {

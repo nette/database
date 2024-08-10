@@ -6,7 +6,6 @@ parameters:
 
 	excludePaths:
 		- src/compatibility.php
-		- src/compatibility-intf.php
 
 	fileExtensions:
 		- php

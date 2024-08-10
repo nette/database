@@ -18,7 +18,7 @@ use function array_values, count, gettype, is_int, iterator_to_array, microtime,
 /**
  * Represents a database result set.
  */
-class ResultSet implements \Iterator, IRowContainer
+class ResultSet implements \Iterator
 {
 	private ?\PDOStatement $pdoStatement = null;
 	private Row|false|null $lastRow = null;

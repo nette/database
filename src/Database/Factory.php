@@ -13,6 +13,7 @@ namespace Nette\Database;
 final class Factory
 {
 	private const Drivers = [
+		'mysqli' => Drivers\MySQLi\Connection::class,
 		'pdo-mssql' => Drivers\PDO\MSSQL\Connection::class,
 		'pdo-mysql' => Drivers\PDO\MySQL\Connection::class,
 		'pdo-oci' => Drivers\PDO\OCI\Connection::class,

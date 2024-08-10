@@ -20,7 +20,7 @@ use function array_filter, array_intersect_key, array_keys, array_map, array_mer
  * @implements \Iterator<string|int, T>
  * @implements \ArrayAccess<string|int, T>
  */
-class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
+class Selection implements \Iterator, \ArrayAccess, \Countable
 {
 	protected readonly Explorer $explorer;
 

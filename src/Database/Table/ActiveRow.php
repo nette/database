@@ -16,7 +16,7 @@ use function array_intersect_key, array_key_exists, array_keys, implode, is_arra
  * ActiveRow is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
  * @implements \IteratorAggregate<string, mixed>
  */
-class ActiveRow implements \IteratorAggregate, IRow
+class ActiveRow implements \IteratorAggregate, \ArrayAccess
 {
 	private bool $dataRefreshed = false;
 

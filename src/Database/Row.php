@@ -16,7 +16,7 @@ use function array_keys, array_map, array_slice, current, is_int;
 /**
  * Represents a single database table row.
  */
-class Row extends Nette\Utils\ArrayHash implements IRow
+class Row extends Nette\Utils\ArrayHash
 {
 	public function __get(mixed $key): mixed
 	{
@@ -63,3 +63,6 @@ class Row extends Nette\Utils\ArrayHash implements IRow
 		return parent::offsetExists($key);
 	}
 }
+
+
+class_alias(Row::class, IRow::class);

@@ -42,6 +42,3 @@ interface Conventions
 	 */
 	function getBelongsToReference(string $table, string $key): ?array;
 }
-
-
-interface_exists(IConventions::class);

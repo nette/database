@@ -84,6 +84,3 @@ interface Driver
 	 */
 	function isSupported(string $item): bool;
 }
-
-
-interface_exists(ISupplementalDriver::class);

@@ -45,16 +45,6 @@ parameters:
 			count: 4
 			path: src/Database/Reflection/Table.php
 
-		# Deprecated interfaces without generic types
-		-
-			identifier: missingType.generics
-			count: 2
-			path: src/Database/IRow.php
-		-
-			identifier: missingType.generics
-			count: 1
-			path: src/Database/IRowContainer.php
-
 		# Generic conflicts from deprecated IRowContainer/IRow extending Traversable without type params
 		-
 			identifier: generics.interfaceConflict

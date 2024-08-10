@@ -17,7 +17,7 @@ use function count, gettype, is_float, is_int;
  * Represents a database result set.
  * @implements \Iterator<int, Row>
  */
-class ResultSet implements \Iterator, IRowContainer
+class ResultSet implements \Iterator
 {
 	private ?\PDOStatement $pdoStatement = null;
 	private Row|false|null $lastRow = null;

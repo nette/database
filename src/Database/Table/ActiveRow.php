@@ -16,7 +16,7 @@ use Nette;
  * Represents database row with support for relations.
  * ActiveRow is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
  */
-class ActiveRow implements \IteratorAggregate, IRow
+class ActiveRow implements \IteratorAggregate, \ArrayAccess
 {
 	private bool $dataRefreshed = false;
 

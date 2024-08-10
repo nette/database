@@ -21,7 +21,7 @@ use Nette\Database\Explorer;
  * @implements \Iterator<T>
  * @implements \ArrayAccess<T>
  */
-class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
+class Selection implements \Iterator, \ArrayAccess, \Countable
 {
 	protected readonly Explorer $explorer;
 

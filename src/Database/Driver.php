@@ -86,6 +86,3 @@ interface Driver
 	 */
 	function getColumnTypes(\PDOStatement $statement): array;
 }
-
-
-interface_exists(ISupplementalDriver::class);

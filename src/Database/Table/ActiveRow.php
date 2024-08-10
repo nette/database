@@ -16,7 +16,7 @@ use function array_key_exists, is_array, is_string;
  * ActiveRow is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
  * @implements \IteratorAggregate<string, mixed>
  */
-class ActiveRow implements \IteratorAggregate, IRow
+class ActiveRow implements \IteratorAggregate, \ArrayAccess
 {
 	private bool $dataRefreshed = false;
 

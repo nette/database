@@ -19,7 +19,7 @@ use function count, func_num_args, is_array, is_int;
  * @implements \Iterator<string|int, T>
  * @implements \ArrayAccess<string|int, T>
  */
-class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
+class Selection implements \Iterator, \ArrayAccess, \Countable
 {
 	protected readonly Explorer $explorer;
 

@@ -17,7 +17,7 @@ use PDO;
 /**
  * Represents a result set.
  */
-class ResultSet implements \Iterator, IRowContainer
+class ResultSet implements \Iterator
 {
 	private ?\PDOStatement $pdoStatement = null;
 

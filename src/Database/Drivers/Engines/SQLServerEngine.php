@@ -227,8 +227,6 @@ class SQLServerEngine implements Engine
 		return match ($meta['nativeType']) {
 			'timestamp' => null, // timestamp does not mean time in sqlsrv
 			'bit' => $converter->convertBoolean ? $converter->toBool(...) : null,
-			'decimal', 'numeric',
-			'double', 'double precision', 'float', 'real', 'money', 'smallmoney' => fn($value): float => (float) (is_string($value) && str_starts_with($value, '.') ? '0' . $value : $value),
 			default => $converter->resolve($meta['nativeType']),
 		};
 	}

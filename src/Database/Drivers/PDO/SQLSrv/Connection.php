@@ -25,6 +25,12 @@ class Connection extends Drivers\PDO\Connection
 	}
 
 
+	protected function initialize(array $options): void
+	{
+		$this->pdo->setAttribute(\PDO::SQLSRV_ATTR_FORMAT_DECIMALS, true);
+	}
+
+
 	public function getMetaTypeKey(): string
 	{
 		return 'sqlsrv:decl_type';

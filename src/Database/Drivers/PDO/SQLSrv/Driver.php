@@ -33,6 +33,7 @@ class Driver implements Drivers\Driver
 	{
 		$connection = new Drivers\PDO\Connection(self::EngineClass, ...$this->params);
 		$connection->metaTypeKey = 'sqlsrv:decl_type';
+		$connection->pdo->setAttribute(\PDO::SQLSRV_ATTR_FORMAT_DECIMALS, true);
 		return $connection;
 	}
 

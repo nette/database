@@ -21,7 +21,7 @@ class ResultSet implements \Iterator, IRowContainer
 	private ?\PDOStatement $pdoStatement = null;
 
 	/** @var callable(array, ResultSet): array */
-	private $normalizer;
+	private readonly mixed $normalizer;
 	private Row|false|null $lastRow = null;
 	private int $lastRowKey = -1;
 

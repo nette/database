@@ -23,9 +23,9 @@ use Nette\Database\SqlLiteral;
  */
 class SqlBuilder
 {
-	protected string $tableName;
-	protected Conventions $conventions;
-	protected string $delimitedTable;
+	protected readonly string $tableName;
+	protected readonly Conventions $conventions;
+	protected readonly string $delimitedTable;
 	protected array $select = [];
 	protected array $where = [];
 	protected array $joinCondition = [];
@@ -46,8 +46,8 @@ class SqlBuilder
 	protected array $reservedTableNames = [];
 	protected array $aliases = [];
 	protected string $currentAlias = '';
-	private Driver $driver;
-	private IStructure $structure;
+	private readonly Driver $driver;
+	private readonly IStructure $structure;
 	private array $cacheTableList = [];
 	private array $expandingJoins = [];
 

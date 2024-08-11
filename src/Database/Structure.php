@@ -17,8 +17,8 @@ use Nette;
  */
 class Structure implements IStructure
 {
-	protected Connection $connection;
-	protected Nette\Caching\Cache $cache;
+	protected readonly Connection $connection;
+	protected readonly Nette\Caching\Cache $cache;
 
 	/** @var array{tables: array, columns: array, primary: array, aliases: array, hasMany: array, belongsTo: array} */
 	protected array $structure;

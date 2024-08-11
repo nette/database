@@ -48,8 +48,8 @@ class SqlPreprocessor
 		'EXPLAIN' => 1,
 	];
 
-	private Connection $connection;
-	private Driver $driver;
+	private readonly Connection $connection;
+	private readonly Driver $driver;
 	private array $params;
 	private array $remaining;
 	private int $counter;

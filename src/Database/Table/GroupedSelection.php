@@ -21,13 +21,13 @@ use Nette\Database\Explorer;
 class GroupedSelection extends Selection
 {
 	/** referenced table */
-	protected Selection $refTable;
+	protected readonly Selection $refTable;
 
 	/** current assigned referencing array */
 	protected mixed $refCacheCurrent;
 
 	/** grouping column name */
-	protected string $column;
+	protected readonly string $column;
 
 	/** primary key */
 	protected int|string $active;

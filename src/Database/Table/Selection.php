@@ -23,19 +23,19 @@ use Nette\Database\Explorer;
  */
 class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 {
-	protected Explorer $explorer;
+	protected readonly Explorer $explorer;
 
 	/** back compatibility */
 	protected Explorer $context;
-	protected Conventions $conventions;
-	protected ?Nette\Caching\Cache $cache;
+	protected readonly Conventions $conventions;
+	protected readonly ?Nette\Caching\Cache $cache;
 	protected SqlBuilder $sqlBuilder;
 
 	/** table name */
-	protected string $name;
+	protected readonly string $name;
 
 	/** @var string|string[]|null primary key field name */
-	protected string|array|null $primary;
+	protected readonly string|array|null $primary;
 
 	/** primary column sequence name, false for autodetection */
 	protected string|bool|null $primarySequence = false;

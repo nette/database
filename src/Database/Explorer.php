@@ -82,7 +82,7 @@ class Explorer
 
 	public function table(string $table): Table\Selection
 	{
-		return new Table\Selection($this, $this->conventions, $table, $this->cacheStorage);
+		return new Table\Selection($this, $table);
 	}
 
 
@@ -101,6 +101,14 @@ class Explorer
 	public function getConventions(): Conventions
 	{
 		return $this->conventions;
+	}
+
+
+	public function createCache(): ?Nette\Caching\Cache
+	{
+		return $this->cacheStorage
+			? new Nette\Caching\Cache($this->cacheStorage, 'Nette.Database.' . hash('xxh128', $this->connection->getDsn()))
+			: null;
 	}
 
 

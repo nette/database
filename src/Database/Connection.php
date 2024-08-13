@@ -155,7 +155,7 @@ class Connection
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
 		}
 
-		$this->query('::beginTransaction');
+		$this->getConnectionDriver()->beginTransaction();
 	}
 
 
@@ -165,7 +165,7 @@ class Connection
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
 		}
 
-		$this->query('::commit');
+		$this->getConnectionDriver()->commit();
 	}
 
 
@@ -175,7 +175,7 @@ class Connection
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
 		}
 
-		$this->query('::rollBack');
+		$this->getConnectionDriver()->rollBack();
 	}
 
 
@@ -214,14 +214,17 @@ class Connection
 	{
 		[$this->sql, $params] = $this->preprocess($sql, ...$params);
 		try {
-			$result = new ResultSet($this, $this->sql, $params, $this->rowNormalizer);
+			$time = microtime(true);
+			$result = $this->connection->query($this->sql, $params);
+			$time = microtime(true) - $time;
+			$resultSet = new ResultSet($this, $result, new SqlLiteral($this->sql, $params), $this->rowNormalizer, $time);
 		} catch (DriverException $e) {
 			Arrays::invoke($this->onQuery, $this, $e);
 			throw $e;
 		}
 
-		Arrays::invoke($this->onQuery, $this, $result);
-		return $result;
+		Arrays::invoke($this->onQuery, $this, $resultSet);
+		return $resultSet;
 	}
 
 

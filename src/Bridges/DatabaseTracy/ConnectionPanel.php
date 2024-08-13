@@ -12,6 +12,7 @@ namespace Nette\Bridges\DatabaseTracy;
 use Nette;
 use Nette\Database\Connection;
 use Nette\Database\Helpers;
+use Nette\Database\ResultSet;
 use Tracy;
 
 
@@ -155,7 +156,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 					$cmd = is_string($this->explain)
 						? $this->explain
 						: 'EXPLAIN';
-					$explain = (new Nette\Database\ResultSet($connection, "$cmd $sql", $params))->fetchAll();
+					$explain = (new ResultSet($connection, $connection->getConnectionDriver()->query("$cmd $sql", $params)))->fetchAll();
 				} catch (\PDOException) {
 				}
 			}

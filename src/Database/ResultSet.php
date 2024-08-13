@@ -17,8 +17,6 @@ use Nette;
  */
 class ResultSet implements \Iterator
 {
-	private readonly ?Drivers\Result $result;
-
 	/** @var callable(array, ResultSet): array */
 	private readonly mixed $normalizer;
 	private Row|false|null $lastRow = null;
@@ -26,24 +24,17 @@ class ResultSet implements \Iterator
 
 	/** @var Row[] */
 	private array $rows;
-	private float $time;
 	private array $converters;
 
 
 	public function __construct(
 		private readonly Connection $connection,
-		private readonly string $queryString,
-		private readonly array $params,
+		private readonly Drivers\Result $result,
+		private readonly ?SqlLiteral $query = null,
 		?callable $normalizer = null,
+		private ?float $time = null,
 	) {
-		$time = microtime(true);
 		$this->normalizer = $normalizer;
-		if (str_starts_with($queryString, '::')) {
-			$connection->getConnectionDriver()->{substr($queryString, 2)}();
-		} else {
-			$this->result = $connection->getConnectionDriver()->query($queryString, $params);
-		}
-		$this->time = microtime(true) - $time;
 	}
 
 
@@ -55,27 +46,27 @@ class ResultSet implements \Iterator
 	}
 
 
-	public function getQueryString(): string
+	public function getQueryString(): ?string
 	{
-		return $this->queryString;
+		return $this->query?->getSql();
 	}
 
 
 	public function getParameters(): array
 	{
-		return $this->params;
+		return $this->query?->getParameters();
 	}
 
 
 	public function getColumnCount(): ?int
 	{
-		return $this->result?->getColumnCount();
+		return $this->result->getColumnCount();
 	}
 
 
 	public function getRowCount(): ?int
 	{
-		return $this->result?->getRowCount();
+		return $this->result->getRowCount();
 	}
 
 
@@ -150,7 +141,7 @@ class ResultSet implements \Iterator
 	 */
 	public function fetch(): ?Row
 	{
-		$data = $this->result?->fetch();
+		$data = $this->result->fetch();
 		if ($data === null) {
 			return null;
 
@@ -174,7 +165,7 @@ class ResultSet implements \Iterator
 	/** @internal */
 	public function fetchAssociative(): ?array
 	{
-		return $this->result?->fetch();
+		return $this->result->fetch();
 	}
 
 

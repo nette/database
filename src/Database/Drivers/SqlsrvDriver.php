@@ -18,13 +18,11 @@ use Nette;
 class SqlsrvDriver implements Nette\Database\Driver
 {
 	private Nette\Database\Connection $connection;
-	private string $version;
 
 
 	public function initialize(Nette\Database\Connection $connection, array $options): void
 	{
 		$this->connection = $connection;
-		$this->version = $connection->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION);
 	}
 
 
@@ -70,16 +68,6 @@ class SqlsrvDriver implements Nette\Database\Driver
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
 
-		} elseif (version_compare($this->version, '11', '<')) { // 11 == SQL Server 2012
-			if ($offset) {
-				throw new Nette\NotSupportedException('Offset is not supported by this database.');
-
-			} elseif ($limit !== null) {
-				$sql = preg_replace('#^\s*(SELECT(\s+DISTINCT|\s+ALL)?|UPDATE|DELETE)#i', '$0 TOP ' . $limit, $sql, 1, $count);
-				if (!$count) {
-					throw new Nette\InvalidArgumentException('SQL query must begin with SELECT, UPDATE or DELETE command.');
-				}
-			}
 		} elseif ($limit !== null || $offset) {
 			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
 			$sql .= ' OFFSET ' . (int) $offset . ' ROWS '

@@ -60,7 +60,6 @@ class Connection
 
 		try {
 			$this->pdo = new PDO($this->dsn, $this->user, $this->password, $this->options);
-			$this->pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		} catch (PDOException $e) {
 			throw ConnectionException::from($e);
 		}

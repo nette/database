@@ -451,7 +451,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			return $this->explorer->query($query, ...$selection->getSqlBuilder()->getParameters())->fetch()->groupaggregate;
 		} else {
 			$selection->select($function);
-			foreach ($selection->fetch() as $val) {
+			foreach ($selection->fetch() ?? [] as $val) {
 				return $val;
 			}
 			return null;

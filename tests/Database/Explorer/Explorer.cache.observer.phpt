@@ -18,12 +18,12 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-$cacheStorage = Mockery::mock(Nette\Caching\Istorage::class);
-$cacheStorage->shouldReceive('read')->withAnyArgs()->once()->andReturn(['id' => true]);
-$cacheStorage->shouldReceive('read')->withAnyArgs()->times(4)->andReturn(['id' => true, 'author_id' => true]);
-$cacheStorage->shouldReceive('write')->with(Mockery::any(), ['id' => true, 'author_id' => true, 'title' => true], []);
+$cache = Mockery::mock(Nette\Caching\Cache::class);
+$cache->shouldReceive('load')->withAnyArgs()->once()->andReturn(['id' => true]);
+$cache->shouldReceive('load')->withAnyArgs()->times(4)->andReturn(['id' => true, 'author_id' => true]);
+$cache->shouldReceive('save')->with(Mockery::any(), ['id' => true, 'author_id' => true, 'title' => true]);
 
-$explorer = new Nette\Database\Explorer($connection, $explorer->getStructure(), $explorer->getConventions(), $cacheStorage);
+$explorer = new Nette\Database\Explorer($connection, $explorer->getStructure(), $explorer->getConventions(), $cache);
 
 $queries = 0;
 $connection->onQuery[] = function ($dao, Result $result) use (&$queries) {

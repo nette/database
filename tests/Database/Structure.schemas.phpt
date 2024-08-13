@@ -6,6 +6,7 @@
 
 declare(strict_types=1);
 
+use Mockery\MockInterface;
 use Nette\Database\Structure;
 use Tester\Assert;
 use Tester\TestCase;
@@ -29,21 +30,17 @@ class StructureMock extends Structure
  */
 class StructureSchemasTestCase extends TestCase
 {
-	private Nette\Database\Connection $connection;
-	private Nette\Database\Drivers\Engine $engine;
-	private Nette\Caching\Storage $storage;
-	private Structure $structure;
+	private Nette\Database\Drivers\Engine|MockInterface $engine;
+	private Nette\Caching\Cache|MockInterface $cache;
+	private Structure|MockInterface $structure;
 
 
 	protected function setUp()
 	{
 		parent::setUp();
 		$this->engine = Mockery::mock(Nette\Database\Drivers\Engine::class);
-		$this->connection = Mockery::mock(Nette\Database\Connection::class);
-		$this->storage = Mockery::mock(Nette\Caching\Storage::class);
+		$this->cache = Mockery::mock(Nette\Caching\Cache::class);
 
-		$this->connection->shouldReceive('getDsn')->once()->andReturn('');
-		$this->connection->shouldReceive('getDatabaseEngine')->once()->andReturn($this->engine);
 		$this->engine->shouldReceive('getTables')->once()->andReturn([
 			['name' => 'authors', 'view' => false, 'fullName' => 'authors.authors'],
 			['name' => 'books', 'view' => false, 'fullName' => 'books.books'],
@@ -57,14 +54,13 @@ class StructureSchemasTestCase extends TestCase
 			['name' => 'title', 'primary' => false, 'vendor' => []],
 		]);
 
-		$this->connection->shouldReceive('getDatabaseEngine')->times(2)->andReturn($this->engine);
 		$this->engine->shouldReceive('getForeignKeys')->with('authors.authors')->once()->andReturn([]);
 		$this->engine->shouldReceive('getForeignKeys')->with('books.books')->once()->andReturn([
 			['local' => ['author_id'], 'table' => 'authors.authors', 'foreign' => ['id'], 'name' => 'authors_authors_fk1'],
 			['local' => ['translator_id'], 'table' => 'authors.authors', 'foreign' => ['id'], 'name' => 'authors_authors_fk2'],
 		]);
 
-		$this->structure = new StructureMock($this->connection, $this->storage);
+		$this->structure = new StructureMock($this->engine, $this->cache);
 	}
 
 

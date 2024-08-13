@@ -7,6 +7,7 @@
 
 declare(strict_types=1);
 
+use Nette\Caching\Cache;
 use Nette\Caching\Storages\DevNullStorage;
 use Nette\Database\Structure;
 use Tester\Assert;
@@ -25,7 +26,7 @@ test('non lazy', function () {
 
 test('lazy & explorer', function () {
 	$connection = new Nette\Database\Connection('mysql:', 'user', 'password', ['lazy' => true]);
-	$explorer = new Nette\Database\Explorer($connection, new Structure($connection, new DevNullStorage));
+	$explorer = new Nette\Database\Explorer($connection, new Structure($connection->getDatabaseEngine(), new Cache(new DevNullStorage)));
 	Assert::exception(
 		fn() => $explorer->query('SELECT ?', 10),
 		Nette\Database\DriverException::class,

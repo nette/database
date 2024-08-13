@@ -41,9 +41,9 @@ function connectToDB(array $options = []): Nette\Database\Explorer
 	}
 
 	$driverName = $connection->getConnection()->getNativeConnection()->getAttribute(PDO::ATTR_DRIVER_NAME);
-	$cacheMemoryStorage = new Nette\Caching\Storages\MemoryStorage;
 
-	$structure = new Nette\Database\Structure($connection, $cacheMemoryStorage);
+	$cacheMemoryStorage = new Nette\Caching\Cache(new Nette\Caching\Storages\MemoryStorage);
+	$structure = new Nette\Database\Structure($connection->getDatabaseEngine(), $cacheMemoryStorage);
 	$conventions = new Nette\Database\Conventions\DiscoveredConventions($structure);
 	$explorer = new Nette\Database\Explorer($connection, $structure, $conventions, $cacheMemoryStorage);
 

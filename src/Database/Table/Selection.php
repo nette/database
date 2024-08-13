@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Nette\Database\Table;
 
 use Nette;
-use Nette\Database\Conventions;
 use Nette\Database\Explorer;
 
 
@@ -24,10 +23,6 @@ use Nette\Database\Explorer;
 class Selection implements \Iterator, \ArrayAccess, \Countable
 {
 	protected readonly Explorer $explorer;
-
-	/** back compatibility */
-	protected Explorer $context;
-	protected readonly Conventions $conventions;
 	protected readonly ?Nette\Caching\Cache $cache;
 	protected SqlBuilder $sqlBuilder;
 
@@ -72,18 +67,12 @@ class Selection implements \Iterator, \ArrayAccess, \Countable
 	 */
 	public function __construct(
 		Explorer $explorer,
-		Conventions $conventions,
 		string $tableName,
-		?Nette\Caching\Storage $cacheStorage = null,
 	) {
-		$this->explorer = $this->context = $explorer;
-		$this->conventions = $conventions;
+		$this->explorer = $explorer;
 		$this->name = $tableName;
-
-		$this->cache = $cacheStorage
-			? new Nette\Caching\Cache($cacheStorage, 'Nette.Database.' . hash('xxh128', $explorer->getConnection()->getDsn()))
-			: null;
-		$this->primary = $conventions->getPrimary($tableName);
+		$this->cache = $explorer->getCache();
+		$this->primary = $explorer->getConventions()->getPrimary($tableName);
 		$this->sqlBuilder = new SqlBuilder($tableName, $explorer);
 		$this->refCache = &$this->getRefTable($refPath)->globalRefCache[$refPath];
 	}
@@ -555,13 +544,13 @@ class Selection implements \Iterator, \ArrayAccess, \Countable
 
 	public function createSelectionInstance(?string $table = null): self
 	{
-		return new self($this->explorer, $this->conventions, $table ?: $this->name, $this->cache?->getStorage());
+		return new self($this->explorer, $table ?: $this->name);
 	}
 
 
 	protected function createGroupedSelectionInstance(string $table, string $column): GroupedSelection
 	{
-		return new GroupedSelection($this->explorer, $this->conventions, $table, $column, $this, $this->cache?->getStorage());
+		return new GroupedSelection($this->explorer, $table, $column, $this);
 	}
 
 
@@ -886,7 +875,7 @@ class Selection implements \Iterator, \ArrayAccess, \Countable
 	public function getReferencedTable(ActiveRow $row, ?string $table, ?string $column = null): ActiveRow|false|null
 	{
 		if (!$column) {
-			$belongsTo = $this->conventions->getBelongsToReference($this->name, $table);
+			$belongsTo = $this->explorer->getConventions()->getBelongsToReference($this->name, $table);
 			if (!$belongsTo) {
 				return false;
 			}
@@ -939,7 +928,7 @@ class Selection implements \Iterator, \ArrayAccess, \Countable
 		if (str_contains($table, '.')) {
 			[$table, $column] = explode('.', $table);
 		} elseif (!$column) {
-			$hasMany = $this->conventions->getHasManyReference($this->name, $table);
+			$hasMany = $this->explorer->getConventions()->getHasManyReference($this->name, $table);
 			if (!$hasMany) {
 				return null;
 			}

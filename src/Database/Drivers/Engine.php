@@ -66,7 +66,7 @@ interface Engine
 	/** @return list<array{name: string, columns: list<string>, unique: bool, primary: bool}> */
 	function getIndexes(string $table): array;
 
-	/** @return list<array{name: string, local: string, table: string, foreign: string}> */
+	/** @return list<array{name: string, local: list<string>, table: string, foreign: list<string>}> */
 	function getForeignKeys(string $table): array;
 
 	function resolveColumnConverter(array $meta, TypeConverter $converter): ?\Closure;

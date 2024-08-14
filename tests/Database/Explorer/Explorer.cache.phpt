@@ -9,7 +9,10 @@ declare(strict_types=1);
 
 use Tester\Assert;
 
-require __DIR__ . '/../connect.inc.php'; // create $connection
+require __DIR__ . '/../../bootstrap.php';
+
+$explorer = connectToDB();
+$connection = $explorer->getConnection();
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
@@ -79,6 +82,7 @@ test('Testing GroupedSelection reinvalidation caching', function () use ($explor
 });
 
 
+$cacheMemoryStorage = new Nette\Caching\Storages\MemoryStorage;
 setUp(fn() => $cacheMemoryStorage->clean([Nette\Caching\Cache::ALL => true]));
 
 

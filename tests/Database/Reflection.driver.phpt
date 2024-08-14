@@ -10,7 +10,10 @@ declare(strict_types=1);
 use Nette\Database\Driver;
 use Tester\Assert;
 
-require __DIR__ . '/connect.inc.php'; // create $connection
+require __DIR__ . '/../bootstrap.php';
+
+$explorer = connectToDB();
+$connection = $explorer->getConnection();
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
 
@@ -187,6 +190,7 @@ switch ($driverName) {
 		Assert::fail("Unsupported driver $driverName");
 }
 
+$structure = $explorer->getStructure();
 $structure->rebuild();
 $primary = $structure->getPrimaryKey('book_tag');
 Assert::same(['book_id', 'tag_id'], $primary);

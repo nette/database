@@ -9,8 +9,9 @@ declare(strict_types=1);
 
 use Tester\Assert;
 
-require __DIR__ . '/../../connect.inc.php';
+require __DIR__ . '/../../../bootstrap.php';
 
+$explorer = connectToDB();
 
 $explorer->query('CREATE TABLE `TABLE 30` (id int)');
 

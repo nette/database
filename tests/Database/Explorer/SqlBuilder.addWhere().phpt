@@ -13,7 +13,10 @@ use Nette\Database\SqlLiteral;
 use Nette\Database\Table\SqlBuilder;
 use Tester\Assert;
 
-require __DIR__ . '/../connect.inc.php'; // create $connection
+require __DIR__ . '/../../bootstrap.php';
+
+$explorer = connectToDB();
+$connection = $explorer->getConnection();
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
@@ -241,7 +244,8 @@ Assert::exception(function () use ($explorer) {
 }, Nette\InvalidArgumentException::class, 'Column operator does not accept array argument.');
 
 
-test('', function () use ($driverName, $explorer, $connection, $structure) {
+test('', function () use ($driverName, $explorer, $connection) {
+	$structure = $explorer->getStructure();
 	switch ($driverName) {
 		case 'mysql':
 			$explorer->query('CREATE INDEX book_tag_unique ON book_tag (book_id, tag_id)');

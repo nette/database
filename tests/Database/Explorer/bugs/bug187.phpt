@@ -10,7 +10,10 @@ declare(strict_types=1);
 use Nette\Database\Table\ActiveRow;
 use Tester\Assert;
 
-require __DIR__ . '/../../connect.inc.php';
+require __DIR__ . '/../../../bootstrap.php';
+
+$explorer = connectToDB();
+$connection = $explorer->getConnection();
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-bug187.sql");
 

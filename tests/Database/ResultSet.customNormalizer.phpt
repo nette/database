@@ -8,9 +8,11 @@ declare(strict_types=1);
 
 use Tester\Assert;
 
-require __DIR__ . '/connect.inc.php'; // create $connection
+require __DIR__ . '/../bootstrap.php';
 
+$connection = connectToDB()->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
+
 $connection->query('UPDATE author SET born=?', new DateTime('2022-01-23'));
 
 

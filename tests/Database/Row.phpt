@@ -9,8 +9,9 @@ declare(strict_types=1);
 
 use Tester\Assert;
 
-require __DIR__ . '/connect.inc.php'; // create $connection
+require __DIR__ . '/../bootstrap.php';
 
+$connection = connectToDB()->getConnection();
 
 test('numeric field', function () use ($connection) {
 	$row = $connection->fetch("SELECT 123 AS {$connection->getDriver()->delimite('123')}, NULL as nullcol");

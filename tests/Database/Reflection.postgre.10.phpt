@@ -10,8 +10,9 @@ declare(strict_types=1);
 use Tester\Assert;
 use Tester\Environment;
 
-require __DIR__ . '/connect.inc.php'; // create $connection
+require __DIR__ . '/../bootstrap.php';
 
+$connection = connectToDB()->getConnection();
 
 $ver = $connection->query('SHOW server_version')->fetchField();
 if (version_compare($ver, '10') < 0) {

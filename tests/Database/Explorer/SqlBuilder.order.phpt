@@ -10,8 +10,9 @@ declare(strict_types=1);
 use Nette\Database\Table\SqlBuilder;
 use Tester\Assert;
 
-require __DIR__ . '/../connect.inc.php'; // create $connection
+require __DIR__ . '/../../bootstrap.php';
 
+$explorer = connectToDB();
 
 test('', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);

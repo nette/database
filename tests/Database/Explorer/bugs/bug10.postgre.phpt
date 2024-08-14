@@ -8,7 +8,9 @@
 declare(strict_types=1);
 
 
-require __DIR__ . '/../../connect.inc.php';
+require __DIR__ . '/../../../bootstrap.php';
+
+$explorer = connectToDB();
 
 $explorer->query('DROP SCHEMA IF EXISTS public CASCADE');
 $explorer->query('CREATE SCHEMA public');

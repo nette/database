@@ -8,9 +8,9 @@ declare(strict_types=1);
 
 use Tester\Assert;
 
-require __DIR__ . '/../connect.inc.php'; // create $connection
+require __DIR__ . '/../../bootstrap.php';
 
-
+$connection = connectToDB()->getConnection();
 $driver = $connection->getDriver();
 
 $query = 'SELECT 1 FROM t';

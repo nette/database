@@ -12,7 +12,10 @@ use Nette\Database\Driver;
 use Nette\Database\Table\SqlBuilder;
 use Tester\Assert;
 
-require __DIR__ . '/../connect.inc.php'; // create $connection
+require __DIR__ . '/../../bootstrap.php';
+
+$explorer = connectToDB();
+$connection = $explorer->getConnection();
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test2.sql");
 
@@ -31,6 +34,7 @@ class SqlBuilderMock extends SqlBuilder
 	}
 }
 
+$structure = $explorer->getStructure();
 $conventions = new DiscoveredConventions($structure);
 $sqlBuilder = new SqlBuilderMock('nUsers', $explorer);
 $driver = $connection->getDriver();

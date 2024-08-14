@@ -16,6 +16,16 @@ Tester\Environment::setup();
 Tester\Environment::setupFunctions();
 date_default_timezone_set('Europe/Prague');
 
+if (PHP_VERSION_ID >= 80400) {
+	set_error_handler(function ($severity, $message, $file, $line) {
+		if (str_contains($message, 'Mockery')) {
+			return false;
+		}
+
+		throw new ErrorException($message, 0, $severity, $file, $line);
+	}, E_DEPRECATED);
+}
+
 
 function getTempDir(): string
 {

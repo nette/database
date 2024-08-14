@@ -169,10 +169,7 @@ class Connection
 	}
 
 
-	/**
-	 * Returns last inserted ID.
-	 */
-	public function getInsertId(?string $sequence = null): string
+	public function getInsertId(?string $sequence = null): int|string
 	{
 		try {
 			return $this->getConnection()->getInsertId($sequence);

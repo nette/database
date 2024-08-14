@@ -19,10 +19,10 @@ $connection->query('
 ');
 
 $connection->query('INSERT INTO noprimarykey (col) VALUES (NULL)');
-Assert::same('', $connection->getInsertId());
-
-$connection->query('INSERT INTO noprimarykey (col) VALUES (NULL)');
-Assert::same('', $connection->getInsertId());
+Assert::exception(
+	fn() => $connection->getInsertId(),
+	Nette\Database\DriverException::class,
+);
 
 
 $connection->query("IF OBJECT_ID('primarykey', 'U') IS NOT NULL DROP TABLE primarykey");
@@ -34,10 +34,10 @@ $connection->query('
 ');
 
 $connection->query('INSERT INTO primarykey (prim) VALUES (5)');
-Assert::same('', $connection->getInsertId());
-
-$connection->query('INSERT INTO primarykey (prim) VALUES (6)');
-Assert::same('', $connection->getInsertId());
+Assert::exception(
+	fn() => $connection->getInsertId(),
+	Nette\Database\DriverException::class,
+);
 
 
 $connection->query("IF OBJECT_ID('autoprimarykey', 'U') IS NOT NULL DROP TABLE autoprimarykey");
@@ -50,13 +50,13 @@ $connection->query('
 ');
 
 $connection->query('INSERT INTO autoprimarykey (col) VALUES (NULL)');
-Assert::same('1', $connection->getInsertId());
+Assert::same(1, $connection->getInsertId());
 
 $connection->query('INSERT INTO autoprimarykey (col) VALUES (NULL)');
-Assert::same('2', $connection->getInsertId());
+Assert::same(2, $connection->getInsertId());
 
 $connection->query('SET IDENTITY_INSERT autoprimarykey ON; INSERT INTO autoprimarykey (prim, col) VALUES (10, NULL)');
-Assert::same('10', $connection->getInsertId());
+Assert::same(10, $connection->getInsertId());
 
 
 $connection->query("IF OBJECT_ID('multiautoprimarykey', 'U') IS NOT NULL DROP TABLE multiautoprimarykey");
@@ -69,10 +69,10 @@ $connection->query('
 ');
 
 $connection->query('INSERT INTO multiautoprimarykey (prim2) VALUES (3)');
-Assert::same('1', $connection->getInsertId());
+Assert::same(1, $connection->getInsertId());
 
 $connection->query('INSERT INTO multiautoprimarykey (prim2) VALUES (3)');
-Assert::same('2', $connection->getInsertId());
+Assert::same(2, $connection->getInsertId());
 
 $connection->query('SET IDENTITY_INSERT multiautoprimarykey ON; INSERT INTO multiautoprimarykey (prim1, prim2) VALUES (10, 3)');
-Assert::same('10', $connection->getInsertId());
+Assert::same(10, $connection->getInsertId());

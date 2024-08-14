@@ -22,6 +22,12 @@ class SqlLiteral
 	}
 
 
+	public function getSql(): string
+	{
+		return $this->value;
+	}
+
+
 	public function getParameters(): array
 	{
 		return $this->parameters;

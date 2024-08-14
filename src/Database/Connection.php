@@ -173,7 +173,7 @@ class Connection
 	/**
 	 * Returns the ID of the last inserted row, or the last value from a sequence.
 	 */
-	public function getInsertId(?string $sequence = null): string
+	public function getInsertId(?string $sequence = null): int|string
 	{
 		$connection = $this->getConnection(); // ConnectionException is a DriverException, the catch below must not see it
 		try {

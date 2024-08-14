@@ -112,11 +112,16 @@ class Connection implements Drivers\Connection
 	}
 
 
-	public function getInsertId(?string $sequence = null): string
+	public function getInsertId(?string $sequence = null): int|string
 	{
 		try {
-			$res = $this->pdo->lastInsertId($sequence);
-			return $res === false ? '0' : $res;
+			$id = $this->pdo->lastInsertId($sequence);
+			if ($id === '0' || $id === '' || $id === false) {
+				throw new Nette\Database\DriverException('Cannot retrieve last generated ID.');
+			}
+			$int = (int) $id;
+			return $id === (string) $int ? $int : $id;
+
 		} catch (PDOException $e) {
 			throw new ($this->convertException($e, $args))(...$args);
 		}

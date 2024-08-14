@@ -129,7 +129,7 @@ class Connection
 	}
 
 
-	public function getInsertId(?string $sequence = null): string
+	public function getInsertId(?string $sequence = null): int|string
 	{
 		return $this->getConnectionDriver()->getInsertId($sequence);
 	}

@@ -123,11 +123,11 @@ abstract class Connection implements Drivers\Connection
 	}
 
 
-	public function getInsertId(?string $sequence = null): string
+	public function getInsertId(?string $sequence = null): int|string
 	{
 		try {
 			$res = $this->pdo->lastInsertId($sequence);
-			return $res === false ? '0' : $res;
+			return $res === false ? 0 : $res;
 		} catch (PDOException $e) {
 			throw new ($this->convertException($e, $args))(...$args);
 		}

@@ -19,39 +19,31 @@ $e = Assert::exception(
 	fn() => $connection->query('SELECT'),
 	Nette\Database\DriverException::class,
 	'%a% error%a%',
-	'HY000',
+	1,
 );
-
-Assert::same(1, $e->getDriverCode());
-Assert::same($e->getCode(), $e->getSqlState());
+Assert::same('HY000', $e->getSqlState());
 
 
 $e = Assert::exception(
 	fn() => $connection->query('INSERT INTO author (id, name, web, born) VALUES (11, "", "", NULL)'),
 	Nette\Database\UniqueConstraintViolationException::class,
 	'%a% Integrity constraint violation: %a%',
-	'23000',
+	19,
 );
-
-Assert::same(19, $e->getDriverCode());
-Assert::same($e->getCode(), $e->getSqlState());
+Assert::same('23000', $e->getSqlState());
 
 
 $e = Assert::exception(
 	fn() => $connection->query('INSERT INTO author (name, web, born) VALUES (NULL, "", NULL)'),
 	Nette\Database\NotNullConstraintViolationException::class,
 	'%a% Integrity constraint violation: %a%',
-	'23000',
+	19,
 );
-
-Assert::same(19, $e->getDriverCode());
-Assert::same($e->getCode(), $e->getSqlState());
+Assert::same('23000', $e->getSqlState());
 
 
 $e = Assert::exception(function () use ($connection) {
 	$connection->query('PRAGMA foreign_keys=true');
 	$connection->query('INSERT INTO book (author_id, translator_id, title) VALUES (999, 12, "")');
-}, Nette\Database\ForeignKeyConstraintViolationException::class, '%a% Integrity constraint violation: %a%', '23000');
-
-Assert::same(19, $e->getDriverCode());
-Assert::same($e->getCode(), $e->getSqlState());
+}, Nette\Database\ForeignKeyConstraintViolationException::class, '%a% Integrity constraint violation: %a%', 19);
+Assert::same('23000', $e->getSqlState());

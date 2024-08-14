@@ -18,18 +18,11 @@ class DriverException extends \Exception
 	public function __construct(
 		string $message,
 		private readonly ?string $sqlState = null,
-		private int $driverCode = 0,
+		int $code = 0,
 		private readonly ?SqlLiteral $query = null,
 		?\Throwable $previous = null,
 	) {
-		parent::__construct($message, 0, $previous);
-		$this->code = $sqlState ?: null;
-	}
-
-
-	public function getDriverCode(): int|string|null
-	{
-		return $this->driverCode ?: null;
+		parent::__construct($message, $code, $previous);
 	}
 
 

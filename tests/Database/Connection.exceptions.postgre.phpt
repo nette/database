@@ -18,11 +18,9 @@ $e = Assert::exception(
 	fn() => new Nette\Database\Connection($options['dsn'], 'unknown', 'unknown'),
 	Nette\Database\ConnectionException::class,
 	null,
-	'08006',
+	7,
 );
-
-Assert::same(7, $e->getDriverCode());
-Assert::same($e->getCode(), $e->getSqlState());
+Assert::same('08006', $e->getSqlState());
 
 
 $e = Assert::exception(
@@ -31,5 +29,4 @@ $e = Assert::exception(
 	'There is no active transaction',
 	0,
 );
-
-Assert::same(null, $e->getDriverCode());
+Assert::null($e->getSqlState());

@@ -19,41 +19,33 @@ $e = Assert::exception(
 	fn() => $connection->query('SELECT INTO'),
 	Nette\Database\DriverException::class,
 	'%a% syntax error %A%',
-	'42601',
+	7,
 );
-
-Assert::same(7, $e->getDriverCode());
-Assert::same($e->getCode(), $e->getSqlState());
+Assert::same('42601', $e->getSqlState());
 
 
 $e = Assert::exception(
 	fn() => $connection->query("INSERT INTO author (id, name, web, born) VALUES (11, '', '', NULL)"),
 	Nette\Database\UniqueConstraintViolationException::class,
 	'%a% Unique violation: %A%',
-	'23505',
+	7,
 );
-
-Assert::same(7, $e->getDriverCode());
-Assert::same($e->getCode(), $e->getSqlState());
+Assert::same('23505', $e->getSqlState());
 
 
 $e = Assert::exception(
 	fn() => $connection->query("INSERT INTO author (name, web, born) VALUES (NULL, '', NULL)"),
 	Nette\Database\NotNullConstraintViolationException::class,
 	'%a% Not null violation: %A%',
-	'23502',
+	7,
 );
-
-Assert::same(7, $e->getDriverCode());
-Assert::same($e->getCode(), $e->getSqlState());
+Assert::same('23502', $e->getSqlState());
 
 
 $e = Assert::exception(
 	fn() => $connection->query("INSERT INTO book (author_id, translator_id, title) VALUES (999, 12, '')"),
 	Nette\Database\ForeignKeyConstraintViolationException::class,
 	'%a% Foreign key violation: %A%',
-	'23503',
+	7,
 );
-
-Assert::same(7, $e->getDriverCode());
-Assert::same($e->getCode(), $e->getSqlState());
+Assert::same('23503', $e->getSqlState());

@@ -17,11 +17,9 @@ $e = Assert::exception(
 	fn() => new Nette\Database\Connection('sqlite:.'),
 	Nette\Database\ConnectionException::class,
 	'SQLSTATE[HY000] [14] unable to open database file',
-	'HY000',
+	14,
 );
-
-Assert::same(14, $e->getDriverCode());
-Assert::same($e->getCode(), $e->getSqlState());
+Assert::same('HY000', $e->getSqlState());
 
 
 $e = Assert::exception(
@@ -30,5 +28,4 @@ $e = Assert::exception(
 	'There is no active transaction',
 	null,
 );
-
-Assert::same(null, $e->getDriverCode());
+Assert::null($e->getSqlState());

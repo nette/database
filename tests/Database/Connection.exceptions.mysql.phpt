@@ -18,11 +18,10 @@ $e = Assert::exception(
 	fn() => new Nette\Database\Connection($options['dsn'], 'unknown', 'unknown'),
 	Nette\Database\ConnectionException::class,
 	'%a% Access denied for user %a%',
+	1045,
 );
 
-Assert::same(1045, $e->getDriverCode());
 Assert::contains($e->getSqlState(), ['HY000', '28000']);
-Assert::same($e->getCode(), $e->getSqlState());
 
 
 $e = Assert::exception(
@@ -32,4 +31,4 @@ $e = Assert::exception(
 	0,
 );
 
-Assert::same(null, $e->getDriverCode());
+Assert::null($e->getSqlState());

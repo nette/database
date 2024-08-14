@@ -56,7 +56,7 @@ class Explorer
 	}
 
 
-	public function getInsertId(?string $sequence = null): string
+	public function getInsertId(?string $sequence = null): int|string
 	{
 		return $this->connection->getInsertId($sequence);
 	}

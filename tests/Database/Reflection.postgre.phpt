@@ -9,7 +9,9 @@ declare(strict_types=1);
 
 use Tester\Assert;
 
-require __DIR__ . '/connect.inc.php'; // create $connection
+require __DIR__ . '/../bootstrap.php';
+
+$connection = connectToDB()->getConnection();
 
 
 function names($columns): array

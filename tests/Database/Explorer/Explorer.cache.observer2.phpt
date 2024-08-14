@@ -10,7 +10,10 @@ declare(strict_types=1);
 use Nette\Caching\Storages\MemoryStorage;
 use Tester\Assert;
 
-require __DIR__ . '/../connect.inc.php'; // create $connection
+require __DIR__ . '/../../bootstrap.php';
+
+$explorer = connectToDB();
+$connection = $explorer->getConnection();
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
@@ -28,7 +31,7 @@ class CacheMock extends MemoryStorage
 }
 
 $cacheStorage = new CacheMock;
-$explorer = new Nette\Database\Explorer($connection, $structure, $conventions, $cacheStorage);
+$explorer = new Nette\Database\Explorer($connection, $explorer->getStructure(), $explorer->getConventions(), $cacheStorage);
 
 for ($i = 0; $i < 2; ++$i) {
 	$authors = $explorer->table('author');

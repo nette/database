@@ -10,9 +10,9 @@ declare(strict_types=1);
 use Nette\Database\SqlLiteral;
 use Tester\Assert;
 
-require __DIR__ . '/connect.inc.php'; // create $connection
+require __DIR__ . '/../bootstrap.php';
 
-
+$connection = connectToDB()->getConnection();
 $preprocessor = new Nette\Database\SqlPreprocessor($connection);
 
 test('basic', function () use ($preprocessor) {

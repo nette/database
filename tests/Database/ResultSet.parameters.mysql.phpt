@@ -9,8 +9,9 @@ declare(strict_types=1);
 
 use Tester\Assert;
 
-require __DIR__ . '/connect.inc.php'; // create $connection
+require __DIR__ . '/../bootstrap.php';
 
+$connection = connectToDB()->getConnection();
 $res = $connection->fetch('SELECT ? AS c1, ? AS c2, ? AS c3, ? as c4', fopen(__FILE__, 'r'), true, null, 123);
 
 Assert::same(

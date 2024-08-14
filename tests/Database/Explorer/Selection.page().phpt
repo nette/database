@@ -9,7 +9,10 @@ declare(strict_types=1);
 
 use Tester\Assert;
 
-require __DIR__ . '/../connect.inc.php'; // create $connection
+require __DIR__ . '/../../bootstrap.php';
+
+$explorer = connectToDB();
+$connection = $explorer->getConnection();
 
 if ($driverName === 'sqlsrv' && $connection->getPdo()->getAttribute(PDO::ATTR_SERVER_VERSION) < 11) {
 	Tester\Environment::skip('Offset is supported since SQL Server 2012');

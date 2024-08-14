@@ -9,8 +9,9 @@ declare(strict_types=1);
 
 use Tester\Assert;
 
-require __DIR__ . '/connect.inc.php'; // create $options
+require __DIR__ . '/../bootstrap.php';
 
+$connection = connectToDB()->getConnection();
 
 $e = Assert::exception(
 	fn() => new Nette\Database\Connection('sqlite:.'),

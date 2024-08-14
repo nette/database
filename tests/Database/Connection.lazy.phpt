@@ -45,11 +45,11 @@ test('', function () {
 
 
 test('connect & disconnect', function () {
-	$options = Tester\Environment::loadData() + ['user' => null, 'password' => null];
+	$options = Tester\Environment::loadData() + ['username' => null, 'password' => null];
 	$connections = 1;
 
 	try {
-		$connection = new Nette\Database\Connection($options['dsn'], $options['user'], $options['password']);
+		$connection = new Nette\Database\Connection($options['dsn'], $options['username'], $options['password']);
 	} catch (PDOException $e) {
 		Tester\Environment::skip("Connection to '$options[dsn]' failed. Reason: " . $e->getMessage());
 	}

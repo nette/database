@@ -16,6 +16,10 @@ Tester\Environment::setup();
 Tester\Environment::setupFunctions();
 date_default_timezone_set('Europe/Prague');
 
+if (PHP_VERSION_ID >= 80400) {
+	error_reporting(E_ALL & ~E_DEPRECATED);
+}
+
 
 function getTempDir(): string
 {

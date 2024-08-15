@@ -38,7 +38,7 @@ test('detects duplicate column names in simple query', function () use ($connect
 test('handles cursor management in stored procedures', function () use ($connection, $driverName) {
 	if ($driverName === 'mysql') {
 		$connection->query('CREATE DEFINER = CURRENT_USER PROCEDURE `testProc`(IN param int(10) unsigned) BEGIN SELECT * FROM book WHERE id != param; END;;');
-		$connection->getPdo()->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
+		$connection->getConnection()->getNativeConnection()->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
 
 		$res = $connection->query('CALL testProc(1)');
 		foreach ($res as $row) {

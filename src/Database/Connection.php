@@ -110,6 +110,12 @@ class Connection
 	}
 
 
+	public function getServerVersion(): string
+	{
+		return $this->getConnectionDriver()->getServerVersion();
+	}
+
+
 	public function getReflection(): Reflection
 	{
 		return new Reflection($this->getDatabaseEngine());

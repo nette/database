@@ -15,7 +15,7 @@ $connection = connectToDB()->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_test3.sql');
 
 
-$version80 = version_compare($connection->getPdo()->getAttribute(PDO::ATTR_SERVER_VERSION), '8.0', '>=');
+$version80 = version_compare($connection->getServerVersion(), '8.0', '>=');
 $reflection = $connection->getReflection();
 $columns = $reflection->getTable('types')->columns;
 

@@ -30,4 +30,6 @@ interface Connection
 	function getInsertId(?string $sequence = null): int|string;
 
 	function quote(string $string): string;
+
+	function getServerVersion(): string;
 }

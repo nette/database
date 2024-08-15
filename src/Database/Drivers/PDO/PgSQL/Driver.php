@@ -18,6 +18,14 @@ use Nette\Database\Drivers\Engines\PostgreSQLEngine;
  */
 class Driver extends Drivers\PDO\Driver
 {
+	public function connect(): Drivers\PDO\Connection
+	{
+		$connection = parent::connect();
+		$connection->resultClass = Result::class;
+		return $connection;
+	}
+
+
 	public function createEngine(Drivers\Connection $connection): PostgreSQLEngine
 	{
 		return new PostgreSQLEngine($connection);

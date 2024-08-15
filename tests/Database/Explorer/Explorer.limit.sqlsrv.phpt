@@ -16,7 +16,7 @@ $connection = $explorer->getConnection();
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
-$version2008 = $connection->getPdo()->getAttribute(PDO::ATTR_SERVER_VERSION) < 11;
+$version2008 = $connection->getServerVersion() < 11;
 
 Assert::same(
 	$version2008

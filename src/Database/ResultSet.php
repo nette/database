@@ -38,21 +38,11 @@ class ResultSet implements \Iterator
 	) {
 		$time = microtime(true);
 		$this->normalizer = $normalizer;
-
-
-		try {
-			if (str_starts_with($queryString, '::')) {
-				$connection->getConnectionDriver()->{substr($queryString, 2)}();
-			} else {
-				$this->result = $connection->getConnectionDriver()->query($queryString, $params);
-			}
-		} catch (\PDOException $e) {
-			$e = $connection->getDatabaseEngine()->convertException($e);
-			$e->queryString = $queryString;
-			$e->params = $params;
-			throw $e;
+		if (str_starts_with($queryString, '::')) {
+			$connection->getConnectionDriver()->{substr($queryString, 2)}();
+		} else {
+			$this->result = $connection->getConnectionDriver()->query($queryString, $params);
 		}
-
 		$this->time = microtime(true) - $time;
 	}
 

@@ -25,6 +25,10 @@ class Connection extends Drivers\PDO\Connection
 
 	public function query(string $sql, array $params = []): Result
 	{
-		return new Result($this->execute($sql, $params), $this);
+		try {
+			return new Result($this->execute($sql, $params), $this);
+		} catch (\PDOException $e) {
+			throw new ($this->convertException($e, $args, null, $sql, $params))(...$args);
+		}
 	}
 }

@@ -28,7 +28,7 @@ $e = Assert::exception(
 	fn() => $connection->rollback(),
 	Nette\Database\DriverException::class,
 	'There is no active transaction',
-	0,
+	null,
 );
 
 Assert::same(null, $e->getDriverCode());

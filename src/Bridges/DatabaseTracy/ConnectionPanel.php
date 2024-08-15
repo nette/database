@@ -79,7 +79,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 		$this->count++;
 
 		$source = null;
-		$trace = $result instanceof \PDOException
+		$trace = $result instanceof \Exception
 			? $result->getTrace()
 			: debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		foreach ($trace as $row) {
@@ -100,7 +100,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 			if ($this->count < $this->maxQueries) {
 				$this->queries[] = [$connection, $result->getQueryString(), $result->getParameters(), $source, $result->getTime(), $result->getRowCount(), null];
 			}
-		} elseif ($result instanceof \PDOException && $this->count < $this->maxQueries) {
+		} elseif ($result instanceof \Exception && $this->count < $this->maxQueries) {
 			$this->queries[] = [$connection, $result->queryString, null, $source, null, null, $result->getMessage()];
 		}
 	}
@@ -108,7 +108,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 
 	public static function renderException(?\Throwable $e): ?array
 	{
-		if (!$e instanceof \PDOException) {
+		if (!$e instanceof \Exception) {
 			return null;
 		}
 

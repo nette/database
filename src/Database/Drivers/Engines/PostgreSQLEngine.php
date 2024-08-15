@@ -26,27 +26,16 @@ class PostgreSQLEngine implements Engine
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public function determineExceptionClass(int $code, ?string $sqlState, string $message): ?string
 	{
-		$code = $e->errorInfo[0] ?? null;
-		if ($code === '0A000' && str_contains($e->getMessage(), 'truncate')) {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
-
-		} elseif ($code === '23502') {
-			return Nette\Database\NotNullConstraintViolationException::from($e);
-
-		} elseif ($code === '23503') {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
-
-		} elseif ($code === '23505') {
-			return Nette\Database\UniqueConstraintViolationException::from($e);
-
-		} elseif ($code === '08006') {
-			return Nette\Database\ConnectionException::from($e);
-
-		} else {
-			return Nette\Database\DriverException::from($e);
-		}
+		return match ($sqlState) {
+			'0A000' => str_contains($message, 'truncate') ? Nette\Database\ForeignKeyConstraintViolationException::class : null,
+			'23502' => Nette\Database\NotNullConstraintViolationException::class,
+			'23503' => Nette\Database\ForeignKeyConstraintViolationException::class,
+			'23505' => Nette\Database\UniqueConstraintViolationException::class,
+			'08006' => Nette\Database\ConnectionException::class,
+			default => null,
+		};
 	}
 
 

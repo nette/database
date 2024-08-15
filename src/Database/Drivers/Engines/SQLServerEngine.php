@@ -26,9 +26,9 @@ class SQLServerEngine implements Engine
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public function determineExceptionClass(int $code, ?string $sqlState, string $message): ?string
 	{
-		return Nette\Database\DriverException::from($e);
+		return null;
 	}
 
 

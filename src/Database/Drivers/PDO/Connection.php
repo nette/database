@@ -9,8 +9,10 @@ declare(strict_types=1);
 
 namespace Nette\Database\Drivers\PDO;
 
+use Nette;
 use Nette\Database\Drivers;
 use PDO;
+use PDOException;
 
 
 abstract class Connection implements Drivers\Connection
@@ -27,8 +29,12 @@ abstract class Connection implements Drivers\Connection
 		array $options = [],
 	) {
 		$this->engine = $this->getDatabaseEngine();
-		$this->pdo = new PDO($dsn, $username, $password, $options);
-		$this->initialize($options);
+		try {
+			$this->pdo = new PDO($dsn, $username, $password, $options);
+			$this->initialize($options);
+		} catch (PDOException $e) {
+			throw new ($this->convertException($e, $args, Nette\Database\ConnectionException::class))(...$args);
+		}
 	}
 
 
@@ -37,9 +43,39 @@ abstract class Connection implements Drivers\Connection
 	}
 
 
+	public function convertException(
+		PDOException $e,
+		?array &$args,
+		?string $class = null,
+		?string $sql = null,
+		?array $params = null,
+	): string
+	{
+		if ($e->errorInfo !== null) {
+			[$sqlState, $code] = $e->errorInfo;
+			$code ??= 0;
+		} elseif (preg_match('#SQLSTATE\[(.*?)\] \[(.*?)\] (.*)#A', $e->getMessage(), $m)) {
+			$sqlState = $m[1];
+			$code = (int) $m[2];
+		} else {
+			$code = $e->getCode();
+			$sqlState = null;
+		}
+
+		$args = [$e->getMessage(), $sqlState, $code, $sql ? new Nette\Database\SqlLiteral($sql, $params) : null, $e];
+		return $this->engine->determineExceptionClass($code, $sqlState, $e->getMessage())
+			?? $class
+			?? Nette\Database\DriverException::class;
+	}
+
+
 	public function query(string $sql, array $params = []): Result
 	{
-		return new Result($this->execute($sql, $params), $this);
+		try {
+			return new Result($this->execute($sql, $params), $this);
+		} catch (PDOException $e) {
+			throw new ($this->convertException($e, $args, null, $sql, $params))(...$args);
+		}
 	}
 
 
@@ -59,30 +95,42 @@ abstract class Connection implements Drivers\Connection
 
 	public function beginTransaction(): void
 	{
-		$this->pdo->beginTransaction();
-
+		try {
+			$this->pdo->beginTransaction();
+		} catch (PDOException $e) {
+			throw new ($this->convertException($e, $args))(...$args);
+		}
 	}
 
 
 	public function commit(): void
 	{
-		$this->pdo->commit();
-
+		try {
+			$this->pdo->commit();
+		} catch (PDOException $e) {
+			throw new ($this->convertException($e, $args))(...$args);
+		}
 	}
 
 
 	public function rollBack(): void
 	{
-		$this->pdo->rollBack();
-
+		try {
+			$this->pdo->rollBack();
+		} catch (PDOException $e) {
+			throw new ($this->convertException($e, $args))(...$args);
+		}
 	}
 
 
 	public function getInsertId(?string $sequence = null): string
 	{
-		$res = $this->pdo->lastInsertId($sequence);
-		return $res === false ? '0' : $res;
-
+		try {
+			$res = $this->pdo->lastInsertId($sequence);
+			return $res === false ? '0' : $res;
+		} catch (PDOException $e) {
+			throw new ($this->convertException($e, $args))(...$args);
+		}
 	}
 
 

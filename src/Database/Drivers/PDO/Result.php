@@ -11,6 +11,7 @@ namespace Nette\Database\Drivers\PDO;
 
 use Nette\Database\DriverException;
 use Nette\Database\Drivers;
+use PDOException;
 
 
 class Result implements Drivers\Result
@@ -27,12 +28,16 @@ class Result implements Drivers\Result
 
 	public function fetch(): ?array
 	{
-		$row = $this->result->fetch(\PDO::FETCH_NUM);
-		if ($row) {
-			return $this->toAssociative($row);
+		try {
+			$row = $this->result->fetch(\PDO::FETCH_NUM);
+			if ($row) {
+				return $this->toAssociative($row);
+			}
+			$this->free();
+			return null;
+		} catch (PDOException $e) {
+			throw new ($this->connection->convertException($e, $args))(...$args);
 		}
-		$this->free();
-		return null;
 	}
 
 
@@ -48,13 +53,21 @@ class Result implements Drivers\Result
 
 	public function getColumnCount(): int
 	{
-		return $this->result->columnCount();
+		try {
+			return $this->result->columnCount();
+		} catch (PDOException $e) {
+			throw new ($this->connection->convertException($e, $args))(...$args);
+		}
 	}
 
 
 	public function getRowCount(): int
 	{
-		return $this->result->rowCount();
+		try {
+			return $this->result->rowCount();
+		} catch (PDOException $e) {
+			throw new ($this->connection->convertException($e, $args))(...$args);
+		}
 	}
 
 

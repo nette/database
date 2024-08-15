@@ -146,7 +146,7 @@ class SQLiteEngine implements Engine
 			X, [$table, $table])->fetch();
 
 		$columns = [];
-		$pragma = version_compare($this->connection->getNativeConnection()->getAttribute(\PDO::ATTR_SERVER_VERSION), '3.26', '>=')
+		$pragma = version_compare($this->connection->getServerVersion(), '3.26', '>=')
 			? 'table_xinfo' // lists generated columns too
 			: 'table_info';
 		$rows = $this->connection->query("PRAGMA $pragma(?name)", $table);

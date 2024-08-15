@@ -151,7 +151,7 @@ Assert::same(
 );
 
 
-$connection->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+$connection->getConnection()->getNativeConnection()->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $res = $connection->query('SELECT `int`, `decimal`, `decimal2`, `float`, `double` FROM types');
 Assert::same([
 	'int' => 1,

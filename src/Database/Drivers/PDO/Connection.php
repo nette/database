@@ -39,6 +39,12 @@ abstract class Connection implements Drivers\Connection
 
 	public function query(string $sql, array $params = []): Result
 	{
+		return new Result($this->execute($sql, $params), $this);
+	}
+
+
+	protected function execute(string $sql, array $params): \PDOStatement
+	{
 		$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 
 		$statement = $this->pdo->prepare($sql);
@@ -47,7 +53,7 @@ abstract class Connection implements Drivers\Connection
 		}
 
 		$statement->execute();
-		return new Result($statement, $this);
+		return $statement;
 	}
 
 

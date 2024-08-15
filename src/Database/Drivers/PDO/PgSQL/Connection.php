@@ -21,4 +21,10 @@ class Connection extends Drivers\PDO\Connection
 	{
 		return new Drivers\Engines\PostgreSQLEngine($this);
 	}
+
+
+	public function query(string $sql, array $params = []): Result
+	{
+		return new Result($this->execute($sql, $params), $this);
+	}
 }

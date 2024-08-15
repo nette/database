@@ -14,7 +14,7 @@ require __DIR__ . '/../../bootstrap.php';
 $explorer = connectToDB();
 $connection = $explorer->getConnection();
 
-if ($driverName === 'sqlsrv' && $connection->getPdo()->getAttribute(PDO::ATTR_SERVER_VERSION) < 11) {
+if ($driverName === 'sqlsrv' && $connection->getServerVersion() < 11) {
 	Tester\Environment::skip('Offset is supported since SQL Server 2012');
 }
 

@@ -36,4 +36,7 @@ interface Connection
 
 	/** Quotes a string for use in an SQL statement. */
 	function quote(string $string): string;
+
+	/** Returns the version of the database server. */
+	function getServerVersion(): string;
 }

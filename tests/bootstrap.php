@@ -40,7 +40,7 @@ function connectToDB(array $options = []): Nette\Database\Explorer
 		Tester\Environment::skip("Connection to '$args[dsn]' failed. Reason: " . $e->getMessage());
 	}
 
-	$driverName = $connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME);
+	$driverName = $connection->getConnection()->getNativeConnection()->getAttribute(PDO::ATTR_DRIVER_NAME);
 	$cacheMemoryStorage = new Nette\Caching\Storages\MemoryStorage;
 
 	$structure = new Nette\Database\Structure($connection, $cacheMemoryStorage);

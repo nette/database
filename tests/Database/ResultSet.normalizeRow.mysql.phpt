@@ -147,7 +147,7 @@ Assert::equal([
 ], (array) $res->fetch());
 
 
-$connection->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+$connection->getConnectionDriver()->getNativeConnection()->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $res = $connection->query('SELECT `int`, `decimal`, `decimal2`, `float`, `double` FROM types');
 Assert::equal([
 	'int' => 1,

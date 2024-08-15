@@ -38,7 +38,7 @@ test('', function () use ($connection, $driverName) {
 test('tests closeCursor()', function () use ($connection, $driverName) {
 	if ($driverName === 'mysql') {
 		$connection->query('CREATE DEFINER = CURRENT_USER PROCEDURE `testProc`(IN param int(10) unsigned) BEGIN SELECT * FROM book WHERE id != param; END;;');
-		$connection->getPdo()->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
+		$connection->getConnectionDriver()->getNativeConnection()->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
 
 		$res = $connection->query('CALL testProc(1)');
 		foreach ($res as $row) {

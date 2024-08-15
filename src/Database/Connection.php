@@ -82,8 +82,10 @@ class Connection
 	}
 
 
+	/** @deprecated use getConnectionDriver()->getNativeConnection() */
 	public function getPdo(): \PDO
 	{
+		trigger_error(__METHOD__ . '() is deprecated, use getConnectionDriver()->getNativeConnection()', E_USER_DEPRECATED);
 		return $this->getConnectionDriver()->getNativeConnection();
 	}
 

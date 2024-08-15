@@ -17,7 +17,7 @@ use Nette;
  */
 class ResultSet implements \Iterator
 {
-	private readonly ?\PDOStatement $pdoStatement;
+	private readonly ?Drivers\Result $result;
 
 	/** @var callable(array, ResultSet): array */
 	private readonly mixed $normalizer;
@@ -44,7 +44,7 @@ class ResultSet implements \Iterator
 			if (str_starts_with($queryString, '::')) {
 				$connection->getConnectionDriver()->{substr($queryString, 2)}();
 			} else {
-				$this->pdoStatement = $connection->getConnectionDriver()->query($queryString, $params);
+				$this->result = $connection->getConnectionDriver()->query($queryString, $params);
 			}
 		} catch (\PDOException $e) {
 			$e = $connection->getDatabaseEngine()->convertException($e);
@@ -65,15 +65,6 @@ class ResultSet implements \Iterator
 	}
 
 
-	/**
-	 * @internal
-	 */
-	public function getPdoStatement(): ?\PDOStatement
-	{
-		return $this->pdoStatement;
-	}
-
-
 	public function getQueryString(): string
 	{
 		return $this->queryString;
@@ -88,13 +79,13 @@ class ResultSet implements \Iterator
 
 	public function getColumnCount(): ?int
 	{
-		return $this->pdoStatement ? $this->pdoStatement->columnCount() : null;
+		return $this->result?->getColumnCount();
 	}
 
 
 	public function getRowCount(): ?int
 	{
-		return $this->pdoStatement ? $this->pdoStatement->rowCount() : null;
+		return $this->result?->getRowCount();
 	}
 
 
@@ -169,14 +160,13 @@ class ResultSet implements \Iterator
 	 */
 	public function fetch(): ?Row
 	{
-		$data = $this->pdoStatement ? $this->pdoStatement->fetch() : null;
-		if (!$data) {
-			$this->pdoStatement->closeCursor();
+		$data = $this->result?->fetch();
+		if ($data === null) {
 			return null;
 
-		} elseif ($this->lastRow === null && count($data) !== $this->pdoStatement->columnCount()) {
-			$duplicates = Helpers::findDuplicates($this->pdoStatement);
-			trigger_error("Found duplicate columns in database result set: $duplicates.");
+		} elseif ($this->lastRow === null && count($data) !== $this->result->getColumnCount()) {
+			$duplicates = array_filter(array_count_values(array_column($this->result->getColumnsInfo(), 'name')), fn($val) => $val > 1);
+			trigger_error("Found duplicate columns in database result set: '" . implode("', '", array_keys($duplicates)) . "'.");
 		}
 
 		$row = new Row;
@@ -188,6 +178,13 @@ class ResultSet implements \Iterator
 
 		$this->lastRowKey++;
 		return $this->lastRow = $row;
+	}
+
+
+	/** @internal */
+	public function fetchAssociative(): ?array
+	{
+		return $this->result?->fetch();
 	}
 
 
@@ -249,17 +246,10 @@ class ResultSet implements \Iterator
 		$res = [];
 		$engine = $this->connection->getDatabaseEngine();
 		$converter = $this->connection->getTypeConverter();
-		$metaTypeKey = $this->connection->getConnectionDriver()->getMetaTypeKey();
-		$count = $this->pdoStatement->columnCount();
-		for ($i = 0; $i < $count; $i++) {
-			$meta = $this->pdoStatement->getColumnMeta($i);
-			if (isset($meta[$metaTypeKey])) {
-				$res[$meta['name']] = $engine->resolveColumnConverter([
-					'nativeType' => $meta[$metaTypeKey],
-					'length' => $meta['len'],
-					'precision' => $meta['precision'],
-				], $converter);
-			}
+		foreach ($this->result->getColumnsInfo() as $meta) {
+			$res[$meta['name']] = isset($meta['nativeType'])
+				? $engine->resolveColumnConverter($meta, $converter)
+				: null;
 		}
 		return $this->converters = $res;
 	}

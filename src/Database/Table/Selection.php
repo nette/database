@@ -519,11 +519,13 @@ class Selection implements \Iterator, \ArrayAccess, \Countable
 
 		$this->rows = [];
 		$usedPrimary = true;
-		foreach ($result->getPdoStatement() as $key => $row) {
+		$key = 0;
+		while ($row = $result->fetchAssociative()) {
 			$row = $this->createRow($result->normalizeRow($row));
 			$primary = $row->getSignature(false);
 			$usedPrimary = $usedPrimary && $primary !== '';
 			$this->rows[$usedPrimary ? $primary : $key] = $row;
+			$key++;
 		}
 
 		$this->data = $this->rows;

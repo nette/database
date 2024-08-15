@@ -17,7 +17,7 @@ interface Connection
 {
 	function getDatabaseEngine(): Engine;
 
-	function query(string $sql, array $params = []);
+	function query(string $sql, array $params = []): Result;
 
 	function getNativeConnection(): mixed;
 

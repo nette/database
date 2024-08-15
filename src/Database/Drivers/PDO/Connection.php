@@ -15,6 +15,7 @@ use PDO;
 
 class Connection implements Drivers\Connection
 {
+	public string $resultClass = Result::class;
 	public string $metaTypeKey = 'native_type';
 
 
@@ -34,7 +35,7 @@ class Connection implements Drivers\Connection
 		}
 
 		$statement->execute();
-		return new Result($statement, $this);
+		return new ($this->resultClass)($statement, $this);
 	}
 
 

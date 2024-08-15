@@ -71,6 +71,12 @@ class Connection implements Drivers\Connection
 	}
 
 
+	public function getServerVersion(): string
+	{
+		return $this->pdo->getAttribute(PDO::ATTR_SERVER_VERSION);
+	}
+
+
 	public function getNativeConnection(): PDO
 	{
 		return $this->pdo;

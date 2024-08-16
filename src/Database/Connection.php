@@ -22,13 +22,13 @@ use PDOException;
 class Connection
 {
 	private const Drivers = [
-		'pdo-mssql' => Drivers\Engines\MSSQLEngine::class,
-		'pdo-mysql' => Drivers\Engines\MySQLEngine::class,
-		'pdo-oci' => Drivers\Engines\OracleEngine::class,
-		'pdo-odbc' => Drivers\Engines\ODBCEngine::class,
-		'pdo-pgsql' => Drivers\Engines\PostgreSQLEngine::class,
-		'pdo-sqlite' => Drivers\Engines\SQLiteEngine::class,
-		'pdo-sqlsrv' => Drivers\Engines\SQLServerEngine::class,
+		'pdo-mssql' => Drivers\PDO\MSSQL\Driver::class,
+		'pdo-mysql' => Drivers\PDO\MySQL\Driver::class,
+		'pdo-oci' => Drivers\PDO\OCI\Driver::class,
+		'pdo-odbc' => Drivers\PDO\ODBC\Driver::class,
+		'pdo-pgsql' => Drivers\PDO\PgSQL\Driver::class,
+		'pdo-sqlite' => Drivers\PDO\SQLite\Driver::class,
+		'pdo-sqlsrv' => Drivers\PDO\SQLSrv\Driver::class,
 	];
 
 	/** @var array<callable(self): void>  Occurs after connection is established */
@@ -36,6 +36,7 @@ class Connection
 
 	/** @var array<callable(self, Result|DriverException): void>  Occurs after query is executed */
 	public array $onQuery = [];
+	private Drivers\Driver $driver;
 	private Drivers\Engine $engine;
 	private SqlPreprocessor $preprocessor;
 	private ?PDO $pdo = null;
@@ -76,7 +77,8 @@ class Connection
 		$class = empty($this->options['driverClass'])
 			? (self::Drivers['pdo-' . $driver] ?? throw new \LogicException("Unknown PDO driver '$driver'."))
 			: $this->options['driverClass'];
-		$this->engine = new $class;
+		$this->driver = new $class;
+		$this->engine = $this->driver->createEngine();
 		$this->preprocessor = new SqlPreprocessor($this);
 		$this->engine->initialize($this, $this->options);
 		Arrays::invoke($this->onConnect, $this);

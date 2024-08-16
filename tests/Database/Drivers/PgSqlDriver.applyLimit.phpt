@@ -7,7 +7,7 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 
-$driver = new Nette\Database\Drivers\PgSqlDriver;
+$driver = new Nette\Database\Drivers\PDO\PgSQL\Connection;
 
 $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, 10, 20);

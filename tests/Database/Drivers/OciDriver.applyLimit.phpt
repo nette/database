@@ -7,7 +7,7 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 
-$driver = new Nette\Database\Drivers\OciDriver;
+$driver = new Nette\Database\Drivers\PDO\OCI\Connection;
 
 $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, 10, 20);

@@ -7,7 +7,7 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 
-$driver = new Nette\Database\Drivers\MsSqlDriver;
+$driver = new Nette\Database\Drivers\PDO\MSSQL\Connection;
 
 Assert::exception(function () use ($driver) {
 	$query = 'SELECT 1 FROM t';

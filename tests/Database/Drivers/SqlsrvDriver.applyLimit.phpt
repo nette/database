@@ -7,7 +7,7 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 
-$driver = new Nette\Database\Drivers\SqlsrvDriver;
+$driver = new Nette\Database\Drivers\PDO\SQLSrv\Connection;
 
 $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, 10, 20);

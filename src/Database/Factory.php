@@ -13,13 +13,13 @@ namespace Nette\Database;
 final class Factory
 {
 	private const Drivers = [
-		'pdo-mssql' => Drivers\MsSqlDriver::class,
-		'pdo-mysql' => Drivers\MySqlDriver::class,
-		'pdo-oci' => Drivers\OciDriver::class,
-		'pdo-odbc' => Drivers\OdbcDriver::class,
-		'pdo-pgsql' => Drivers\PgSqlDriver::class,
-		'pdo-sqlite' => Drivers\SqliteDriver::class,
-		'pdo-sqlsrv' => Drivers\SqlsrvDriver::class,
+		'pdo-mssql' => Drivers\PDO\MSSQL\Connection::class,
+		'pdo-mysql' => Drivers\PDO\MySQL\Connection::class,
+		'pdo-oci' => Drivers\PDO\OCI\Connection::class,
+		'pdo-odbc' => Drivers\PDO\ODBC\Connection::class,
+		'pdo-pgsql' => Drivers\PDO\PgSQL\Connection::class,
+		'pdo-sqlite' => Drivers\PDO\SQLite\Connection::class,
+		'pdo-sqlsrv' => Drivers\PDO\SQLSrv\Connection::class,
 	];
 
 

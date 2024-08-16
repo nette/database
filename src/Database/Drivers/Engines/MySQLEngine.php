@@ -7,16 +7,17 @@
 
 declare(strict_types=1);
 
-namespace Nette\Database\Drivers;
+namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Engine;
 use Nette\Database\TypeConverter;
 
 
 /**
- * Supplemental MySQL database driver.
+ * MySQL-like database platform.
  */
-class MySqlDriver implements Engine
+class MySQLEngine implements Engine
 {
 	private Nette\Database\Connection $connection;
 	private bool $convertBoolean;

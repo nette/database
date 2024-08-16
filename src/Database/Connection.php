@@ -26,6 +26,7 @@ class Connection
 
 	/** @var array<callable(self, Result|DriverException): void>  Occurs after query is executed */
 	public array $onQuery = [];
+	private Drivers\Driver $driver;
 	private Drivers\Engine $engine;
 	private SqlPreprocessor $preprocessor;
 	private ?PDO $pdo = null;
@@ -65,10 +66,8 @@ class Connection
 			throw ConnectionException::from($e);
 		}
 
-		$class = empty($this->options['driverClass'])
-			? 'Nette\Database\Drivers\\' . ucfirst(str_replace('sql', 'Sql', $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) . 'Driver'
-			: $this->options['driverClass'];
-		$this->engine = new $class;
+		$this->driver = Factory::createDriverFromDsn($this->dsn, $this->user, $this->password, $this->options);
+		$this->engine = $this->driver->createDatabaseEngine();
 		$this->preprocessor = new SqlPreprocessor($this);
 		$this->engine->initialize($this, $this->options);
 		Arrays::invoke($this->onConnect, $this);

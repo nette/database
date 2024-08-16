@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-use Nette\Database\Driver;
+use Nette\Database\Drivers\Engine;
 use Nette\Database\Table\SqlBuilder;
 use Tester\Assert;
 
@@ -44,7 +44,7 @@ class SqlBuilderMock extends SqlBuilder
 	}
 }
 
-$driver = $connection->getDriver();
+$engine = $connection->getDatabaseEngine();
 
 test('test circular reference', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilderMock('author', $explorer);
@@ -75,7 +75,7 @@ test('test circular reference', function () use ($explorer) {
 	);
 });
 
-test('', function () use ($explorer, $driver) {
+test('', function () use ($explorer, $engine) {
 	$sqlBuilder = new SqlBuilderMock('author', $explorer);
 	$sqlBuilder->addJoinCondition(':book(translator)', ':book(translator).id > ?', 2);
 	$sqlBuilder->addJoinCondition(':book(translator):book_tag_alt', ':book(translator):book_tag_alt.state ?', 'private');
@@ -83,7 +83,7 @@ test('', function () use ($explorer, $driver) {
 	$leftJoinConditions = $sqlBuilder->parseJoinConditions($joins, $sqlBuilder->buildJoinConditions());
 	$join = $sqlBuilder->buildQueryJoins($joins, $leftJoinConditions);
 
-	if ($driver->isSupported(Driver::SupportSchema)) {
+	if ($engine->isSupported(Engine::SupportSchema)) {
 		Assert::same(
 			'LEFT JOIN book ON author.id = book.translator_id AND (book.id > ?) ' .
 			'LEFT JOIN public.book_tag_alt book_tag_alt ON book.id = book_tag_alt.book_id AND (book_tag_alt.state = ?)',

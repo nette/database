@@ -790,7 +790,7 @@ class Selection implements \Iterator, \ArrayAccess, \Countable
 
 		// First check sequence
 		if (!empty($primarySequenceName) && $primaryAutoincrementKey) {
-			$primaryKey[$primaryAutoincrementKey] = $this->explorer->getInsertId($this->explorer->getConnection()->getDriver()->delimite($primarySequenceName));
+			$primaryKey[$primaryAutoincrementKey] = $this->explorer->getInsertId($this->explorer->getConnection()->getDatabaseEngine()->delimite($primarySequenceName));
 
 		// Autoincrement primary without sequence
 		} elseif ($primaryAutoincrementKey) {

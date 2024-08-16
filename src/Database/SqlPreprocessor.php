@@ -49,7 +49,7 @@ class SqlPreprocessor
 	];
 
 	private readonly Connection $connection;
-	private readonly Driver $driver;
+	private readonly Drivers\Engine $engine;
 	private array $params;
 	private array $remaining;
 	private int $counter;
@@ -62,7 +62,7 @@ class SqlPreprocessor
 	public function __construct(Connection $connection)
 	{
 		$this->connection = $connection;
-		$this->driver = $connection->getDriver();
+		$this->engine = $connection->getDatabaseEngine();
 	}
 
 
@@ -177,10 +177,10 @@ class SqlPreprocessor
 				return $res;
 
 			} elseif ($value instanceof \DateTimeInterface) {
-				return $this->driver->formatDateTime($value);
+				return $this->engine->formatDateTime($value);
 
 			} elseif ($value instanceof \DateInterval) {
-				return $this->driver->formatDateInterval($value);
+				return $this->engine->formatDateInterval($value);
 
 			} elseif ($value instanceof \BackedEnum && is_scalar($value->value)) {
 				$this->remaining[] = $value->value;
@@ -231,7 +231,7 @@ class SqlPreprocessor
 						$vx[] = implode(', ', $vx2);
 					}
 
-					$select = $this->driver->isSupported(Driver::SupportMultiInsertAsSelect);
+					$select = $this->engine->isSupported(Drivers\Engine::SupportMultiInsertAsSelect);
 					return '(' . implode(', ', $kx) . ($select ? ') SELECT ' : ') VALUES (')
 						. implode($select ? ' UNION ALL SELECT ' : '), (', $vx) . ($select ? '' : ')');
 				}
@@ -320,6 +320,6 @@ class SqlPreprocessor
 
 	private function delimite(string $name): string
 	{
-		return implode('.', array_map($this->driver->delimite(...), explode('.', $name)));
+		return implode('.', array_map($this->engine->delimite(...), explode('.', $name)));
 	}
 }

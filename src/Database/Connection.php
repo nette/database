@@ -41,11 +41,9 @@ class Connection
 		private readonly ?string $user = null,
 		#[\SensitiveParameter]
 		private readonly ?string $password = null,
-		private readonly array $options = [],
+		private array $options = [],
 	) {
-		if (!empty($options['newDateTime'])) {
-			$this->rowNormalizer = fn($row, $resultSet) => Helpers::normalizeRow($row, $resultSet, DateTime::class);
-		}
+		unset($this->options['newDateTime']);
 		if (empty($options['lazy'])) {
 			$this->connect();
 		}

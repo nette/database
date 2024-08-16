@@ -26,7 +26,7 @@ class Connection
 	/** @var array<callable(self, ResultSet|DriverException): void>  Occurs after query is executed */
 	public array $onQuery = [];
 	private Drivers\Engine $engine;
-	private SqlPreprocessor $preprocessor;
+	private ?SqlPreprocessor $preprocessor;
 	private ?PDO $pdo = null;
 
 	/** @var callable(array, ResultSet): array */
@@ -44,6 +44,8 @@ class Connection
 		private array $options = [],
 	) {
 		unset($this->options['newDateTime']);
+
+		$this->engine = (new Factory)->createConnectorFromDsn($dsn, $user, $password, $options);
 		if (empty($options['lazy'])) {
 			$this->connect();
 		}
@@ -62,11 +64,6 @@ class Connection
 			throw ConnectionException::from($e);
 		}
 
-		$class = empty($this->options['driverClass'])
-			? 'Nette\Database\Drivers\\' . ucfirst(str_replace('sql', 'Sql', $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) . 'Driver'
-			: $this->options['driverClass'];
-		$this->engine = new $class;
-		$this->preprocessor = new SqlPreprocessor($this);
 		$this->engine->initialize($this, $this->options);
 		Arrays::invoke($this->onConnect, $this);
 	}
@@ -239,6 +236,7 @@ class Connection
 	public function preprocess(string $sql, ...$params): array
 	{
 		$this->connect();
+		$this->preprocessor ??= new SqlPreprocessor($this);
 		return $params
 			? $this->preprocessor->process(func_get_args())
 			: [$sql, []];

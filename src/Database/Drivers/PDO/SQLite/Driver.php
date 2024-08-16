@@ -17,7 +17,7 @@ use Nette\Database\Drivers;
  */
 class Driver implements Drivers\Driver
 {
-	private const EngineClass = Drivers\SqliteDriver::class;
+	private const EngineClass = Drivers\Engines\SQLiteEngine::class;
 
 
 	public function createDatabaseEngine(): Drivers\Engine

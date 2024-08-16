@@ -17,7 +17,7 @@ use Nette\Database\Drivers;
  */
 class Driver implements Drivers\Driver
 {
-	private const EngineClass = Drivers\MsSqlDriver::class;
+	private const EngineClass = Drivers\Engines\MSSQLEngine::class;
 
 
 	public function createDatabaseEngine(): Drivers\Engine

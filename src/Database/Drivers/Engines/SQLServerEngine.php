@@ -220,6 +220,7 @@ class SQLServerEngine implements Engine
 	{
 		return match ($meta['nativeType']) {
 			'timestamp' => $value, // timestamp does not mean time in sqlsrv
+			'bit' => $converter->convertBoolean ? $converter->toBool($value) : $converter->toInt($value),
 			default => $converter->convertToPhp($value, $meta),
 		};
 	}

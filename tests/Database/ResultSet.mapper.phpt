@@ -6,6 +6,7 @@ declare(strict_types=1);
  * @dataProvider? databases.ini
  */
 
+use Nette\Database\Mapping;
 use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
@@ -16,11 +17,10 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 $connection->query('UPDATE author SET born=?', new DateTime('2022-01-23'));
 
 
-// TODO
 test('disabled normalization', function () use ($connection) {
 	$driverName = $GLOBALS['driverName'];
 
-	$connection->getTypeConverter()->convertDateTime = false;
+	$connection->setMapper(null);
 	$res = $connection->query('SELECT * FROM author');
 	$asInt = $driverName === 'pgsql' || ($driverName !== 'sqlsrv' && PHP_VERSION_ID >= 80100);
 	Assert::same([
@@ -32,18 +32,22 @@ test('disabled normalization', function () use ($connection) {
 });
 
 
-test('custom normalization', function () use ($connection) {
-	$driverName = $GLOBALS['driverName'];
-
-	@$connection->setRowNormalizer(function (array $row, Nette\Database\ResultSet $resultSet) { // deprecated
+class TestMapper implements Mapping\Mapper
+{
+	public function mapRow(array $row): array
+	{
 		foreach ($row as $key => $value) {
 			unset($row[$key]);
 			$row['_' . $key . '_'] = (string) $value;
 		}
-
 		return $row;
-	});
+	}
+}
 
+test('custom normalization', function () use ($connection) {
+	$driverName = $GLOBALS['driverName'];
+
+	$connection->setMapper(new TestMapper);
 	$res = $connection->query('SELECT * FROM author');
 	Assert::same([
 		'_id_' => '11',

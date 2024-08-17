@@ -521,7 +521,7 @@ class Selection implements \Iterator, \ArrayAccess, \Countable
 		$usedPrimary = true;
 		$key = 0;
 		while ($row = $result->fetchAssociative()) {
-			$row = $this->createRow($result->normalizeRow($row));
+			$row = $this->createRow($result->convertTypes($row));
 			$primary = $row->getSignature(false);
 			$usedPrimary = $usedPrimary && $primary !== '';
 			$this->rows[$usedPrimary ? $primary : $key] = $row;

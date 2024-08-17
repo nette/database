@@ -29,9 +29,7 @@ class Connection
 	private ?Drivers\Engine $engine;
 	private ?SqlPreprocessor $preprocessor;
 	private TypeConverter $typeConverter;
-
-	/** @var callable(array, ResultSet): array */
-	private $rowNormalizer = [Helpers::class, 'normalizeRow'];
+	private ?Mapping\Mapper $mapper = null;
 	private ?string $sql = null;
 	private int $transactionDepth = 0;
 
@@ -137,10 +135,24 @@ class Connection
 	}
 
 
+	/** @internal experimental feature */
+	public function setMapper(?Mapping\Mapper $mapper): static
+	{
+		$this->mapper = $mapper;
+		return $this;
+	}
+
+
+	public function getMapper(): ?Mapping\Mapper
+	{
+		return $this->mapper;
+	}
+
+
+	/** @deprecated use setMapper() */
 	public function setRowNormalizer(?callable $normalizer): static
 	{
-		$this->rowNormalizer = $normalizer;
-		return $this;
+		throw new Nette\DeprecatedException(__METHOD__ . "() is deprecated, use setMapper() or configure 'convert*' options.");
 	}
 
 
@@ -224,7 +236,7 @@ class Connection
 			$time = microtime(true);
 			$result = $this->connection->query($this->sql, $params);
 			$time = microtime(true) - $time;
-			$resultSet = new ResultSet($this, $result, new SqlLiteral($this->sql, $params), $this->rowNormalizer, $time);
+			$resultSet = new ResultSet($this, $result, new SqlLiteral($this->sql, $params), $time);
 		} catch (DriverException $e) {
 			Arrays::invoke($this->onQuery, $this, $e);
 			throw $e;

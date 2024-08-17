@@ -17,8 +17,6 @@ use Nette;
  */
 class ResultSet implements \Iterator
 {
-	/** @var callable(array, ResultSet): array */
-	private readonly mixed $normalizer;
 	private Row|false|null $lastRow = null;
 	private int $lastRowKey = -1;
 
@@ -31,10 +29,8 @@ class ResultSet implements \Iterator
 		private readonly Connection $connection,
 		private readonly Drivers\Result $result,
 		private readonly ?SqlLiteral $query = null,
-		?callable $normalizer = null,
 		private ?float $time = null,
 	) {
-		$this->normalizer = $normalizer;
 	}
 
 
@@ -73,15 +69,6 @@ class ResultSet implements \Iterator
 	public function getTime(): float
 	{
 		return $this->time;
-	}
-
-
-	/** @internal */
-	public function normalizeRow(array $row): array
-	{
-		return $this->normalizer
-			? ($this->normalizer)($row, $this)
-			: $row;
 	}
 
 
@@ -136,26 +123,25 @@ class ResultSet implements \Iterator
 	}
 
 
+	/********************* fetch ****************d*g**/
+
+
 	/**
 	 * Fetches single row object.
 	 */
-	public function fetch(): ?Row
+	public function fetch(): mixed
 	{
-		$data = $this->result->fetch();
-		if ($data === null) {
+		$row = $this->result->fetch();
+		if ($row === null) {
 			return null;
 
-		} elseif ($this->lastRow === null && count($data) !== $this->result->getColumnCount()) {
+		} elseif ($this->lastRow === null && count($row) !== $this->result->getColumnCount()) {
 			$duplicates = array_filter(array_count_values(array_column($this->result->getColumnsInfo(), 'name')), fn($val) => $val > 1);
 			trigger_error("Found duplicate columns in database result set: '" . implode("', '", array_keys($duplicates)) . "'.");
 		}
 
-		$row = new Row;
-		foreach ($this->normalizeRow($data) as $key => $value) {
-			if ($key !== '') {
-				$row->$key = $value;
-			}
-		}
+		$row = $this->convertTypes($row);
+		$row = $this->connection->getMapper()?->mapRow($row, $this) ?? $this->mapRow($row);
 
 		$this->lastRowKey++;
 		return $this->lastRow = $row;
@@ -218,12 +204,23 @@ class ResultSet implements \Iterator
 	}
 
 
-	public function resolveColumnConverters(): array
+	/** @internal */
+	public function convertTypes(array $row): array
 	{
-		if (isset($this->converters)) {
-			return $this->converters;
+		$converters = $this->converters ??= $this->resolveColumnConverters();
+		foreach ($row as $key => $value) {
+			$converter = $converters[$key];
+			$row[$key] = isset($value, $converter)
+				? $converter($value)
+				: $value;
 		}
 
+		return $row;
+	}
+
+
+	private function resolveColumnConverters(): array
+	{
 		$res = [];
 		$engine = $this->connection->getDatabaseEngine();
 		$converter = $this->connection->getTypeConverter();
@@ -232,6 +229,16 @@ class ResultSet implements \Iterator
 				? $engine->resolveColumnConverter($meta, $converter)
 				: null;
 		}
-		return $this->converters = $res;
+		return $res;
+	}
+
+
+	private function mapRow(?array $row): Row
+	{
+		$res = new Row;
+		foreach ($row as $key => $value) {
+			$res->$key = $value;
+		}
+		return $res;
 	}
 }

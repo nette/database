@@ -15,6 +15,8 @@ use Nette\Database\Drivers\Engines\SQLServerEngine;
 
 /**
  * PDO SQL Server database driver.
+ * Options:
+ *    - convertBoolean => converts BIT to boolean
  */
 class Driver extends Drivers\PDO\Driver
 {

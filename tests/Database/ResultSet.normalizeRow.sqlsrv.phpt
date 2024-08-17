@@ -21,7 +21,7 @@ $res = $connection->query('SELECT * FROM types');
 Assert::equal([
 	'bigint' => 1,
 	'binary_3' => "\x00\x00\xFF",
-	'bit' => '1',
+	'bit' => true,
 	'char_5' => 'a    ',
 	'date' => new DateTime('2012-10-13 00:00:00'),
 	'datetime' => new DateTime('2012-10-13 10:10:10'),
@@ -54,7 +54,7 @@ Assert::equal([
 Assert::equal([
 	'bigint' => 0,
 	'binary_3' => "\x00\x00\x00",
-	'bit' => '0',
+	'bit' => false,
 	'char_5' => '     ',
 	'date' => new DateTime('0001-01-01 00:00:00'),
 	'datetime' => new DateTime('1753-01-01 00:00:00'),

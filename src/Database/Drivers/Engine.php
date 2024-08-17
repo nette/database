@@ -13,7 +13,7 @@ use Nette\Database;
 
 
 /**
- * Engine-specific behaviors, features and SQL dialects.
+ * Database driver.
  */
 interface Engine
 {
@@ -24,11 +24,6 @@ interface Engine
 		SupportMultiColumnAsOrCond = 'multi_column_as_or',
 		SupportSubselect = 'subselect',
 		SupportSchema = 'schema';
-
-	/**
-	 * Initializes connection.
-	 */
-	function initialize(Database\Connection $connection, array $options): void;
 
 	/**
 	 * Converts PDOException to DriverException or its descendant.

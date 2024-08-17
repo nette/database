@@ -11,7 +11,6 @@ namespace Nette\Database;
 
 use JetBrains\PhpStorm\Language;
 use Nette\Utils\Arrays;
-use PDO;
 use PDOException;
 
 
@@ -25,9 +24,10 @@ class Connection
 
 	/** @var array<callable(self, ResultSet|DriverException): void>  Occurs after query is executed */
 	public array $onQuery = [];
-	private Drivers\Engine $engine;
+	private \Closure $connector;
+	private ?Drivers\Connection $connection = null;
+	private ?Drivers\Engine $engine;
 	private ?SqlPreprocessor $preprocessor;
-	private ?PDO $pdo = null;
 
 	/** @var callable(array, ResultSet): array */
 	private $rowNormalizer = [Helpers::class, 'normalizeRow'];
@@ -37,16 +37,16 @@ class Connection
 
 	public function __construct(
 		private readonly string $dsn,
+		?string $user = null,
 		#[\SensitiveParameter]
-		private readonly ?string $user = null,
-		#[\SensitiveParameter]
-		private readonly ?string $password = null,
-		private array $options = [],
+		?string $password = null,
+		array $options = [],
 	) {
-		unset($this->options['newDateTime']);
+		$lazy = $options['lazy'] ?? false;
+		unset($options['newDateTime'], $options['lazy']);
 
-		$this->engine = (new Factory)->createConnectorFromDsn($dsn, $user, $password, $options);
-		if (empty($options['lazy'])) {
+		$this->connector = (new Factory)->createConnectorFromDsn($dsn, $user, $password, $options);
+		if (!$lazy) {
 			$this->connect();
 		}
 	}
@@ -54,17 +54,16 @@ class Connection
 
 	public function connect(): void
 	{
-		if ($this->pdo) {
+		if ($this->connection) {
 			return;
 		}
 
 		try {
-			$this->pdo = new PDO($this->dsn, $this->user, $this->password, $this->options);
+			$this->connection = ($this->connector)();
 		} catch (PDOException $e) {
 			throw ConnectionException::from($e);
 		}
 
-		$this->engine->initialize($this, $this->options);
 		Arrays::invoke($this->onConnect, $this);
 	}
 
@@ -78,7 +77,7 @@ class Connection
 
 	public function disconnect(): void
 	{
-		$this->pdo = null;
+		$this->connection = null;
 	}
 
 
@@ -88,26 +87,31 @@ class Connection
 	}
 
 
-	public function getPdo(): PDO
+	public function getPdo(): \PDO
 	{
-		$this->connect();
-		return $this->pdo;
+		return $this->getConnectionDriver()->getNativeConnection();
 	}
 
 
-	/** @deprecated use getDriver() */
-	public function getSupplementalDriver(): Drivers\Engine
+	public function getConnectionDriver(): Drivers\Connection
 	{
-		trigger_error(__METHOD__ . '() is deprecated, use getDriver()', E_USER_DEPRECATED);
 		$this->connect();
-		return $this->engine;
+		return $this->connection;
+	}
+
+
+	/** @deprecated use getConnectionDriver() */
+	public function getSupplementalDriver(): Drivers\Connection
+	{
+		trigger_error(__METHOD__ . '() is deprecated, use getConnectionDriver()', E_USER_DEPRECATED);
+		return $this->getConnectionDriver();
 	}
 
 
 	public function getDatabaseEngine(): Drivers\Engine
 	{
 		$this->connect();
-		return $this->engine;
+		return $this->engine ??= $this->connection->getDatabaseEngine();
 	}
 
 
@@ -127,21 +131,16 @@ class Connection
 	public function getInsertId(?string $sequence = null): string
 	{
 		try {
-			$res = $this->getPdo()->lastInsertId($sequence);
-			return $res === false ? '0' : $res;
+			return $this->getConnectionDriver()->getInsertId($sequence);
 		} catch (PDOException $e) {
 			throw $this->engine->convertException($e);
 		}
 	}
 
 
-	public function quote(string $string, int $type = PDO::PARAM_STR): string
+	public function quote(string $string): string
 	{
-		try {
-			return $this->getPdo()->quote($string, $type);
-		} catch (PDOException $e) {
-			throw DriverException::from($e);
-		}
+		return $this->getConnectionDriver()->quote($string);
 	}
 
 

@@ -57,28 +57,28 @@ test('connect & disconnect', function () {
 	};
 
 	// first connection
-	$pdo = $connection->getPdo();
-	$driver = $connection->getDatabaseEngine();
+	$native = $connection->getConnectionDriver()->getNativeConnection();
+	$driver = $connection->getConnectionDriver();
 	Assert::same(1, $connections);
 
 	// still first connection
 	$connection->connect();
-	Assert::same($pdo, $connection->getPdo());
-	Assert::same($driver, $connection->getDatabaseEngine());
+	Assert::same($native, $connection->getConnectionDriver()->getNativeConnection());
+	Assert::same($driver, $connection->getConnectionDriver());
 	Assert::same(1, $connections);
 
 	// second connection
 	$connection->reconnect();
-	$pdo2 = $connection->getPdo();
-	$driver2 = $connection->getDatabaseEngine();
+	$native2 = $connection->getConnectionDriver()->getNativeConnection();
+	$driver2 = $connection->getConnectionDriver();
 
-	Assert::notSame($pdo, $pdo2);
-	Assert::same($driver, $driver2);
+	Assert::notSame($native, $native2);
+	Assert::notSame($driver, $driver2);
 	Assert::same(2, $connections);
 
 	// third connection
 	$connection->disconnect();
-	Assert::notSame($pdo2, $connection->getPdo());
-	Assert::same($driver2, $connection->getDatabaseEngine());
+	Assert::notSame($native2, $connection->getConnectionDriver()->getNativeConnection());
+	Assert::notSame($driver2, $connection->getConnectionDriver());
 	Assert::same(3, $connections);
 });

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
 
 
@@ -18,14 +19,12 @@ use Nette\Database\Drivers\Engine;
  */
 class OracleEngine implements Engine
 {
-	private Nette\Database\Connection $connection;
-	private string $fmtDateTime;
+	public string $formatDateTime = 'U';
 
 
-	public function initialize(Nette\Database\Connection $connection, array $options): void
-	{
-		$this->connection = $connection;
-		$this->fmtDateTime = $options['formatDateTime'] ?? 'U';
+	public function __construct(
+		private readonly Connection $connection,
+	) {
 	}
 
 
@@ -59,7 +58,7 @@ class OracleEngine implements Engine
 
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
-		return $value->format($this->fmtDateTime);
+		return $value->format($this->formatDateTime);
 	}
 
 
@@ -100,6 +99,7 @@ class OracleEngine implements Engine
 		$tables = [];
 		$rows = $this->connection->query('SELECT * FROM cat');
 		while ($row = $rows->fetch()) {
+			$row = array_values($row);
 			if ($row[1] === 'TABLE' || $row[1] === 'VIEW') {
 				$tables[] = [
 					'name' => $row[0],

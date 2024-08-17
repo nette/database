@@ -10,8 +10,7 @@ use Tester\Assert;
 
 require __DIR__ . '/../../bootstrap.php';
 
-$connection = connectToDB()->getConnection();
-$engine = $connection->getDatabaseEngine();
+$engine = connectToDB()->getDatabaseEngine();
 
 $query = 'SELECT 1 FROM t';
 $engine->applyLimit($query, 10, 20);

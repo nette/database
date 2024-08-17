@@ -15,6 +15,10 @@ use Nette\Database\Drivers;
 /**
  * PDO PostgreSQL database driver connection.
  */
-class Connection extends Drivers\Engines\PostgreSQLEngine
+class Connection extends Drivers\PDO\Connection
 {
+	public function getDatabaseEngine(): Drivers\Engines\PostgreSQLEngine
+	{
+		return new Drivers\Engines\PostgreSQLEngine($this);
+	}
 }

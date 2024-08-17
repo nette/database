@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
 use Nette\Database\TypeConverter;
 
@@ -19,14 +20,12 @@ use Nette\Database\TypeConverter;
  */
 class SQLiteEngine implements Engine
 {
-	private Nette\Database\Connection $connection;
-	private string $fmtDateTime;
+	public string $formatDateTime = 'U';
 
 
-	public function initialize(Nette\Database\Connection $connection, array $options): void
-	{
-		$this->connection = $connection;
-		$this->fmtDateTime = $options['formatDateTime'] ?? 'U';
+	public function __construct(
+		private readonly Connection $connection,
+	) {
 	}
 
 
@@ -73,7 +72,7 @@ class SQLiteEngine implements Engine
 
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
-		return $value->format($this->fmtDateTime);
+		return $value->format($this->formatDateTime);
 	}
 
 
@@ -140,7 +139,7 @@ class SQLiteEngine implements Engine
 			SELECT sql
 			FROM sqlite_temp_master
 			WHERE type = 'table' AND name = ?
-			X, $table, $table)->fetch();
+			X, [$table, $table])->fetch();
 
 		$columns = [];
 		$rows = $this->connection->query("PRAGMA table_info({$this->delimite($table)})");
@@ -158,7 +157,7 @@ class SQLiteEngine implements Engine
 				'default' => $row['dflt_value'],
 				'autoIncrement' => $createSql && preg_match($pattern, $createSql['sql']),
 				'primary' => $row['pk'] > 0,
-				'vendor' => (array) $row,
+				'vendor' => $row,
 			];
 		}
 
@@ -236,7 +235,7 @@ class SQLiteEngine implements Engine
 		for ($col = 0; $col < $count; $col++) {
 			$meta = $statement->getColumnMeta($col);
 			if (isset($meta['sqlite:decl_type'])) {
-				$types[$meta['name']] = $this->fmtDateTime === 'U' && in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], strict: true)
+				$types[$meta['name']] = $this->formatDateTime === 'U' && in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], strict: true)
 					? Nette\Database\IStructure::FIELD_UNIX_TIMESTAMP
 					: TypeConverter::detectType($meta['sqlite:decl_type']);
 			} elseif (isset($meta['native_type'])) {

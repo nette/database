@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
 
 
@@ -18,12 +19,9 @@ use Nette\Database\Drivers\Engine;
  */
 class MSSQLEngine implements Engine
 {
-	private Nette\Database\Connection $connection;
-
-
-	public function initialize(Nette\Database\Connection $connection, array $options): void
-	{
-		$this->connection = $connection;
+	public function __construct(
+		private readonly Connection $connection,
+	) {
 	}
 
 
@@ -117,7 +115,7 @@ class MSSQLEngine implements Engine
 			WHERE
 				TABLE_SCHEMA = ?
 				AND TABLE_NAME = ?
-			X, $table_schema, $table_name);
+			X, [$table_schema, $table_name]);
 
 		while ($row = $rows->fetch()) {
 			$columns[] = [
@@ -131,7 +129,7 @@ class MSSQLEngine implements Engine
 				'default' => $row['COLUMN_DEFAULT'],
 				'autoIncrement' => $row['DOMAIN_NAME'] === 'COUNTER',
 				'primary' => $row['COLUMN_NAME'] === 'ID',
-				'vendor' => (array) $row,
+				'vendor' => $row,
 			];
 		}
 
@@ -160,7 +158,7 @@ class MSSQLEngine implements Engine
 				 t.name = ?
 			ORDER BY
 				 t.name, ind.name, ind.index_id, ic.index_column_id
-			X, $table_name);
+			X, [$table_name]);
 
 		while ($row = $rows->fetch()) {
 			$id = $row['name_index'];
@@ -201,7 +199,7 @@ class MSSQLEngine implements Engine
 				ON col2.column_id = referenced_column_id AND col2.object_id = tab2.object_id
 			WHERE
 				tab1.name = ?
-			X, $table_name);
+			X, [$table_name]);
 
 		$id = 0;
 		while ($row = $rows->fetch()) {

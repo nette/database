@@ -15,6 +15,10 @@ use Nette\Database\Drivers;
 /**
  * PDO SQL Server database driver connection.
  */
-class Connection extends Drivers\Engines\SQLServerEngine
+class Connection extends Drivers\PDO\Connection
 {
+	public function getDatabaseEngine(): Drivers\Engines\SQLServerEngine
+	{
+		return new Drivers\Engines\SQLServerEngine($this);
+	}
 }

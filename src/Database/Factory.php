@@ -30,11 +30,11 @@ final class Factory
 		#[\SensitiveParameter]
 		?string $password = null,
 		array $options = [],
-	): Drivers\Engine
+	): \Closure
 	{
 		if ($class = $params['driverClass'] ?? null) {
-			if (!is_subclass_of($class, Drivers\Engine::class)) {
-				throw new \LogicException("Driver class '$class' is not subclass of " . Drivers\Engine::class);
+			if (!is_subclass_of($class, Drivers\Connection::class)) {
+				throw new \LogicException("Driver class '$class' is not subclass of " . Drivers\Connection::class);
 			}
 
 		} else {
@@ -45,6 +45,6 @@ final class Factory
 			}
 		}
 
-		return new $class;
+		return fn() => new $class($dsn, $username, $password, $options);
 	}
 }

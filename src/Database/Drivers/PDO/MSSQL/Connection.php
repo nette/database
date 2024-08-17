@@ -15,6 +15,10 @@ use Nette\Database\Drivers;
 /**
  * PDO MS SQL database driver connection.
  */
-class Connection extends Drivers\Engines\MSSQLEngine
+class Connection extends Drivers\PDO\Connection
 {
+	public function getDatabaseEngine(): Drivers\Engines\MSSQLEngine
+	{
+		return new Drivers\Engines\MSSQLEngine($this);
+	}
 }

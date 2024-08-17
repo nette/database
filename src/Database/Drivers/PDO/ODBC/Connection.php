@@ -15,6 +15,10 @@ use Nette\Database\Drivers;
 /**
  * PDO ODBC database driver connection.
  */
-class Connection extends Drivers\Engines\ODBCEngine
+class Connection extends Drivers\PDO\Connection
 {
+	public function getDatabaseEngine(): Drivers\Engines\ODBCEngine
+	{
+		return new Drivers\Engines\ODBCEngine;
+	}
 }

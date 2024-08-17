@@ -15,6 +15,18 @@ use Nette\Database\Drivers;
 /**
  * PDO SQLite3 database driver connection.
  */
-class Connection extends Drivers\Engines\SQLiteEngine
+class Connection extends Drivers\PDO\Connection
 {
+	public function getDatabaseEngine(): Drivers\Engines\SQLiteEngine
+	{
+		return new Drivers\Engines\SQLiteEngine($this);
+	}
+
+
+	protected function initialize(array $options): void
+	{
+		if (isset($options['formatDateTime'])) {
+			$this->engine->formatDateTime = $options['formatDateTime'];
+		}
+	}
 }

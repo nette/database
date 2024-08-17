@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Nette\Database;
 
 use Nette;
-use PDO;
 
 
 /**
@@ -39,20 +38,13 @@ class ResultSet implements \Iterator
 	) {
 		$time = microtime(true);
 		$this->normalizer = $normalizer;
-		$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
+
 
 		try {
 			if (str_starts_with($queryString, '::')) {
-				$connection->getPdo()->{substr($queryString, 2)}();
+				$connection->getConnectionDriver()->{substr($queryString, 2)}();
 			} else {
-				$this->pdoStatement = $connection->getPdo()->prepare($queryString);
-				foreach ($params as $key => $value) {
-					$type = gettype($value);
-					$this->pdoStatement->bindValue(is_int($key) ? $key + 1 : $key, $value, $types[$type] ?? PDO::PARAM_STR);
-				}
-
-				$this->pdoStatement->setFetchMode(PDO::FETCH_ASSOC);
-				$this->pdoStatement->execute();
+				$this->pdoStatement = $connection->getConnectionDriver()->query($queryString, $params);
 			}
 		} catch (\PDOException $e) {
 			$e = $connection->getDatabaseEngine()->convertException($e);

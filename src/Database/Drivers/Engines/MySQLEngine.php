@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
 use Nette\Database\TypeConverter;
 
@@ -19,29 +20,12 @@ use Nette\Database\TypeConverter;
  */
 class MySQLEngine implements Engine
 {
-	private Nette\Database\Connection $connection;
-	private bool $convertBoolean;
+	public bool $convertBoolean = true;
 
 
-	/**
-	 * Driver options:
-	 *   - charset => character encoding to set (default is utf8mb4)
-	 *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
-	 *   - convertBoolean => converts INT(1) to boolean
-	 */
-	public function initialize(Nette\Database\Connection $connection, array $options): void
-	{
-		$this->connection = $connection;
-		$charset = $options['charset'] ?? 'utf8mb4';
-		if ($charset) {
-			$connection->query('SET NAMES ?', $charset);
-		}
-
-		if (isset($options['sqlmode'])) {
-			$connection->query('SET sql_mode=?', $options['sqlmode']);
-		}
-
-		$this->convertBoolean = (bool) ($options['convertBoolean'] ?? true);
+	public function __construct(
+		private readonly Connection $connection,
+	) {
 	}
 
 
@@ -117,6 +101,7 @@ class MySQLEngine implements Engine
 		$tables = [];
 		$rows = $this->connection->query('SHOW FULL TABLES');
 		while ($row = $rows->fetch()) {
+			$row = array_values($row);
 			$tables[] = [
 				'name' => $row[0],
 				'view' => ($row[1] ?? null) === 'VIEW',
@@ -132,7 +117,7 @@ class MySQLEngine implements Engine
 		$columns = [];
 		$rows = $this->connection->query('SHOW FULL COLUMNS FROM ' . $this->delimite($table));
 		while ($row = $rows->fetch()) {
-			$row = array_change_key_case((array) $row, CASE_LOWER);
+			$row = array_change_key_case($row);
 			$typeInfo = Nette\Database\Helpers::parseColumnType($row['type']);
 			$columns[] = [
 				'name' => $row['field'],
@@ -177,7 +162,7 @@ class MySQLEngine implements Engine
 			WHERE TABLE_SCHEMA = DATABASE()
 			  AND REFERENCED_TABLE_NAME IS NOT NULL
 			  AND TABLE_NAME = ?
-			X, $table);
+			X, [$table]);
 
 		$id = 0;
 		while ($row = $rows->fetch()) {

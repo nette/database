@@ -38,3 +38,25 @@ test('convertDecimal = false', function () {
 	Assert::same('1', $row->numeric_10_0);
 	Assert::same('1.10', $row->numeric_10_2);
 });
+
+
+test('default convertBoolean', function () {
+	$connection = connectToDB(['convertBoolean' => null])->getConnection();
+	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlsrv-nette_test3.sql');
+	$row = $connection->fetch('SELECT * FROM types');
+	Assert::equal(true, $row->bit);
+});
+
+test('convertBoolean = true', function () {
+	$connection = connectToDB(['convertBoolean' => true])->getConnection();
+	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlsrv-nette_test3.sql');
+	$row = $connection->fetch('SELECT * FROM types');
+	Assert::equal(true, $row->bit);
+});
+
+test('convertBoolean = false', function () {
+	$connection = connectToDB(['convertBoolean' => false])->getConnection();
+	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlsrv-nette_test3.sql');
+	$row = $connection->fetch('SELECT * FROM types');
+	Assert::equal(1, $row->bit);
+});

@@ -73,9 +73,10 @@ class Connection
 	}
 
 
+	/** @deprecated */
 	public function getDsn(): string
 	{
-		return $this->dsn;
+		throw new Nette\DeprecatedException(__METHOD__ . '() is deprecated.');
 	}
 
 

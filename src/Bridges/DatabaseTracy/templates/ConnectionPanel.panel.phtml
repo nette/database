@@ -16,7 +16,7 @@ use Tracy\Helpers;
 	#tracy-debug td.nette-DbConnectionPanel-sql-update { background: #E7FBFF !important }
 </style>
 
-<h1 title="<?= Helpers::escapeHtml($connection->getDsn()) ?>">Queries: <?php
+<h1>Queries: <?php
 	echo $count, ($totalTime ? sprintf(', time: %0.3f ms', $totalTime * 1000) : ''), ', ', Helpers::escapeHtml($name) ?></h1>
 
 <div class="tracy-inner">

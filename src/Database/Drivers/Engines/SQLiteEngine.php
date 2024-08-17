@@ -9,6 +9,7 @@ namespace Nette\Database\Drivers\Engines;
 
 use Nette;
 use Nette\Database\Drivers\{Connection, Engine};
+use Nette\Database\TypeConverter;
 use function in_array;
 
 
@@ -235,9 +236,9 @@ class SQLiteEngine implements Engine
 			if (isset($meta['sqlite:decl_type'])) {
 				$types[$meta['name']] = $this->formatDateTime === 'U' && in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], true)
 					? Nette\Database\IStructure::FIELD_UNIX_TIMESTAMP
-					: Nette\Database\Helpers::detectType($meta['sqlite:decl_type']);
+					: TypeConverter::detectType($meta['sqlite:decl_type']);
 			} elseif (isset($meta['native_type'])) {
-				$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['native_type']);
+				$types[$meta['name']] = TypeConverter::detectType($meta['native_type']);
 			}
 		}
 

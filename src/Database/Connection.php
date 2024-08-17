@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database;
 
 use JetBrains\PhpStorm\Language;
+use Nette;
 use Nette\Utils\Arrays;
 
 
@@ -36,20 +37,24 @@ class Connection
 
 
 	public function __construct(
-		private readonly string $dsn,
-		?string $user = null,
-		#[\SensitiveParameter]
-		?string $password = null,
-		array $options = [],
+		\Closure|string $connector,
 	) {
-		$lazy = $options['lazy'] ?? false;
-		unset($options['newDateTime'], $options['lazy']);
+		if (is_string($connector)) { // compatibility with version 3.x
+			//trigger_error('Passing DSN as string is deprecated, use Nette\Database\Factory::createFromDsn() instead.', E_USER_DEPRECATED);
+			[$dsn, $user, $password, $options] = func_get_args() + [null, null, null, []];
+			$lazy = $options['lazy'] ?? false;
+			unset($options['newDateTime'], $options['lazy']);
 
-		$factory = new Factory;
-		$this->typeConverter = $factory->createTypeConverter($options);
-		$this->connector = $factory->createConnectorFromDsn($dsn, $user, $password, $options);
-		if (!$lazy) {
-			$this->connect();
+			$factory = new Factory;
+			$this->typeConverter = $factory->createTypeConverter($options);
+			$this->connector = $factory->createConnectorFromDsn($dsn, $user, $password, $options);
+			if (!$lazy) {
+				$this->connect();
+			}
+
+		} else {
+			$this->typeConverter = new TypeConverter;
+			$this->connector = $connector;
 		}
 	}
 
@@ -76,9 +81,11 @@ class Connection
 	}
 
 
+	/** @deprecated */
 	public function getDsn(): string
 	{
-		return $this->dsn;
+		return ''; // TODO
+		throw new Nette\DeprecatedException(__METHOD__ . '() is deprecated.');
 	}
 
 

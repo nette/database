@@ -12,6 +12,7 @@ namespace Nette\Database\Drivers\Engines;
 use Nette;
 use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
+use Nette\Database\TypeConverter;
 use function array_values, str_replace;
 
 
@@ -238,9 +239,9 @@ class SQLServerEngine implements Engine
 				isset($meta['sqlsrv:decl_type'])
 				&& $meta['sqlsrv:decl_type'] !== 'timestamp'
 			) { // timestamp does not mean time in sqlsrv
-				$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['sqlsrv:decl_type']);
+				$types[$meta['name']] = TypeConverter::detectType($meta['sqlsrv:decl_type']);
 			} elseif (isset($meta['native_type'])) {
-				$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['native_type']);
+				$types[$meta['name']] = TypeConverter::detectType($meta['native_type']);
 			}
 		}
 

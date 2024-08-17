@@ -23,19 +23,6 @@ class Helpers
 	/** maximum SQL length */
 	public static int $maxLength = 100;
 
-	/** @var array<string, string> */
-	public static array $typePatterns = [
-		'^_' => IStructure::FIELD_TEXT, // PostgreSQL arrays
-		'(TINY|SMALL|SHORT|MEDIUM|BIG|LONG)(INT)?|INT(EGER|\d+| IDENTITY| UNSIGNED)?|(SMALL|BIG|)SERIAL\d*|COUNTER|YEAR|BYTE|LONGLONG|UNSIGNED BIG INT' => IStructure::FIELD_INTEGER,
-		'(NEW)?DEC(IMAL)?(\(.*)?|NUMERIC|(SMALL)?MONEY|CURRENCY|NUMBER' => IStructure::FIELD_DECIMAL,
-		'REAL|DOUBLE( PRECISION)?|FLOAT\d*' => IStructure::FIELD_FLOAT,
-		'BOOL(EAN)?' => IStructure::FIELD_BOOL,
-		'TIME' => IStructure::FIELD_TIME,
-		'DATE' => IStructure::FIELD_DATE,
-		'(SMALL)?DATETIME(OFFSET)?\d*|TIME(STAMP.*)?' => IStructure::FIELD_DATETIME,
-		'BYTEA|(TINY|MEDIUM|LONG|)BLOB|(LONG )?(VAR)?BINARY|IMAGE' => IStructure::FIELD_BINARY,
-	];
-
 
 	/**
 	 * Displays result set as HTML table.
@@ -179,7 +166,7 @@ class Helpers
 		for ($col = 0; $col < $count; $col++) {
 			$meta = $statement->getColumnMeta($col);
 			if (isset($meta['native_type'])) {
-				$types[$meta['name']] = self::detectType($meta['native_type']);
+				$types[$meta['name']] = TypeConverter::detectType($meta['native_type']);
 			}
 		}
 
@@ -198,26 +185,6 @@ class Helpers
 		return is_finite($value) && (float) $res !== $value
 			? str_replace(',', '.', sprintf('%.17G', $value)) // 17 digits always survive the round-trip, but %G is locale-aware
 			: $res;
-	}
-
-
-	/**
-	 * Maps a native column type string to an IStructure::FIELD_* constant.
-	 * @internal
-	 */
-	public static function detectType(string $type): string
-	{
-		static $cache;
-		if (!isset($cache[$type])) {
-			$cache[$type] = 'string';
-			foreach (self::$typePatterns as $s => $val) {
-				if (preg_match("#^($s)$#i", $type)) {
-					return $cache[$type] = $val;
-				}
-			}
-		}
-
-		return $cache[$type];
 	}
 
 

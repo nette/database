@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers;
 
 use Nette;
+use Nette\Database\TypeConverter;
 
 
 /**
@@ -236,9 +237,9 @@ class SqliteDriver implements Engine
 			if (isset($meta['sqlite:decl_type'])) {
 				$types[$meta['name']] = $this->fmtDateTime === 'U' && in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], strict: true)
 					? Nette\Database\IStructure::FIELD_UNIX_TIMESTAMP
-					: Nette\Database\Helpers::detectType($meta['sqlite:decl_type']);
+					: TypeConverter::detectType($meta['sqlite:decl_type']);
 			} elseif (isset($meta['native_type'])) {
-				$types[$meta['name']] = Nette\Database\Helpers::detectType($meta['native_type']);
+				$types[$meta['name']] = TypeConverter::detectType($meta['native_type']);
 			}
 		}
 

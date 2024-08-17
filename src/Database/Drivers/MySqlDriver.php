@@ -23,14 +23,14 @@ class MySqlDriver implements Nette\Database\Driver
 		ERROR_DATA_TRUNCATED = 1265;
 
 	private Nette\Database\Connection $connection;
-	private bool $supportBooleans;
+	private bool $convertBoolean;
 
 
 	/**
 	 * Driver options:
 	 *   - charset => character encoding to set (default is utf8mb4)
 	 *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
-	 *   - supportBooleans => converts INT(1) to boolean
+	 *   - convertBoolean => converts INT(1) to boolean
 	 */
 	public function initialize(Nette\Database\Connection $connection, array $options): void
 	{
@@ -44,7 +44,7 @@ class MySqlDriver implements Nette\Database\Driver
 			$connection->query('SET sql_mode=?', $options['sqlmode']);
 		}
 
-		$this->supportBooleans = (bool) ($options['supportBooleans'] ?? false);
+		$this->convertBoolean = (bool) ($options['convertBoolean'] ?? $options['supportBooleans'] ?? false);
 	}
 
 
@@ -202,7 +202,7 @@ class MySqlDriver implements Nette\Database\Driver
 			if (isset($meta['native_type'])) {
 				$types[$meta['name']] = match (true) {
 					$meta['native_type'] === 'NEWDECIMAL' && $meta['precision'] === 0 => Nette\Database\IStructure::FIELD_INTEGER,
-					$meta['native_type'] === 'TINY' && $meta['len'] === 1 && $this->supportBooleans => Nette\Database\IStructure::FIELD_BOOL,
+					$meta['native_type'] === 'TINY' && $meta['len'] === 1 && $this->convertBoolean => Nette\Database\IStructure::FIELD_BOOL,
 					$meta['native_type'] === 'TIME' => Nette\Database\IStructure::FIELD_TIME_INTERVAL,
 					default => Nette\Database\Helpers::detectType($meta['native_type']),
 				};

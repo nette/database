@@ -118,7 +118,8 @@ class MySqlDriver implements Nette\Database\Driver
 	public function getTables(): array
 	{
 		$tables = [];
-		foreach ($this->connection->query('SHOW FULL TABLES') as $row) {
+		$rows = $this->connection->query('SHOW FULL TABLES');
+		while ($row = $rows->fetch()) {
 			$tables[] = [
 				'name' => $row[0],
 				'view' => ($row[1] ?? null) === 'VIEW',
@@ -132,14 +133,15 @@ class MySqlDriver implements Nette\Database\Driver
 	public function getColumns(string $table): array
 	{
 		$columns = [];
-		foreach ($this->connection->query('SHOW FULL COLUMNS FROM ' . $this->delimite($table)) as $row) {
+		$rows = $this->connection->query('SHOW FULL COLUMNS FROM ' . $this->delimite($table));
+		while ($row = $rows->fetch()) {
 			$row = array_change_key_case((array) $row, CASE_LOWER);
-			$type = explode('(', $row['type']);
+			$typeInfo = Nette\Database\Helpers::parseColumnType($row['type']);
 			$columns[] = [
 				'name' => $row['field'],
 				'table' => $table,
-				'nativetype' => strtoupper($type[0]),
-				'size' => isset($type[1]) ? (int) $type[1] : null,
+				'nativetype' => strtoupper($typeInfo['type']),
+				'size' => $typeInfo['length'],
 				'nullable' => $row['null'] === 'YES',
 				'default' => $row['default'],
 				'autoincrement' => $row['extra'] === 'auto_increment',
@@ -155,7 +157,8 @@ class MySqlDriver implements Nette\Database\Driver
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
-		foreach ($this->connection->query('SHOW INDEX FROM ' . $this->delimite($table)) as $row) {
+		$rows = $this->connection->query('SHOW INDEX FROM ' . $this->delimite($table));
+		while ($row = $rows->fetch()) {
 			$id = $row['Key_name'];
 			$indexes[$id]['name'] = $id;
 			$indexes[$id]['unique'] = !$row['Non_unique'];
@@ -170,17 +173,20 @@ class MySqlDriver implements Nette\Database\Driver
 	public function getForeignKeys(string $table): array
 	{
 		$keys = [];
-		foreach ($this->connection->query(<<<X
+		$rows = $this->connection->query(<<<'X'
 			SELECT CONSTRAINT_NAME, COLUMN_NAME, REFERENCED_TABLE_NAME, REFERENCED_COLUMN_NAME
 			FROM information_schema.KEY_COLUMN_USAGE
 			WHERE TABLE_SCHEMA = DATABASE()
 			  AND REFERENCED_TABLE_NAME IS NOT NULL
-			  AND TABLE_NAME = {$this->connection->quote($table)}
-			X) as $id => $row) {
+			  AND TABLE_NAME = ?
+			X, $table);
+
+		$id = 0;
+		while ($row = $rows->fetch()) {
 			$keys[$id]['name'] = $row['CONSTRAINT_NAME'];
 			$keys[$id]['local'] = $row['COLUMN_NAME'];
 			$keys[$id]['table'] = $row['REFERENCED_TABLE_NAME'];
-			$keys[$id]['foreign'] = $row['REFERENCED_COLUMN_NAME'];
+			$keys[$id++]['foreign'] = $row['REFERENCED_COLUMN_NAME'];
 		}
 
 		return array_values($keys);

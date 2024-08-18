@@ -121,7 +121,8 @@ switch ($driverName) {
 	case 'pgsql':
 		$expectedColumns['id']['nativeType'] = 'INT4';
 		$expectedColumns['id']['default'] = "nextval('author_id_seq'::regclass)";
-		$expectedColumns['id']['size'] = null;
+		$expectedColumns['id']['size'] = 4;
+		$expectedColumns['born']['size'] = 4;
 		break;
 	case 'sqlite':
 		$expectedColumns['id']['nativeType'] = 'INTEGER';
@@ -132,9 +133,8 @@ switch ($driverName) {
 		$expectedColumns['web']['size'] = null;
 		break;
 	case 'sqlsrv':
-		$expectedColumns['id']['size'] = null;
-		$expectedColumns['name']['size'] = null;
-		$expectedColumns['web']['size'] = null;
+		$expectedColumns['id']['size'] = 10;
+		$expectedColumns['born']['size'] = 10;
 		break;
 	default:
 		Assert::fail("Unsupported driver $driverName");

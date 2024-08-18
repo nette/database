@@ -106,7 +106,7 @@ class SqliteDriver implements Nette\Database\Driver
 	public function getTables(): array
 	{
 		$tables = [];
-		foreach ($this->connection->query(<<<'X'
+		$rows = $this->connection->query(<<<'X'
 			SELECT name, type = 'view' as view
 			FROM sqlite_master
 			WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
@@ -115,10 +115,12 @@ class SqliteDriver implements Nette\Database\Driver
 			FROM sqlite_temp_master
 			WHERE type IN ('table', 'view') AND name NOT LIKE 'sqlite_%'
 			ORDER BY name
-			X) as $row) {
+			X);
+
+		while ($row = $rows->fetch()) {
 			$tables[] = [
-				'name' => $row->name,
-				'view' => (bool) $row->view,
+				'name' => $row['name'],
+				'view' => (bool) $row['view'],
 			];
 		}
 
@@ -128,29 +130,30 @@ class SqliteDriver implements Nette\Database\Driver
 
 	public function getColumns(string $table): array
 	{
-		$meta = $this->connection->query(<<<X
+		$createSql = $this->connection->query(<<<'X'
 			SELECT sql
 			FROM sqlite_master
-			WHERE type = 'table' AND name = {$this->connection->quote($table)}
+			WHERE type = 'table' AND name = ?
 			UNION ALL
 			SELECT sql
 			FROM sqlite_temp_master
-			WHERE type = 'table' AND name = {$this->connection->quote($table)}
-			X)->fetch();
+			WHERE type = 'table' AND name = ?
+			X, $table, $table)->fetch();
 
 		$columns = [];
-		foreach ($this->connection->query("PRAGMA table_info({$this->delimite($table)})") as $row) {
+		$rows = $this->connection->query("PRAGMA table_info({$this->delimite($table)})");
+		while ($row = $rows->fetch()) {
 			$column = $row['name'];
 			$pattern = "/(\"$column\"|`$column`|\\[$column\\]|$column)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";
-			$type = explode('(', $row['type']);
+			$typeInfo = Nette\Database\Helpers::parseColumnType($row['type']);
 			$columns[] = [
 				'name' => $column,
 				'table' => $table,
-				'nativetype' => strtoupper($type[0]),
-				'size' => isset($type[1]) ? (int) $type[1] : null,
-				'nullable' => $row['notnull'] === 0,
+				'nativetype' => strtoupper($typeInfo['type']),
+				'size' => $typeInfo['length'],
+				'nullable' => $row['notnull'] == 0,
 				'default' => $row['dflt_value'],
-				'autoincrement' => $meta && preg_match($pattern, (string) $meta['sql']),
+				'autoincrement' => $createSql && preg_match($pattern, $createSql['sql']),
 				'primary' => $row['pk'] > 0,
 				'vendor' => (array) $row,
 			];
@@ -163,7 +166,8 @@ class SqliteDriver implements Nette\Database\Driver
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
-		foreach ($this->connection->query("PRAGMA index_list({$this->delimite($table)})") as $row) {
+		$rows = $this->connection->query("PRAGMA index_list({$this->delimite($table)})");
+		while ($row = $rows->fetch()) {
 			$id = $row['name'];
 			$indexes[$id]['name'] = $id;
 			$indexes[$id]['unique'] = (bool) $row['unique'];
@@ -209,7 +213,8 @@ class SqliteDriver implements Nette\Database\Driver
 	public function getForeignKeys(string $table): array
 	{
 		$keys = [];
-		foreach ($this->connection->query("PRAGMA foreign_key_list({$this->delimite($table)})") as $row) {
+		$rows = $this->connection->query("PRAGMA foreign_key_list({$this->delimite($table)})");
+		while ($row = $rows->fetch()) {
 			$id = $row['id'];
 			$keys[$id]['name'] = $id;
 			$keys[$id]['local'] = $row['from'];

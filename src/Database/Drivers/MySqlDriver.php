@@ -137,6 +137,7 @@ class MySqlDriver implements Nette\Database\Driver
 				'table' => $table,
 				'nativeType' => strtoupper($typeInfo['type']),
 				'size' => $typeInfo['length'],
+				'scale' => $typeInfo['scale'],
 				'nullable' => $row['null'] === 'YES',
 				'default' => $row['default'],
 				'autoIncrement' => $row['extra'] === 'auto_increment',

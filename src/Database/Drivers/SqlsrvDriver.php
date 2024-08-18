@@ -119,6 +119,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 					WHEN c.max_length <> -1 THEN c.max_length
 					ELSE NULL
 				END AS size,
+				c.scale AS scale,
 				c.is_nullable AS nullable,
 				OBJECT_DEFINITION(c.default_object_id) AS [default],
 				c.is_identity AS autoIncrement,
@@ -140,6 +141,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 		while ($row = $rows->fetch()) {
 			$row = (array) $row;
 			$row['vendor'] = $row;
+			$row['scale'] = $row['scale'] ?: null;
 			$row['nullable'] = (bool) $row['nullable'];
 			$row['autoIncrement'] = (bool) $row['autoIncrement'];
 			$row['primary'] = (bool) $row['primary'];

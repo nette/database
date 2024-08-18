@@ -121,12 +121,12 @@ class MsSqlDriver implements Nette\Database\Driver
 			$columns[] = [
 				'name' => $row['COLUMN_NAME'],
 				'table' => $table,
-				'nativetype' => strtoupper($row['DATA_TYPE']),
+				'nativeType' => strtoupper($row['DATA_TYPE']),
 				'size' => $row['CHARACTER_MAXIMUM_LENGTH'] ?? $row['NUMERIC_PRECISION'],
 				'unsigned' => false,
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],
-				'autoincrement' => $row['DOMAIN_NAME'] === 'COUNTER',
+				'autoIncrement' => $row['DOMAIN_NAME'] === 'COUNTER',
 				'primary' => $row['COLUMN_NAME'] === 'ID',
 				'vendor' => (array) $row,
 			];

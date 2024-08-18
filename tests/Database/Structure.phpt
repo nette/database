@@ -52,24 +52,24 @@ class StructureTestCase extends TestCase
 			['name' => 'books_view', 'view' => true],
 		]);
 		$this->driver->shouldReceive('getColumns')->with('authors')->once()->andReturn([
-			['name' => 'id', 'primary' => true, 'autoincrement' => true, 'vendor' => ['sequence' => '"public"."authors_id_seq"']],
-			['name' => 'name', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
+			['name' => 'id', 'primary' => true, 'autoIncrement' => true, 'vendor' => ['sequence' => '"public"."authors_id_seq"']],
+			['name' => 'name', 'primary' => false, 'autoIncrement' => false, 'vendor' => []],
 		]);
 		$this->driver->shouldReceive('getColumns')->with('Books')->once()->andReturn([
-			['name' => 'id', 'primary' => true, 'autoincrement' => true, 'vendor' => ['sequence' => '"public"."Books_id_seq"']],
-			['name' => 'title', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
+			['name' => 'id', 'primary' => true, 'autoIncrement' => true, 'vendor' => ['sequence' => '"public"."Books_id_seq"']],
+			['name' => 'title', 'primary' => false, 'autoIncrement' => false, 'vendor' => []],
 		]);
 		$this->driver->shouldReceive('getColumns')->with('tags')->once()->andReturn([
-			['name' => 'id', 'primary' => true, 'autoincrement' => false, 'vendor' => []],
-			['name' => 'name', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
+			['name' => 'id', 'primary' => true, 'autoIncrement' => false, 'vendor' => []],
+			['name' => 'name', 'primary' => false, 'autoIncrement' => false, 'vendor' => []],
 		]);
 		$this->driver->shouldReceive('getColumns')->with('books_x_tags')->once()->andReturn([
-			['name' => 'book_id', 'primary' => true, 'autoincrement' => false, 'vendor' => []],
-			['name' => 'tag_id', 'primary' => true, 'autoincrement' => false, 'vendor' => []],
+			['name' => 'book_id', 'primary' => true, 'autoIncrement' => false, 'vendor' => []],
+			['name' => 'tag_id', 'primary' => true, 'autoIncrement' => false, 'vendor' => []],
 		]);
 		$this->driver->shouldReceive('getColumns')->with('books_view')->once()->andReturn([
-			['name' => 'id', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
-			['name' => 'title', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
+			['name' => 'id', 'primary' => false, 'autoIncrement' => false, 'vendor' => []],
+			['name' => 'title', 'primary' => false, 'autoIncrement' => false, 'vendor' => []],
 		]);
 		$this->connection->shouldReceive('getDriver')->times(4)->andReturn($this->driver);
 		$this->driver->shouldReceive('getForeignKeys')->with('authors')->once()->andReturn([]);
@@ -102,8 +102,8 @@ class StructureTestCase extends TestCase
 	public function testGetColumns()
 	{
 		$columns = [
-			['name' => 'id', 'primary' => true, 'autoincrement' => false, 'vendor' => []],
-			['name' => 'name', 'primary' => false, 'autoincrement' => false, 'vendor' => []],
+			['name' => 'id', 'primary' => true, 'autoIncrement' => false, 'vendor' => []],
+			['name' => 'name', 'primary' => false, 'autoIncrement' => false, 'vendor' => []],
 		];
 
 		Assert::same($columns, $this->structure->getColumns('tags'));

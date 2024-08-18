@@ -63,7 +63,7 @@ interface Driver
 	/** @return list<array{name: string, fullName: string, view: bool}> */
 	function getTables(): array;
 
-	/** @return list<array{name: string, table: string, nativetype: string, size: int|null, nullable: bool, default: mixed, autoincrement: bool, primary: bool, vendor: array}> */
+	/** @return list<array{name: string, table: string, nativeType: string, size: int|null, nullable: bool, default: mixed, autoIncrement: bool, primary: bool, vendor: array}> */
 	function getColumns(string $table): array;
 
 	/** @return list<array{name: string, columns: list<string>, unique: bool, primary: bool}> */

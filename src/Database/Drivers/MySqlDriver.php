@@ -135,11 +135,11 @@ class MySqlDriver implements Nette\Database\Driver
 			$columns[] = [
 				'name' => $row['field'],
 				'table' => $table,
-				'nativetype' => strtoupper($typeInfo['type']),
+				'nativeType' => strtoupper($typeInfo['type']),
 				'size' => $typeInfo['length'],
 				'nullable' => $row['null'] === 'YES',
 				'default' => $row['default'],
-				'autoincrement' => $row['extra'] === 'auto_increment',
+				'autoIncrement' => $row['extra'] === 'auto_increment',
 				'primary' => $row['key'] === 'PRI',
 				'vendor' => $row,
 			];

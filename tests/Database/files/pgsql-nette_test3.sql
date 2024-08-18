@@ -2,7 +2,7 @@ CREATE TEMPORARY TABLE "types" (
   "smallint" smallint NULL,
   "integer" integer NULL,
   "bigint" bigint NULL,
-  "numeric" numeric NULL,
+  "numeric" numeric(3, 2) NULL,
   "real" real NULL,
   "double" double precision NULL,
   "money" money NULL,

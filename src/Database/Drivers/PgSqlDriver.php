@@ -103,7 +103,7 @@ class PgSqlDriver implements Nette\Database\Driver
 	public function getTables(): array
 	{
 		$tables = [];
-		foreach ($this->connection->query(<<<'X'
+		$rows = $this->connection->query(<<<'X'
 			SELECT DISTINCT ON (c.relname)
 				c.relname::varchar AS name,
 				c.relkind IN ('v', 'm') AS view,
@@ -116,7 +116,9 @@ class PgSqlDriver implements Nette\Database\Driver
 				AND n.nspname = ANY (pg_catalog.current_schemas(FALSE))
 			ORDER BY
 				c.relname
-			X) as $row) {
+			X);
+
+		while ($row = $rows->fetch()) {
 			$tables[] = (array) $row;
 		}
 
@@ -127,12 +129,17 @@ class PgSqlDriver implements Nette\Database\Driver
 	public function getColumns(string $table): array
 	{
 		$columns = [];
-		foreach ($this->connection->query(<<<X
+		$rows = $this->connection->query(<<<'X'
 			SELECT
 				a.attname::varchar AS name,
 				c.relname::varchar AS table,
 				upper(t.typname) AS nativetype,
-				CASE WHEN a.atttypmod = -1 THEN NULL ELSE a.atttypmod -4 END AS size,
+				CASE
+					WHEN a.atttypid IN (1700, 1231) THEN ((a.atttypmod - 4) >> 16) & 65535  -- precision for numeric/decimal
+					WHEN a.atttypmod > 0 THEN a.atttypmod - 4  -- length for varchar etc.
+					WHEN t.typlen > 0 THEN t.typlen  -- length for fixed-length types
+					ELSE NULL
+				END AS size,
 				NOT (a.attnotnull OR t.typtype = 'd' AND t.typnotnull) AS nullable,
 				pg_catalog.pg_get_expr(ad.adbin, 'pg_catalog.pg_attrdef'::regclass)::varchar AS default,
 				coalesce(co.contype = 'p' AND (seq.relname IS NOT NULL OR strpos(pg_catalog.pg_get_expr(ad.adbin, ad.adrelid), 'nextval') = 1), FALSE) AS autoincrement,
@@ -148,12 +155,14 @@ class PgSqlDriver implements Nette\Database\Driver
 				LEFT JOIN pg_catalog.pg_constraint AS co ON co.connamespace = c.relnamespace AND contype = 'p' AND co.conrelid = c.oid AND a.attnum = ANY(co.conkey)
 			WHERE
 				c.relkind IN ('r', 'v', 'm', 'p')
-				AND c.oid = {$this->connection->quote($this->delimiteFQN($table))}::regclass
+				AND c.oid = ?::regclass
 				AND a.attnum > 0
 				AND NOT a.attisdropped
 			ORDER BY
 				a.attnum
-			X) as $row) {
+			X, $this->delimiteFQN($table));
+
+		while ($row = $rows->fetch()) {
 			$column = (array) $row;
 			$column['vendor'] = $column;
 			unset($column['sequence']);
@@ -168,7 +177,7 @@ class PgSqlDriver implements Nette\Database\Driver
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
-		foreach ($this->connection->query(<<<X
+		$rows = $this->connection->query(<<<'X'
 			SELECT
 				c2.relname::varchar AS name,
 				i.indisunique AS unique,
@@ -181,8 +190,10 @@ class PgSqlDriver implements Nette\Database\Driver
 				LEFT JOIN pg_catalog.pg_attribute AS a ON c1.oid = a.attrelid AND a.attnum = ANY(i.indkey)
 			WHERE
 				c1.relkind IN ('r', 'p')
-				AND c1.oid = {$this->connection->quote($this->delimiteFQN($table))}::regclass
-			X) as $row) {
+				AND c1.oid = ?::regclass
+			X, $this->delimiteFQN($table));
+
+		while ($row = $rows->fetch()) {
 			$id = $row['name'];
 			$indexes[$id]['name'] = $id;
 			$indexes[$id]['unique'] = $row['unique'];
@@ -197,7 +208,8 @@ class PgSqlDriver implements Nette\Database\Driver
 	public function getForeignKeys(string $table): array
 	{
 		/* Doesn't work with multi-column foreign keys */
-		return $this->connection->query(<<<X
+		$keys = [];
+		$rows = $this->connection->query(<<<'X'
 			SELECT
 				co.conname::varchar AS name,
 				al.attname::varchar AS local,
@@ -212,9 +224,14 @@ class PgSqlDriver implements Nette\Database\Driver
 				JOIN pg_catalog.pg_attribute AS af ON af.attrelid = cf.oid AND af.attnum = co.confkey[1]
 			WHERE
 				co.contype = 'f'
-				AND cl.oid = {$this->connection->quote($this->delimiteFQN($table))}::regclass
+				AND cl.oid = ?::regclass
 				AND nf.nspname = ANY (pg_catalog.current_schemas(FALSE))
-			X)->fetchAll();
+			X, $this->delimiteFQN($table));
+
+		while ($row = $rows->fetch()) {
+			$keys[] = (array) $row;
+		}
+		return $keys;
 	}
 
 

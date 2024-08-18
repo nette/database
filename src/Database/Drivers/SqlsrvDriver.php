@@ -82,7 +82,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 	public function getTables(): array
 	{
 		$tables = [];
-		foreach ($this->connection->query(<<<'X'
+		$rows = $this->connection->query(<<<'X'
 			SELECT
 				name,
 				CASE type
@@ -93,10 +93,12 @@ class SqlsrvDriver implements Nette\Database\Driver
 				sys.objects
 			WHERE
 				type IN ('U', 'V')
-			X) as $row) {
+			X);
+
+		while ($row = $rows->fetch()) {
 			$tables[] = [
-				'name' => $row->name,
-				'view' => (bool) $row->view,
+				'name' => $row['name'],
+				'view' => (bool) $row['view'],
 			];
 		}
 
@@ -107,12 +109,16 @@ class SqlsrvDriver implements Nette\Database\Driver
 	public function getColumns(string $table): array
 	{
 		$columns = [];
-		foreach ($this->connection->query(<<<X
+		$rows = $this->connection->query(<<<'X'
 			SELECT
 				c.name AS name,
 				o.name AS [table],
 				UPPER(t.name) AS nativetype,
-				NULL AS size,
+				CASE
+					WHEN c.precision <> 0 THEN c.precision
+					WHEN c.max_length <> -1 THEN c.max_length
+					ELSE NULL
+				END AS size,
 				c.is_nullable AS nullable,
 				OBJECT_DEFINITION(c.default_object_id) AS [default],
 				c.is_identity AS autoincrement,
@@ -128,8 +134,10 @@ class SqlsrvDriver implements Nette\Database\Driver
 				LEFT JOIN sys.index_columns i ON k.parent_object_id = i.object_id AND i.index_id = k.unique_index_id AND i.column_id = c.column_id
 			WHERE
 				o.type IN ('U', 'V')
-				AND o.name = {$this->connection->quote($table)}
-			X) as $row) {
+				AND o.name = ?
+			X, $table);
+
+		while ($row = $rows->fetch()) {
 			$row = (array) $row;
 			$row['vendor'] = $row;
 			$row['nullable'] = (bool) $row['nullable'];
@@ -146,7 +154,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
-		foreach ($this->connection->query(<<<X
+		$rows = $this->connection->query(<<<'X'
 			SELECT
 				i.name AS name,
 				CASE WHEN i.is_unique = 1 OR i.is_unique_constraint = 1
@@ -161,11 +169,13 @@ class SqlsrvDriver implements Nette\Database\Driver
 				JOIN sys.columns c ON ic.object_id = c.object_id AND ic.column_id = c.column_id
 				JOIN sys.tables t ON i.object_id = t.object_id
 			WHERE
-				t.name = {$this->connection->quote($table)}
+				t.name = ?
 			ORDER BY
 				i.index_id,
 				ic.index_column_id
-			X) as $row) {
+			X, $table);
+
+		while ($row = $rows->fetch()) {
 			$id = $row['name'];
 			$indexes[$id]['name'] = $id;
 			$indexes[$id]['unique'] = (bool) $row['unique'];
@@ -181,7 +191,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 	{
 		// Does't work with multicolumn foreign keys
 		$keys = [];
-		foreach ($this->connection->query(<<<X
+		$rows = $this->connection->query(<<<'X'
 			SELECT
 				fk.name AS name,
 				cl.name AS local,
@@ -195,9 +205,11 @@ class SqlsrvDriver implements Nette\Database\Driver
 				JOIN sys.tables tf ON fkc.referenced_object_id = tf.object_id
 				JOIN sys.columns cf ON fkc.referenced_object_id = cf.object_id AND fkc.referenced_column_id = cf.column_id
 			WHERE
-				tl.name = {$this->connection->quote($table)}
-			X) as $row) {
-			$keys[$row->name] = (array) $row;
+				tl.name = ?
+			X, $table);
+
+		while ($row = $rows->fetch()) {
+			$keys[$row['name']] = (array) $row;
 		}
 
 		return array_values($keys);

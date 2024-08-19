@@ -225,6 +225,12 @@ class Connection
 	}
 
 
+	public function inTransaction(): bool
+	{
+		return $this->pdo && $this->pdo->inTransaction();
+	}
+
+
 	/**
 	 * Generates and executes SQL query.
 	 * @param  literal-string  $sql

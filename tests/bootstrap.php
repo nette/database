@@ -25,9 +25,10 @@ function getTempDir(): string
 }
 
 
-function connectToDB(): Nette\Database\Explorer
+function connectToDB(array $options = []): Nette\Database\Explorer
 {
 	$args = Tester\Environment::loadData() + ['username' => null, 'password' => null, 'options' => []];
+	$args['options'] = $options + $args['options'];
 
 	if ($args['dsn'] !== 'sqlite::memory:') {
 		Tester\Environment::lock($args['dsn'], getTempDir());

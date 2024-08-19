@@ -18,14 +18,12 @@ use Nette\Database\Drivers\Engine;
  */
 class OracleEngine implements Engine
 {
-	private Nette\Database\Connection $connection;
-	private string $fmtDateTime;
+	public string $formatDateTime = 'U';
 
 
-	public function initialize(Nette\Database\Connection $connection, array $options): void
-	{
-		$this->connection = $connection;
-		$this->fmtDateTime = $options['formatDateTime'] ?? 'U';
+	public function __construct(
+		private readonly Nette\Database\Connection $connection,
+	) {
 	}
 
 
@@ -59,7 +57,7 @@ class OracleEngine implements Engine
 
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
-		return $value->format($this->fmtDateTime);
+		return $value->format($this->formatDateTime);
 	}
 
 

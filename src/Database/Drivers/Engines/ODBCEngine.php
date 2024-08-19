@@ -18,11 +18,6 @@ use Nette\Database\Drivers\Engine;
  */
 class ODBCEngine implements Engine
 {
-	public function initialize(Nette\Database\Connection $connection, array $options): void
-	{
-	}
-
-
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		return Nette\Database\DriverException::from($e);

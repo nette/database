@@ -49,6 +49,6 @@ final class Factory
 			}
 		}
 
-		return new $class;
+		return new $class(['dsn' => $dsn, 'username' => $username, 'password' => $password, 'options' => $options]);
 	}
 }

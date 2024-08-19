@@ -20,8 +20,21 @@ class Driver implements Drivers\Driver
 	private const EngineClass = Drivers\Engines\ODBCEngine::class;
 
 
-	public function createDatabaseEngine(): Drivers\Engine
+	public function __construct(
+		#[\SensitiveParameter]
+		private readonly array $params,
+	) {
+	}
+
+
+	public function connect()
 	{
-		return new (self::EngineClass)();
+		return new \PDO(...$this->params);
+	}
+
+
+	public function createDatabaseEngine($connection): Drivers\Engine
+	{
+		return new (self::EngineClass)($connection);
 	}
 }

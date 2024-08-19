@@ -64,13 +64,11 @@ class Connection
 		}
 
 		try {
-			$this->pdo = new PDO($this->dsn, $this->user, $this->password, $this->options);
+			$this->pdo = $this->driver->connect();
 		} catch (PDOException $e) {
 			throw ConnectionException::from($e);
 		}
 
-		$this->engine = $this->driver->createDatabaseEngine();
-		$this->engine->initialize($this, $this->options);
 		Arrays::invoke($this->onConnect, $this);
 	}
 
@@ -105,15 +103,13 @@ class Connection
 	public function getSupplementalDriver(): Drivers\Engine
 	{
 		trigger_error(__METHOD__ . '() is deprecated, use getDriver()', E_USER_DEPRECATED);
-		$this->connect();
-		return $this->engine;
+		return $this->getDatabaseEngine();
 	}
 
 
 	public function getDatabaseEngine(): Drivers\Engine
 	{
-		$this->connect();
-		return $this->engine;
+		return $this->engine ??= $this->driver->createDatabaseEngine($this);
 	}
 
 
@@ -136,7 +132,7 @@ class Connection
 			$res = $this->getPdo()->lastInsertId($sequence);
 			return $res === false ? '0' : $res;
 		} catch (PDOException $e) {
-			throw $this->engine->convertException($e);
+			throw $this->getDatabaseEngine()->convertException($e);
 		}
 	}
 

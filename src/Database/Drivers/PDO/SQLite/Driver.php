@@ -14,14 +14,34 @@ use Nette\Database\Drivers;
 
 /**
  * PDO SQLite database driver.
+ * Options:
+ *    - formatDateTime => the format in which the date is stored in the database
  */
 class Driver implements Drivers\Driver
 {
 	private const EngineClass = Drivers\Engines\SQLiteEngine::class;
 
 
-	public function createDatabaseEngine(): Drivers\Engine
+	public function __construct(
+		#[\SensitiveParameter]
+		private readonly array $params,
+	) {
+	}
+
+
+	public function connect()
 	{
-		return new (self::EngineClass)();
+		return new \PDO(...$this->params);
+	}
+
+
+	public function createDatabaseEngine($connection): Drivers\Engine
+	{
+		$engine = new (self::EngineClass)($connection);
+		$options = $this->params['options'];
+		if (isset($options['formatDateTime'])) {
+			$engine->formatDateTime = $options['formatDateTime'];
+		}
+		return $engine;
 	}
 }

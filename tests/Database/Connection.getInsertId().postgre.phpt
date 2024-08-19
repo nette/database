@@ -27,7 +27,7 @@ if (PHP_VERSION_ID >= 70016) {
 		Nette\Database\DriverException::class,
 	);
 } else {
-	Assert::equal('0', $connection->getInsertId());
+	Assert::same('0', $connection->getInsertId());
 }
 
 
@@ -40,13 +40,13 @@ $connection->query('
 ');
 
 $connection->query('INSERT INTO autoprimarykey (col) VALUES (NULL)');
-Assert::equal('1', $connection->getInsertId('autoprimarykey_prim_seq'));
+Assert::same('1', $connection->getInsertId('autoprimarykey_prim_seq'));
 
 $connection->query('INSERT INTO autoprimarykey (col) VALUES (NULL)');
-Assert::equal('2', $connection->getInsertId('autoprimarykey_prim_seq'));
+Assert::same('2', $connection->getInsertId('autoprimarykey_prim_seq'));
 
 $connection->query('INSERT INTO autoprimarykey (prim, col) VALUES (10, NULL)');
-Assert::equal('2', $connection->getInsertId('autoprimarykey_prim_seq'));
+Assert::same('2', $connection->getInsertId('autoprimarykey_prim_seq'));
 
 
 $connection->query('
@@ -58,10 +58,10 @@ $connection->query('
 ');
 
 $connection->query('INSERT INTO multiautoprimarykey (prim2) VALUES (3)');
-Assert::equal('1', $connection->getInsertId('multiautoprimarykey_prim1_seq'));
+Assert::same('1', $connection->getInsertId('multiautoprimarykey_prim1_seq'));
 
 $connection->query('INSERT INTO multiautoprimarykey (prim2) VALUES (3)');
-Assert::equal('2', $connection->getInsertId('multiautoprimarykey_prim1_seq'));
+Assert::same('2', $connection->getInsertId('multiautoprimarykey_prim1_seq'));
 
 $connection->query('INSERT INTO multiautoprimarykey (prim1, prim2) VALUES (10, 3)');
-Assert::equal('2', $connection->getInsertId('multiautoprimarykey_prim1_seq'));
+Assert::same('2', $connection->getInsertId('multiautoprimarykey_prim1_seq'));

@@ -50,5 +50,5 @@ test('', function () use ($explorer, $connection) {
 		$translator = $book->ref('author', 'translator_id');
 	}
 
-	Assert::equal(2, $counter);
+	Assert::same(2, $counter);
 });

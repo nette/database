@@ -21,8 +21,8 @@ test('', function () use ($explorer) {
 	$book = $explorer->table('book')->get(1);
 	$book->related('book_tag')->insert(['tag_id' => 23]);
 
-	Assert::equal(3, $book->related('book_tag')->count());
-	Assert::equal(3, $book->related('book_tag')->count('*'));
+	Assert::same(3, $book->related('book_tag')->count());
+	Assert::same(3, $book->related('book_tag')->count('*'));
 
 	$book->related('book_tag')->where('tag_id', 23)->delete();
 });
@@ -32,5 +32,5 @@ test('test counting already fetched rows', function () use ($explorer) {
 	$book = $explorer->table('book')->get(1);
 	iterator_to_array($book->related('book_tag'));
 	$book->related('book_tag')->insert(['tag_id' => 23]);
-	Assert::equal(3, $book->related('book_tag')->count());
+	Assert::same(3, $book->related('book_tag')->count());
 });

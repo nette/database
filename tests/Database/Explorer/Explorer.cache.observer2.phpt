@@ -51,5 +51,5 @@ for ($i = 0; $i < 2; ++$i) {
 	}
 }
 
-Assert::equal(reformat('SELECT [id], [name] FROM [author]'), $sql);
+Assert::same(reformat('SELECT [id], [name] FROM [author]'), $sql);
 Assert::same(2, $cacheStorage->writes);

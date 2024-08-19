@@ -28,7 +28,7 @@ test('', function () use ($connection) {
 
 test('', function () use ($connection) {
 	$pairs = $connection->query('SELECT id FROM book ORDER BY id')->fetchAssoc('id');
-	Assert::equal([
+	Assert::same([
 		1 => ['id' => 1],
 		2 => ['id' => 2],
 		3 => ['id' => 3],
@@ -38,7 +38,7 @@ test('', function () use ($connection) {
 
 test('', function () use ($connection) {
 	$pairs = $connection->query('SELECT id FROM book ORDER BY id')->fetchAssoc('id[]=id');
-	Assert::equal([
+	Assert::same([
 		1 => [1],
 		2 => [2],
 		3 => [3],

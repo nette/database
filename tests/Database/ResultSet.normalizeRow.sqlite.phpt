@@ -117,7 +117,7 @@ Assert::same([
 
 
 $res = $connection->query('SELECT SUM([int]) AS int_sum, AVG([int]) AS int_avg, SUM([double]) AS float_sum, AVG([double]) AS float_avg FROM types WHERE [int] = 1 GROUP BY [int]');
-Assert::equal([
+Assert::same([
 	'int_sum' => 1,
 	'int_avg' => 1.0,
 	'float_sum' => 1.1,

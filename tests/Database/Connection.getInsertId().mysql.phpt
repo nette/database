@@ -20,10 +20,10 @@ $connection->query('
 ');
 
 $connection->query('INSERT INTO noprimarykey (col) VALUES (NULL)');
-Assert::equal('0', $connection->getInsertId());
+Assert::same('0', $connection->getInsertId());
 
 $connection->query('INSERT INTO noprimarykey (col) VALUES (3)');
-Assert::equal('0', $connection->getInsertId());
+Assert::same('0', $connection->getInsertId());
 
 
 $connection->query('
@@ -34,10 +34,10 @@ $connection->query('
 ');
 
 $connection->query('INSERT INTO primarykey (prim) VALUES (5)');
-Assert::equal('0', $connection->getInsertId());
+Assert::same('0', $connection->getInsertId());
 
 $connection->query('INSERT INTO primarykey (prim) VALUES (6)');
-Assert::equal('0', $connection->getInsertId());
+Assert::same('0', $connection->getInsertId());
 
 
 $connection->query('
@@ -49,13 +49,13 @@ $connection->query('
 ');
 
 $connection->query('INSERT INTO autoprimarykey (col) VALUES (NULL)');
-Assert::equal('1', $connection->getInsertId());
+Assert::same('1', $connection->getInsertId());
 
 $connection->query('INSERT INTO autoprimarykey (col) VALUES (NULL)');
-Assert::equal('2', $connection->getInsertId());
+Assert::same('2', $connection->getInsertId());
 
 $connection->query('INSERT INTO autoprimarykey (prim, col) VALUES (10, NULL)');
-Assert::equal('10', $connection->getInsertId());
+Assert::same('10', $connection->getInsertId());
 
 
 $connection->query('
@@ -67,10 +67,10 @@ $connection->query('
 ');
 
 $connection->query('INSERT INTO multiautoprimarykey (prim2) VALUES (3)');
-Assert::equal('1', $connection->getInsertId());
+Assert::same('1', $connection->getInsertId());
 
 $connection->query('INSERT INTO multiautoprimarykey (prim2) VALUES (3)');
-Assert::equal('2', $connection->getInsertId());
+Assert::same('2', $connection->getInsertId());
 
 $connection->query('INSERT INTO multiautoprimarykey (prim1, prim2) VALUES (10, 3)');
-Assert::equal('10', $connection->getInsertId());
+Assert::same('10', $connection->getInsertId());

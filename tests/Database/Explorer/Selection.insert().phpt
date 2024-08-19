@@ -24,7 +24,7 @@ $book = $explorer->table('author')->insert([
 ]);  // INSERT INTO `author` (`name`, `web`) VALUES (LOWER('Eddard Stark'), 'http://example.com', '2011-11-11 00:00:00')
 // id = 14
 
-Assert::equal('eddard stark', $book->name);
+Assert::same('eddard stark', $book->name);
 Assert::equal(new Nette\Database\DateTime('2011-11-11'), $book->born);
 
 
@@ -66,7 +66,7 @@ if ($driverName !== 'sqlsrv') {
 	};
 
 	$explorer->table('book')->insert($selection);
-	Assert::equal(4, $explorer->table('book')->where('title LIKE', 'Biography%')->count('*'));
+	Assert::same(4, $explorer->table('book')->where('title LIKE', 'Biography%')->count('*'));
 }
 
 
@@ -82,4 +82,4 @@ $inserted = $explorer->table('note')->insert([
 	'book_id' => 1,
 	'note' => 'Good one!',
 ]);
-Assert::equal(1, $inserted);
+Assert::same(1, $inserted);

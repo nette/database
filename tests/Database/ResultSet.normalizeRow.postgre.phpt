@@ -128,16 +128,22 @@ Assert::same([
 
 
 $res = $connection->query('SELECT "integer" AS a, "text" AS a FROM types');
-
 Assert::same([
 	'a' => 'a',
 ], (array) @$res->fetch());
 
 
 $res = $connection->query('SELECT SUM("integer") AS int_sum, AVG("integer") AS int_avg, SUM("double") AS float_sum, AVG("double") AS float_avg FROM types WHERE "integer" = 1 GROUP BY "integer"');
-Assert::equal([
+Assert::same([
 	'int_sum' => 1,
 	'int_avg' => 1.0,
 	'float_sum' => 1.11,
 	'float_avg' => 1.11,
 ], (array) $res->fetch());
+
+
+$res = $connection->fetch('SELECT ?::bool AS c1, ? AS c2, ?::int AS c3', true, null, 123);
+Assert::same(
+	['c1' => true, 'c2' => null, 'c3' => 123],
+	(array) $res,
+);

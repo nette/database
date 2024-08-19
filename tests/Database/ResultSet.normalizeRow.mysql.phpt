@@ -122,24 +122,21 @@ Assert::same([
 
 
 $res = $connection->query('SELECT `int` AS a, `char` AS a FROM types');
-
 Assert::same([
 	'a' => 'a',
 ], (array) @$res->fetch());
 
 
 $res = $connection->query('SELECT sec_to_time(avg(time_to_sec(`time`))) AS `avg_time` FROM `avgs`');
-
 $avgTime = new DateInterval('PT10H10M10S');
 $avgTime->f = 0.5;
-
 Assert::equal([
 	'avg_time' => $avgTime,
 ], (array) $res->fetch());
 
 
 $res = $connection->query('SELECT SUM(`int`) AS int_sum, AVG(`int`) AS int_avg, SUM(`double`) AS float_sum, AVG(`double`) AS float_avg FROM types WHERE `int` = 1 GROUP BY `int`');
-Assert::equal([
+Assert::same([
 	'int_sum' => 1,
 	'int_avg' => 1.0,
 	'float_sum' => 1.1,
@@ -147,9 +144,16 @@ Assert::equal([
 ], (array) $res->fetch());
 
 
+$res = $connection->fetch('SELECT ? AS c1, ? AS c2, ? AS c3, ? as c4', fopen(__FILE__, 'r'), true, null, 123);
+Assert::same(
+	['c1' => file_get_contents(__FILE__), 'c2' => 1, 'c3' => null, 'c4' => 123],
+	(array) $res,
+);
+
+
 $connection->getPdo()->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
 $res = $connection->query('SELECT `int`, `decimal`, `decimal2`, `float`, `double` FROM types');
-Assert::equal([
+Assert::same([
 	'int' => 1,
 	'decimal' => 1,
 	'decimal2' => 1.1,

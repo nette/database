@@ -26,4 +26,4 @@ $result = $explorer->table('Bug10')->insert([
 	'D1' => 123,
 ]);
 
-Tester\Assert::notEqual(null, $result);
+Tester\Assert::notSame(null, $result);

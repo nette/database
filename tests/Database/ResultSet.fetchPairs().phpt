@@ -87,7 +87,7 @@ Assert::equal([
 
 
 $pairs = $connection->query('SELECT id FROM book ORDER BY id')->fetchPairs(null, 'id');
-Assert::equal([
+Assert::same([
 	0 => 1,
 	1 => 2,
 	2 => 3,
@@ -96,7 +96,7 @@ Assert::equal([
 
 
 $pairs = $connection->query('SELECT id FROM book ORDER BY id')->fetchPairs();
-Assert::equal([
+Assert::same([
 	0 => 1,
 	1 => 2,
 	2 => 3,
@@ -105,7 +105,7 @@ Assert::equal([
 
 
 $pairs = $connection->query('SELECT id, id + 1 AS id1 FROM book ORDER BY id')->fetchPairs();
-Assert::equal([
+Assert::same([
 	1 => 2,
 	2 => 3,
 	3 => 4,
@@ -114,7 +114,7 @@ Assert::equal([
 
 
 $pairs = $connection->query('SELECT id, id + 1 AS id1, title FROM book ORDER BY id')->fetchPairs();
-Assert::equal([
+Assert::same([
 	1 => 2,
 	2 => 3,
 	3 => 4,
@@ -132,7 +132,7 @@ Assert::same([
 
 
 $pairs = $connection->query('SELECT 1.5 AS k, 1 AS v')->fetchPairs();
-Assert::equal([
+Assert::same([
 	'1.5' => 1,
 ], $pairs);
 

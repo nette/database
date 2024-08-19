@@ -24,5 +24,5 @@ $book = $explorer->table('author')->insert([
 // id = 14
 
 Assert::type(Nette\Database\Table\ActiveRow::class, $book);
-Assert::equal('eddard stark', $book->name);
+Assert::same('eddard stark', $book->name);
 Assert::equal(new Nette\Database\DateTime('2011-11-11'), $book->born);

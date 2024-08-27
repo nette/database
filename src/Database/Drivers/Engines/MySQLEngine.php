@@ -36,7 +36,7 @@ class MySQLEngine implements Engine
 
 	public function classifyException(Nette\Database\DriverException $e): ?string
 	{
-		$code = $e->getDriverCode();
+		$code = $e->getCode();
 		return match (true) {
 			in_array($code, [1216, 1217, 1451, 1452, 1701], true) => Nette\Database\ForeignKeyConstraintViolationException::class,
 			in_array($code, [1062, 1557, 1569, 1586], true) => Nette\Database\UniqueConstraintViolationException::class,

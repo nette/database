@@ -23,7 +23,7 @@ test('Exception thrown for unique constraint violation', function () use ($conne
 		Nette\Database\UniqueConstraintViolationException::class,
 	);
 
-	Assert::same(2627, $e->getDriverCode());
+	Assert::same(2627, $e->getCode());
 });
 
 
@@ -33,7 +33,7 @@ test('Exception thrown for not null constraint violation', function () use ($con
 		Nette\Database\NotNullConstraintViolationException::class,
 	);
 
-	Assert::same(515, $e->getDriverCode());
+	Assert::same(515, $e->getCode());
 });
 
 
@@ -43,7 +43,7 @@ test('Exception thrown for check constraint violation', function () use ($connec
 		Nette\Database\CheckConstraintViolationException::class,
 	);
 
-	Assert::same(547, $e->getDriverCode());
+	Assert::same(547, $e->getCode());
 });
 
 
@@ -53,5 +53,5 @@ test('Exception thrown for foreign key constraint violation', function () use ($
 		Nette\Database\ForeignKeyConstraintViolationException::class,
 	);
 
-	Assert::same(547, $e->getDriverCode());
+	Assert::same(547, $e->getCode());
 });

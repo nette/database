@@ -39,12 +39,20 @@ class DriverException extends \Exception
 	}
 
 
+	public function getQuery(): ?SqlLiteral
+	{
+		return $this->query;
+	}
+
+
+	/** @deprecated use getQuery()->getSql() */
 	public function getQueryString(): ?string
 	{
 		return $this->query?->getSql();
 	}
 
 
+	/** @deprecated use getQuery()->getParameters() */
 	public function getParameters(): ?array
 	{
 		return $this->query?->getParameters();

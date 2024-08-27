@@ -30,14 +30,14 @@ class Result implements \Iterator
 
 	public function __construct(
 		private readonly Connection $connection,
-		private readonly string $queryString,
-		private readonly array $params,
+		private readonly SqlLiteral $query,
 	) {
 		$time = microtime(true);
+		$queryString = $query->getSql();
 		if (str_starts_with($queryString, '::')) {
 			$connection->getConnection()->{substr($queryString, 2)}();
 		} else {
-			$this->result = $connection->getConnection()->query($queryString, $params);
+			$this->result = $connection->getConnection()->query($queryString, $query->getParameters());
 		}
 		$this->time = microtime(true) - $time;
 	}
@@ -51,15 +51,23 @@ class Result implements \Iterator
 	}
 
 
-	public function getQueryString(): string
+	public function getQuery(): SqlLiteral
 	{
-		return $this->queryString;
+		return $this->query;
 	}
 
 
+	/** @deprecated use getQuery()->getSql() */
+	public function getQueryString(): string
+	{
+		return $this->query->getSql();
+	}
+
+
+	/** @deprecated use getQuery()->getParameters() */
 	public function getParameters(): array
 	{
-		return $this->params;
+		return $this->query->getParameters();
 	}
 
 

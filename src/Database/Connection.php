@@ -29,7 +29,7 @@ class Connection
 	private Drivers\Engine $engine;
 	private SqlPreprocessor $preprocessor;
 	private TypeConverter $typeConverter;
-	private ?string $sql = null;
+	private ?SqlLiteral $query = null;
 	private int $transactionDepth = 0;
 
 
@@ -208,9 +208,9 @@ class Connection
 	 */
 	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): Result
 	{
-		[$this->sql, $params] = $this->preprocess($sql, ...$params);
+		$this->query = new SqlLiteral(...$this->preprocess($sql, ...$params));
 		try {
-			$result = new Result($this, $this->sql, $params);
+			$result = new Result($this, $this->query);
 		} catch (DriverException $e) {
 			Arrays::invoke($this->onQuery, $this, $e);
 			throw $e;
@@ -243,9 +243,17 @@ class Connection
 	}
 
 
+	public function getLastQuery(): ?SqlLiteral
+	{
+		return $this->query;
+	}
+
+
+	/** @deprecated use getLastQuery()->getSql() */
 	public function getLastQueryString(): ?string
 	{
-		return $this->sql;
+		trigger_error(__METHOD__ . '() is deprecated, use getLastQuery()->getSql()', E_USER_DEPRECATED);
+		return $this->query?->getSql();
 	}
 
 

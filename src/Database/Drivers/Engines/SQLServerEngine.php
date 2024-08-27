@@ -33,7 +33,12 @@ class SQLServerEngine implements Engine
 
 	public function classifyException(Nette\Database\DriverException $e): ?string
 	{
-		return null;
+		$code = $e->getCode();
+		return match (true) {
+			$code === 1205 => Nette\Database\DeadlockException::class,
+			$code === 1222 => Nette\Database\LockTimeoutException::class,
+			default => null,
+		};
 	}
 
 

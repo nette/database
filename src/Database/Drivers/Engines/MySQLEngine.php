@@ -26,24 +26,15 @@ class MySQLEngine implements Engine
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public static function determineExceptionClass(int $code, ?string $sqlState, string $message): ?string
 	{
-		$code = $e->errorInfo[1] ?? null;
-		if (in_array($code, [1216, 1217, 1451, 1452, 1701], strict: true)) {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
-
-		} elseif (in_array($code, [1062, 1557, 1569, 1586], strict: true)) {
-			return Nette\Database\UniqueConstraintViolationException::from($e);
-
-		} elseif ($code >= 2001 && $code <= 2028) {
-			return Nette\Database\ConnectionException::from($e);
-
-		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], strict: true)) {
-			return Nette\Database\NotNullConstraintViolationException::from($e);
-
-		} else {
-			return Nette\Database\DriverException::from($e);
-		}
+		return match (true) {
+			in_array($code, [1216, 1217, 1451, 1452, 1701], strict: true) => Nette\Database\ForeignKeyConstraintViolationException::class,
+			in_array($code, [1062, 1557, 1569, 1586], strict: true) => Nette\Database\UniqueConstraintViolationException::class,
+			$code >= 2001 && $code <= 2028 => Nette\Database\ConnectionException::class,
+			in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], strict: true) => Nette\Database\NotNullConstraintViolationException::class,
+			default => null,
+		};
 	}
 
 

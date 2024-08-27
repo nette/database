@@ -12,7 +12,6 @@ namespace Nette\Database;
 use JetBrains\PhpStorm\Language;
 use Nette;
 use Nette\Utils\Arrays;
-use PDOException;
 
 
 /**
@@ -54,17 +53,10 @@ class Connection
 
 	public function connect(): void
 	{
-		if ($this->connection) {
-			return;
-		}
-
-		try {
+		if (!$this->connection) {
 			$this->connection = $this->driver->connect();
-		} catch (PDOException $e) {
-			throw ConnectionException::from($e);
+			Arrays::invoke($this->onConnect, $this);
 		}
-
-		Arrays::invoke($this->onConnect, $this);
 	}
 
 
@@ -143,11 +135,7 @@ class Connection
 
 	public function getInsertId(?string $sequence = null): string
 	{
-		try {
-			return $this->getConnection()->getInsertId($sequence);
-		} catch (PDOException $e) {
-			throw $this->getDatabaseEngine()->convertException($e);
-		}
+		return $this->getConnection()->getInsertId($sequence);
 	}
 
 
@@ -223,7 +211,7 @@ class Connection
 		[$this->sql, $params] = $this->preprocess($sql, ...$params);
 		try {
 			$result = new Result($this, $this->sql, $params);
-		} catch (PDOException $e) {
+		} catch (DriverException $e) {
 			Arrays::invoke($this->onQuery, $this, $e);
 			throw $e;
 		}

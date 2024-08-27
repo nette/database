@@ -29,7 +29,7 @@ class Driver implements Drivers\Driver
 
 	public function connect(): Drivers\Connection
 	{
-		$connection = new Drivers\PDO\Connection(...$this->params);
+		$connection = new Drivers\PDO\Connection(self::EngineClass, ...$this->params);
 		$connection->resultClass = Result::class;
 		return $connection;
 	}

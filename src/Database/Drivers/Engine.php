@@ -9,7 +9,6 @@ declare(strict_types=1);
 
 namespace Nette\Database\Drivers;
 
-use Nette\Database;
 use Nette\Database\TypeConverter;
 
 
@@ -27,9 +26,9 @@ interface Engine
 		SupportSchema = 'schema';
 
 	/**
-	 * Converts PDOException to DriverException or its descendant.
+	 * Suggests an appropriate class for the exception.
 	 */
-	function convertException(\PDOException $e): Database\DriverException;
+	static function determineExceptionClass(int $code, ?string $sqlState, string $message): ?string;
 
 	/**
 	 * Delimites identifier for use in a SQL statement.

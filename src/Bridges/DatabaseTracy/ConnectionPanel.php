@@ -11,6 +11,7 @@ namespace Nette\Bridges\DatabaseTracy;
 
 use Nette;
 use Nette\Database\Connection;
+use Nette\Database\DriverException;
 use Nette\Database\Helpers;
 use Nette\Database\Result;
 use Tracy;
@@ -72,7 +73,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 		$this->count++;
 
 		$source = null;
-		$trace = $result instanceof \PDOException
+		$trace = $result instanceof DriverException
 			? $result->getTrace()
 			: debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		foreach ($trace as $row) {
@@ -93,26 +94,20 @@ class ConnectionPanel implements Tracy\IBarPanel
 			if ($this->count < $this->maxQueries) {
 				$this->events[] = [$connection, $result->getQueryString(), $result->getParameters(), $source, $result->getTime(), $result->getRowCount(), null];
 			}
-		} elseif ($result instanceof \PDOException && $this->count < $this->maxQueries) {
-			$this->events[] = [$connection, $result->queryString, null, $source, null, null, $result->getMessage()];
+		} elseif ($result instanceof DriverException && $this->count < $this->maxQueries) {
+			$this->events[] = [$connection, $result->getQueryString(), null, $source, null, null, $result->getMessage()];
 		}
 	}
 
 
 	public static function renderException(?\Throwable $e): ?array
 	{
-		if (!$e instanceof \PDOException) {
+		if (!$e instanceof DriverException) {
 			return null;
 		}
 
-		if (isset($e->queryString)) {
-			$sql = $e->queryString;
-
-		} elseif ($item = Tracy\Helpers::findTrace($e->getTrace(), 'PDO::prepare')) {
-			$sql = $item['args'][0];
-		}
-
-		return isset($sql) ? [
+		$sql = $e->getQueryString();
+		return $sql ? [
 			'tab' => 'SQL',
 			'panel' => Helpers::dumpSql($sql, $e->params ?? []),
 		] : null;
@@ -150,7 +145,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 						: 'EXPLAIN';
 					$rows = $connection->getConnection()->query("$cmd $sql", $params);
 					for ($explain = []; $row = $rows->fetch(); $explain[] = $row);
-				} catch (\PDOException) {
+				} catch (DriverException) {
 				}
 			}
 

@@ -9,8 +9,11 @@ declare(strict_types=1);
 
 namespace Nette\Database\Drivers\PDO;
 
+use Nette;
 use Nette\Database\Drivers;
+use Nette\Database\SqlLiteral;
 use PDO;
+use PDOException;
 
 
 class Connection implements Drivers\Connection
@@ -21,13 +24,43 @@ class Connection implements Drivers\Connection
 
 
 	public function __construct(
+		private string $engineClass,
 		string $dsn,
 		?string $username = null,
 		#[\SensitiveParameter]
 		?string $password = null,
 		array $options = [],
 	) {
-		$this->pdo = new PDO($dsn, $username, $password, $options);
+		try {
+			$this->pdo = new PDO($dsn, $username, $password, $options);
+		} catch (PDOException $e) {
+			throw new ($this->convertException($e, $args, Nette\Database\ConnectionException::class))(...$args);
+		}
+	}
+
+
+	public function convertException(
+		PDOException $e,
+		?array &$args,
+		?string $class = null,
+		?SqlLiteral $query = null,
+	): string
+	{
+		if ($e->errorInfo !== null) {
+			[$sqlState, $code] = $e->errorInfo;
+			$code ??= 0;
+		} elseif (preg_match('#SQLSTATE\[(.*?)\] \[(.*?)\] (.*)#A', $e->getMessage(), $m)) {
+			$sqlState = $m[1];
+			$code = (int) $m[2];
+		} else {
+			$code = $e->getCode();
+			$sqlState = null;
+		}
+
+		$args = [$e->getMessage(), $sqlState, $code, $query, $e];
+		return $this->engineClass::determineExceptionClass($code, $sqlState, $e->getMessage())
+			?? $class
+			?? Nette\Database\DriverException::class;
 	}
 
 
@@ -35,42 +68,58 @@ class Connection implements Drivers\Connection
 	{
 		$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 
-		$statement = $this->pdo->prepare($sql);
-		foreach ($params as $key => $value) {
-			$statement->bindValue(is_int($key) ? $key + 1 : $key, $value, $types[gettype($value)] ?? PDO::PARAM_STR);
-		}
+		try {
+			$statement = $this->pdo->prepare($sql);
+			foreach ($params as $key => $value) {
+				$statement->bindValue(is_int($key) ? $key + 1 : $key, $value, $types[gettype($value)] ?? PDO::PARAM_STR);
+			}
+			$statement->execute();
+			return new ($this->resultClass)($statement, $this);
 
-		$statement->execute();
-		return new ($this->resultClass)($statement, $this);
+		} catch (PDOException $e) {
+			throw new ($this->convertException($e, $args, null, new SqlLiteral($sql, $params)))(...$args);
+		}
 	}
 
 
 	public function beginTransaction(): void
 	{
-		$this->pdo->beginTransaction();
-
+		try {
+			$this->pdo->beginTransaction();
+		} catch (PDOException $e) {
+			throw new ($this->convertException($e, $args))(...$args);
+		}
 	}
 
 
 	public function commit(): void
 	{
-		$this->pdo->commit();
-
+		try {
+			$this->pdo->commit();
+		} catch (PDOException $e) {
+			throw new ($this->convertException($e, $args))(...$args);
+		}
 	}
 
 
 	public function rollBack(): void
 	{
-		$this->pdo->rollBack();
-
+		try {
+			$this->pdo->rollBack();
+		} catch (PDOException $e) {
+			throw new ($this->convertException($e, $args))(...$args);
+		}
 	}
 
 
 	public function getInsertId(?string $sequence = null): string
 	{
-		$res = $this->pdo->lastInsertId($sequence);
-		return $res === false ? '0' : $res;
-
+		try {
+			$res = $this->pdo->lastInsertId($sequence);
+			return $res === false ? '0' : $res;
+		} catch (PDOException $e) {
+			throw new ($this->convertException($e, $args))(...$args);
+		}
 	}
 
 

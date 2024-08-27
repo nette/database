@@ -34,21 +34,11 @@ class Result implements \Iterator
 		private readonly array $params,
 	) {
 		$time = microtime(true);
-
-
-		try {
-			if (str_starts_with($queryString, '::')) {
-				$connection->getConnection()->{substr($queryString, 2)}();
-			} else {
-				$this->result = $connection->getConnection()->query($queryString, $params);
-			}
-		} catch (\PDOException $e) {
-			$e = $connection->getDatabaseEngine()->convertException($e);
-			$e->queryString = $queryString;
-			$e->params = $params;
-			throw $e;
+		if (str_starts_with($queryString, '::')) {
+			$connection->getConnection()->{substr($queryString, 2)}();
+		} else {
+			$this->result = $connection->getConnection()->query($queryString, $params);
 		}
-
 		$this->time = microtime(true) - $time;
 	}
 

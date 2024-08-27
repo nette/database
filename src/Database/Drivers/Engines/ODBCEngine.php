@@ -19,9 +19,9 @@ use Nette\Database\TypeConverter;
  */
 class ODBCEngine implements Engine
 {
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public static function determineExceptionClass(int $code, ?string $sqlState, string $message): ?string
 	{
-		return Nette\Database\DriverException::from($e);
+		return null;
 	}
 
 

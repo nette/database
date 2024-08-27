@@ -31,7 +31,7 @@ class Driver implements Drivers\Driver
 
 	public function connect(): Drivers\Connection
 	{
-		return new Drivers\PDO\Connection(...$this->params);
+		return new Drivers\PDO\Connection(self::EngineClass, ...$this->params);
 	}
 
 

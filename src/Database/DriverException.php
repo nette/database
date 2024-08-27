@@ -17,25 +17,25 @@ class DriverException extends \Exception
 {
 	public static function from(self $e): static
 	{
-		return new static($e->getMessage(), $e->sqlState, $e->getDriverCode() ?? 0, $e->query, $e);
+		return new static($e->getMessage(), $e->sqlState, $e->getCode(), $e->query, $e);
 	}
 
 
 	public function __construct(
 		string $message,
 		private readonly ?string $sqlState = null,
-		private int $driverCode = 0,
+		int $code = 0,
 		private readonly ?SqlLiteral $query = null,
 		?\Throwable $previous = null,
 	) {
-		parent::__construct($message, 0, $previous);
-		$this->code = $sqlState ?: null;
+		parent::__construct($message, $code, $previous);
 	}
 
 
-	public function getDriverCode(): int|string|null
+	/** @deprecated use getCode() */
+	public function getDriverCode(): int
 	{
-		return $this->driverCode ?: null;
+		return $this->getCode();
 	}
 
 

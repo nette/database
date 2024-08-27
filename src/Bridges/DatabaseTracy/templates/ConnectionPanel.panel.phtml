@@ -24,8 +24,8 @@ use Tracy\Helpers;
 	<table class="tracy-sortable">
 		<tr><th>Time&nbsp;ms</th><th>SQL Query</th><th>Rows</th></tr>
 		<?php
-		foreach ($queries as $query):
-			[$connection, $sql, $params, $source, $time, $rows, $error, $command, $explain] = $query;
+		foreach ($events as $event):
+			[$connection, $sql, $params, $source, $time, $rows, $error, $command, $explain] = $event;
 		?>
 		<tr>
 		<td style="background:rgba(255, 95, 23, <?= sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale) ?>)" data-order="<?= (float) $time ?>">
@@ -61,6 +61,6 @@ use Tracy\Helpers;
 		</tr>
 		<?php endforeach ?>
 	</table>
-	<?php if (count($queries) < $count): ?><p>...and more</p><?php endif ?>
+	<?php if (count($events) < $count): ?><p>...and more</p><?php endif ?>
 </div>
 </div>

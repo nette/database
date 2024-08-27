@@ -79,7 +79,7 @@ $tag2 = $explorer->table('tag')->insert([
 	'name' => 'PS4 Game',
 ]);  // INSERT INTO `tag` (`name`) VALUES ('PS4 Game')
 
-// SQL Server throw PDOException because does not allow to update identity column
+// SQL Server throw exception because does not allow to update identity column
 if ($driverName !== 'sqlsrv') {
 	$tag2->update([
 		'id' => 1,

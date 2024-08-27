@@ -37,7 +37,7 @@ class OracleEngine implements Engine
 
 	public function classifyException(Nette\Database\DriverException $e): ?string
 	{
-		$code = $e->getDriverCode();
+		$code = $e->getCode();
 		return match (true) {
 			in_array($code, [1, 2299, 38911], strict: true) => Nette\Database\UniqueConstraintViolationException::class,
 			in_array($code, [1400], strict: true) => Nette\Database\NotNullConstraintViolationException::class,

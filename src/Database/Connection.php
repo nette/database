@@ -11,6 +11,7 @@ namespace Nette\Database;
 
 use JetBrains\PhpStorm\Language;
 use Nette\Utils\Arrays;
+use Nette\Utils\DateTime;
 use PDO;
 use PDOException;
 use function func_get_args, str_replace, ucfirst;
@@ -44,7 +45,7 @@ class Connection
 		private readonly ?string $password = null,
 		private readonly array $options = [],
 	) {
-		$this->rowNormalizer = !empty($options['newDateTime'])
+		$this->rowNormalizer = ($options['newDateTime'] ?? null) === false
 			? fn(array $row, ResultSet $resultSet): array => Helpers::normalizeRow($row, $resultSet, DateTime::class)
 			: Helpers::normalizeRow(...);
 		if (empty($options['lazy'])) {

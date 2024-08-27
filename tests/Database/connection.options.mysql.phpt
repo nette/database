@@ -58,7 +58,7 @@ test('convertBoolean = false', function () {
 test('default newDateTime', function () {
 	$connection = connectToDB(['newDateTime' => null])->getConnection();
 	$field = $connection->fetchField('SELECT NOW()');
-	Assert::type(Nette\Utils\DateTime::class, $field);
+	Assert::type(Nette\Database\DateTime::class, $field);
 });
 
 test('newDateTime = false', function () {

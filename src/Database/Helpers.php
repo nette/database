@@ -208,7 +208,7 @@ class Helpers
 	public static function normalizeRow(
 		array $row,
 		ResultSet $resultSet,
-		string $dateTimeClass = Nette\Utils\DateTime::class,
+		string $dateTimeClass = DateTime::class,
 	): array
 	{
 		foreach ($resultSet->getColumnTypes() as $key => $type) {

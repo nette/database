@@ -19,16 +19,14 @@ test('Exception thrown for invalid database credentials', function () {
 		Nette\Database\ConnectionException::class,
 	);
 
-	if ($e->getDriverCode() === 1524) {
+	if ($e->getCode() === 1524) {
 		// MySQL 8.4+ dropped mysql_native_password and rejects unknown users with a missing-plugin error instead of access denied
 		Assert::contains('mysql_native_password', $e->getMessage());
 	} else {
 		Assert::match('%a% Access denied for user %a%', $e->getMessage());
-		Assert::same(1045, $e->getDriverCode());
+		Assert::same(1045, $e->getCode());
 		Assert::contains($e->getSqlState(), ['HY000', '28000']);
 	}
-
-	Assert::same($e->getCode(), $e->getSqlState());
 });
 
 
@@ -37,8 +35,9 @@ test('Exception thrown when calling rollback with no active transaction', functi
 		fn() => $connection->rollBack(),
 		Nette\Database\DriverException::class,
 		'There is no active transaction',
+		0,
 	);
-	Assert::same(null, $e->getDriverCode());
+	Assert::null($e->getSqlState());
 });
 
 
@@ -47,11 +46,9 @@ test('Exception thrown for syntax error in SQL query', function () use ($connect
 		fn() => $connection->query('SELECT'),
 		Nette\Database\DriverException::class,
 		'%a% Syntax error %a%',
-		'42000',
+		1064,
 	);
-
-	Assert::same(1064, $e->getDriverCode());
-	Assert::same($e->getCode(), $e->getSqlState());
+	Assert::same('42000', $e->getSqlState());
 });
 
 
@@ -60,11 +57,9 @@ test('Exception thrown for unique constraint violation', function () use ($conne
 		fn() => $connection->query('INSERT INTO author (id, name, web, born) VALUES (11, "", "", NULL)'),
 		Nette\Database\UniqueConstraintViolationException::class,
 		'%a% Integrity constraint violation: %a%',
-		'23000',
+		1062,
 	);
-
-	Assert::same(1062, $e->getDriverCode());
-	Assert::same($e->getCode(), $e->getSqlState());
+	Assert::same('23000', $e->getSqlState());
 });
 
 
@@ -73,11 +68,9 @@ test('Exception thrown for not null constraint violation', function () use ($con
 		fn() => $connection->query('INSERT INTO author (name, web, born) VALUES (NULL, "", NULL)'),
 		Nette\Database\NotNullConstraintViolationException::class,
 		'%a% Integrity constraint violation: %a%',
-		'23000',
+		1048,
 	);
-
-	Assert::same(1048, $e->getDriverCode());
-	Assert::same($e->getCode(), $e->getSqlState());
+	Assert::same('23000', $e->getSqlState());
 });
 
 
@@ -86,11 +79,9 @@ test('Exception thrown for foreign key constraint violation', function () use ($
 		fn() => $connection->query('INSERT INTO book (author_id, translator_id, title) VALUES (999, 12, "")'),
 		Nette\Database\ForeignKeyConstraintViolationException::class,
 		'%a% a foreign key constraint fails %a%',
-		'23000',
+		1452,
 	);
-
-	Assert::same(1452, $e->getDriverCode());
-	Assert::same($e->getCode(), $e->getSqlState());
+	Assert::same('23000', $e->getSqlState());
 });
 
 

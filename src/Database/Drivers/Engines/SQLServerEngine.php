@@ -32,7 +32,7 @@ class SQLServerEngine implements Engine
 	public function classifyException(Nette\Database\DriverException $e): ?string
 	{
 		$message = $e->getMessage();
-		return match ($e->getDriverCode()) {
+		return match ($e->getCode()) {
 			2627, 2601 => Nette\Database\UniqueConstraintViolationException::class,
 			515 => Nette\Database\NotNullConstraintViolationException::class,
 			547 => match (true) {

@@ -182,10 +182,10 @@ class MySQLEngine implements Engine
 			'TINY' => $meta['size'] === 1 && $converter->convertBoolean
 				? $converter->toBool(...)
 				: $converter->toInt(...),
-			'TIME' => $converter->toInterval(...),
-			'DATE', 'DATETIME', 'TIMESTAMP' => fn($value): ?\DateTimeInterface => str_starts_with($value, '0000-00')
-				? null
-				: $converter->toDateTime($value),
+			'TIME' => $converter->convertDateTime ? $converter->toInterval(...) : null,
+			'DATE', 'DATETIME', 'TIMESTAMP' => $converter->convertDateTime ?
+				(fn($value): ?\DateTimeInterface => str_starts_with($value, '0000-00') ? null : $converter->toDateTime($value))
+				: null,
 			default => $converter->resolve($meta),
 		};
 	}

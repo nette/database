@@ -37,6 +37,7 @@ final class TypeConverter
 	];
 
 	public bool $convertBoolean = true;
+	public bool $convertDateTime = true;
 	public bool $newDateTime = true;
 
 
@@ -66,9 +67,9 @@ final class TypeConverter
 			self::Float,
 			self::Decimal => $this->toFloat(...),
 			self::Boolean => $this->convertBoolean ? $this->toBool(...) : null,
-			self::DateTime, self::Date => $this->toDateTime(...),
-			self::Time => $this->toTime(...),
-			self::Interval => self::toInterval(...),
+			self::DateTime, self::Date => $this->convertDateTime ? $this->toDateTime(...) : null,
+			self::Time => $this->convertDateTime ? $this->toTime(...) : null,
+			self::Interval => $this->convertDateTime ? self::toInterval(...) : null,
 			default => null,
 		};
 	}

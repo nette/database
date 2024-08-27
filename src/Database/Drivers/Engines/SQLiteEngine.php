@@ -40,7 +40,7 @@ class SQLiteEngine implements Engine
 	public function classifyException(Nette\Database\DriverException $e): ?string
 	{
 		$message = $e->getMessage();
-		if ($e->getDriverCode() !== 19) {
+		if ($e->getCode() !== 19) {
 			return null;
 
 		} elseif (

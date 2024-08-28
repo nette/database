@@ -26,7 +26,7 @@ class Connection
 
 	/** @var array<callable(self, Result|DriverException): void>  Occurs after query is executed */
 	public array $onQuery = [];
-	private Driver $driver;
+	private Drivers\Engine $engine;
 	private SqlPreprocessor $preprocessor;
 	private ?PDO $pdo = null;
 
@@ -68,9 +68,9 @@ class Connection
 		$class = empty($this->options['driverClass'])
 			? 'Nette\Database\Drivers\\' . ucfirst(str_replace('sql', 'Sql', $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) . 'Driver'
 			: $this->options['driverClass'];
-		$this->driver = new $class;
+		$this->engine = new $class;
 		$this->preprocessor = new SqlPreprocessor($this);
-		$this->driver->initialize($this, $this->options);
+		$this->engine->initialize($this, $this->options);
 		Arrays::invoke($this->onConnect, $this);
 	}
 
@@ -101,25 +101,25 @@ class Connection
 	}
 
 
-	public function getDriver(): Driver
-	{
-		$this->connect();
-		return $this->driver;
-	}
-
-
 	/** @deprecated use getDriver() */
-	public function getSupplementalDriver(): Driver
+	public function getSupplementalDriver(): Drivers\Engine
 	{
 		trigger_error(__METHOD__ . '() is deprecated, use getDriver()', E_USER_DEPRECATED);
 		$this->connect();
-		return $this->driver;
+		return $this->engine;
+	}
+
+
+	public function getDatabaseEngine(): Drivers\Engine
+	{
+		$this->connect();
+		return $this->engine;
 	}
 
 
 	public function getReflection(): Reflection
 	{
-		return new Reflection($this->getDriver());
+		return new Reflection($this->getDatabaseEngine());
 	}
 
 
@@ -136,7 +136,7 @@ class Connection
 			$res = $this->getPdo()->lastInsertId($sequence);
 			return $res === false ? '0' : $res;
 		} catch (PDOException $e) {
-			throw $this->driver->convertException($e);
+			throw $this->engine->convertException($e);
 		}
 	}
 

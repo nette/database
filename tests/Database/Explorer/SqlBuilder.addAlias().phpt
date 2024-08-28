@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-use Nette\Database\Driver;
+use Nette\Database\Drivers\Engine;
 use Nette\Database\Table\SqlBuilder;
 use Tester\Assert;
 
@@ -32,11 +32,11 @@ class SqlBuilderMock extends SqlBuilder
 	}
 }
 
-$driver = $connection->getDriver();
+$engine = $connection->getDatabaseEngine();
 
 
-test('test duplicated table names throw exception', function () use ($explorer, $driver) {
-	$authorTable = ($driver->isSupported(Driver::SupportSchema) ? 'public.' : '') . 'author';
+test('test duplicated table names throw exception', function () use ($explorer, $engine) {
+	$authorTable = ($engine->isSupported(Engine::SupportSchema) ? 'public.' : '') . 'author';
 	$sqlBuilder = new SqlBuilderMock($authorTable, $explorer);
 	$sqlBuilder->addAlias(':book(translator)', 'book1');
 	$sqlBuilder->addAlias(':book:book_tag', 'book2');
@@ -73,7 +73,7 @@ test('test duplicated table names throw exception', function () use ($explorer, 
 });
 
 
-test('test same table chain with another alias', function () use ($explorer, $driver) {
+test('test same table chain with another alias', function () use ($explorer, $engine) {
 	$sqlBuilder = new SqlBuilderMock('author', $explorer);
 	$sqlBuilder->addAlias(':book(translator)', 'translated_book');
 	$sqlBuilder->addAlias(':book(translator)', 'translated_book2');
@@ -90,8 +90,8 @@ test('test same table chain with another alias', function () use ($explorer, $dr
 });
 
 
-test('test nested alias', function () use ($explorer, $driver) {
-	$sqlBuilder = $driver->isSupported(Driver::SupportSchema)
+test('test nested alias', function () use ($explorer, $engine) {
+	$sqlBuilder = $engine->isSupported(Engine::SupportSchema)
 		? new SqlBuilderMock('public.author', $explorer)
 		: new SqlBuilderMock('author', $explorer);
 	$sqlBuilder->addAlias(':book(translator)', 'translated_book');
@@ -100,7 +100,7 @@ test('test nested alias', function () use ($explorer, $driver) {
 	$joins = [];
 	$sqlBuilder->parseJoins($joins, $query);
 	$join = $sqlBuilder->buildQueryJoins($joins);
-	if ($driver->isSupported(Driver::SupportSchema)) {
+	if ($engine->isSupported(Engine::SupportSchema)) {
 		Assert::same(
 			'LEFT JOIN book translated_book ON author.id = translated_book.translator_id ' .
 			'LEFT JOIN public.book next ON translated_book.next_volume = next.id',

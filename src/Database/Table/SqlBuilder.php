@@ -11,7 +11,7 @@ namespace Nette\Database\Table;
 
 use Nette;
 use Nette\Database\Conventions;
-use Nette\Database\Driver;
+use Nette\Database\Drivers\Engine;
 use Nette\Database\Explorer;
 use Nette\Database\IStructure;
 use Nette\Database\SqlLiteral;
@@ -46,7 +46,7 @@ class SqlBuilder
 	protected array $reservedTableNames = [];
 	protected array $aliases = [];
 	protected string $currentAlias = '';
-	private readonly Driver $driver;
+	private readonly Engine $engine;
 	private readonly IStructure $structure;
 	private array $cacheTableList = [];
 	private array $expandingJoins = [];
@@ -55,11 +55,11 @@ class SqlBuilder
 	public function __construct(string $tableName, Explorer $explorer)
 	{
 		$this->tableName = $tableName;
-		$this->driver = $explorer->getConnection()->getDriver();
+		$this->engine = $explorer->getConnection()->getDatabaseEngine();
 		$this->conventions = $explorer->getConventions();
 		$this->structure = $explorer->getStructure();
 		$tableNameParts = explode('.', $tableName);
-		$this->delimitedTable = implode('.', array_map($this->driver->delimite(...), $tableNameParts));
+		$this->delimitedTable = implode('.', array_map($this->engine->delimite(...), $tableNameParts));
 		$this->checkUniqueTableName(end($tableNameParts), $tableName);
 	}
 
@@ -85,7 +85,7 @@ class SqlBuilder
 		}
 
 		if ($this->limit !== null || $this->offset) {
-			$this->driver->applyLimit($query, $this->limit, $this->offset);
+			$this->engine->applyLimit($query, $this->limit, $this->offset);
 		}
 
 		return $query;
@@ -96,7 +96,7 @@ class SqlBuilder
 	{
 		$query = "DELETE FROM {$this->delimitedTable}" . $this->tryDelimite($this->buildConditions());
 		if ($this->limit !== null || $this->offset) {
-			$this->driver->applyLimit($query, $this->limit, $this->offset);
+			$this->engine->applyLimit($query, $this->limit, $this->offset);
 		}
 
 		return $query;
@@ -119,7 +119,7 @@ class SqlBuilder
 			$parts[] = $this->select;
 		} elseif ($columns) {
 			$parts[] = [$this->delimitedTable, $columns];
-		} elseif ($this->group && !$this->driver->isSupported(Driver::SupportSelectUngroupedColumns)) {
+		} elseif ($this->group && !$this->engine->isSupported(Engine::SupportSelectUngroupedColumns)) {
 			$parts[] = [$this->group];
 		} else {
 			$parts[] = "{$this->delimitedTable}.*";
@@ -171,7 +171,7 @@ class SqlBuilder
 
 			$querySelect = $this->buildSelect($cols);
 
-		} elseif ($this->group && !$this->driver->isSupported(Driver::SupportSelectUngroupedColumns)) {
+		} elseif ($this->group && !$this->engine->isSupported(Engine::SupportSelectUngroupedColumns)) {
 			$querySelect = $this->buildSelect([$this->group]);
 			$this->parseJoins($joins, $querySelect);
 
@@ -183,7 +183,7 @@ class SqlBuilder
 		$queryJoins = $this->buildQueryJoins($joins, $finalJoinConditions);
 		$query = "{$querySelect} FROM {$this->delimitedTable}{$queryJoins}{$queryCondition}{$queryEnd}";
 
-		$this->driver->applyLimit($query, $this->limit, $this->offset);
+		$this->engine->applyLimit($query, $this->limit, $this->offset);
 
 		return $this->tryDelimite($query);
 	}
@@ -343,7 +343,7 @@ class SqlBuilder
 						}
 					}
 
-					if ($this->driver->isSupported(Driver::SupportSubselect)) {
+					if ($this->engine->isSupported(Engine::SupportSubselect)) {
 						$arg = null;
 						$subSelectPlaceholderCount = substr_count($clone->getSql(), '?');
 						$replace = $match[2][0] . '(' . $clone->getSql() . (!$subSelectPlaceholderCount && count($clone->getSqlBuilder()->getParameters()) === 1 ? ' ?' : '') . ')';
@@ -634,7 +634,7 @@ class SqlBuilder
 		$parentAlias = preg_replace('#^(.*\.)?(.*)$#', '$2', $this->tableName);
 
 		// join schema keyMatch and table keyMatch to schema.table keyMatch
-		if ($this->driver->isSupported(Driver::SupportSchema) && count($keyMatches) > 1) {
+		if ($this->engine->isSupported(Engine::SupportSchema) && count($keyMatches) > 1) {
 			$tables = $this->getCachedTableList();
 			if (
 				!isset($tables[$keyMatches[0]['key']])
@@ -795,7 +795,7 @@ class SqlBuilder
 			'#(?<=[^\w`"\[?:]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|$)#Di',
 			fn(array $m): string => strtoupper($m[0]) === $m[0]
 				? $m[0]
-				: $this->driver->delimite($m[0]),
+				: $this->engine->delimite($m[0]),
 			$s,
 		);
 	}
@@ -808,7 +808,7 @@ class SqlBuilder
 		array &$conditionsParameters,
 	): bool
 	{
-		if ($this->driver->isSupported(Driver::SupportMultiColumnAsOrCond)) {
+		if ($this->engine->isSupported(Engine::SupportMultiColumnAsOrCond)) {
 			$conditionFragment = '(' . implode(' = ? AND ', $columns) . ' = ?) OR ';
 			$condition = substr(str_repeat($conditionFragment, count($parameters)), 0, -4);
 			return $this->addCondition($condition, [Nette\Utils\Arrays::flatten($parameters)], $conditions, $conditionsParameters);

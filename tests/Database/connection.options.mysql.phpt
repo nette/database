@@ -91,3 +91,37 @@ test('convertDateTime = true', function () {
 	$field = $connection->fetchField('SELECT NOW()');
 	Assert::type(Nette\Database\DateTime::class, $field);
 });
+
+
+test('default convertDecimal', function () {
+	$connection = connectToDB(['convertDecimal' => null])->getConnection();
+	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_test3.sql');
+	$row = $connection->fetch('SELECT * FROM types');
+	Assert::same(1, $row->decimal);
+	Assert::same(1.1, $row->decimal2);
+
+	$fields = $connection->fetchFields('SELECT 10, 10.5');
+	Assert::same([10, 10.5], $fields);
+});
+
+test('convertDecimal = false', function () {
+	$connection = connectToDB(['convertDecimal' => false])->getConnection();
+	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_test3.sql');
+	$row = $connection->fetch('SELECT * FROM types');
+	Assert::same('1', $row->decimal);
+	Assert::same('1.10', $row->decimal2);
+
+	$fields = $connection->fetchFields('SELECT 10, 10.5');
+	Assert::same([10, '10.5'], $fields);
+});
+
+test('convertDecimal = true', function () {
+	$connection = connectToDB(['convertDecimal' => true])->getConnection();
+	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_test3.sql');
+	$row = $connection->fetch('SELECT * FROM types');
+	Assert::same(1, $row->decimal);
+	Assert::same(1.1, $row->decimal2);
+
+	$fields = $connection->fetchFields('SELECT 10, 10.5');
+	Assert::same([10, 10.5], $fields);
+});

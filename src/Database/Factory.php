@@ -25,7 +25,7 @@ final class Factory
 		'pdo-sqlite' => Drivers\PDO\SQLite\Driver::class,
 		'pdo-sqlsrv' => Drivers\PDO\SQLSrv\Driver::class,
 	];
-	private const TypeConverterOptions = ['convertBoolean', 'convertDateTime', 'newDateTime'];
+	private const TypeConverterOptions = ['convertBoolean', 'convertDateTime', 'convertDecimal', 'newDateTime'];
 
 
 	/** @internal */

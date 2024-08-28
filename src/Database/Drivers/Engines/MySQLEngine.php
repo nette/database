@@ -176,9 +176,6 @@ class MySQLEngine implements Engine
 	public function resolveColumnConverter(array $meta, TypeConverter $converter): ?\Closure
 	{
 		return match ($meta['nativeType']) {
-			'NEWDECIMAL' => $meta['scale'] === 0
-				? $converter->toInt(...)
-				: $converter->toFloat(...),
 			'TINY' => $meta['size'] === 1 && $converter->convertBoolean
 				? $converter->toBool(...)
 				: $converter->toInt(...),

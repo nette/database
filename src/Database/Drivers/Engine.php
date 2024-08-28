@@ -7,13 +7,15 @@
 
 declare(strict_types=1);
 
-namespace Nette\Database;
+namespace Nette\Database\Drivers;
+
+use Nette\Database;
 
 
 /**
- * Supplemental PDO database driver.
+ * Database platform specific operations and reflection capabilities.
  */
-interface Driver
+interface Engine
 {
 	public const
 		SupportSequence = 'sequence',
@@ -32,12 +34,12 @@ interface Driver
 	/**
 	 * Initializes connection.
 	 */
-	function initialize(Connection $connection, array $options): void;
+	function initialize(Database\Connection $connection, array $options): void;
 
 	/**
 	 * Converts PDOException to DriverException or its descendant.
 	 */
-	function convertException(\PDOException $e): DriverException;
+	function convertException(\PDOException $e): Database\DriverException;
 
 	/********************* SQL utilities ****************d*g**/
 

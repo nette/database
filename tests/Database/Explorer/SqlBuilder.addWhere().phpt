@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-use Nette\Database\Driver;
+use Nette\Database\Drivers\Engine;
 use Nette\Database\SqlLiteral;
 use Nette\Database\Table\SqlBuilder;
 use Tester\Assert;
@@ -82,7 +82,7 @@ test('test more ActiveRow as a parameter', function () use ($explorer) {
 test('test Selection with parameters as a parameter', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id', $explorer->table('book')->having('COUNT(:book_tag.tag_id) >', 1));
-	$schemaSupported = $explorer->getConnection()->getDriver()->isSupported(Driver::SupportSchema);
+	$schemaSupported = $explorer->getDatabaseEngine()->isSupported(Engine::SupportSchema);
 	Assert::same(reformat([
 		'mysql' => 'SELECT * FROM `book` WHERE (`id` IN (?))',
 		'SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book] LEFT JOIN ' . ($schemaSupported ? '[public].[book_tag] ' : '') . '[book_tag] ON [book].[id] = [book_tag].[book_id] HAVING COUNT([book_tag].[tag_id]) > ?))',

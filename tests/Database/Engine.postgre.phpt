@@ -43,26 +43,26 @@ test('Tables in schema', function () use ($connection) {
 		ALTER TABLE "two"."slave" ADD CONSTRAINT "two_slave_fk" FOREIGN KEY ("two_id") REFERENCES "two"."master"("two_id");
 	'));
 
-	$driver = $connection->getDriver();
+	$engine = $connection->getDatabaseEngine();
 
 	// Reflection for tables with the same name but different schema
 	$connection->query('SET search_path TO one, two');
-	Assert::same(['master', 'slave'], names($driver->getTables()));
-	Assert::same(['one_id'], names($driver->getColumns('master')));
-	Assert::same(['one_master_pkey'], names($driver->getIndexes('master')));
-	Assert::same(['one_slave_fk'], names($driver->getForeignKeys('slave')));
+	Assert::same(['master', 'slave'], names($engine->getTables()));
+	Assert::same(['one_id'], names($engine->getColumns('master')));
+	Assert::same(['one_master_pkey'], names($engine->getIndexes('master')));
+	Assert::same(['one_slave_fk'], names($engine->getForeignKeys('slave')));
 
 	$connection->query('SET search_path TO two, one');
-	Assert::same(['master', 'slave'], names($driver->getTables()));
-	Assert::same(['two_id'], names($driver->getColumns('master')));
-	Assert::same(['two_master_pkey'], names($driver->getIndexes('master')));
-	Assert::same(['two_slave_fk'], names($driver->getForeignKeys('slave')));
+	Assert::same(['master', 'slave'], names($engine->getTables()));
+	Assert::same(['two_id'], names($engine->getColumns('master')));
+	Assert::same(['two_master_pkey'], names($engine->getIndexes('master')));
+	Assert::same(['two_slave_fk'], names($engine->getForeignKeys('slave')));
 
 
 	// Reflection for FQN
-	Assert::same(['one_id'], names($driver->getColumns('one.master')));
-	Assert::same(['one_master_pkey'], names($driver->getIndexes('one.master')));
-	$foreign = $driver->getForeignKeys('one.slave');
+	Assert::same(['one_id'], names($engine->getColumns('one.master')));
+	Assert::same(['one_master_pkey'], names($engine->getIndexes('one.master')));
+	$foreign = $engine->getForeignKeys('one.slave');
 	Assert::same([
 		'name' => 'one_slave_fk',
 		'local' => 'one_id',
@@ -74,7 +74,7 @@ test('Tables in schema', function () use ($connection) {
 	// Limit foreign keys for current schemas only
 	$connection->query('ALTER TABLE "one"."slave" ADD CONSTRAINT "one_two_fk" FOREIGN KEY ("one_id") REFERENCES "two"."master"("two_id")');
 	$connection->query('SET search_path TO one');
-	Assert::same(['one_slave_fk'], names($driver->getForeignKeys('slave')));
+	Assert::same(['one_slave_fk'], names($engine->getForeignKeys('slave')));
 	$connection->query('SET search_path TO one, two');
-	Assert::same(['one_slave_fk', 'one_two_fk'], names($driver->getForeignKeys('slave')));
+	Assert::same(['one_slave_fk', 'one_two_fk'], names($engine->getForeignKeys('slave')));
 });

@@ -15,7 +15,7 @@ use Nette;
 /**
  * Supplemental ODBC database driver.
  */
-class OdbcDriver implements Nette\Database\Driver
+class OdbcDriver implements Engine
 {
 	public function initialize(Nette\Database\Connection $connection, array $options): void
 	{

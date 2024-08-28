@@ -19,7 +19,7 @@ final class Reflection
 
 
 	public function __construct(
-		private readonly Driver $driver,
+		private readonly Drivers\Engine $engine,
 	) {
 		unset($this->tables);
 	}
@@ -67,16 +67,16 @@ final class Reflection
 
 
 	/** @internal */
-	public function getDriver(): Driver
+	public function getDatabaseEngine(): Drivers\Engine
 	{
-		return $this->driver;
+		return $this->engine;
 	}
 
 
 	private function initTables(): void
 	{
 		$res = [];
-		foreach ($this->driver->getTables() as $row) {
+		foreach ($this->engine->getTables() as $row) {
 			$res[$row['fullName'] ?? $row['name']] = new Table($this, $row['name'], $row['view'], $row['fullName'] ?? null);
 		}
 		$this->tables = $res;

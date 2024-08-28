@@ -17,7 +17,7 @@ use function array_values, count, gettype, is_int, iterator_to_array, microtime,
  * Represents a database result set.
  * @implements \Iterator<int, Row>
  */
-class ResultSet implements \Iterator
+class Result implements \Iterator
 {
 	private ?\PDOStatement $pdoStatement = null;
 	private Row|false|null $lastRow = null;
@@ -285,3 +285,6 @@ class ResultSet implements \Iterator
 		return $this->rows;
 	}
 }
+
+
+class_exists(ResultSet::class);

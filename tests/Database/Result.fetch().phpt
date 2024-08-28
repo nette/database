@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Test: Nette\Database\ResultSet::fetch()
+ * Test: Nette\Database\Result::fetch()
  * @dataProvider? databases.ini
  */
 

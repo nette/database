@@ -137,12 +137,22 @@ class Explorer
 
 
 	/**
-	 * Shortcut for query()->fetchFields()
+	 * Shortcut for query()->fetchList()
+	 * @param  literal-string  $sql
+	 */
+	public function fetchList(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
+	{
+		return $this->connection->query($sql, ...$params)->fetchList();
+	}
+
+
+	/**
+	 * Shortcut for query()->fetchList()
 	 * @param  literal-string  $sql
 	 */
 	public function fetchFields(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
 	{
-		return $this->connection->query($sql, ...$params)->fetchFields();
+		return $this->connection->query($sql, ...$params)->fetchList();
 	}
 
 

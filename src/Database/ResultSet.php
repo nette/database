@@ -221,7 +221,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * Fetches single field.
+	 * Returns the first field of the next row or null if there are no more rows.
 	 */
 	public function fetchField(): mixed
 	{
@@ -231,12 +231,21 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * Fetches array of fields.
+	 * Returns the next row as indexed array or null if there are no more rows.
 	 */
-	public function fetchFields(): ?array
+	public function fetchList(): ?array
 	{
 		$row = $this->fetchAssoc();
 		return $row ? array_values($row) : null;
+	}
+
+
+	/**
+	 * Alias for fetchList().
+	 */
+	public function fetchFields(): ?array
+	{
+		return $this->fetchList();
 	}
 
 

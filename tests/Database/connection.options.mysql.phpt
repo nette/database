@@ -37,7 +37,7 @@ test('default convertBoolean', function () {
 	$connection = connectToDB(['convertBoolean' => null])->getConnection();
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
-	Assert::same(1, $row->bool);
+	Assert::same(true, $row->bool);
 });
 
 test('convertBoolean = true', function () {

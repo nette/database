@@ -39,7 +39,7 @@ class MySqlDriver implements Nette\Database\Driver
 			$connection->query('SET sql_mode=?', $options['sqlmode']);
 		}
 
-		$this->convertBoolean = (bool) ($options['convertBoolean'] ?? $options['supportBooleans'] ?? false);
+		$this->convertBoolean = (bool) ($options['convertBoolean'] ?? true);
 	}
 
 

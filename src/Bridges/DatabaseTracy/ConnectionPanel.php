@@ -12,6 +12,7 @@ namespace Nette\Bridges\DatabaseTracy;
 use Nette;
 use Nette\Database\Connection;
 use Nette\Database\Helpers;
+use Nette\Database\Result;
 use Tracy;
 
 
@@ -81,7 +82,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 			array_shift($trace);
 		}
 
-		if ($result instanceof Nette\Database\ResultSet) {
+		if ($result instanceof Result) {
 			$this->totalTime += $result->getTime();
 			if ($this->count < $this->maxQueries) {
 				$this->events[] = [$connection, $result->getQueryString(), $result->getParameters(), $trace, $result->getTime(), $result->getRowCount(), null];
@@ -141,7 +142,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 					$cmd = is_string($this->explain)
 						? $this->explain
 						: 'EXPLAIN';
-					$explain = (new Nette\Database\ResultSet($connection, "$cmd $sql", $params))->fetchAll();
+					$explain = (new Result($connection, "$cmd $sql", $params))->fetchAll();
 				} catch (\PDOException) {
 				}
 			}

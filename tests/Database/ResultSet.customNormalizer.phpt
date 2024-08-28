@@ -34,7 +34,7 @@ test('disabled normalization', function () use ($connection) {
 test('custom normalization', function () use ($connection) {
 	$driverName = $GLOBALS['driverName'];
 
-	$connection->setRowNormalizer(function (array $row, Nette\Database\ResultSet $resultSet) {
+	$connection->setRowNormalizer(function (array $row) {
 		foreach ($row as $key => $value) {
 			unset($row[$key]);
 			$row['_' . $key . '_'] = (string) $value;

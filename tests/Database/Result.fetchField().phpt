@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test: Nette\Database\ResultSet: Fetch field.
+ * Test: Nette\Database\Result::fetchField()
  * @dataProvider? databases.ini
  */
 

@@ -25,13 +25,13 @@ class Connection
 	/** @var array<callable(self): void>  Occurs after connection is established */
 	public array $onConnect = [];
 
-	/** @var array<callable(self, ResultSet|DriverException): void>  Occurs after query is executed */
+	/** @var array<callable(self, Result|DriverException): void>  Occurs after query is executed */
 	public array $onQuery = [];
 	private Driver $driver;
 	private SqlPreprocessor $preprocessor;
 	private ?PDO $pdo = null;
 
-	/** @var ?\Closure(array<string, mixed>, ResultSet): array<string, mixed> */
+	/** @var ?\Closure(array<string, mixed>, Result): array<string, mixed> */
 	private ?\Closure $rowNormalizer;
 	private ?string $sql = null;
 	private int $transactionDepth = 0;
@@ -244,11 +244,11 @@ class Connection
 	 * Generates and executes SQL query.
 	 * @param  literal-string  $sql
 	 */
-	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ResultSet
+	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): Result
 	{
 		[$this->sql, $params] = $this->preprocess($sql, ...$params);
 		try {
-			$result = new ResultSet($this, $this->sql, $params, $this->rowNormalizer);
+			$result = new Result($this, $this->sql, $params, $this->rowNormalizer);
 		} catch (PDOException $e) {
 			Arrays::invoke($this->onQuery, $this, $e);
 			throw $e;
@@ -260,7 +260,7 @@ class Connection
 
 
 	/** @deprecated  use query() */
-	public function queryArgs(string $sql, array $params): ResultSet
+	public function queryArgs(string $sql, array $params): Result
 	{
 		trigger_error(__METHOD__ . '() is deprecated, use query()', E_USER_DEPRECATED);
 		return $this->query($sql, ...$params);

@@ -19,7 +19,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 
 test('parameterized query through explorer', function () use ($explorer) {
 	$res = $explorer->query('SELECT id FROM author WHERE id = ?', 11);
-	Assert::type(Nette\Database\ResultSet::class, $res);
+	Assert::type(Nette\Database\Result::class, $res);
 	Assert::same('SELECT id FROM author WHERE id = ?', $res->getQueryString());
 	Assert::same([11], $res->getParameters());
 });

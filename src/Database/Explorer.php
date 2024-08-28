@@ -68,14 +68,14 @@ class Explorer
 	 * Generates and executes SQL query.
 	 * @param  literal-string  $sql
 	 */
-	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ResultSet
+	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): Result
 	{
 		return $this->connection->query($sql, ...$params);
 	}
 
 
 	/** @deprecated  use query() */
-	public function queryArgs(string $sql, array $params): ResultSet
+	public function queryArgs(string $sql, array $params): Result
 	{
 		trigger_error(__METHOD__ . '() is deprecated, use query()', E_USER_DEPRECATED);
 		return $this->connection->query($sql, ...$params);

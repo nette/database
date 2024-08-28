@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test: Nette\Database\ResultSet: Fetch all.
+ * Test: Nette\Database\Result::fetchAll()
  * @dataProvider? databases.ini
  */
 

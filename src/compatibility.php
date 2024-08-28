@@ -17,3 +17,12 @@ if (false) {
 } elseif (!class_exists(Context::class)) {
 	class_alias(Explorer::class, Context::class);
 }
+
+if (false) {
+	/** @deprecated use Nette\Database\Result */
+	class ResultSet extends Result
+	{
+	}
+} elseif (!class_exists(ResultSet::class)) {
+	class_alias(Result::class, ResultSet::class);
+}

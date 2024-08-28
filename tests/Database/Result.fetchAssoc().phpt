@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Test: Nette\Database\ResultSet: Fetch assoc.
+ * Test: Nette\Database\Result::fetchAssoc()
  * @dataProvider? databases.ini
  */
 

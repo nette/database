@@ -18,28 +18,20 @@ use Nette\Utils\Arrays;
  */
 class Result implements \Iterator
 {
-	private ?Drivers\Result $result = null;
 	private Row|false|null $lastRow = null;
 	private int $lastRowKey = -1;
 
 	/** @var Row[] */
 	private array $rows;
-	private float $time;
 	private array $converters;
 
 
 	public function __construct(
 		private readonly Connection $connection,
 		private readonly SqlLiteral $query,
+		private readonly ?Drivers\Result $result,
+		private float $time,
 	) {
-		$time = microtime(true);
-		$queryString = $query->getSql();
-		if (str_starts_with($queryString, '::')) {
-			$connection->getConnection()->{substr($queryString, 2)}();
-		} else {
-			$this->result = $connection->getConnection()->query($queryString, $query->getParameters());
-		}
-		$this->time = microtime(true) - $time;
 	}
 
 

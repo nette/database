@@ -151,7 +151,7 @@ class Connection
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
 		}
 
-		$this->query('::beginTransaction');
+		$this->execute($this->getConnection()->beginTransaction(...), new SqlLiteral('BEGIN TRANSACTION'));
 	}
 
 
@@ -161,7 +161,7 @@ class Connection
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
 		}
 
-		$this->query('::commit');
+		$this->execute($this->getConnection()->commit(...), new SqlLiteral('COMMIT'));
 	}
 
 
@@ -171,7 +171,7 @@ class Connection
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
 		}
 
-		$this->query('::rollBack');
+		$this->execute($this->getConnection()->rollBack(...), new SqlLiteral('ROLLBACK'));
 	}
 
 
@@ -209,15 +209,10 @@ class Connection
 	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): Result
 	{
 		$this->query = new SqlLiteral(...$this->preprocess($sql, ...$params));
-		try {
-			$result = new Result($this, $this->query);
-		} catch (DriverException $e) {
-			Arrays::invoke($this->onQuery, $this, $e);
-			throw $e;
-		}
-
-		Arrays::invoke($this->onQuery, $this, $result);
-		return $result;
+		return $this->execute(
+			fn() => $this->connection->query($this->query->getSql(), $this->query->getParameters()),
+			$this->query,
+		);
 	}
 
 
@@ -240,6 +235,22 @@ class Connection
 		return $params
 			? $this->preprocessor->process(func_get_args())
 			: [$sql, []];
+	}
+
+
+	private function execute(mixed $callback, SqlLiteral $query): Result
+	{
+		try {
+			$time = microtime(true);
+			$result = $callback();
+			$time = microtime(true) - $time;
+			$result = new Result($this, $query, $result, $time);
+			Arrays::invoke($this->onQuery, $this, $result);
+		} catch (DriverException $e) {
+			Arrays::invoke($this->onQuery, $this, $e);
+			throw $e;
+		}
+		return $result;
 	}
 
 

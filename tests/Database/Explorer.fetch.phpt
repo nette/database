@@ -41,8 +41,8 @@ test('fetchField', function () use ($explorer) {
 });
 
 
-test('fetchFields', function () use ($explorer) {
-	Assert::same([11, 'Jakub Vrana'], $explorer->fetchFields('SELECT id, name FROM author ORDER BY id'));
+test('fetchList', function () use ($explorer) {
+	Assert::same([11, 'Jakub Vrana'], $explorer->fetchList('SELECT id, name FROM author ORDER BY id'));
 });
 
 

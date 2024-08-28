@@ -19,9 +19,6 @@ use Nette\Utils\Arrays;
 class Result implements \Iterator
 {
 	private ?\PDOStatement $pdoStatement = null;
-
-	/** @var callable(array, Result): array */
-	private readonly mixed $normalizer;
 	private Row|false|null $lastRow = null;
 	private int $lastRowKey = -1;
 
@@ -35,10 +32,9 @@ class Result implements \Iterator
 		private readonly Connection $connection,
 		private readonly string $queryString,
 		private readonly array $params,
-		?callable $normalizer = null,
 	) {
 		$time = microtime(true);
-		$this->normalizer = $normalizer;
+
 
 		try {
 			if (str_starts_with($queryString, '::')) {
@@ -101,15 +97,6 @@ class Result implements \Iterator
 	public function getTime(): float
 	{
 		return $this->time;
-	}
-
-
-	/** @internal */
-	public function normalizeRow(array $row): array
-	{
-		return $this->normalizer
-			? ($this->normalizer)($row, $this)
-			: $row;
 	}
 
 
@@ -254,12 +241,21 @@ class Result implements \Iterator
 	}
 
 
-	public function resolveColumnConverters(): array
+	private function normalizeRow(array $row): array
 	{
-		if (isset($this->converters)) {
-			return $this->converters;
+		$converters = $this->converters ??= $this->resolveColumnConverters();
+		foreach ($row as $key => $value) {
+			$row[$key] = isset($value, $converters[$key])
+				? $converters[$key]($value)
+				: $value;
 		}
 
+		return $row;
+	}
+
+
+	private function resolveColumnConverters(): array
+	{
 		$res = [];
 		$engine = $this->connection->getDatabaseEngine();
 		$converter = $this->connection->getTypeConverter();
@@ -275,7 +271,7 @@ class Result implements \Iterator
 				], $converter);
 			}
 		}
-		return $this->converters = $res;
+		return $res;
 	}
 }
 

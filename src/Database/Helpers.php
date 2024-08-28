@@ -151,23 +151,6 @@ class Helpers
 	}
 
 
-	/** @internal */
-	public static function normalizeRow(
-		array $row,
-		Result $resultSet,
-		$dateTimeClass = DateTime::class,
-	): array
-	{
-		foreach ($resultSet->resolveColumnConverters() as $key => $converter) {
-			$value = $row[$key];
-			$row[$key] = isset($value, $converter)
-				? $converter($value)
-				: $value;
-		}
-		return $row;
-	}
-
-
 	/**
 	 * Import SQL dump from file - extremely fast.
 	 * @param  ?array<callable(int, ?float): void>  $onProgress

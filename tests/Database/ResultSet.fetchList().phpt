@@ -18,12 +18,12 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 test('', function () use ($connection) {
 	$res = $connection->query('SELECT name, id FROM author ORDER BY id');
 
-	Assert::same(['Jakub Vrana', 11], $res->fetchFields());
+	Assert::same(['Jakub Vrana', 11], $res->fetchList());
 });
 
 
 test('', function () use ($connection) {
 	$res = $connection->query('SELECT id FROM author WHERE id = ?', 666);
 
-	Assert::null($res->fetchFields());
+	Assert::null($res->fetchList());
 });

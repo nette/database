@@ -285,12 +285,22 @@ class Connection
 
 
 	/**
-	 * Shortcut for query()->fetchFields()
+	 * Shortcut for query()->fetchList()
+	 * @param  literal-string  $sql
+	 */
+	public function fetchList(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
+	{
+		return $this->query($sql, ...$params)->fetchList();
+	}
+
+
+	/**
+	 * Shortcut for query()->fetchList()
 	 * @param  literal-string  $sql
 	 */
 	public function fetchFields(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
 	{
-		return $this->query($sql, ...$params)->fetchFields();
+		return $this->query($sql, ...$params)->fetchList();
 	}
 
 

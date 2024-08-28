@@ -39,8 +39,8 @@ test('fetchField', function () use ($connection) {
 });
 
 
-test('fetchFields', function () use ($connection) {
-	Assert::same([11, 'Jakub Vrana'], $connection->fetchFields('SELECT id, name FROM author ORDER BY id'));
+test('fetchList', function () use ($connection) {
+	Assert::same([11, 'Jakub Vrana'], $connection->fetchList('SELECT id, name FROM author ORDER BY id'));
 });
 
 

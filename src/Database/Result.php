@@ -17,11 +17,11 @@ use PDO;
 /**
  * Represents a result set.
  */
-class ResultSet implements \Iterator
+class Result implements \Iterator
 {
 	private ?\PDOStatement $pdoStatement = null;
 
-	/** @var callable(array, ResultSet): array */
+	/** @var callable(array, Result): array */
 	private readonly mixed $normalizer;
 	private Row|false|null $lastRow = null;
 	private int $lastRowKey = -1;
@@ -269,3 +269,6 @@ class ResultSet implements \Iterator
 		return $this->rows;
 	}
 }
+
+
+class_exists(ResultSet::class);

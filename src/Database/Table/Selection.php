@@ -565,7 +565,7 @@ class Selection implements \Iterator, \ArrayAccess, \Countable
 	}
 
 
-	protected function query(string $query): Nette\Database\ResultSet
+	protected function query(string $query): Nette\Database\Result
 	{
 		return $this->explorer->query($query, ...$this->sqlBuilder->getParameters());
 	}

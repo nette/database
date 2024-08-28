@@ -40,7 +40,7 @@ class Helpers
 	/**
 	 * Displays complete result set as HTML table for debug purposes.
 	 */
-	public static function dumpResult(ResultSet $result): void
+	public static function dumpResult(Result $result): void
 	{
 		echo "\n<table class=\"dump\">\n<caption>" . htmlspecialchars($result->getQueryString(), ENT_IGNORE, 'UTF-8') . "</caption>\n";
 		if (!$result->getColumnCount()) {
@@ -204,7 +204,7 @@ class Helpers
 	/** @internal */
 	public static function normalizeRow(
 		array $row,
-		ResultSet $resultSet,
+		Result $resultSet,
 		$dateTimeClass = DateTime::class,
 	): array
 	{

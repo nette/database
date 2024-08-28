@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database;
 
 use Nette;
+use Nette\Utils\Arrays;
 use PDO;
 
 
@@ -178,11 +179,18 @@ class ResultSet implements \Iterator, IRowContainer
 	}
 
 
+	/********************* fetch ****************d*g**/
+
+
 	/**
-	 * Fetches single row object.
+	 * Returns the next row as an associative array or null if there are no more rows.
 	 */
-	public function fetch(): ?Row
+	public function fetchAssoc(?string $path = null): ?array
 	{
+		if ($path !== null) {
+			return Arrays::associate($this->fetchAll(), $path);
+		}
+
 		$data = $this->pdoStatement ? $this->pdoStatement->fetch() : null;
 		if (!$data) {
 			$this->pdoStatement->closeCursor();
@@ -193,15 +201,22 @@ class ResultSet implements \Iterator, IRowContainer
 			trigger_error("Found duplicate columns in database result set: $duplicates.");
 		}
 
-		$row = new Row;
-		foreach ($this->normalizeRow($data) as $key => $value) {
-			if ($key !== '') {
-				$row->$key = $value;
-			}
+		return $this->normalizeRow($data);
+	}
+
+
+	/**
+	 * Returns the next row as an object Row or null if there are no more rows.
+	 */
+	public function fetch(): ?Row
+	{
+		$data = $this->fetchAssoc();
+		if ($data === null) {
+			return null;
 		}
 
 		$this->lastRowKey++;
-		return $this->lastRow = $row;
+		return $this->lastRow = Arrays::toObject($data, new Row);
 	}
 
 
@@ -210,8 +225,8 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function fetchField(): mixed
 	{
-		$row = $this->fetch();
-		return $row ? $row[0] : null;
+		$row = $this->fetchAssoc();
+		return $row ? reset($row) : null;
 	}
 
 
@@ -220,8 +235,8 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function fetchFields(): ?array
 	{
-		$row = $this->fetch();
-		return $row ? array_values((array) $row) : null;
+		$row = $this->fetchAssoc();
+		return $row ? array_values($row) : null;
 	}
 
 
@@ -242,14 +257,5 @@ class ResultSet implements \Iterator, IRowContainer
 	{
 		$this->rows ??= iterator_to_array($this);
 		return $this->rows;
-	}
-
-
-	/**
-	 * Fetches all rows and returns associative tree.
-	 */
-	public function fetchAssoc(string $path): array
-	{
-		return Nette\Utils\Arrays::associate($this->fetchAll(), $path);
 	}
 }

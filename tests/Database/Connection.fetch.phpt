@@ -25,6 +25,15 @@ test('fetch', function () use ($connection) {
 });
 
 
+test('fetchAssoc', function () use ($connection) {
+	$row = $connection->fetchAssoc('SELECT name, id FROM author WHERE id = ?', 11);
+	Assert::same([
+		'name' => 'Jakub Vrana',
+		'id' => 11,
+	], $row);
+});
+
+
 test('fetchField', function () use ($connection) {
 	Assert::same('Jakub Vrana', $connection->fetchField('SELECT name FROM author ORDER BY id'));
 });

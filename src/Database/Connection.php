@@ -265,6 +265,16 @@ class Connection
 
 
 	/**
+	 * Shortcut for query()->fetchAssoc()
+	 * @param  literal-string  $sql
+	 */
+	public function fetchAssoc(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
+	{
+		return $this->query($sql, ...$params)->fetchAssoc();
+	}
+
+
+	/**
 	 * Shortcut for query()->fetchField()
 	 * @param  literal-string  $sql
 	 */

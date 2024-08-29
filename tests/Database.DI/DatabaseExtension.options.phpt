@@ -67,21 +67,15 @@ test('an unknown PDO:: constant in options names the offending config key', func
 });
 
 
-test('BC option reflection: creates the conventions service under the historical name', function () {
-	$container = buildContainer('
-	database:
-		dsn: "sqlite::memory:"
-		reflection: discovered
-
-	services:
-		cache: Nette\Caching\Storages\DevNullStorage
-	', 'ContainerOpt2');
-
-	Assert::true($container->hasService('database.default.reflection'));
-	Assert::false($container->hasService('database.default.conventions'));
-	Assert::type(
-		Nette\Database\Conventions\DiscoveredConventions::class,
-		$container->getService('database.default.reflection'),
+test('removed option reflection is rejected', function () {
+	Assert::exception(
+		fn() => buildContainer('
+		database:
+			dsn: "sqlite::memory:"
+			reflection: discovered
+		', 'ContainerOpt2'),
+		Nette\DeprecatedException::class,
+		'The "reflection" option is deprecated, use "conventions" instead.',
 	);
 });
 

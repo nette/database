@@ -20,7 +20,7 @@ test('', function () {
 		password: secret
 		debugger: no
 		options:
-			lazy: yes
+			lazy: no
 
 	services:
 		cache: Nette\Caching\Storages\DevNullStorage

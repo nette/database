@@ -16,30 +16,28 @@ require __DIR__ . '/../bootstrap.php';
 
 test('non lazy', function () {
 	Assert::exception(
-		fn() => new Nette\Database\Connection('dsn', 'user', 'password'),
+		fn() => new Nette\Database\Connection('xxx', 'user', 'password'),
+		LogicException::class,
+		"Unknown PDO driver 'xxx'.",
+	);
+});
+
+
+test('lazy & explorer', function () {
+	$connection = new Nette\Database\Connection('mysql:', 'user', 'password', ['lazy' => true]);
+	$explorer = new Nette\Database\Explorer($connection, new Structure($connection, new DevNullStorage));
+	Assert::exception(
+		fn() => $explorer->query('SELECT ?', 10),
 		Nette\Database\DriverException::class,
-		'%a%valid data source %a%',
 	);
 });
 
 
 test('lazy', function () {
-	$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => true]);
-	$explorer = new Nette\Database\Explorer($connection, new Structure($connection, new DevNullStorage));
-	Assert::exception(
-		fn() => $explorer->query('SELECT ?', 10),
-		Nette\Database\DriverException::class,
-		'%a%valid data source %a%',
-	);
-});
-
-
-test('', function () {
-	$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => true]);
+	$connection = new Nette\Database\Connection('mysql:', 'user', 'password', ['lazy' => true]);
 	Assert::exception(
 		fn() => $connection->quote('x'),
 		Nette\Database\DriverException::class,
-		'%a%valid data source %a%',
 	);
 });
 

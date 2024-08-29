@@ -39,16 +39,19 @@ class Connection
 
 	public function __construct(
 		private readonly string $dsn,
-		#[\SensitiveParameter]
 		private readonly ?string $user = null,
 		#[\SensitiveParameter]
 		private readonly ?string $password = null,
-		private readonly array $options = [],
+		private array $options = [],
 	) {
 		if (($options['newDateTime'] ?? null) === false) {
 			$this->rowNormalizer = fn($row, $resultSet) => Helpers::normalizeRow($row, $resultSet, DateTime::class);
 		}
-		if (empty($options['lazy'])) {
+		$lazy = $options['lazy'] ?? false;
+		unset($options['newDateTime'], $options['lazy']);
+
+		$this->driver = Factory::createDriverFromDsn($dsn, $user, $password, $options);
+		if (!$lazy) {
 			$this->connect();
 		}
 	}
@@ -66,9 +69,7 @@ class Connection
 			throw ConnectionException::from($e);
 		}
 
-		$this->driver = Factory::createDriverFromDsn($this->dsn, $this->user, $this->password, $this->options);
 		$this->engine = $this->driver->createDatabaseEngine();
-		$this->preprocessor = new SqlPreprocessor($this);
 		$this->engine->initialize($this, $this->options);
 		Arrays::invoke($this->onConnect, $this);
 	}
@@ -241,6 +242,7 @@ class Connection
 	public function preprocess(string $sql, ...$params): array
 	{
 		$this->connect();
+		$this->preprocessor ??= new SqlPreprocessor($this);
 		return $params
 			? $this->preprocessor->process(func_get_args())
 			: [$sql, []];

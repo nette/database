@@ -35,6 +35,7 @@ function connectToDB(array $options = []): Nette\Database\Explorer
 	}
 
 	$connection = new Nette\Database\Connection($args['dsn'], $args['username'], $args['password'], $args['options']);
+	$connection->connect();
 	$driverName = $connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME);
 	$cacheMemoryStorage = new Nette\Caching\Storages\MemoryStorage;
 

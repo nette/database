@@ -63,7 +63,7 @@ final class TypeConverter
 
 	public function convertToPhp(mixed $value, array $meta): mixed
 	{
-		return match ($this->detectType($meta['nativeType'])) {
+		return match ($this->detectType($meta['nativeType'] ?? '')) {
 			self::Integer => $this->toInt($value),
 			self::Float => $this->toFloat($value),
 			self::Decimal => $this->convertDecimal

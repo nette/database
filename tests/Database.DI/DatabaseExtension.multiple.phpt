@@ -21,16 +21,12 @@ test('', function () {
 			user: name
 			password: secret
 			debugger: no
-			options:
-				lazy: yes
 
 		second:
 			dsn: "sqlite::memory:"
 			user: name
 			password: secret
 			debugger: no
-			options:
-				lazy: yes
 
 	services:
 		cache: Nette\Caching\Storages\DevNullStorage

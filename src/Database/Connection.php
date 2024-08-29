@@ -48,9 +48,6 @@ class Connection
 		if (($options['newDateTime'] ?? null) === false) {
 			$this->rowNormalizer = fn($row, $resultSet) => Helpers::normalizeRow($row, $resultSet, DateTime::class);
 		}
-		if (empty($options['lazy'])) {
-			$this->connect();
-		}
 	}
 
 

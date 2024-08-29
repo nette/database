@@ -26,9 +26,7 @@ test('numeric field', function () use ($connection) {
 	Assert::same(123, $row[0]);
 	Assert::true(isset($row[0]));
 	Assert::false(isset($row[123]));
-	if (PHP_VERSION_ID > 70300) {
-		Assert::false(isset($row['0'])); // this is buggy since PHP 5.4 (bug #63217) to PHP 7.2
-	}
+	Assert::false(isset($row['0'])); // this is buggy since PHP 5.4 (bug #63217) to PHP 7.2
 
 	Assert::false(isset($row[1])); // null value
 	Assert::false(isset($row[2])); // is not set

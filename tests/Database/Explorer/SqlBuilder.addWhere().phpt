@@ -7,7 +7,6 @@
 
 declare(strict_types=1);
 
-use Nette\Database\Conventions\DiscoveredConventions;
 use Nette\Database\Driver;
 use Nette\Database\SqlLiteral;
 use Nette\Database\Table\SqlBuilder;
@@ -276,13 +275,11 @@ test('', function () use ($driverName, $explorer, $connection) {
 	}
 
 	$structure->rebuild();
-	$conventions = new DiscoveredConventions($structure);
-	$dao = new Nette\Database\Explorer($connection, $structure, $conventions);
 
-	$e = Assert::exception(function () use ($dao) {
-		$books = $dao->table('book')->where(
+	$e = Assert::exception(function () use ($explorer) {
+		$books = $explorer->table('book')->where(
 			'id',
-			$dao->table('book_tag')->where('tag_id', 21),
+			$explorer->table('book_tag')->where('tag_id', 21),
 		);
 		$books->fetch();
 	}, Nette\InvalidArgumentException::class, 'Selection argument must have defined a select column.');

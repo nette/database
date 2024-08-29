@@ -87,14 +87,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($connection, $explorer) {
-	$structure = $explorer->getStructure();
-	$explorer = new Nette\Database\Explorer(
-		$connection,
-		$structure,
-		new Nette\Database\Conventions\DiscoveredConventions($structure),
-	);
-
+test('', function () use ($explorer) {
 	$books = $explorer->table('book')->select('book.*, author.name, translator.name');
 	iterator_to_array($books);
 });

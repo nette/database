@@ -71,13 +71,6 @@ if ($driverName !== 'sqlsrv') {
 
 
 // Insert into table without primary key
-$structure = $explorer->getStructure();
-$explorer = new Nette\Database\Explorer(
-	$connection,
-	$structure,
-	new Nette\Database\Conventions\DiscoveredConventions($structure),
-);
-
 $inserted = $explorer->table('note')->insert([
 	'book_id' => 1,
 	'note' => 'Good one!',

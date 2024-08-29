@@ -79,14 +79,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($connection, $explorer) {
-	$structure = $explorer->getStructure();
-	$explorer = new Nette\Database\Explorer(
-		$connection,
-		$structure,
-		new Nette\Database\Conventions\DiscoveredConventions($structure),
-	);
-
+test('', function () use ($explorer) {
 	$book = $explorer->table('book')->get(1);
 	Assert::exception(
 		fn() => $book->test,

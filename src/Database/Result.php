@@ -27,7 +27,7 @@ class Result implements \Iterator
 
 
 	public function __construct(
-		private readonly Connection $connection,
+		private readonly Explorer $explorer,
 		private readonly SqlLiteral $query,
 		private readonly ?Drivers\Result $result,
 		private float $time,
@@ -36,10 +36,10 @@ class Result implements \Iterator
 
 
 	/** @deprecated */
-	public function getConnection(): Connection
+	public function getConnection(): Explorer
 	{
 		trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
-		return $this->connection;
+		return $this->explorer;
 	}
 
 
@@ -237,8 +237,8 @@ class Result implements \Iterator
 	private function resolveColumnConverters(): array
 	{
 		$res = [];
-		$engine = $this->connection->getDatabaseEngine();
-		$converter = $this->connection->getTypeConverter();
+		$engine = $this->explorer->getDatabaseEngine();
+		$converter = $this->explorer->getTypeConverter();
 		foreach ($this->result->getColumnsInfo() as $meta) {
 			$res[$meta['name']] = isset($meta['nativeType'])
 				? $engine->resolveColumnConverter($meta, $converter)

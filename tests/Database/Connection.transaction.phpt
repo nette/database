@@ -7,12 +7,12 @@
 
 declare(strict_types=1);
 
-use Nette\Database\Connection;
+use Nette\Database\Explorer;
 use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
-$connection = connectToDB()->getConnection();
+$connection = connectToDB();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
 
 
@@ -27,7 +27,7 @@ test('', function () use ($connection) {
 
 test('', function () use ($connection) {
 	Assert::exception(
-		fn() => $connection->transaction(function (Connection $connection) {
+		fn() => $connection->transaction(function (Explorer $connection) {
 			$connection->query('DELETE FROM book');
 			throw new Exception('my exception');
 		}),
@@ -52,13 +52,13 @@ test('nested transaction() call fail', function () use ($connection) {
 	$base = (int) $connection->query('SELECT COUNT(*) AS cnt FROM author')->fetchField();
 
 	Assert::exception(
-		fn() => $connection->transaction(function (Connection $connection) {
+		fn() => $connection->transaction(function (Explorer $connection) {
 			$connection->query('INSERT INTO author', [
 				'name' => 'A',
 				'web' => '',
 			]);
 
-			$connection->transaction(function (Connection $connection2) {
+			$connection->transaction(function (Explorer $connection2) {
 				$connection2->query('INSERT INTO author', [
 					'name' => 'B',
 					'web' => '',
@@ -77,7 +77,7 @@ test('nested transaction() call fail', function () use ($connection) {
 test('nested transaction() call success', function () use ($connection) {
 	$base = (int) $connection->query('SELECT COUNT(*) AS cnt FROM author')->fetchField();
 
-	$connection->transaction(function (Connection $connection) {
+	$connection->transaction(function (Explorer $connection) {
 		$connection->query('INSERT INTO author', [
 			'name' => 'A',
 			'web' => '',
@@ -97,18 +97,18 @@ test('beginTransaction(), commit() & rollBack() calls are forbidden in transacti
 	Assert::exception(
 		fn() => $connection->transaction(fn() => $connection->beginTransaction()),
 		LogicException::class,
-		Connection::class . '::beginTransaction() call is forbidden inside a transaction() callback',
+		Explorer::class . '::beginTransaction() call is forbidden inside a transaction() callback',
 	);
 
 	Assert::exception(
 		fn() => $connection->transaction(fn() => $connection->commit()),
 		LogicException::class,
-		Connection::class . '::commit() call is forbidden inside a transaction() callback',
+		Explorer::class . '::commit() call is forbidden inside a transaction() callback',
 	);
 
 	Assert::exception(
 		fn() => $connection->transaction(fn() => $connection->rollBack()),
 		LogicException::class,
-		Connection::class . '::rollBack() call is forbidden inside a transaction() callback',
+		Explorer::class . '::rollBack() call is forbidden inside a transaction() callback',
 	);
 });

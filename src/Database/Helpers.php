@@ -75,7 +75,7 @@ class Helpers
 	/**
 	 * Returns syntax highlighted SQL command.
 	 */
-	public static function dumpSql(SqlLiteral $query, ?Connection $connection = null): string
+	public static function dumpSql(SqlLiteral $query, ?Explorer $explorer = null): string
 	{
 		$keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
 		$keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|[RI]?LIKE|REGEXP|TRUE|FALSE';
@@ -110,7 +110,7 @@ class Helpers
 
 		// parameters
 		$params = $query->getParameters();
-		$sql = preg_replace_callback('#\?#', function () use ($params, $connection): string {
+		$sql = preg_replace_callback('#\?#', function () use ($params, $explorer): string {
 			static $i = 0;
 			$param = $params[$i++] ?? null;
 			if ($param === null) {
@@ -128,7 +128,7 @@ class Helpers
 			} elseif (is_string($param)) {
 				$length = Nette\Utils\Strings::length($param);
 				$truncated = Nette\Utils\Strings::truncate($param, self::$maxLength);
-				$text = htmlspecialchars($connection ? $connection->quote($truncated) : '\'' . $truncated . '\'', ENT_NOQUOTES, 'UTF-8');
+				$text = htmlspecialchars($explorer ? $explorer->quote($truncated) : '\'' . $truncated . '\'', ENT_NOQUOTES, 'UTF-8');
 				return '<span title="Length ' . $length . ' characters">' . $text . '</span>';
 
 			} elseif (is_resource($param)) {
@@ -157,7 +157,7 @@ class Helpers
 	 * @param  ?array<callable(int, ?float): void>  $onProgress
 	 * @return int  count of commands
 	 */
-	public static function loadFromFile(Connection $connection, string $file, ?callable $onProgress = null): int
+	public static function loadFromFile(Explorer $explorer, string $file, ?callable $onProgress = null): int
 	{
 		@set_time_limit(0); // @ function may be disabled
 
@@ -170,7 +170,7 @@ class Helpers
 		$count = $size = 0;
 		$delimiter = ';';
 		$sql = '';
-		$driver = $connection->getConnection(); // native query without logging
+		$connection = $explorer->getConnection(); // native query without logging
 		while (($s = fgets($handle)) !== false) {
 			$size += strlen($s);
 			if (!strncasecmp($s, 'DELIMITER ', 10)) {
@@ -178,7 +178,7 @@ class Helpers
 
 			} elseif (str_ends_with($ts = rtrim($s), $delimiter)) {
 				$sql .= substr($ts, 0, -strlen($delimiter));
-				$driver->query($sql);
+				$connection->query($sql);
 				$sql = '';
 				$count++;
 				if ($onProgress) {
@@ -190,7 +190,7 @@ class Helpers
 		}
 
 		if (rtrim($sql) !== '') {
-			$driver->query($sql);
+			$connection->query($sql);
 			$count++;
 			if ($onProgress) {
 				$onProgress($count, isset($stat['size']) ? 100 : null);
@@ -204,7 +204,7 @@ class Helpers
 
 	/** @deprecated  use Nette\Bridges\DatabaseTracy\ConnectionPanel::initialize() */
 	public static function createDebugPanel(
-		Connection $connection,
+		Explorer $connection,
 		bool $explain,
 		string $name,
 		Tracy\Bar $bar,
@@ -218,7 +218,7 @@ class Helpers
 
 	/** @deprecated  use Nette\Bridges\DatabaseTracy\ConnectionPanel::initialize() */
 	public static function initializeTracy(
-		Connection $connection,
+		Explorer $connection,
 		bool $addBarPanel = false,
 		string $name = '',
 		bool $explain = true,

@@ -7,9 +7,6 @@
 
 declare(strict_types=1);
 
-use Nette\Caching\Cache;
-use Nette\Caching\Storages\DevNullStorage;
-use Nette\Database\Structure;
 use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
@@ -17,25 +14,15 @@ require __DIR__ . '/../bootstrap.php';
 
 test('non lazy', function () {
 	Assert::exception(
-		fn() => new Nette\Database\Connection('xxx', 'user', 'password'),
+		fn() => new Nette\Database\Explorer('xxx', 'user', 'password'),
 		LogicException::class,
 		"Unknown PDO driver 'xxx'.",
 	);
 });
 
 
-test('lazy & explorer', function () {
-	$connection = new Nette\Database\Connection('mysql:', 'user', 'password', ['lazy' => true]);
-	$explorer = new Nette\Database\Explorer($connection, new Structure($connection->getDatabaseEngine(), new Cache(new DevNullStorage)));
-	Assert::exception(
-		fn() => $explorer->query('SELECT ?', 10),
-		Nette\Database\DriverException::class,
-	);
-});
-
-
 test('lazy', function () {
-	$connection = new Nette\Database\Connection('mysql:', 'user', 'password', ['lazy' => true]);
+	$connection = new Nette\Database\Explorer('mysql:', 'user', 'password', ['lazy' => true]);
 	Assert::exception(
 		fn() => $connection->quote('x'),
 		Nette\Database\DriverException::class,
@@ -48,7 +35,7 @@ test('connect & disconnect', function () {
 	$connections = 1;
 
 	try {
-		$connection = new Nette\Database\Connection($options['dsn'], $options['username'], $options['password']);
+		$connection = new Nette\Database\Explorer($options['dsn'], $options['username'], $options['password']);
 	} catch (Nette\Database\DriverException $e) {
 		Tester\Environment::skip("Connection to '$options[dsn]' failed. Reason: " . $e->getMessage());
 	}

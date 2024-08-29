@@ -55,9 +55,9 @@ final class Factory
 
 
 	/** @internal */
-	public static function configure(Connection $connection, array $options): void
+	public static function configure(Explorer $explorer, array $options): void
 	{
-		$converter = $connection->getTypeConverter();
+		$converter = $explorer->getTypeConverter();
 		foreach (self::TypeConverterOptions as $opt) {
 			if (isset($options[$opt])) {
 				$converter->$opt = (bool) $options[$opt];

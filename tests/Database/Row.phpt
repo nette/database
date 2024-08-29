@@ -11,7 +11,7 @@ use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
-$connection = connectToDB()->getConnection();
+$connection = connectToDB();
 
 test('numeric field', function () use ($connection) {
 	$row = $connection->fetch("SELECT 123 AS {$connection->getDatabaseEngine()->delimite('123')}, NULL as nullcol");

@@ -11,13 +11,14 @@ namespace Nette\Database;
 
 use JetBrains\PhpStorm\Language;
 use Nette;
+use Nette\Caching\Cache;
 use Nette\Utils\Arrays;
 
 
 /**
- * Represents a connection between PHP and a database server.
+ * The central access point to Nette Database functionality.
  */
-class Connection
+class Explorer
 {
 	/** @var array<callable(self): void>  Occurs after connection is established */
 	public array $onConnect = [];
@@ -31,22 +32,28 @@ class Connection
 	private TypeConverter $typeConverter;
 	private ?SqlLiteral $query = null;
 	private int $transactionDepth = 0;
+	private ?Cache $cache = null;
+	private ?Conventions $conventions = null;
+	private ?IStructure $structure = null;
 
 
 	public function __construct(
-		private readonly string $dsn,
-		?string $user = null,
-		#[\SensitiveParameter]
-		?string $password = null,
-		array $options = [],
+		Drivers\Driver|string $driver,
 	) {
-		$lazy = $options['lazy'] ?? false;
-		unset($options['lazy']);
+		if (is_string($driver)) { // compatibility with version 3.x
+			[$dsn, $user, $password, $options] = func_get_args() + [null, null, null, []];
 
-		Factory::configure($this, $options);
-		$this->driver = Factory::createDriverFromDsn($dsn, $user, $password, $options);
-		if (!$lazy) {
-			$this->connect();
+			$lazy = $options['lazy'] ?? false;
+			unset($options['lazy']);
+
+			Factory::configure($this, $options);
+			$this->driver = Factory::createDriverFromDsn($dsn, $user, $password, $options);
+			if (!$lazy) {
+				$this->connect();
+			}
+
+		} else {
+			$this->driver = $driver;
 		}
 	}
 
@@ -346,4 +353,57 @@ class Connection
 	{
 		return new SqlLiteral($value, $params);
 	}
+
+
+	/********************* active row ****************d*g**/
+
+
+	public function table(string $table): Table\Selection
+	{
+		return new Table\Selection($this, $table);
+	}
+
+
+	public function setCache(Cache $cache): static
+	{
+		if (isset($this->structure)) {
+			throw new \LogicException('Cannot set cache after structure is created.');
+		}
+		$this->cache = $cache;
+		return $this;
+	}
+
+
+	/** @internal */
+	public function getCache(): ?Cache
+	{
+		return $this->cache;
+	}
+
+
+	public function setConventions(Conventions $conventions): static
+	{
+		if (isset($this->conventions)) {
+			throw new \LogicException('Conventions are already set.');
+		}
+		$this->conventions = $conventions;
+		return $this;
+	}
+
+
+	/** @internal */
+	public function getConventions(): Conventions
+	{
+		return $this->conventions ??= new Conventions\DiscoveredConventions($this->getStructure());
+	}
+
+
+	/** @internal */
+	public function getStructure(): IStructure
+	{
+		return $this->structure ??= new Structure($this->getDatabaseEngine(), $this->getCache());
+	}
 }
+
+
+class_exists(Connection::class);

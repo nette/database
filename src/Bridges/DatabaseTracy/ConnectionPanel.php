@@ -10,8 +10,8 @@ declare(strict_types=1);
 namespace Nette\Bridges\DatabaseTracy;
 
 use Nette;
-use Nette\Database\Connection;
 use Nette\Database\DriverException;
+use Nette\Database\Explorer;
 use Nette\Database\Helpers;
 use Nette\Database\Result;
 use Tracy;
@@ -34,7 +34,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 
 
 	public static function initialize(
-		Connection $connection,
+		Explorer $explorer,
 		bool $addBarPanel = true,
 		string $name = '',
 		bool $explain = true,
@@ -46,7 +46,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 		$blueScreen->addPanel(self::renderException(...));
 
 		if ($addBarPanel) {
-			$panel = new self($connection, $blueScreen);
+			$panel = new self($explorer, $blueScreen);
 			$panel->explain = $explain;
 			$panel->name = $name;
 			$bar ??= Tracy\Debugger::getBar();
@@ -57,14 +57,14 @@ class ConnectionPanel implements Tracy\IBarPanel
 	}
 
 
-	public function __construct(Connection $connection, Tracy\BlueScreen $blueScreen)
+	public function __construct(Explorer $explorer, Tracy\BlueScreen $blueScreen)
 	{
-		$connection->onQuery[] = $this->logQuery(...);
+		$explorer->onQuery[] = $this->logQuery(...);
 		$this->blueScreen = $blueScreen;
 	}
 
 
-	private function logQuery(Connection $connection, $result): void
+	private function logQuery(Explorer $connection, $result): void
 	{
 		if ($this->disabled) {
 			return;
@@ -82,7 +82,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 				&& preg_match('~\.(php.?|phtml)$~', $row['file'])
 				&& !$this->blueScreen->isCollapsed($row['file']))
 				&& ($row['class'] ?? '') !== self::class
-				&& !is_a($row['class'] ?? '', Connection::class, allow_string: true)
+				&& !is_a($row['class'] ?? '', Explorer::class, allow_string: true)
 			) {
 				$source = [$row['file'], (int) $row['line']];
 				break;

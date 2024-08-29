@@ -10,7 +10,7 @@ use Tester\Assert;
 
 require __DIR__ . '/../../bootstrap.php';
 
-$connection = connectToDB()->getConnection();
+$connection = connectToDB();
 $engine = $connection->getDatabaseEngine();
 
 Assert::same(0, $connection->query("SELECT 'AAxBB' LIKE", $connection::literal($engine->formatLike('A_B', 0)))->fetchField());

@@ -11,13 +11,13 @@ use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
-$connection = connectToDB()->getConnection();
+$connection = connectToDB();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
 
 
 test('Exception thrown for unable to open database file', function () {
 	$e = Assert::exception(
-		fn() => new Nette\Database\Connection('sqlite:.'),
+		fn() => new Nette\Database\Explorer('sqlite:.'),
 		Nette\Database\ConnectionException::class,
 		'SQLSTATE[HY000] [14] unable to open database file',
 		14,

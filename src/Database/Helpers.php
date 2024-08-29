@@ -279,29 +279,6 @@ class Helpers
 	}
 
 
-	/**
-	 * Returns duplicate columns from result set.
-	 */
-	public static function findDuplicates(\PDOStatement $statement): string
-	{
-		$cols = [];
-		for ($i = 0; $i < $statement->columnCount(); $i++) {
-			$meta = $statement->getColumnMeta($i);
-			$cols[$meta['name']][] = $meta['table'] ?? '';
-		}
-
-		$duplicates = [];
-		foreach ($cols as $name => $tables) {
-			if (count($tables) > 1) {
-				$tables = array_filter(array_unique($tables));
-				$duplicates[] = "'$name'" . ($tables ? ' (from ' . implode(', ', $tables) . ')' : '');
-			}
-		}
-
-		return implode(', ', $duplicates);
-	}
-
-
 	/** @return array{type: ?string, size: ?int, scale: ?int, parameters: ?string} */
 	public static function parseColumnType(string $type): array
 	{

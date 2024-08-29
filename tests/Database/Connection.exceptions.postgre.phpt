@@ -18,7 +18,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 test('Exception thrown for invalid database credentials', function () {
 	$options = Tester\Environment::loadData();
 	$e = Assert::exception(
-		fn() => new Nette\Database\Connection($options['dsn'], 'unknown', 'unknown'),
+		fn() => (new Nette\Database\Connection($options['dsn'], 'unknown', 'unknown'))->connect(),
 		Nette\Database\ConnectionException::class,
 		null,
 		'08006',

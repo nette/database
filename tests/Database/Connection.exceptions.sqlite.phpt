@@ -17,7 +17,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 
 test('Exception thrown for unable to open database file', function () {
 	$e = Assert::exception(
-		fn() => new Nette\Database\Connection('sqlite:.'),
+		fn() => (new Nette\Database\Connection('sqlite:.'))->connect(),
 		Nette\Database\ConnectionException::class,
 		'SQLSTATE[HY000] [14] unable to open database file',
 		'HY000',

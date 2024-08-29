@@ -32,9 +32,9 @@ class Driver implements Drivers\Driver
 	}
 
 
-	public function connect()
+	public function connect(): Drivers\Connection
 	{
-		$connection = new \PDO(...$this->params);
+		$connection = new Drivers\PDO\Connection(...$this->params);
 		$options = $this->params['options'];
 		if ($charset = $options['charset'] ?? self::DefaultCharset) {
 			$connection->query('SET NAMES ' . $connection->quote($charset));
@@ -47,7 +47,7 @@ class Driver implements Drivers\Driver
 	}
 
 
-	public function createDatabaseEngine($connection): Drivers\Engine
+	public function createDatabaseEngine(Drivers\Connection $connection): Drivers\Engine
 	{
 		$engine = new (self::EngineClass)($connection);
 		$options = $this->params['options'];

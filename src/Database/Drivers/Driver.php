@@ -15,7 +15,7 @@ namespace Nette\Database\Drivers;
  */
 interface Driver
 {
-	function connect();
+	function connect(): Connection;
 
-	function createDatabaseEngine($connection): Engine;
+	function createDatabaseEngine(Connection $connection): Engine;
 }

@@ -29,13 +29,13 @@ class Driver implements Drivers\Driver
 	}
 
 
-	public function connect()
+	public function connect(): Drivers\Connection
 	{
-		return new \PDO(...$this->params);
+		return new Drivers\PDO\Connection(...$this->params);
 	}
 
 
-	public function createDatabaseEngine($connection): Drivers\Engine
+	public function createDatabaseEngine(Drivers\Connection $connection): Drivers\Engine
 	{
 		$engine = new (self::EngineClass)($connection);
 		$options = $this->params['options'];

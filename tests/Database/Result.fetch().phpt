@@ -18,9 +18,9 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 test('', function () use ($connection, $driverName) {
 	$res = $connection->query('SELECT name, name FROM author');
 	$message = match ($driverName) {
-		'mysql' => "Found duplicate columns in database result set: 'name' (from author).",
+		'mysql' => "Found duplicate columns in database result set: 'name'.",
 		'pgsql' => "Found duplicate columns in database result set: 'name'%a%",
-		'sqlite' => "Found duplicate columns in database result set: 'name' (from author).",
+		'sqlite' => "Found duplicate columns in database result set: 'name'.",
 		'sqlsrv' => "Found duplicate columns in database result set: 'name'.",
 		default => Assert::fail("Unsupported driver $driverName"),
 	};
@@ -54,9 +54,9 @@ test('tests closeCursor()', function () use ($connection, $driverName) {
 test('', function () use ($connection, $driverName) {
 	$res = $connection->query('SELECT book.id, author.id, author.name, translator.name FROM book JOIN author ON (author.id = book.author_id) JOIN author translator ON (translator.id = book.translator_id)');
 	$message = match ($driverName) {
-		'mysql' => "Found duplicate columns in database result set: 'id' (from book, author), 'name' (from author, translator).",
+		'mysql' => "Found duplicate columns in database result set: 'id', 'name'.",
 		'pgsql' => "Found duplicate columns in database result set: 'id'%a% 'name'%a%",
-		'sqlite' => "Found duplicate columns in database result set: 'id' (from book, author), 'name' (from author).",
+		'sqlite' => "Found duplicate columns in database result set: 'id', 'name'.",
 		'sqlsrv' => "Found duplicate columns in database result set: 'id', 'name'.",
 		default => Assert::fail("Unsupported driver $driverName"),
 	};

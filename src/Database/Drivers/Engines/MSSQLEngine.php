@@ -282,6 +282,6 @@ class MSSQLEngine implements Engine
 			return [$schema, $name];
 		}
 
-		return [(string) $this->connection->query('SELECT SCHEMA_NAME()')->fetchColumn(), $table];
+		return [(string) $this->connection->query('SELECT SCHEMA_NAME()')->fetchList()[0], $table];
 	}
 }

@@ -38,7 +38,6 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				'options' => Expect::array(),
 				'debugger' => Expect::bool(),
 				'explain' => Expect::bool(true),
-				'reflection' => Expect::string(), // BC
 				'conventions' => Expect::string('discovered'), // Nette\Database\Conventions\DiscoveredConventions
 				'autowired' => Expect::bool(),
 			]),
@@ -99,21 +98,11 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			->setArguments([$connection])
 			->setAutowired($config->autowired);
 
-		if (!empty($config->reflection)) {
-			$conventionsServiceName = 'reflection';
-			$config->conventions = $config->reflection;
-			if (is_string($config->conventions) && strtolower($config->conventions) === 'conventional') {
-				$config->conventions = 'Static';
-			}
-		} else {
-			$conventionsServiceName = 'conventions';
-		}
-
 		if (!$config->conventions) {
 			$conventions = null;
 
 		} elseif (is_string($config->conventions)) {
-			$conventions = $builder->addDefinition($this->prefix("$name.$conventionsServiceName"))
+			$conventions = $builder->addDefinition($this->prefix("$name.conventions"))
 				->setFactory(preg_match('#^[a-z]+$#Di', $config->conventions)
 					? 'Nette\Database\Conventions\\' . ucfirst($config->conventions) . 'Conventions'
 					: $config->conventions)

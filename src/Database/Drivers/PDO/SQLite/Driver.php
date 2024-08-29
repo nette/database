@@ -31,7 +31,9 @@ class Driver implements Drivers\Driver
 
 	public function connect(): Drivers\Connection
 	{
-		return new Drivers\PDO\Connection(...$this->params);
+		$connection = new Drivers\PDO\Connection(...$this->params);
+		$connection->metaTypeKey = 'sqlite:decl_type';
+		return $connection;
 	}
 
 

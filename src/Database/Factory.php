@@ -25,6 +25,7 @@ final class Factory
 		'pdo-sqlite' => Drivers\PDO\SQLite\Driver::class,
 		'pdo-sqlsrv' => Drivers\PDO\SQLSrv\Driver::class,
 	];
+	private const TypeConverterOptions = ['convertBoolean', 'newDateTime'];
 
 
 	/** @internal */
@@ -50,5 +51,18 @@ final class Factory
 		}
 
 		return new $class(['dsn' => $dsn, 'username' => $username, 'password' => $password, 'options' => $options]);
+	}
+
+
+	/** @internal */
+	public static function configure(Connection $connection, array $options): void
+	{
+		$converter = $connection->getTypeConverter();
+		foreach (self::TypeConverterOptions as $opt) {
+			if (isset($options[$opt])) {
+				$converter->$opt = (bool) $options[$opt];
+				unset($options[$opt]);
+			}
+		}
 	}
 }

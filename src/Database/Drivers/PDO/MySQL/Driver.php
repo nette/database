@@ -49,11 +49,6 @@ class Driver implements Drivers\Driver
 
 	public function createDatabaseEngine(Drivers\Connection $connection): Drivers\Engine
 	{
-		$engine = new (self::EngineClass)($connection);
-		$options = $this->params['options'];
-		if (isset($options['convertBoolean'])) {
-			$engine->convertBoolean = (bool) $options['convertBoolean'];
-		}
-		return $engine;
+		return new (self::EngineClass)($connection);
 	}
 }

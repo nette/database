@@ -11,7 +11,6 @@ namespace Nette\Database;
 
 use JetBrains\PhpStorm\Language;
 use Nette\Utils\Arrays;
-use Nette\Utils\DateTime;
 use PDOException;
 
 
@@ -29,6 +28,7 @@ class Connection
 	private ?Drivers\Connection $connection = null;
 	private Drivers\Engine $engine;
 	private SqlPreprocessor $preprocessor;
+	private TypeConverter $typeConverter;
 
 	/** @var callable(array, Result): array */
 	private $rowNormalizer = [Helpers::class, 'normalizeRow'];
@@ -43,12 +43,10 @@ class Connection
 		?string $password = null,
 		array $options = [],
 	) {
-		if (($options['newDateTime'] ?? null) === false) {
-			$this->rowNormalizer = fn($row, $resultSet) => Helpers::normalizeRow($row, $resultSet, DateTime::class);
-		}
 		$lazy = $options['lazy'] ?? false;
-		unset($options['newDateTime'], $options['lazy']);
+		unset($options['lazy']);
 
+		Factory::configure($this, $options);
 		$this->driver = Factory::createDriverFromDsn($dsn, $user, $password, $options);
 		if (!$lazy) {
 			$this->connect();
@@ -129,6 +127,12 @@ class Connection
 	public function getReflection(): Reflection
 	{
 		return new Reflection($this->getDatabaseEngine());
+	}
+
+
+	public function getTypeConverter(): TypeConverter
+	{
+		return $this->typeConverter ??= new TypeConverter;
 	}
 
 

@@ -28,7 +28,7 @@ class Result implements \Iterator
 	/** @var Row[] */
 	private array $rows;
 	private float $time;
-	private array $types;
+	private array $converters;
 
 
 	public function __construct(
@@ -95,13 +95,6 @@ class Result implements \Iterator
 	public function getRowCount(): ?int
 	{
 		return $this->pdoStatement ? $this->pdoStatement->rowCount() : null;
-	}
-
-
-	public function getColumnTypes(): array
-	{
-		$this->types ??= $this->connection->getDatabaseEngine()->getColumnTypes($this->pdoStatement);
-		return $this->types;
 	}
 
 
@@ -258,6 +251,31 @@ class Result implements \Iterator
 	{
 		$this->rows ??= iterator_to_array($this);
 		return $this->rows;
+	}
+
+
+	public function resolveColumnConverters(): array
+	{
+		if (isset($this->converters)) {
+			return $this->converters;
+		}
+
+		$res = [];
+		$engine = $this->connection->getDatabaseEngine();
+		$converter = $this->connection->getTypeConverter();
+		$metaTypeKey = $this->connection->getConnection()->metaTypeKey;
+		$count = $this->pdoStatement->columnCount();
+		for ($i = 0; $i < $count; $i++) {
+			$meta = $this->pdoStatement->getColumnMeta($i);
+			if (isset($meta[$metaTypeKey])) {
+				$res[$meta['name']] = $engine->resolveColumnConverter([
+					'nativeType' => $meta[$metaTypeKey],
+					'size' => $meta['len'],
+					'scale' => $meta['precision'],
+				], $converter);
+			}
+		}
+		return $this->converters = $res;
 	}
 }
 

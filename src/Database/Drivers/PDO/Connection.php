@@ -15,7 +15,8 @@ use PDO;
 
 class Connection implements Drivers\Connection
 {
-	protected readonly PDO $pdo;
+	public readonly PDO $pdo;
+	public string $metaTypeKey = 'native_type';
 
 
 	public function __construct(

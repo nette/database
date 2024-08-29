@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers;
 
 use Nette\Database;
+use Nette\Database\TypeConverter;
 
 
 /**
@@ -69,11 +70,7 @@ interface Engine
 	/** @return list<array{name: string, local: string, table: string, foreign: string}> */
 	function getForeignKeys(string $table): array;
 
-	/**
-	 * Returns associative array of detected types (IStructure::FIELD_*) in result set.
-	 * @return array<string, string>
-	 */
-	function getColumnTypes(\PDOStatement $statement): array;
+	function resolveColumnConverter(array $meta, TypeConverter $converter): ?\Closure;
 
 	/**
 	 * Cheks if driver supports specific property

@@ -12,6 +12,7 @@ namespace Nette\Database\Drivers\Engines;
 use Nette;
 use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
+use Nette\Database\TypeConverter;
 
 
 /**
@@ -238,12 +239,11 @@ class PostgreSQLEngine implements Engine
 	}
 
 
-	public function getColumnTypes(\PDOStatement $statement): array
+	public function resolveColumnConverter(array $meta, TypeConverter $converter): ?\Closure
 	{
-		static $cache;
-		$item = &$cache[$statement->queryString];
-		$item ??= Nette\Database\Helpers::detectTypes($statement);
-		return $item;
+		return $meta['nativeType'] === 'bool'
+			? fn($value): bool => ($value && $value !== 'f' && $value !== 'F')
+			: $converter->resolve($meta);
 	}
 
 

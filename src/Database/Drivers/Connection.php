@@ -15,7 +15,7 @@ namespace Nette\Database\Drivers;
  */
 interface Connection
 {
-	function query(string $sql, array $params = []);
+	function query(string $sql, array $params = []): Result;
 
 	function getNativeConnection(): mixed;
 

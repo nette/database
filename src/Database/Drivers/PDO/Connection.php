@@ -30,7 +30,7 @@ class Connection implements Drivers\Connection
 	}
 
 
-	public function query(string $sql, array $params = [])
+	public function query(string $sql, array $params = []): Result
 	{
 		$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 
@@ -39,9 +39,8 @@ class Connection implements Drivers\Connection
 			$statement->bindValue(is_int($key) ? $key + 1 : $key, $value, $types[gettype($value)] ?? PDO::PARAM_STR);
 		}
 
-		$statement->setFetchMode(PDO::FETCH_ASSOC);
 		$statement->execute();
-		return $statement;
+		return new Result($statement, $this);
 	}
 
 

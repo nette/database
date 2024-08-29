@@ -25,7 +25,7 @@ final readonly class LazyConnection implements Drivers\Connection
 	}
 
 
-	public function query(string $sql, array $params = [])
+	public function query(string $sql, array $params = []): Drivers\Result
 	{
 		return $this->getConnection()->query($sql, $params);
 	}

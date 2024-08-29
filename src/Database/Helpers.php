@@ -296,33 +296,6 @@ class Helpers
 
 
 	/**
-	 * Returns a human-readable string listing duplicate column names in the result set.
-	 */
-	public static function findDuplicates(\PDOStatement $statement): string
-	{
-		$cols = [];
-		for ($i = 0; $i < $statement->columnCount(); $i++) {
-			$meta = $statement->getColumnMeta($i);
-			if ($meta === false) {
-				continue;
-			}
-
-			$cols[$meta['name']][] = $meta['table'] ?? '';
-		}
-
-		$duplicates = [];
-		foreach ($cols as $name => $tables) {
-			if (count($tables) > 1) {
-				$tables = array_filter(array_unique($tables));
-				$duplicates[] = "'$name'" . ($tables ? ' (from ' . implode(', ', $tables) . ')' : '');
-			}
-		}
-
-		return implode(', ', $duplicates);
-	}
-
-
-	/**
 	 * Materializes rows for insertion. A Traversable is drained by position, so that rows yielded
 	 * under colliding keys (`yield from`) survive, while a single associative row stays inspectable.
 	 * @param  iterable<mixed>  $data

@@ -10,7 +10,6 @@ namespace Nette\Database;
 use Nette;
 use Nette\Bridges\DatabaseTracy\ConnectionPanel;
 use Tracy;
-use function array_filter, array_keys, array_unique, count, fclose, fgets, fopen, fstat, get_resource_type, htmlspecialchars, implode, is_bool, is_float, is_resource, is_string, preg_last_error, preg_match, preg_replace, preg_replace_callback, reset, rtrim, set_time_limit, str_ends_with, str_starts_with, stream_get_meta_data, strlen, strncasecmp, substr, trim, wordwrap;
 
 
 /**
@@ -276,33 +275,6 @@ class Helpers
 		}
 
 		return $return;
-	}
-
-
-	/**
-	 * Returns a human-readable string listing duplicate column names in the result set.
-	 */
-	public static function findDuplicates(\PDOStatement $statement): string
-	{
-		$cols = [];
-		for ($i = 0; $i < $statement->columnCount(); $i++) {
-			$meta = $statement->getColumnMeta($i);
-			if ($meta === false) {
-				continue;
-			}
-
-			$cols[$meta['name']][] = $meta['table'] ?? '';
-		}
-
-		$duplicates = [];
-		foreach ($cols as $name => $tables) {
-			if (count($tables) > 1) {
-				$tables = array_filter(array_unique($tables));
-				$duplicates[] = "'$name'" . ($tables ? ' (from ' . implode(', ', $tables) . ')' : '');
-			}
-		}
-
-		return implode(', ', $duplicates);
 	}
 
 

@@ -13,7 +13,7 @@ require __DIR__ . '/../../bootstrap.php';
 
 
 test('', function () {
-	$structure = Mockery::mock(Nette\Database\IStructure::class);
+	$structure = Mockery::mock(Nette\Database\Structure::class);
 	$structure->shouldReceive('getPrimaryKey')->with('books_x_tags')->andReturn(['book_id', 'tag_id']);
 
 	$conventions = new DiscoveredConventions($structure);

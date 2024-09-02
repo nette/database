@@ -8,7 +8,7 @@
 namespace Nette\Database\Table;
 
 use Nette;
-use Nette\Database\{Conventions, Explorer, IStructure, SqlLiteral};
+use Nette\Database\{Conventions, Explorer, SqlLiteral, Structure};
 use Nette\Database\Drivers\Engine;
 use function count, is_array, strlen;
 
@@ -60,7 +60,7 @@ class SqlBuilder
 	/** distinguishes WHERE vs JOIN conditions in the dedup hash; a subclass calling addCondition() directly gets the WHERE scope */
 	private string $conditionScope = '';
 	private readonly Engine $engine;
-	private readonly IStructure $structure;
+	private readonly Structure $structure;
 
 	/** @var array<string, int> table fullName => exists */
 	private array $cacheTableList = [];

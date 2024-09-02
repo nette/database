@@ -7,7 +7,7 @@
 
 namespace Nette\Database\Conventions;
 
-use Nette\Database\{Conventions, IStructure};
+use Nette\Database\{Conventions, Structure};
 use function count, sprintf;
 
 
@@ -17,7 +17,7 @@ use function count, sprintf;
 class DiscoveredConventions implements Conventions
 {
 	public function __construct(
-		protected readonly IStructure $structure,
+		protected readonly Structure $structure,
 	) {
 	}
 

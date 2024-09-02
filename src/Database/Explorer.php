@@ -45,7 +45,7 @@ class Explorer
 	private int $transactionDepth = 0;
 	private ?Cache $cache = null;
 	private ?Conventions $conventions = null;
-	private ?IStructure $structure = null;
+	private ?Structure $structure = null;
 
 
 	public function __construct(
@@ -435,7 +435,7 @@ class Explorer
 
 
 	/** @internal */
-	public function getStructure(): IStructure
+	public function getStructure(): Structure
 	{
 		return $this->structure ??= new Structure($this->getDatabaseEngine(), $this->getCache());
 	}

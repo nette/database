@@ -26,10 +26,6 @@ overrides:
 		paths: [src/Database/ResultSet.php, src/Database/Row.php, src/Database/Table]
 		upgrading: {declarations: {deprecatedMember: keep}}
 
-	- # public constants of the API, renaming them breaks the users
-		paths: [src/Database/IStructure.php, src/Database/Drivers/MySqlDriver.php]
-		naming: {constant: keep}
-
 	- # the names of the ArrayAccess parameters say what the offset is, renaming them breaks calls naming them
 		paths: [src/Database/Table/ActiveRow.php, src/Database/Table/Selection.php]
 		classes: {overridingMethod: {parameterName: keep}}

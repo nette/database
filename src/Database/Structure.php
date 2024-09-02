@@ -14,8 +14,9 @@ use Nette;
 
 /**
  * Provides database structure metadata with caching.
+ * @internal
  */
-class Structure implements IStructure
+class Structure
 {
 	/** @var array{tables: array, columns: array, primary: array, aliases: array, hasMany: array, belongsTo: array} */
 	protected array $structure;

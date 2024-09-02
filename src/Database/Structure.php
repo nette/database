@@ -13,8 +13,9 @@ use function array_flip, count, hash, is_array, reset, strlen, strtolower, uksor
 
 /**
  * Provides database structure metadata with caching.
+ * @internal
  */
-class Structure implements IStructure
+class Structure
 {
 	/** @var array{tables: list<array{name: string, fullName?: string, view: bool}>, columns: array<string, list<array<string, mixed>>>, primary: array<string, string|list<string>|null>, aliases: array<string, string>, hasMany: array<string, array<string, list<string>>>, belongsTo: array<string, array<string, string>>} */
 	protected array $structure;

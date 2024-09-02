@@ -8,7 +8,8 @@
 namespace Nette\Database\Conventions;
 
 use Nette\Database\Conventions;
-use Nette\Database\IStructure;
+use Nette\Database\Structure;
+use function count, preg_replace, strcmp, stripos, strtolower;
 
 
 /**
@@ -17,7 +18,7 @@ use Nette\Database\IStructure;
 class DiscoveredConventions implements Conventions
 {
 	public function __construct(
-		protected readonly IStructure $structure,
+		protected readonly Structure $structure,
 	) {
 	}
 

@@ -3,7 +3,7 @@ name: Tests
 on: [push, pull_request]
 
 env:
-    php-extensions: mbstring, intl, pdo_sqlsrv-5.10.0beta2
+    php-extensions: mbstring, intl, pdo_sqlsrv-5.12.0
     php-tools: "composer:v2, pecl"
 
 jobs:

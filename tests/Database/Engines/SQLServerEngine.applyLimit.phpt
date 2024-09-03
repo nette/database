@@ -9,32 +9,39 @@ require __DIR__ . '/../../bootstrap.php';
 $connection = Mockery::mock(Nette\Database\Drivers\Connection::class);
 $engine = new Nette\Database\Drivers\Engines\SQLServerEngine($connection);
 
-$query = 'SELECT 1 FROM t';
-$engine->applyLimit($query, 10, 20);
-Assert::same('SELECT 1 FROM t OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY', $query);
+Assert::same(
+	$engine->applyLimit('SELECT 1 FROM t', 10, 20),
+	'SELECT 1 FROM t OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY',
+);
 
-$query = 'SELECT 1 FROM t';
-$engine->applyLimit($query, 0, 20);
-Assert::same('SELECT 1 FROM t OFFSET 20 ROWS FETCH NEXT 0 ROWS ONLY', $query);
+Assert::same(
+	$engine->applyLimit('SELECT 1 FROM t', 0, 20),
+	'SELECT 1 FROM t OFFSET 20 ROWS FETCH NEXT 0 ROWS ONLY',
+);
 
-$query = 'SELECT 1 FROM t';
-$engine->applyLimit($query, 10, 0);
-Assert::same('SELECT 1 FROM t OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY', $query);
+Assert::same(
+	$engine->applyLimit('SELECT 1 FROM t', 10, 0),
+	'SELECT 1 FROM t OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY',
+);
 
-$query = 'SELECT 1 FROM t';
-$engine->applyLimit($query, null, 20);
-Assert::same('SELECT 1 FROM t OFFSET 20 ROWS FETCH NEXT 0 ROWS ONLY', $query);
+Assert::same(
+	$engine->applyLimit('SELECT 1 FROM t', null, 20),
+	'SELECT 1 FROM t OFFSET 20 ROWS FETCH NEXT 0 ROWS ONLY',
+);
 
-$query = 'SELECT 1 FROM t';
-$engine->applyLimit($query, 10, null);
-Assert::same('SELECT 1 FROM t OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY', $query);
+Assert::same(
+	$engine->applyLimit('SELECT 1 FROM t', 10, null),
+	'SELECT 1 FROM t OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY',
+);
 
-Assert::exception(function () use ($engine) {
-	$query = 'SELECT 1 FROM t';
-	$engine->applyLimit($query, -1, null);
-}, Nette\InvalidArgumentException::class, 'Negative offset or limit.');
+Assert::exception(
+	fn() => $engine->applyLimit('SELECT 1 FROM t', -1, null),
+	Nette\InvalidArgumentException::class,
+	'Negative offset or limit.',
+);
 
-Assert::exception(function () use ($engine) {
-	$query = 'SELECT 1 FROM t';
-	$engine->applyLimit($query, null, -1);
-}, Nette\InvalidArgumentException::class, 'Negative offset or limit.');
+Assert::exception(
+	fn() => $engine->applyLimit('SELECT 1 FROM t', null, -1),
+	Nette\InvalidArgumentException::class,
+	'Negative offset or limit.',
+);

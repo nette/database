@@ -50,7 +50,7 @@ interface Engine
 	function formatDateInterval(\DateInterval $value): string;
 
 	/** Applies LIMIT and OFFSET clauses to an SQL query. */
-	function applyLimit(string &$sql, ?int $limit, ?int $offset): void;
+	function applyLimit(string $sql, ?int $limit, ?int $offset): string;
 
 	/********************* reflection ****************d*g**/
 

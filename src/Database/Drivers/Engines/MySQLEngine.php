@@ -72,7 +72,7 @@ class MySQLEngine implements Engine
 	}
 
 
-	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
+	public function applyLimit(string $sql, ?int $limit, ?int $offset): string
 	{
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
@@ -82,6 +82,8 @@ class MySQLEngine implements Engine
 			$sql .= ' LIMIT ' . ($limit ?? '18446744073709551615')
 				. ($offset ? ' OFFSET ' . $offset : '');
 		}
+
+		return $sql;
 	}
 
 

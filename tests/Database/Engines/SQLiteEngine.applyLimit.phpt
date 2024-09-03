@@ -9,32 +9,39 @@ require __DIR__ . '/../../bootstrap.php';
 $connection = Mockery::mock(Nette\Database\Drivers\Connection::class);
 $engine = new Nette\Database\Drivers\Engines\SQLiteEngine($connection);
 
-$query = 'SELECT 1 FROM t';
-$engine->applyLimit($query, 10, 20);
-Assert::same('SELECT 1 FROM t LIMIT 10 OFFSET 20', $query);
+Assert::same(
+	$engine->applyLimit('SELECT 1 FROM t', 10, 20),
+	'SELECT 1 FROM t LIMIT 10 OFFSET 20',
+);
 
-$query = 'SELECT 1 FROM t';
-$engine->applyLimit($query, 0, 20);
-Assert::same('SELECT 1 FROM t LIMIT 0 OFFSET 20', $query);
+Assert::same(
+	$engine->applyLimit('SELECT 1 FROM t', 0, 20),
+	'SELECT 1 FROM t LIMIT 0 OFFSET 20',
+);
 
-$query = 'SELECT 1 FROM t';
-$engine->applyLimit($query, 10, 0);
-Assert::same('SELECT 1 FROM t LIMIT 10', $query);
+Assert::same(
+	$engine->applyLimit('SELECT 1 FROM t', 10, 0),
+	'SELECT 1 FROM t LIMIT 10',
+);
 
-$query = 'SELECT 1 FROM t';
-$engine->applyLimit($query, null, 20);
-Assert::same('SELECT 1 FROM t LIMIT -1 OFFSET 20', $query);
+Assert::same(
+	$engine->applyLimit('SELECT 1 FROM t', null, 20),
+	'SELECT 1 FROM t LIMIT -1 OFFSET 20',
+);
 
-$query = 'SELECT 1 FROM t';
-$engine->applyLimit($query, 10, null);
-Assert::same('SELECT 1 FROM t LIMIT 10', $query);
+Assert::same(
+	$engine->applyLimit('SELECT 1 FROM t', 10, null),
+	'SELECT 1 FROM t LIMIT 10',
+);
 
-Assert::exception(function () use ($engine) {
-	$query = 'SELECT 1 FROM t';
-	$engine->applyLimit($query, -1, null);
-}, Nette\InvalidArgumentException::class, 'Negative offset or limit.');
+Assert::exception(
+	fn() => $engine->applyLimit('SELECT 1 FROM t', -1, null),
+	Nette\InvalidArgumentException::class,
+	'Negative offset or limit.',
+);
 
-Assert::exception(function () use ($engine) {
-	$query = 'SELECT 1 FROM t';
-	$engine->applyLimit($query, null, -1);
-}, Nette\InvalidArgumentException::class, 'Negative offset or limit.');
+Assert::exception(
+	fn() => $engine->applyLimit('SELECT 1 FROM t', null, -1),
+	Nette\InvalidArgumentException::class,
+	'Negative offset or limit.',
+);

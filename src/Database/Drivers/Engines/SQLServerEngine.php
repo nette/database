@@ -62,7 +62,7 @@ class SQLServerEngine implements Engine
 	}
 
 
-	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
+	public function applyLimit(string $sql, ?int $limit, ?int $offset): string
 	{
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
@@ -72,6 +72,8 @@ class SQLServerEngine implements Engine
 			$sql .= ' OFFSET ' . (int) $offset . ' ROWS '
 				. 'FETCH NEXT ' . (int) $limit . ' ROWS ONLY';
 		}
+
+		return $sql;
 	}
 
 

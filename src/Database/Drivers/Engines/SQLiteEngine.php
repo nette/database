@@ -230,7 +230,7 @@ class SQLiteEngine implements Engine
 
 	public function convertToPhp(mixed $value, array $meta, TypeConverter $converter): mixed
 	{
-		return in_array($meta['nativeType'], ['DATE', 'DATETIME'], true)
+		return $converter->convertDateTime && in_array($meta['nativeType'], ['DATE', 'DATETIME'], true)
 			? (is_int($value) ? (new DateTime)->setTimestamp($value) : new DateTime($value))
 			: $converter->convertToPhp($value, $meta);
 	}

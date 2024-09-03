@@ -28,7 +28,7 @@ class Connection
 		'pdo-sqlite' => Drivers\PDO\SQLite\Driver::class,
 		'pdo-sqlsrv' => Drivers\PDO\SQLSrv\Driver::class,
 	];
-	private const TypeConverterOptions = ['convertBoolean', 'newDateTime'];
+	private const TypeConverterOptions = ['convertBoolean', 'convertDateTime', 'newDateTime'];
 
 	/** @var array<callable(self): void>  Occurs after connection is established */
 	public array $onConnect = [];

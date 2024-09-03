@@ -181,7 +181,7 @@ class Connection
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
 		}
 
-		$this->query('::beginTransaction');
+		$this->logOperation($this->getConnection()->beginTransaction(...), new SqlLiteral('BEGIN TRANSACTION'));
 	}
 
 
@@ -191,7 +191,7 @@ class Connection
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
 		}
 
-		$this->query('::commit');
+		$this->logOperation($this->getConnection()->commit(...), new SqlLiteral('COMMIT'));
 	}
 
 
@@ -201,7 +201,7 @@ class Connection
 			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
 		}
 
-		$this->query('::rollBack');
+		$this->logOperation($this->getConnection()->rollBack(...), new SqlLiteral('ROLLBACK'));
 	}
 
 
@@ -239,15 +239,10 @@ class Connection
 	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): Result
 	{
 		[$this->sql, $params] = $this->preprocess($sql, ...$params);
-		try {
-			$result = new Result($this, $this->sql, $params);
-		} catch (DriverException $e) {
-			Arrays::invoke($this->onQuery, $this, $e);
-			throw $e;
-		}
-
-		Arrays::invoke($this->onQuery, $this, $result);
-		return $result;
+		return $this->logOperation(
+			fn() => $this->connection->query($this->sql, $params),
+			new SqlLiteral($this->sql, $params),
+		);
 	}
 
 
@@ -273,13 +268,31 @@ class Connection
 	}
 
 
+	private function logOperation(\Closure $callback, SqlLiteral $query): Result
+	{
+		try {
+			$time = microtime(true);
+			$result = $callback();
+			$time = microtime(true) - $time;
+		} catch (DriverException $e) {
+			$e = $this->convertException($e);
+			Arrays::invoke($this->onQuery, $this, $e);
+			throw $e;
+		}
+
+		$result = new Result($this, $query->getSql(), $query->getParameters(), $result, $time);
+		Arrays::invoke($this->onQuery, $this, $result);
+		return $result;
+	}
+
+
 	public function getLastQueryString(): ?string
 	{
 		return $this->sql;
 	}
 
 
-	public function convertException(DriverException $e): DriverException
+	private function convertException(DriverException $e): DriverException
 	{
 		$class = $this->getDatabaseEngine()->classifyException($e);
 		return $class ? $class::from($e) : $e;

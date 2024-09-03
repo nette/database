@@ -23,3 +23,27 @@ test('formatDateTime', function () {
 	$engine = $connection->getDatabaseEngine();
 	Assert::same('1978-01-23', $engine->formatDateTime(new DateTime('1978-01-23 00:00:00')));
 });
+
+
+test('default convertDateTime', function () {
+	$connection = connectToDB(['convertDateTime' => null])->getConnection();
+	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlite-nette_test3.sql');
+	$row = $connection->fetch('SELECT * FROM types');
+	Assert::type(Nette\Database\DateTime::class, $row->date);
+	Assert::type(Nette\Database\DateTime::class, $row->datetime);
+});
+
+test('convertDateTime = false', function () {
+	$connection = connectToDB(['convertDateTime' => false])->getConnection();
+	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlite-nette_test3.sql');
+	$row = $connection->fetch('SELECT * FROM types');
+	Assert::type('int', $row->date);
+	Assert::type('int', $row->datetime);
+});
+
+test('convertDateTime = true', function () {
+	$connection = connectToDB(['convertDateTime' => true])->getConnection();
+	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlite-nette_test3.sql');
+	$row = $connection->fetch('SELECT * FROM types');
+	Assert::type(Nette\Database\DateTime::class, $row->date);
+});

@@ -25,7 +25,7 @@ use Tracy\Helpers;
 		<tr><th>Time&nbsp;ms</th><th>SQL Query</th><th>Rows</th></tr>
 		<?php
 		foreach ($events as $event):
-			[$connection, $sql, $params, $source, $time, $rows, $error, $command, $explain] = $event;
+			[$connection, $query, $source, $time, $rows, $error, $command, $explain] = $event;
 		?>
 		<tr>
 		<td style="background:rgba(255, 95, 23, <?= sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale) ?>)" data-order="<?= (float) $time ?>">
@@ -36,7 +36,7 @@ use Tracy\Helpers;
 			<br /><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-explain">explain</a>
 		<?php endif ?>
 		</td>
-		<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-<?= Helpers::escapeHtml($command) ?>"><?= DbHelpers::dumpSql($sql, $params, $connection) ?>
+		<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-<?= Helpers::escapeHtml($command) ?>"><?= DbHelpers::dumpSql($query, $connection) ?>
 		<?php if ($explain): ?>
 			<table class="tracy-collapsed nette-DbConnectionPanel-explain">
 			<tr>

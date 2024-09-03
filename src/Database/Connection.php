@@ -40,7 +40,7 @@ class Connection
 	private Drivers\Engine $engine;
 	private SqlPreprocessor $preprocessor;
 	private TypeConverter $typeConverter;
-	private ?string $sql = null;
+	private ?SqlLiteral $lastQuery = null;
 	private int $transactionDepth = 0;
 
 
@@ -238,10 +238,10 @@ class Connection
 	 */
 	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): Result
 	{
-		[$this->sql, $params] = $this->preprocess($sql, ...$params);
+		[$sql, $params] = $this->preprocess($sql, ...$params);
 		return $this->logOperation(
-			fn() => $this->connection->query($this->sql, $params),
-			new SqlLiteral($this->sql, $params),
+			fn() => $this->connection->query($sql, $params),
+			$this->lastQuery = new SqlLiteral($sql, $params),
 		);
 	}
 
@@ -280,15 +280,23 @@ class Connection
 			throw $e;
 		}
 
-		$result = new Result($this, $query->getSql(), $query->getParameters(), $result, $time);
+		$result = new Result($this, $query, $result, $time);
 		Arrays::invoke($this->onQuery, $this, $result);
 		return $result;
 	}
 
 
+	public function getLastQuery(): ?SqlLiteral
+	{
+		return $this->lastQuery;
+	}
+
+
+	/** @deprecated use getLastQuery()->getSql() */
 	public function getLastQueryString(): ?string
 	{
-		return $this->sql;
+		trigger_error(__METHOD__ . '() is deprecated, use getLastQuery()->getSql()', E_USER_DEPRECATED);
+		return $this->lastQuery?->getSql();
 	}
 
 

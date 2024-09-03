@@ -178,9 +178,6 @@ class MySQLEngine implements Engine
 	public function convertToPhp(mixed $value, array $meta, TypeConverter $converter): mixed
 	{
 		return match ($meta['nativeType']) {
-			'NEWDECIMAL' => $meta['scale'] === 0
-				? $converter->toInt($value)
-				: $converter->toFloat($value),
 			'TINY' => $meta['size'] === 1 && $converter->convertBoolean
 				? $converter->toBool($value)
 				: $converter->toInt($value),

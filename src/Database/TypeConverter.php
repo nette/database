@@ -38,6 +38,7 @@ final class TypeConverter
 
 	public bool $convertBoolean = true;
 	public bool $convertDateTime = true;
+	public bool $convertDecimal = true;
 	public bool $newDateTime = true;
 
 
@@ -64,8 +65,10 @@ final class TypeConverter
 	{
 		return match ($this->detectType($meta['nativeType'])) {
 			self::Integer => $this->toInt($value),
-			self::Float,
-			self::Decimal => $this->toFloat($value),
+			self::Float => $this->toFloat($value),
+			self::Decimal => $this->convertDecimal
+				? ($meta['scale'] === 0 ? $this->toInt($value) : $this->toFloat($value))
+				: $value,
 			self::Boolean => $this->convertBoolean ? $this->toBool($value) : $value,
 			self::DateTime, self::Date => $this->convertDateTime ? $this->toDateTime($value) : $value,
 			self::Time => $this->convertDateTime ? $this->toTime($value) : $value,
@@ -75,7 +78,7 @@ final class TypeConverter
 	}
 
 
-	public function toInt(int|string $value): int|float
+	public function toInt(int|float|string $value): int|float|string
 	{
 		return is_float($tmp = $value * 1) ? $value : $tmp;
 	}

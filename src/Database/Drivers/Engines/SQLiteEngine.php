@@ -92,7 +92,7 @@ class SQLiteEngine implements Engine
 	}
 
 
-	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
+	public function applyLimit(string $sql, ?int $limit, ?int $offset): string
 	{
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
@@ -101,6 +101,8 @@ class SQLiteEngine implements Engine
 			$sql .= ' LIMIT ' . ($limit ?? '-1')
 				. ($offset ? ' OFFSET ' . $offset : '');
 		}
+
+		return $sql;
 	}
 
 

@@ -73,7 +73,7 @@ class PostgreSQLEngine implements Engine
 	}
 
 
-	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
+	public function applyLimit(string $sql, ?int $limit, ?int $offset): string
 	{
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
@@ -86,6 +86,8 @@ class PostgreSQLEngine implements Engine
 		if ($offset) {
 			$sql .= ' OFFSET ' . $offset;
 		}
+
+		return $sql;
 	}
 
 

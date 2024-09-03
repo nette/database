@@ -105,7 +105,7 @@ class SqlBuilder
 		}
 
 		if ($this->limit !== null || $this->offset) {
-			$this->engine->applyLimit($query, $this->limit, $this->offset);
+			$query = $this->engine->applyLimit($query, $this->limit, $this->offset);
 		}
 
 		return $query;
@@ -116,7 +116,7 @@ class SqlBuilder
 	{
 		$query = "DELETE FROM {$this->delimitedTable}" . $this->tryDelimite($this->buildConditions());
 		if ($this->limit !== null || $this->offset) {
-			$this->engine->applyLimit($query, $this->limit, $this->offset);
+			$query = $this->engine->applyLimit($query, $this->limit, $this->offset);
 		}
 
 		return $query;
@@ -204,7 +204,7 @@ class SqlBuilder
 		$queryJoins = $this->buildQueryJoins($joins, $finalJoinConditions);
 		$query = "{$querySelect} FROM {$this->delimitedTable}{$queryJoins}{$queryCondition}{$queryEnd}";
 
-		$this->engine->applyLimit($query, $this->limit, $this->offset);
+		$query = $this->engine->applyLimit($query, $this->limit, $this->offset);
 
 		return $this->tryDelimite($query);
 	}

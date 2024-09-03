@@ -48,29 +48,68 @@ class Explorer
 	private ?Structure $structure = null;
 
 
-	public function __construct(
+	public static function createFromParameters(
+		#[\SensitiveParameter]
+		...$params,
+	): self
+	{
+		$params = count($params) === 1 && is_array($params[0] ?? null) ? $params[0] : $params;
+
+		if ($class = $params['driverClass'] ?? null) {
+			if (!is_subclass_of($class, Drivers\Driver::class)) {
+				throw new \LogicException("Driver class '$class' is not subclass of " . Drivers\Driver::class);
+			}
+			unset($params['driverClass']);
+
+		} elseif ($driver = $params['driver'] ?? null) {
+			$class = self::Drivers[$driver] ?? throw new \LogicException("Unknown driver '$driver'.");
+			unset($params['driver']);
+
+		} elseif ($dsn = $params['dsn'] ?? null) {
+			$driver = explode(':', $dsn)[0];
+			$class = self::Drivers['pdo-' . $driver] ?? throw new \LogicException("Unknown PDO driver '$driver'.");
+
+		} else {
+			throw new \LogicException("Missing options 'driver', 'driverClass' or 'dsn'.");
+		}
+
+		$args = array_diff_key($params, array_flip(self::TypeConverterOptions));
+		$explorer = new self(new $class(...$args));
+		array_map(fn($opt) => isset($params[$opt]) && ($explorer->typeConverter->$opt = (bool) $params[$opt]), self::TypeConverterOptions);
+		return $explorer;
+	}
+
+
+	public static function createFromDsn(
 		string $dsn,
 		?string $username = null,
 		#[\SensitiveParameter]
 		?string $password = null,
 		array $options = [],
-	) {
-		$driver = explode(':', $dsn)[0];
-		$class = empty($options['driverClass'])
-			? (self::Drivers['pdo-' . $driver] ?? throw new \LogicException("Unknown PDO driver '$driver'."))
-			: $options['driverClass'];
-		$args = compact('dsn', 'username', 'password', 'options');
-		unset($options['lazy'], $options['driverClass']);
+	): self
+	{
+		$params = compact('dsn', 'username', 'password', 'options');
 		foreach ($options as $key => $value) {
 			if (!is_int($key) && $value !== null) {
-				$args[$key] = $value;
-				unset($args['options'][$key]);
+				$params[$key] = $value;
+				unset($params['options'][$key]);
 			}
 		}
-		$args = array_diff_key($args, array_flip(self::TypeConverterOptions));
-		$this->driver = new $class(...$args);
-		$this->typeConverter = new TypeConverter;
-		array_map(fn($opt) => isset($options[$opt]) && ($this->typeConverter->$opt = (bool) $options[$opt]), self::TypeConverterOptions);
+		unset($params['lazy']);
+		return self::createFromParameters($params);
+	}
+
+
+	public function __construct(
+		Drivers\Driver|string $driver,
+	) {
+		if (is_string($driver)) { // back compatibility with version 3.x
+			$explorer = self::createFromDsn(...func_get_args());
+			[$this->driver, $this->typeConverter] = [$explorer->driver, $explorer->typeConverter];
+		} else {
+			$this->driver = $driver;
+			$this->typeConverter = new TypeConverter;
+		}
 	}
 
 

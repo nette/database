@@ -192,10 +192,10 @@ class MySQLEngine implements Engine
 			'TINY' => $meta['size'] === 1 && $converter->convertBoolean
 				? $converter->toBool($value)
 				: $converter->toInt($value),
-			'TIME' => $converter->toInterval($value),
-			'DATE', 'DATETIME', 'TIMESTAMP' => str_starts_with($value, '0000-00')
-				? null
-				: $converter->toDateTime($value),
+			'TIME' => $converter->convertDateTime ? $converter->toInterval($value) : $value,
+			'DATE', 'DATETIME', 'TIMESTAMP' => $converter->convertDateTime
+				? (str_starts_with($value, '0000-00') ? null : $converter->toDateTime($value))
+				: $value,
 			default => $converter->convertToPhp($value, $meta),
 		};
 	}

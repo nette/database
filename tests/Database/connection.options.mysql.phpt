@@ -72,3 +72,22 @@ test('newDateTime = true', function () {
 	$field = $connection->fetchField('SELECT NOW()');
 	Assert::type(Nette\Database\DateTime::class, $field);
 });
+
+
+test('default convertDateTime', function () {
+	$connection = connectToDB(['convertDateTime' => null])->getConnection();
+	$field = $connection->fetchField('SELECT NOW()');
+	Assert::type(Nette\Database\DateTime::class, $field);
+});
+
+test('convertDateTime = false', function () {
+	$connection = connectToDB(['convertDateTime' => false])->getConnection();
+	$field = $connection->fetchField('SELECT NOW()');
+	Assert::type('string', $field);
+});
+
+test('convertDateTime = true', function () {
+	$connection = connectToDB(['convertDateTime' => true])->getConnection();
+	$field = $connection->fetchField('SELECT NOW()');
+	Assert::type(Nette\Database\DateTime::class, $field);
+});

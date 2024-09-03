@@ -59,6 +59,12 @@ class Connection
 		$this->rowNormalizer = ($options['newDateTime'] ?? null) === false
 			? fn(array $row, ResultSet $resultSet): array => Helpers::normalizeRow($row, $resultSet, DateTime::class)
 			: Helpers::normalizeRow(...);
+
+		$driver = explode(':', $dsn)[0];
+		$class = empty($options['driverClass'])
+			? (self::Drivers['pdo-' . $driver] ?? throw new \LogicException("Unknown PDO driver '$driver'."))
+			: $options['driverClass'];
+		$this->driver = new $class;
 	}
 
 
@@ -77,13 +83,7 @@ class Connection
 			throw ConnectionException::from($e);
 		}
 
-		$driver = explode(':', $this->dsn)[0];
-		$class = empty($this->options['driverClass'])
-			? (self::Drivers['pdo-' . $driver] ?? throw new \LogicException("Unknown PDO driver '$driver'."))
-			: $this->options['driverClass'];
-		$this->driver = new $class;
 		$this->engine = $this->driver->createEngine();
-		$this->preprocessor = new SqlPreprocessor($this);
 		$this->engine->initialize($this, $this->options);
 		Arrays::invoke($this->onConnect, $this);
 	}
@@ -287,6 +287,7 @@ class Connection
 	public function preprocess(string $sql, ...$params): array
 	{
 		$this->connect();
+		$this->preprocessor ??= new SqlPreprocessor($this);
 		return $params
 			? $this->preprocessor->process(func_get_args())
 			: [$sql, []];

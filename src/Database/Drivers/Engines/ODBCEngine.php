@@ -52,7 +52,7 @@ class ODBCEngine implements Engine
 	}
 
 
-	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
+	public function applyLimit(string $sql, ?int $limit, ?int $offset): string
 	{
 		if ($offset) {
 			throw new Nette\NotSupportedException('Offset is not supported by this database.');
@@ -66,6 +66,8 @@ class ODBCEngine implements Engine
 				throw new Nette\InvalidArgumentException('SQL query must begin with SELECT, UPDATE or DELETE command.');
 			}
 		}
+
+		return $sql;
 	}
 
 

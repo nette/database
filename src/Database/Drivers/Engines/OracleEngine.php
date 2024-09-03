@@ -69,7 +69,7 @@ class OracleEngine implements Engine
 	}
 
 
-	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
+	public function applyLimit(string $sql, ?int $limit, ?int $offset): string
 	{
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
@@ -83,6 +83,8 @@ class OracleEngine implements Engine
 		} elseif ($limit !== null) {
 			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . $limit;
 		}
+
+		return $sql;
 	}
 
 

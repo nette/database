@@ -11,7 +11,7 @@ namespace Nette\Database\Reflection;
 
 
 /**
- * Foreign key reflection.
+ * Database foreign key relationship.
  */
 final class ForeignKey
 {

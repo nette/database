@@ -13,7 +13,7 @@ use Nette;
 
 
 /**
- * Single row representation.
+ * Represents database row with support for relations.
  * ActiveRow is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
  */
 class ActiveRow implements \IteratorAggregate, IRow
@@ -28,18 +28,14 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
-	/**
-	 * @internal
-	 */
+	/** @internal */
 	public function setTable(Selection $table): void
 	{
 		$this->table = $table;
 	}
 
 
-	/**
-	 * @internal
-	 */
+	/** @internal */
 	public function getTable(): Selection
 	{
 		return $this->table;
@@ -97,7 +93,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 
 	/**
-	 * Returns row signature (composition of primary keys)
+	 * Returns row signature (composition of primary keys).
 	 */
 	public function getSignature(bool $throw = true): string
 	{
@@ -121,7 +117,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 
 	/**
-	 * Returns referencing rows.
+	 * Returns referencing rows collection.
 	 */
 	public function related(string $key, ?string $throughColumn = null): GroupedSelection
 	{
@@ -135,7 +131,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 
 	/**
-	 * Updates row.
+	 * Updates row data.
 	 */
 	public function update(iterable $data): bool
 	{
@@ -171,7 +167,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 
 	/**
-	 * Deletes row.
+	 * Deletes row from database.
 	 * @return int number of affected rows
 	 */
 	public function delete(): int
@@ -201,41 +197,24 @@ class ActiveRow implements \IteratorAggregate, IRow
 	/********************* interface ArrayAccess & magic accessors ****************d*g**/
 
 
-	/**
-	 * Stores value in column.
-	 * @param  string  $column
-	 * @param  mixed  $value
-	 */
 	public function offsetSet($column, $value): void
 	{
 		$this->__set($column, $value);
 	}
 
 
-	/**
-	 * Returns value of column.
-	 * @param  string  $column
-	 */
 	public function offsetGet($column): mixed
 	{
 		return $this->__get($column);
 	}
 
 
-	/**
-	 * Tests if column exists.
-	 * @param  string  $column
-	 */
 	public function offsetExists($column): bool
 	{
 		return $this->__isset($column);
 	}
 
 
-	/**
-	 * Removes column from data.
-	 * @param  string  $column
-	 */
 	public function offsetUnset($column): void
 	{
 		$this->__unset($column);
@@ -293,9 +272,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
-	/**
-	 * @internal
-	 */
+	/** @internal */
 	public function accessColumn(?string $key, bool $selectColumn = true): bool
 	{
 		if ($this->table->accessColumn($key, $selectColumn) && !$this->dataRefreshed) {

@@ -13,7 +13,7 @@ use Nette\Database\Reflection;
 
 
 /**
- * Table reflection.
+ * Database table structure.
  */
 final class Table
 {
@@ -39,6 +39,10 @@ final class Table
 	}
 
 
+	/**
+	 * Returns column object or throws exception if column doesn't exist.
+	 * @throws \InvalidArgumentException
+	 */
 	public function getColumn(string $name): Column
 	{
 		return $this->columns[$name] ?? throw new \InvalidArgumentException("Column '$name' not found in table '$this->name'.");

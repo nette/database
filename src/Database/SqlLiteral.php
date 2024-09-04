@@ -11,7 +11,7 @@ namespace Nette\Database;
 
 
 /**
- * SQL literal value.
+ * SQL literal that will not be escaped.
  */
 class SqlLiteral
 {

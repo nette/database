@@ -14,7 +14,7 @@ use Nette\Database\IStructure;
 
 
 /**
- * Conventions based on database structure.
+ * Discovers database conventions based on table structure metadata.
  */
 class DiscoveredConventions implements Conventions
 {

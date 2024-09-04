@@ -13,7 +13,7 @@ use Nette;
 
 
 /**
- * Represents a single table row.
+ * Represents a single database table row.
  */
 class Row extends Nette\Utils\ArrayHash implements IRow
 {

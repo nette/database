@@ -15,7 +15,7 @@ use PDO;
 
 
 /**
- * Represents a result set.
+ * Represents a database result set.
  */
 class ResultSet implements \Iterator, IRowContainer
 {
@@ -73,9 +73,7 @@ class ResultSet implements \Iterator, IRowContainer
 	}
 
 
-	/**
-	 * @internal
-	 */
+	/** @internal */
 	public function getPdoStatement(): ?\PDOStatement
 	{
 		return $this->pdoStatement;
@@ -132,7 +130,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * Displays complete result set as HTML table for debug purposes.
+	 * Displays result set as HTML table.
 	 */
 	public function dump(): void
 	{
@@ -250,7 +248,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * Fetches all rows as associative array.
+	 * Returns all rows as associative array.
 	 */
 	public function fetchPairs(string|int|\Closure|null $keyOrCallback = null, string|int|null $value = null): array
 	{
@@ -259,7 +257,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * Fetches all rows.
+	 * Returns all rows.
 	 * @return Row[]
 	 */
 	public function fetchAll(): array

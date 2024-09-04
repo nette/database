@@ -15,7 +15,7 @@ use Tracy;
 
 
 /**
- * Database helpers.
+ * Database utility functions.
  */
 class Helpers
 {
@@ -38,7 +38,7 @@ class Helpers
 
 
 	/**
-	 * Displays complete result set as HTML table for debug purposes.
+	 * Displays result set as HTML table.
 	 */
 	public static function dumpResult(ResultSet $result): void
 	{
@@ -164,7 +164,7 @@ class Helpers
 
 
 	/**
-	 * Common column type detection.
+	 * Returns column types from result set.
 	 */
 	public static function detectTypes(\PDOStatement $statement): array
 	{
@@ -182,7 +182,7 @@ class Helpers
 
 
 	/**
-	 * Heuristic column type detection.
+	 * Detects column type from native type.
 	 * @internal
 	 */
 	public static function detectType(string $type): string
@@ -245,9 +245,10 @@ class Helpers
 
 
 	/**
-	 * Import SQL dump from file - extremely fast.
-	 * @param  ?array<callable(int, ?float): void>  $onProgress
-	 * @return int  count of commands
+	 * Imports SQL dump from file.
+	 * @param  ?array<callable(int, ?float): void>  $onProgress  Called after each query
+	 * @return int  Number of executed commands
+	 * @throws Nette\FileNotFoundException
 	 */
 	public static function loadFromFile(Connection $connection, string $file, ?callable $onProgress = null): int
 	{
@@ -322,7 +323,7 @@ class Helpers
 
 
 	/**
-	 * Reformat source to key -> value pairs.
+	 * Converts rows to key-value pairs.
 	 */
 	public static function toPairs(array $rows, string|int|\Closure|null $key, string|int|null $value): array
 	{
@@ -366,7 +367,7 @@ class Helpers
 
 
 	/**
-	 * Finds duplicate columns in select statement
+	 * Returns duplicate columns from result set.
 	 */
 	public static function findDuplicates(\PDOStatement $statement): string
 	{

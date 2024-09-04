@@ -13,7 +13,7 @@ use Nette\Database\Conventions;
 
 
 /**
- * Conventions based on static definition.
+ * Defines naming conventions for database structure using static patterns.
  */
 class StaticConventions implements Conventions
 {

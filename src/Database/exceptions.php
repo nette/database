@@ -11,7 +11,7 @@ namespace Nette\Database;
 
 
 /**
- * Server connection related errors.
+ * Failed to connect to the database server.
  */
 class ConnectionException extends DriverException
 {
@@ -19,7 +19,7 @@ class ConnectionException extends DriverException
 
 
 /**
- * Base class for all constraint violation related exceptions.
+ * A database constraint was violated.
  */
 class ConstraintViolationException extends DriverException
 {
@@ -27,7 +27,7 @@ class ConstraintViolationException extends DriverException
 
 
 /**
- * Exception for a foreign key constraint violation.
+ * The foreign key constraint check failed.
  */
 class ForeignKeyConstraintViolationException extends ConstraintViolationException
 {
@@ -35,7 +35,7 @@ class ForeignKeyConstraintViolationException extends ConstraintViolationExceptio
 
 
 /**
- * Exception for a NOT NULL constraint violation.
+ * The NOT NULL constraint check failed.
  */
 class NotNullConstraintViolationException extends ConstraintViolationException
 {
@@ -43,7 +43,7 @@ class NotNullConstraintViolationException extends ConstraintViolationException
 
 
 /**
- * Exception for a unique constraint violation.
+ * The unique constraint check failed.
  */
 class UniqueConstraintViolationException extends ConstraintViolationException
 {

@@ -13,7 +13,7 @@ use Nette;
 
 
 /**
- * SQL preprocessor.
+ * Processes SQL queries with parameter substitution.
  */
 class SqlPreprocessor
 {
@@ -67,7 +67,7 @@ class SqlPreprocessor
 
 
 	/**
-	 * @return array of [sql, params]
+	 * @return array{string, array}
 	 */
 	public function process(array $params, bool $useParams = false): array
 	{
@@ -318,6 +318,9 @@ class SqlPreprocessor
 	}
 
 
+	/**
+	 * Adds delimiters around database identifier.
+	 */
 	private function delimite(string $name): string
 	{
 		return implode('.', array_map($this->driver->delimite(...), explode('.', $name)));

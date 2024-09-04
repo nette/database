@@ -15,7 +15,7 @@ use Nette\Database\Conventions\StaticConventions;
 
 
 /**
- * Database explorer.
+ * Provides high-level database layer with ActiveRow pattern.
  */
 class Explorer
 {
@@ -79,6 +79,9 @@ class Explorer
 	}
 
 
+	/**
+	 * Returns table selection.
+	 */
 	public function table(string $table): Table\Selection
 	{
 		return new Table\Selection($this, $this->conventions, $table, $this->cacheStorage);
@@ -176,6 +179,9 @@ class Explorer
 	}
 
 
+	/**
+	 * Creates SQL literal value.
+	 */
 	public static function literal(string $value, ...$params): SqlLiteral
 	{
 		return new SqlLiteral($value, $params);

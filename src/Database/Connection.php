@@ -16,7 +16,7 @@ use PDOException;
 
 
 /**
- * Represents a connection between PHP and a database server.
+ * Manages database connection and executes SQL queries.
  */
 class Connection
 {
@@ -52,6 +52,9 @@ class Connection
 	}
 
 
+	/**
+	 * @throws ConnectionException
+	 */
 	public function connect(): void
 	{
 		if ($this->pdo) {
@@ -74,6 +77,9 @@ class Connection
 	}
 
 
+	/**
+	 * Disconnects and connects to database again.
+	 */
 	public function reconnect(): void
 	{
 		$this->disconnect();
@@ -81,6 +87,9 @@ class Connection
 	}
 
 
+	/**
+	 * Disconnects from database.
+	 */
 	public function disconnect(): void
 	{
 		$this->pdo = null;
@@ -121,6 +130,9 @@ class Connection
 	}
 
 
+	/**
+	 * Sets callback for row preprocessing.
+	 */
 	public function setRowNormalizer(?callable $normalizer): static
 	{
 		$this->rowNormalizer = $normalizer;
@@ -128,6 +140,9 @@ class Connection
 	}
 
 
+	/**
+	 * Returns last inserted ID.
+	 */
 	public function getInsertId(?string $sequence = null): string
 	{
 		try {
@@ -139,6 +154,9 @@ class Connection
 	}
 
 
+	/**
+	 * Quotes string for use in SQL.
+	 */
 	public function quote(string $string, int $type = PDO::PARAM_STR): string
 	{
 		try {
@@ -149,6 +167,10 @@ class Connection
 	}
 
 
+	/**
+	 * Starts a transaction.
+	 * @throws \LogicException  when called inside a transaction
+	 */
 	public function beginTransaction(): void
 	{
 		if ($this->transactionDepth !== 0) {
@@ -159,6 +181,10 @@ class Connection
 	}
 
 
+	/**
+	 * Commits current transaction.
+	 * @throws \LogicException  when called inside a transaction
+	 */
 	public function commit(): void
 	{
 		if ($this->transactionDepth !== 0) {
@@ -169,6 +195,10 @@ class Connection
 	}
 
 
+	/**
+	 * Rolls back current transaction.
+	 * @throws \LogicException  when called inside a transaction
+	 */
 	public function rollBack(): void
 	{
 		if ($this->transactionDepth !== 0) {
@@ -179,6 +209,9 @@ class Connection
 	}
 
 
+	/**
+	 * Executes callback inside a transaction.
+	 */
 	public function transaction(callable $callback): mixed
 	{
 		if ($this->transactionDepth === 0) {
@@ -324,6 +357,9 @@ class Connection
 	}
 
 
+	/**
+	 * Creates SQL literal value.
+	 */
 	public static function literal(string $value, ...$params): SqlLiteral
 	{
 		return new SqlLiteral($value, $params);

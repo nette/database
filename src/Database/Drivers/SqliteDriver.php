@@ -28,6 +28,12 @@ class SqliteDriver implements Nette\Database\Driver
 	}
 
 
+	public function isSupported(string $feature): bool
+	{
+		return $feature === self::SupportMultiInsertAsSelect || $feature === self::SupportSubselect || $feature === self::SupportMultiColumnAsOrCondition;
+	}
+
+
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		$code = $e->errorInfo[1] ?? null;
@@ -242,11 +248,5 @@ class SqliteDriver implements Nette\Database\Driver
 		}
 
 		return $types;
-	}
-
-
-	public function isSupported(string $item): bool
-	{
-		return $item === self::SupportMultiInsertAsSelect || $item === self::SupportSubselect || $item === self::SupportMultiColumnAsOrCond;
 	}
 }

@@ -15,7 +15,7 @@ use Nette\Database\Explorer;
 
 
 /**
- * Filtered table representation.
+ * Represents filtered table result.
  * Selection is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
  * @template T of ActiveRow
  * @implements \Iterator<T>
@@ -40,10 +40,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/** primary column sequence name, false for autodetection */
 	protected string|bool|null $primarySequence = false;
 
-	/** @var ActiveRow[]|null data read from database in [primary key => ActiveRow] format */
+	/** @var array<T>|null data read from database in [primary key => ActiveRow] format */
 	protected ?array $rows = null;
 
-	/** @var ActiveRow[]|null modifiable data in [primary key => ActiveRow] format */
+	/** @var array<T>|null modifiable data in [primary key => ActiveRow] format */
 	protected ?array $data = null;
 
 	protected bool $dataRefreshed = false;
@@ -108,6 +108,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
+	 * Returns table primary key.
 	 * @return string|string[]|null
 	 */
 	public function getPrimary(bool $throw = true): string|array|null
@@ -172,7 +173,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns row specified by primary key.
-	 * @return T
+	 * @return T|null
 	 */
 	public function get(mixed $key): ?ActiveRow
 	{
@@ -182,8 +183,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Fetches single row object.
-	 * @return T
+	 * Fetches next row of result.
+	 * @return T|null
 	 */
 	public function fetch(): ?ActiveRow
 	{
@@ -233,7 +234,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Fetches all rows and returns associative tree.
+	 * Returns all rows as associative tree.
 	 */
 	public function fetchAssoc(string $path): array
 	{
@@ -246,7 +247,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Adds select clause, more calls appends to the end.
+	 * Adds select clause, more calls append to the end.
 	 * @param  string  $columns  for example "column, MD5(column) AS column_md5"
 	 */
 	public function select(string $columns, ...$params): static
@@ -281,7 +282,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Adds where condition, more calls appends with AND.
+	 * Adds where condition, more calls append with AND.
 	 * @param  string|array  $condition  possibly containing ?
 	 */
 	public function where(string|array $condition, ...$params): static
@@ -363,7 +364,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Adds order clause, more calls appends to the end.
+	 * Adds ORDER BY clause, more calls appends to the end.
 	 * @param  string  $columns  for example 'column1, column2 DESC'
 	 */
 	public function order(string $columns, ...$params): static
@@ -375,7 +376,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Sets limit clause, more calls rewrite old values.
+	 * Sets LIMIT clause, more calls rewrite old values.
 	 */
 	public function limit(?int $limit, ?int $offset = null): static
 	{
@@ -386,7 +387,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Sets offset using page number, more calls rewrite old values.
+	 * Sets OFFSET using page number, more calls rewrite old values.
 	 */
 	public function page(int $page, int $itemsPerPage, &$numOfPages = null): static
 	{
@@ -403,7 +404,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Sets group clause, more calls rewrite old value.
+	 * Sets GROUP BY clause, more calls rewrite old value.
 	 */
 	public function group(string $columns, ...$params): static
 	{
@@ -414,7 +415,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Sets having clause, more calls rewrite old value.
+	 * Sets HAVING clause, more calls rewrite old value.
 	 */
 	public function having(string $having, ...$params): static
 	{
@@ -765,7 +766,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Inserts row in a table. Returns ActiveRow or number of affected rows for Selection or table without primary key.
-	 * @param  iterable|Selection  $data  [$column => $value]|\Traversable|Selection for INSERT ... SELECT
+	 * @param  iterable|Selection  $data
 	 * @return T|array|int|bool
 	 */
 	public function insert(iterable $data): ActiveRow|array|int|bool

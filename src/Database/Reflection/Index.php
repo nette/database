@@ -11,7 +11,7 @@ namespace Nette\Database\Reflection;
 
 
 /**
- * Index reflection.
+ * Database table index.
  */
 final class Index
 {

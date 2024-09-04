@@ -15,7 +15,7 @@ use Nette\Database\Explorer;
 
 
 /**
- * Representation of filtered table grouped by some column.
+ * Represents filtered table grouped by referencing table.
  * GroupedSelection is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
  */
 class GroupedSelection extends Selection
@@ -86,6 +86,9 @@ class GroupedSelection extends Selection
 	/********************* aggregations ****************d*g**/
 
 
+	/**
+	 * Calculates aggregation for this group.
+	 */
 	public function aggregation(string $function, ?string $groupFunction = null): mixed
 	{
 		$aggregation = &$this->getRefTable($refPath)->aggregation[$refPath . $function . $this->sqlBuilder->getSelectQueryHash($this->getPreviousAccessedColumns())];

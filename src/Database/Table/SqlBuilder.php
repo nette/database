@@ -235,6 +235,9 @@ class SqlBuilder
 	/********************* SQL selectors ****************d*g**/
 
 
+	/**
+	 * Adds SELECT clause, more calls append to the end.
+	 */
 	public function addSelect(string $columns, ...$params): void
 	{
 		$this->select[] = $columns;
@@ -255,12 +258,18 @@ class SqlBuilder
 	}
 
 
+	/**
+	 * Adds WHERE condition, more calls append with AND.
+	 */
 	public function addWhere(string|array $condition, ...$params): bool
 	{
 		return $this->addCondition($condition, $params, $this->where, $this->parameters['where']);
 	}
 
 
+	/**
+	 * Adds JOIN condition.
+	 */
 	public function addJoinCondition(string $tableChain, string|array $condition, ...$params): bool
 	{
 		$this->parameters['joinConditionSorted'] = null;
@@ -409,7 +418,7 @@ class SqlBuilder
 
 
 	/**
-	 * Adds alias.
+	 * Adds alias AS.
 	 */
 	public function addAlias(string $chain, string $alias): void
 	{
@@ -440,6 +449,9 @@ class SqlBuilder
 	}
 
 
+	/**
+	 * Adds ORDER BY clause, more calls append to the end.
+	 */
 	public function addOrder(string|array $columns, ...$params): void
 	{
 		$this->order[] = $columns;
@@ -460,6 +472,9 @@ class SqlBuilder
 	}
 
 
+	/**
+	 * Sets LIMIT/OFFSET clause.
+	 */
 	public function setLimit(?int $limit, ?int $offset): void
 	{
 		$this->limit = $limit;
@@ -479,6 +494,9 @@ class SqlBuilder
 	}
 
 
+	/**
+	 * Sets GROUP BY and HAVING clause.
+	 */
 	public function setGroup(string|array $columns, ...$params): void
 	{
 		$this->group = $columns;
@@ -808,7 +826,7 @@ class SqlBuilder
 		array &$conditionsParameters,
 	): bool
 	{
-		if ($this->driver->isSupported(Driver::SupportMultiColumnAsOrCond)) {
+		if ($this->driver->isSupported(Driver::SupportMultiColumnAsOrCondition)) {
 			$conditionFragment = '(' . implode(' = ? AND ', $columns) . ' = ?) OR ';
 			$condition = substr(str_repeat($conditionFragment, count($parameters)), 0, -4);
 			return $this->addCondition($condition, [Nette\Utils\Arrays::flatten($parameters)], $conditions, $conditionsParameters);

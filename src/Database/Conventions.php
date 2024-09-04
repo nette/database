@@ -12,6 +12,9 @@ namespace Nette\Database;
 use Nette\Database\Conventions\AmbiguousReferenceKeyException;
 
 
+/**
+ * Provides naming conventions for database tables and columns.
+ */
 interface Conventions
 {
 	/**

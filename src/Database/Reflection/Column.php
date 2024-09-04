@@ -11,7 +11,7 @@ namespace Nette\Database\Reflection;
 
 
 /**
- * Column reflection.
+ * Database table column metadata.
  */
 final class Column
 {

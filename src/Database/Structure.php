@@ -13,7 +13,7 @@ use Nette;
 
 
 /**
- * Cached reflection of database structure.
+ * Provides database structure metadata with caching.
  */
 class Structure implements IStructure
 {
@@ -152,6 +152,9 @@ class Structure implements IStructure
 	}
 
 
+	/**
+	 * Rebuilds structure cache.
+	 */
 	public function rebuild(): void
 	{
 		$this->structure = $this->loadStructure();
@@ -175,6 +178,9 @@ class Structure implements IStructure
 	}
 
 
+	/**
+	 * Loads complete structure from database.
+	 */
 	protected function loadStructure(): array
 	{
 		$driver = $this->connection->getDriver();
@@ -254,6 +260,9 @@ class Structure implements IStructure
 	}
 
 
+	/**
+	 * Returns normalized table name.
+	 */
 	protected function resolveFQTableName(string $table): string
 	{
 		$name = strtolower($table);

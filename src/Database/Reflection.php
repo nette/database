@@ -12,6 +12,9 @@ namespace Nette\Database;
 use Nette\Database\Reflection\Table;
 
 
+/**
+ * Provides database schema reflection.
+ */
 final class Reflection
 {
 	/** @var array<string, Table> */
@@ -32,6 +35,10 @@ final class Reflection
 	}
 
 
+	/**
+	 * Returns table metadata.
+	 * @throws \InvalidArgumentException if table does not exist
+	 */
 	public function getTable(string $name): Table
 	{
 		$name = $this->getFullName($name);

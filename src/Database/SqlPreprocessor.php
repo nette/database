@@ -46,6 +46,7 @@ class SqlPreprocessor
 		'EXPLAIN' => 1,
 	];
 
+	private readonly Drivers\Connection $connection;
 	private readonly Drivers\Engine $engine;
 
 	/** @var list<mixed> */
@@ -60,9 +61,9 @@ class SqlPreprocessor
 	private ?string $arrayMode;
 
 
-	public function __construct(
-		private readonly Connection $connection,
-	) {
+	public function __construct(Connection $connection)
+	{
+		$this->connection = $connection->getConnection();
 		$this->engine = $connection->getDatabaseEngine();
 	}
 

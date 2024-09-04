@@ -121,6 +121,7 @@ class Connection
 	}
 
 
+	#[\Deprecated('use getConnection()->getNativeConnection()')]
 	public function getPdo(): \PDO
 	{
 		return $this->getConnection()->getNativeConnection();

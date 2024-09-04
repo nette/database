@@ -38,7 +38,7 @@ function connectToDB(array $options = []): Nette\Database\Explorer
 
 	try {
 		$connection->connect();
-	} catch (PDOException $e) {
+	} catch (Nette\Database\ConnectionException $e) {
 		Tester\Environment::skip("Connection to '$args[dsn]' failed. Reason: " . $e->getMessage());
 	}
 

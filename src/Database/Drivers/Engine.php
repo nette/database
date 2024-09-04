@@ -9,7 +9,7 @@ declare(strict_types=1);
 
 namespace Nette\Database\Drivers;
 
-use Nette\Database;
+use Nette\Database\DriverException;
 use Nette\Database\TypeConverter;
 
 
@@ -32,10 +32,8 @@ interface Engine
 	 */
 	function isSupported(string $feature): bool;
 
-	/**
-	 * Converts PDOException to DriverException or its descendant.
-	 */
-	function convertException(\PDOException $e): Database\DriverException;
+	/** Maps a driver exception to an appropriate exception class. */
+	function classifyException(DriverException $e): ?string;
 
 	/** Converts a value from the database to a PHP value. */
 	function convertToPhp(mixed $value, array $meta, TypeConverter $converter): mixed;

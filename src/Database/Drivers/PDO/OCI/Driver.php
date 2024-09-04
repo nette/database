@@ -29,7 +29,7 @@ class Driver extends Drivers\PDO\Driver
 	}
 
 
-	public function createEngine($connection): OracleEngine
+	public function createEngine(Drivers\Connection $connection): OracleEngine
 	{
 		$engine = new OracleEngine($connection);
 		if ($this->formatDateTime) {

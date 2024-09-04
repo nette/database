@@ -8,6 +8,7 @@
 namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
 use function array_values, str_replace;
 
@@ -18,7 +19,7 @@ use function array_values, str_replace;
 class SQLServerEngine implements Engine
 {
 	public function __construct(
-		private readonly Nette\Database\Connection $connection,
+		private readonly Connection $connection,
 	) {
 	}
 
@@ -150,22 +151,18 @@ class SQLServerEngine implements Engine
 			WHERE
 				o.type IN ('U', 'V')
 				AND o.name = ?
-			X, $table);
+			X, [$table]);
 
 		while ($row = $rows->fetch()) {
-			$columns[] = [
-				'name' => (string) $row['name'],
-				'table' => (string) $row['table'],
-				'nativeType' => (string) $row['nativeType'],
-				'size' => $row['size'] !== null ? (int) $row['size'] : null,
-				'scale' => $row['scale'] !== null ? (int) $row['scale'] : null,
-				'nullable' => (bool) $row['nullable'],
-				'default' => $row['default'],
-				'autoIncrement' => (bool) $row['autoIncrement'],
-				'primary' => (bool) $row['primary'],
-				'comment' => (string) ($row['comment'] ?? ''),
-				'vendor' => (array) $row,
-			];
+			$row['vendor'] = $row;
+			$row['size'] = $row['size'] ? (int) $row['size'] : null;
+			$row['scale'] = $row['scale'] ? (int) $row['scale'] : null;
+			$row['nullable'] = (bool) $row['nullable'];
+			$row['autoIncrement'] = (bool) $row['autoIncrement'];
+			$row['primary'] = (bool) $row['primary'];
+			$row['comment'] ??= '';
+
+			$columns[] = $row;
 		}
 
 		return $columns;
@@ -194,7 +191,7 @@ class SQLServerEngine implements Engine
 			ORDER BY
 				i.index_id,
 				ic.index_column_id
-			X, $table);
+			X, [$table]);
 
 		while ($row = $rows->fetch()) {
 			$id = (string) $row['name'];
@@ -229,17 +226,10 @@ class SQLServerEngine implements Engine
 				JOIN sys.columns cf ON fkc.referenced_object_id = cf.object_id AND fkc.referenced_column_id = cf.column_id
 			WHERE
 				tl.name = ?
-			ORDER BY
-				fk.name, fkc.constraint_column_id
-			X, $table);
+			X, [$table]);
 
 		while ($row = $rows->fetch()) {
-			$keys[] = [
-				'name' => (string) $row['name'],
-				'local' => (string) $row['local'],
-				'table' => (string) $row['table'],
-				'foreign' => (string) $row['foreign'],
-			];
+			$keys[$row['name']] = $row;
 		}
 
 		return $keys;

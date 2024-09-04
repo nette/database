@@ -29,7 +29,7 @@ class Driver extends Drivers\PDO\Driver
 	}
 
 
-	public function createEngine($connection): SQLiteEngine
+	public function createEngine(Drivers\Connection $connection): SQLiteEngine
 	{
 		$engine = new SQLiteEngine($connection);
 		if ($this->formatDateTime) {

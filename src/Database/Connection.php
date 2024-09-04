@@ -11,7 +11,6 @@ use JetBrains\PhpStorm\Language;
 use Nette;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
-use PDO;
 use PDOException;
 
 
@@ -36,9 +35,9 @@ class Connection
 	/** @var array<callable(self, Result|DriverException): void>  Occurs after query is executed */
 	public array $onQuery = [];
 	private Drivers\Driver $driver;
+	private ?Drivers\Connection $connection = null;
 	private Drivers\Engine $engine;
 	private SqlPreprocessor $preprocessor;
-	private ?PDO $pdo = null;
 
 	/** @var ?\Closure(array<string, mixed>, Result): array<string, mixed> */
 	private ?\Closure $rowNormalizer;
@@ -80,12 +79,12 @@ class Connection
 	 */
 	public function connect(): void
 	{
-		if ($this->pdo) {
+		if ($this->connection) {
 			return;
 		}
 
 		try {
-			$this->pdo = $this->driver->connect();
+			$this->connection = $this->driver->connect();
 		} catch (PDOException $e) {
 			throw ConnectionException::from($e);
 		}
@@ -109,7 +108,7 @@ class Connection
 	 */
 	public function disconnect(): void
 	{
-		$this->pdo = null;
+		$this->connection = null;
 	}
 
 
@@ -119,24 +118,30 @@ class Connection
 	}
 
 
-	public function getPdo(): PDO
+	public function getPdo(): \PDO
 	{
-		$this->connect();
-		return $this->pdo ?? throw new Nette\ShouldNotHappenException;
+		return $this->getConnection()->getNativeConnection();
 	}
 
 
-	/** @deprecated use getDriver() */
-	public function getSupplementalDriver(): Drivers\Engine
+	public function getConnection(): Drivers\Connection
 	{
-		trigger_error(__METHOD__ . '() is deprecated, use getDriver()', E_USER_DEPRECATED);
-		return $this->getDatabaseEngine();
+		$this->connect();
+		return $this->connection;
+	}
+
+
+	/** @deprecated use getConnection() */
+	public function getSupplementalDriver(): Drivers\Connection
+	{
+		trigger_error(__METHOD__ . '() is deprecated, use getConnection()', E_USER_DEPRECATED);
+		return $this->getConnection();
 	}
 
 
 	public function getDatabaseEngine(): Drivers\Engine
 	{
-		return $this->engine ??= $this->driver->createEngine($this);
+		return $this->engine ??= $this->driver->createEngine(new Drivers\Accessory\LazyConnection($this->getConnection(...)));
 	}
 
 
@@ -163,8 +168,7 @@ class Connection
 	public function getInsertId(?string $sequence = null): string
 	{
 		try {
-			$res = $this->getPdo()->lastInsertId($sequence);
-			return $res === false ? '0' : $res;
+			return $this->getConnection()->getInsertId($sequence);
 		} catch (PDOException $e) {
 			throw $this->getDatabaseEngine()->convertException($e);
 		}
@@ -174,13 +178,9 @@ class Connection
 	/**
 	 * Quotes string for use in SQL.
 	 */
-	public function quote(string $string, int $type = PDO::PARAM_STR): string
+	public function quote(string $string): string
 	{
-		try {
-			return $this->getPdo()->quote($string, $type);
-		} catch (PDOException $e) {
-			throw DriverException::from($e);
-		}
+		return $this->getConnection()->quote($string);
 	}
 
 

@@ -8,6 +8,7 @@
 namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
 use function in_array, str_replace;
 
@@ -21,7 +22,7 @@ class OracleEngine implements Engine
 
 
 	public function __construct(
-		private readonly Nette\Database\Connection $connection,
+		private readonly Connection $connection,
 	) {
 	}
 
@@ -100,6 +101,7 @@ class OracleEngine implements Engine
 		$tables = [];
 		$rows = $this->connection->query('SELECT * FROM cat');
 		while ($row = $rows->fetch()) {
+			$row = array_values($row);
 			if ($row[1] === 'TABLE' || $row[1] === 'VIEW') {
 				$tables[] = [
 					'name' => (string) $row[0],

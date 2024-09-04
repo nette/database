@@ -8,6 +8,7 @@
 namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
 use function array_map, array_values, explode, implode, str_contains, str_replace;
 
@@ -18,7 +19,7 @@ use function array_map, array_values, explode, implode, str_contains, str_replac
 class PostgreSQLEngine implements Engine
 {
 	public function __construct(
-		private readonly Nette\Database\Connection $connection,
+		private readonly Connection $connection,
 	) {
 	}
 
@@ -128,12 +129,7 @@ class PostgreSQLEngine implements Engine
 			X);
 
 		while ($row = $rows->fetch()) {
-			$tables[] = [
-				'name' => (string) $row['name'],
-				'view' => (bool) $row['view'],
-				'fullName' => (string) $row['fullName'],
-				'comment' => (string) $row['comment'],
-			];
+			$tables[] = $row;
 		}
 
 		return $tables;
@@ -179,23 +175,14 @@ class PostgreSQLEngine implements Engine
 				AND NOT a.attisdropped
 			ORDER BY
 				a.attnum
-			X, $this->delimiteFQN($table));
+			X, [$this->delimiteFQN($table)]);
 
 		while ($row = $rows->fetch()) {
-			$vendor = (array) $row;
-			$columns[] = [
-				'name' => (string) $row['name'],
-				'table' => (string) $row['table'],
-				'nativeType' => (string) $row['nativeType'],
-				'size' => $row['size'] !== null ? (int) $row['size'] : null,
-				'scale' => $row['scale'] !== null ? (int) $row['scale'] : null,
-				'nullable' => (bool) $row['nullable'],
-				'default' => $row['default'],
-				'autoIncrement' => (bool) $row['autoIncrement'],
-				'primary' => (bool) $row['primary'],
-				'comment' => (string) $row['comment'],
-				'vendor' => $vendor,
-			];
+			$column = $row;
+			$column['vendor'] = $column;
+			unset($column['sequence']);
+
+			$columns[] = $column;
 		}
 
 		return $columns;
@@ -219,7 +206,7 @@ class PostgreSQLEngine implements Engine
 			WHERE
 				c1.relkind IN ('r', 'p')
 				AND c1.oid = ?::regclass
-			X, $this->delimiteFQN($table));
+			X, [$this->delimiteFQN($table)]);
 
 		while ($row = $rows->fetch()) {
 			$id = (string) $row['name'];
@@ -257,15 +244,10 @@ class PostgreSQLEngine implements Engine
 				co.contype = 'f'
 				AND cl.oid = ?::regclass
 				AND nf.nspname = ANY (pg_catalog.current_schemas(FALSE))
-			X, $this->delimiteFQN($table));
+			X, [$this->delimiteFQN($table)]);
 
 		while ($row = $rows->fetch()) {
-			$keys[] = [
-				'name' => (string) $row['name'],
-				'local' => (string) $row['local'],
-				'table' => (string) $row['table'],
-				'foreign' => (string) $row['foreign'],
-			];
+			$keys[] = $row;
 		}
 
 		return $keys;

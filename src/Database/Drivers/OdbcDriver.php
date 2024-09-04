@@ -56,13 +56,6 @@ class OdbcDriver implements Nette\Database\Driver
 	}
 
 
-	public function formatLike(string $value, int $pos): string
-	{
-		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
-		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
-	}
-
-
 	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
 	{
 		if ($offset) {

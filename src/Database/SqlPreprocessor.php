@@ -352,6 +352,6 @@ class SqlPreprocessor
 	 */
 	private function delimit(string $name): string
 	{
-		return implode('.', array_map($this->engine->delimite(...), explode('.', $name)));
+		return implode('.', array_map($this->engine->delimit(...), explode('.', $name)));
 	}
 }

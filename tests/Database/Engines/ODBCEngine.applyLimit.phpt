@@ -6,7 +6,8 @@ use Tester\Assert;
 
 require __DIR__ . '/../../bootstrap.php';
 
-$engine = new Nette\Database\Drivers\Engines\ODBCEngine;
+$connection = Mockery::mock(Nette\Database\Connection::class);
+$engine = new Nette\Database\Drivers\Engines\ODBCEngine($connection);
 
 Assert::exception(function () use ($engine) {
 	$query = 'SELECT 1 FROM t';

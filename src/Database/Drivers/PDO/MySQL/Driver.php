@@ -18,8 +18,39 @@ use Nette\Database\Drivers\Engines\MySQLEngine;
  */
 class Driver extends Drivers\PDO\Driver
 {
-	public function createEngine(): MySQLEngine
+	private const DefaultCharset = 'utf8mb4';
+
+
+	public function __construct(
+		protected readonly string $dsn,
+		protected readonly ?string $username = null,
+		#[\SensitiveParameter]
+		protected readonly ?string $password = null,
+		protected readonly array $options = [],
+		protected readonly ?string $charset = self::DefaultCharset,
+		protected readonly ?string $sqlmode = null,
+		protected readonly ?bool $convertBoolean = null,
+	) {
+	}
+
+
+	public function connect()
 	{
-		return new MySQLEngine;
+		$connection = parent::connect();
+		if ($this->charset) {
+			$connection->query('SET NAMES ' . $connection->quote($this->charset));
+		}
+		if ($this->sqlmode) {
+			$connection->query('SET sql_mode=' . $connection->quote($this->sqlmode));
+		}
+		return $connection;
+	}
+
+
+	public function createEngine($connection): MySQLEngine
+	{
+		$engine = new MySQLEngine($connection);
+		$engine->convertBoolean = $this->convertBoolean ?? $engine->convertBoolean;
+		return $engine;
 	}
 }

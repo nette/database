@@ -31,11 +31,6 @@ interface Engine
 	function isSupported(string $feature): bool;
 
 	/**
-	 * Initializes connection.
-	 */
-	function initialize(Database\Connection $connection, array $options): void;
-
-	/**
 	 * Converts PDOException to DriverException or its descendant.
 	 */
 	function convertException(\PDOException $e): Database\DriverException;

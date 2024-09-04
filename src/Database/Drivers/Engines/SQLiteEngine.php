@@ -19,14 +19,12 @@ use function array_values, in_array, preg_match, str_contains, strtoupper, strtr
  */
 class SQLiteEngine implements Engine
 {
-	private Nette\Database\Connection $connection;
-	private string $fmtDateTime;
+	public string $formatDateTime = 'U';
 
 
-	public function initialize(Nette\Database\Connection $connection, array $options): void
-	{
-		$this->connection = $connection;
-		$this->fmtDateTime = $options['formatDateTime'] ?? 'U';
+	public function __construct(
+		private readonly Nette\Database\Connection $connection,
+	) {
 	}
 
 
@@ -79,7 +77,7 @@ class SQLiteEngine implements Engine
 
 	public function formatDateTime(\DateTimeInterface $value): string
 	{
-		return $value->format($this->fmtDateTime);
+		return $value->format($this->formatDateTime);
 	}
 
 
@@ -237,7 +235,7 @@ class SQLiteEngine implements Engine
 		for ($col = 0; $col < $count; $col++) {
 			$meta = $statement->getColumnMeta($col);
 			if (isset($meta['sqlite:decl_type'])) {
-				$types[$meta['name']] = $this->fmtDateTime === 'U' && in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], strict: true)
+				$types[$meta['name']] = $this->formatDateTime === 'U' && in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], strict: true)
 					? Nette\Database\IStructure::FIELD_UNIX_TIMESTAMP
 					: Nette\Database\Helpers::detectType($meta['sqlite:decl_type']);
 			} elseif (isset($meta['native_type'])) {

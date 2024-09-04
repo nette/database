@@ -19,29 +19,12 @@ use function array_change_key_case, array_values, in_array, str_replace, strtoup
  */
 class MySQLEngine implements Engine
 {
-	private Nette\Database\Connection $connection;
-	private bool $convertBoolean;
+	public bool $convertBoolean = true;
 
 
-	/**
-	 * Driver options:
-	 *   - charset => character encoding to set (default is utf8mb4)
-	 *   - sqlmode => see http://dev.mysql.com/doc/refman/5.0/en/server-sql-mode.html
-	 *   - convertBoolean => converts INT(1) to boolean
-	 */
-	public function initialize(Nette\Database\Connection $connection, array $options): void
-	{
-		$this->connection = $connection;
-		$charset = $options['charset'] ?? 'utf8mb4';
-		if ($charset) {
-			$connection->query('SET NAMES ?', $charset);
-		}
-
-		if (isset($options['sqlmode'])) {
-			$connection->query('SET sql_mode=?', $options['sqlmode']);
-		}
-
-		$this->convertBoolean = (bool) ($options['convertBoolean'] ?? true);
+	public function __construct(
+		private readonly Nette\Database\Connection $connection,
+	) {
 	}
 
 

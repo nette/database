@@ -19,11 +19,6 @@ use function preg_replace, str_replace;
  */
 class ODBCEngine implements Engine
 {
-	public function initialize(Nette\Database\Connection $connection, array $options): void
-	{
-	}
-
-
 	public function isSupported(string $feature): bool
 	{
 		return false;

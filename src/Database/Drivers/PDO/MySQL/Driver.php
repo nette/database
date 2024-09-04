@@ -38,10 +38,10 @@ class Driver extends Drivers\PDO\Driver
 	{
 		$connection = parent::connect();
 		if ($this->charset) {
-			$connection->query('SET NAMES ' . $connection->quote($this->charset));
+			$connection->execute('SET NAMES ' . $connection->quote($this->charset));
 		}
 		if ($this->sqlmode) {
-			$connection->query('SET sql_mode=' . $connection->quote($this->sqlmode));
+			$connection->execute('SET sql_mode=' . $connection->quote($this->sqlmode));
 		}
 		return $connection;
 	}

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
 use function array_change_key_case, array_values, in_array, str_replace, strtoupper;
 
@@ -23,7 +24,7 @@ class MySQLEngine implements Engine
 
 
 	public function __construct(
-		private readonly Nette\Database\Connection $connection,
+		private readonly Connection $connection,
 	) {
 	}
 
@@ -107,6 +108,7 @@ class MySQLEngine implements Engine
 			XX);
 
 		while ($row = $query->fetch()) {
+			$row = array_values($row);
 			$tables[] = [
 				'name' => $row['TABLE_NAME'],
 				'view' => $row['TABLE_TYPE'] === 'VIEW',
@@ -123,7 +125,7 @@ class MySQLEngine implements Engine
 		$columns = [];
 		$rows = $this->connection->query('SHOW FULL COLUMNS FROM ' . $this->delimite($table));
 		while ($row = $rows->fetch()) {
-			$row = array_change_key_case((array) $row);
+			$row = array_change_key_case($row);
 			$typeInfo = Nette\Database\Helpers::parseColumnType($row['type']);
 			$columns[] = [
 				'name' => $row['field'],
@@ -169,7 +171,7 @@ class MySQLEngine implements Engine
 			WHERE TABLE_SCHEMA = DATABASE()
 			  AND REFERENCED_TABLE_NAME IS NOT NULL
 			  AND TABLE_NAME = ?
-			X, $table);
+			X, [$table]);
 
 		$id = 0;
 		while ($row = $rows->fetch()) {

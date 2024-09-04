@@ -143,7 +143,8 @@ class ConnectionPanel implements Tracy\IBarPanel
 					$cmd = is_string($this->explain)
 						? $this->explain
 						: 'EXPLAIN';
-					$explain = (new Result($connection, "$cmd $sql", $params))->fetchAll();
+					$rows = $connection->getConnection()->query("$cmd $sql", $params);
+					for ($explain = []; $row = $rows->fetch(); $explain[] = $row);
 				} catch (\PDOException) {
 				}
 			}

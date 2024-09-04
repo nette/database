@@ -19,6 +19,9 @@ interface Connection
 	/** Executes an SQL query with optional parameters and returns a result set. */
 	function query(string $sql, array $params = []);
 
+	/** Executes an SQL command and returns the number of affected rows. */
+	function execute(string $sql): int;
+
 	/** Returns the underlying database connection object. */
 	function getNativeConnection(): mixed;
 

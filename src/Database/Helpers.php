@@ -271,7 +271,7 @@ class Helpers
 
 			} elseif (str_ends_with($ts = rtrim($s), $delimiter)) {
 				$sql .= substr($ts, 0, -strlen($delimiter));
-				$connection->query($sql);
+				$connection->execute($sql);
 				$sql = '';
 				$count++;
 				if ($onProgress) {
@@ -283,7 +283,7 @@ class Helpers
 		}
 
 		if (rtrim($sql) !== '') {
-			$connection->query($sql);
+			$connection->execute($sql);
 			$count++;
 			if ($onProgress) {
 				$onProgress($count, isset($stat['size']) ? 100 : null);

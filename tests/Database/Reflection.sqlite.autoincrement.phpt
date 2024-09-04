@@ -16,7 +16,7 @@ $driver = $connection->getDriver();
 test('a column whose name is a substring of the autoincrement column is not flagged', function () use ($connection, $driver) {
 	$connection->query('CREATE TABLE ai_test (id INTEGER, paid INTEGER PRIMARY KEY AUTOINCREMENT)');
 
-	$autoincrement = array_column($driver->getColumns('ai_test'), 'autoincrement', 'name');
+	$autoincrement = array_column($driver->getColumns('ai_test'), 'autoIncrement', 'name');
 	Assert::false($autoincrement['id']);
 	Assert::true($autoincrement['paid']);
 });
@@ -25,7 +25,7 @@ test('a column whose name is a substring of the autoincrement column is not flag
 test('a column name with regex meta-characters does not break the detection', function () use ($connection, $driver) {
 	$connection->query('CREATE TABLE ai_test2 ("price(usd)" TEXT, id INTEGER PRIMARY KEY AUTOINCREMENT)');
 
-	$autoincrement = array_column($driver->getColumns('ai_test2'), 'autoincrement', 'name');
+	$autoincrement = array_column($driver->getColumns('ai_test2'), 'autoIncrement', 'name');
 	Assert::false($autoincrement['price(usd)']);
 	Assert::true($autoincrement['id']);
 });

@@ -18,7 +18,7 @@ test('generated columns are listed', function () use ($connection, $driver) {
 
 	Assert::same(
 		['id' => 'INTEGER', 'price' => 'REAL', 'qty' => 'INTEGER', 'total' => 'REAL', 'label' => 'TEXT'],
-		array_column($driver->getColumns('gen_test'), 'nativetype', 'name'),
+		array_column($driver->getColumns('gen_test'), 'nativeType', 'name'),
 	);
 });
 

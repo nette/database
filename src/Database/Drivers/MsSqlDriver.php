@@ -179,12 +179,12 @@ class MsSqlDriver implements Nette\Database\Driver
 			$columns[] = [
 				'name' => $row['COLUMN_NAME'],
 				'table' => $table,
-				'nativetype' => strtoupper($row['DATA_TYPE']),
+				'nativeType' => strtoupper($row['DATA_TYPE']),
 				'size' => $row['CHARACTER_MAXIMUM_LENGTH'] ?? $row['NUMERIC_PRECISION'],
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],
 				// the query returns ints on purpose: pdo_dblib gives BIT as 'True'/'False' and (bool) 'False' is true
-				'autoincrement' => (bool) $row['autoincrement'],
+				'autoIncrement' => (bool) $row['autoincrement'],
 				'primary' => (bool) $row['primary'],
 				'comment' => $row['comment'] ?? '',
 				'vendor' => (array) $row,

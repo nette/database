@@ -222,9 +222,14 @@ class PostgreSQLEngine implements Engine
 			X, [$this->delimiteFQN($table)]);
 
 		while ($row = $rows->fetch()) {
-			$keys[] = $row;
+			$id = $row['name'];
+			$keys[$id]['name'] = $id;
+			$keys[$id]['local'][] = $row['local'];
+			$keys[$id]['table'] = $row['table'];
+			$keys[$id]['foreign'][] = $row['foreign'];
 		}
-		return $keys;
+
+		return array_values($keys);
 	}
 
 

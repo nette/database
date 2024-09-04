@@ -219,15 +219,17 @@ class SQLiteEngine implements Engine
 		$keys = [];
 		$rows = $this->connection->query('PRAGMA foreign_key_list(?name)', $table);
 		while ($row = $rows->fetch()) {
-			$keys[] = [
-				'name' => (string) $row['id'], // SQLite does not expose FK names via PRAGMA, synthetic id is used
-				'local' => (string) $row['from'],
-				'table' => (string) $row['table'],
-				'foreign' => (string) $row['to'],
-			];
+			$id = $row['id'];
+			$keys[$id]['name'] = $id;
+			$keys[$id]['local'][] = $row['from'];
+			$keys[$id]['table'] = $row['table'];
+			$keys[$id]['foreign'][] = $row['to'];
+			if ($keys[$id]['foreign'][0] == null) {
+				$keys[$id]['foreign'] = [];
+			}
 		}
 
-		return $keys;
+		return array_values($keys);
 	}
 
 

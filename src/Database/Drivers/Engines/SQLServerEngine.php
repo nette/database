@@ -227,7 +227,11 @@ class SQLServerEngine implements Engine
 			X, [$table]);
 
 		while ($row = $rows->fetch()) {
-			$keys[$row['name']] = $row;
+			$id = $row['name'];
+			$keys[$id]['name'] = $id;
+			$keys[$id]['local'][] = $row['local'];
+			$keys[$id]['table'] = $row['table'];
+			$keys[$id]['foreign'][] = $row['foreign'];
 		}
 
 		return $keys;

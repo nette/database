@@ -223,15 +223,14 @@ class MSSQLEngine implements Engine
 			X, [$table_name]);
 
 		while ($row = $rows->fetch()) {
-			$keys[] = [
-				'name' => (string) $row['name'],
-				'local' => (string) $row['local'],
-				'table' => $table_schema . '.' . $row['table'],
-				'foreign' => (string) $row['foreign'],
-			];
+			$id = $row['fk_name'];
+			$keys[$id]['name'] = $id;
+			$keys[$id]['local'][] = $row['column'];
+			$keys[$id]['table'] = $table_schema . '.' . $row['referenced_table'];
+			$keys[$id]['foreign'][] = $row['referenced_column'];
 		}
 
-		return $keys;
+		return array_values($keys);
 	}
 
 

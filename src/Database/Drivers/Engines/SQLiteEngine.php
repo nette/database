@@ -8,9 +8,9 @@
 namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\{DateTime, TypeConverter};
 use Nette\Database\Drivers\{Connection, Engine};
-use Nette\Database\TypeConverter;
-use function in_array;
+use function in_array, is_int;
 
 
 /**
@@ -227,21 +227,10 @@ class SQLiteEngine implements Engine
 	}
 
 
-	public function getColumnTypes(\PDOStatement $statement): array
+	public function convertToPhp(mixed $value, array $meta, TypeConverter $converter): mixed
 	{
-		$types = [];
-		$count = $statement->columnCount();
-		for ($col = 0; $col < $count; $col++) {
-			$meta = $statement->getColumnMeta($col);
-			if (isset($meta['sqlite:decl_type'])) {
-				$types[$meta['name']] = $this->formatDateTime === 'U' && in_array($meta['sqlite:decl_type'], ['DATE', 'DATETIME'], true)
-					? Nette\Database\IStructure::FIELD_UNIX_TIMESTAMP
-					: TypeConverter::detectType($meta['sqlite:decl_type']);
-			} elseif (isset($meta['native_type'])) {
-				$types[$meta['name']] = TypeConverter::detectType($meta['native_type']);
-			}
-		}
-
-		return $types;
+		return in_array($meta['nativeType'], ['DATE', 'DATETIME'], true)
+			? (is_int($value) ? (new DateTime)->setTimestamp($value) : new DateTime($value))
+			: $converter->convertToPhp($value, $meta);
 	}
 }

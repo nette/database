@@ -151,63 +151,20 @@ class Helpers
 	}
 
 
-	/**
-	 * Common column type detection.
-	 */
-	public static function detectTypes(\PDOStatement $statement): array
-	{
-		$types = [];
-		$count = $statement->columnCount(); // driver must be meta-aware, see PHP bugs #53782, #54695
-		for ($col = 0; $col < $count; $col++) {
-			$meta = $statement->getColumnMeta($col);
-			if (isset($meta['native_type'])) {
-				$types[$meta['name']] = TypeConverter::detectType($meta['native_type']);
-			}
-		}
-
-		return $types;
-	}
-
-
 	/** @internal */
 	public static function normalizeRow(
 		array $row,
 		Result $resultSet,
-		$dateTimeClass = DateTime::class,
 	): array
 	{
-		foreach ($resultSet->getColumnTypes() as $key => $type) {
+		$engine = @$resultSet->getConnection()->getDatabaseEngine();
+		$converter = @$resultSet->getConnection()->getTypeConverter();
+		foreach ($resultSet->getColumnsMeta() as $key => $meta) {
 			$value = $row[$key];
-			if ($value === null || $value === false || $type === IStructure::FIELD_TEXT) {
-				// do nothing
-			} elseif ($type === IStructure::FIELD_INTEGER) {
-				$row[$key] = is_float($tmp = $value * 1) ? $value : $tmp;
-
-			} elseif ($type === IStructure::FIELD_FLOAT || $type === IStructure::FIELD_DECIMAL) {
-				$row[$key] = (float) $value;
-
-			} elseif ($type === IStructure::FIELD_BOOL) {
-				$row[$key] = $value && $value !== 'f' && $value !== 'F';
-
-			} elseif ($type === IStructure::FIELD_DATETIME || $type === IStructure::FIELD_DATE) {
-				$row[$key] = str_starts_with($value, '0000-00')
-					? null
-					: new $dateTimeClass($value);
-
-			} elseif ($type === IStructure::FIELD_TIME) {
-				$row[$key] = (new $dateTimeClass($value))->setDate(1, 1, 1);
-
-			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
-				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?$#D', $value, $m);
-				$row[$key] = new \DateInterval("PT$m[2]H$m[3]M$m[4]S");
-				$row[$key]->f = isset($m[5]) ? (float) $m[5] : 0.0;
-				$row[$key]->invert = (int) (bool) $m[1];
-
-			} elseif ($type === IStructure::FIELD_UNIX_TIMESTAMP) {
-				$row[$key] = (new $dateTimeClass)->setTimestamp($value);
-			}
+			$row[$key] = isset($value, $converter)
+				? $engine->convertToPhp($value, $meta, $converter)
+				: $value;
 		}
-
 		return $row;
 	}
 

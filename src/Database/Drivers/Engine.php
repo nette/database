@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers;
 
 use Nette\Database;
+use Nette\Database\TypeConverter;
 
 
 /**
@@ -35,6 +36,9 @@ interface Engine
 	 * Converts PDOException to DriverException or its descendant.
 	 */
 	function convertException(\PDOException $e): Database\DriverException;
+
+	/** Converts a value from the database to a PHP value. */
+	function convertToPhp(mixed $value, array $meta, TypeConverter $converter): mixed;
 
 	/********************* SQL utilities ****************d*g**/
 
@@ -75,10 +79,4 @@ interface Engine
 	 * @return list<array{name: string, local: string, table: string, foreign: string}>
 	 */
 	function getForeignKeys(string $table): array;
-
-	/**
-	 * Returns associative array of detected types (IStructure::FIELD_*) in result set.
-	 * @return array<string, string>
-	 */
-	function getColumnTypes(\PDOStatement $statement): array;
 }

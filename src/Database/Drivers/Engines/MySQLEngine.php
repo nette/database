@@ -20,9 +20,6 @@ use Nette\Database\TypeConverter;
  */
 class MySQLEngine implements Engine
 {
-	public bool $convertBoolean = true;
-
-
 	public function __construct(
 		private readonly Connection $connection,
 	) {
@@ -178,22 +175,20 @@ class MySQLEngine implements Engine
 	}
 
 
-	public function getColumnTypes(\PDOStatement $statement): array
+	public function convertToPhp(mixed $value, array $meta, TypeConverter $converter): mixed
 	{
-		$types = [];
-		$count = $statement->columnCount();
-		for ($col = 0; $col < $count; $col++) {
-			$meta = $statement->getColumnMeta($col);
-			if (isset($meta['native_type'])) {
-				$types[$meta['name']] = match (true) {
-					$meta['native_type'] === 'NEWDECIMAL' && $meta['precision'] === 0 => Nette\Database\IStructure::FIELD_INTEGER,
-					$meta['native_type'] === 'TINY' && $meta['len'] === 1 && $this->convertBoolean => Nette\Database\IStructure::FIELD_BOOL,
-					$meta['native_type'] === 'TIME' => Nette\Database\IStructure::FIELD_TIME_INTERVAL,
-					default => TypeConverter::detectType($meta['native_type']),
-				};
-			}
-		}
-
-		return $types;
+		return match ($meta['nativeType']) {
+			'NEWDECIMAL' => $meta['scale'] === 0
+				? $converter->toInt($value)
+				: $converter->toFloat($value),
+			'TINY' => $meta['size'] === 1 && $converter->convertBoolean
+				? $converter->toBool($value)
+				: $converter->toInt($value),
+			'TIME' => $converter->toInterval($value),
+			'DATE', 'DATETIME', 'TIMESTAMP' => str_starts_with($value, '0000-00')
+				? null
+				: $converter->toDateTime($value),
+			default => $converter->convertToPhp($value, $meta),
+		};
 	}
 }

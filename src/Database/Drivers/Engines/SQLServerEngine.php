@@ -229,22 +229,11 @@ class SQLServerEngine implements Engine
 	}
 
 
-	public function getColumnTypes(\PDOStatement $statement): array
+	public function convertToPhp(mixed $value, array $meta, TypeConverter $converter): mixed
 	{
-		$types = [];
-		$count = $statement->columnCount();
-		for ($col = 0; $col < $count; $col++) {
-			$meta = $statement->getColumnMeta($col);
-			if (
-				isset($meta['sqlsrv:decl_type'])
-				&& $meta['sqlsrv:decl_type'] !== 'timestamp'
-			) { // timestamp does not mean time in sqlsrv
-				$types[$meta['name']] = TypeConverter::detectType($meta['sqlsrv:decl_type']);
-			} elseif (isset($meta['native_type'])) {
-				$types[$meta['name']] = TypeConverter::detectType($meta['native_type']);
-			}
-		}
-
-		return $types;
+		return match ($meta['nativeType']) {
+			'timestamp' => $value, // timestamp does not mean time in sqlsrv
+			default => $converter->convertToPhp($value, $meta),
+		};
 	}
 }

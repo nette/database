@@ -528,13 +528,13 @@ class Selection implements \Iterator, \ArrayAccess, \Countable
 			}
 		}
 
+		$key = 0;
 		$this->rows = [];
 		$usedPrimary = true;
-		foreach ($result->getPdoStatement() as $key => $row) {
-			$row = $this->createRow($result->normalizeRow($row));
-			$primary = $row->getSignature(false);
-			$usedPrimary = $usedPrimary && $primary !== '';
-			$this->rows[$usedPrimary ? $primary : $key] = $row;
+		while ($row = @$result->fetchAssoc()) { // @ may contain duplicate columns
+			$row = $this->createRow($row);
+			$usedPrimary = $usedPrimary && ($primary = $row->getSignature(false)) !== '';
+			$this->rows[$usedPrimary ? $primary : $key++] = $row;
 		}
 
 		$this->data = $this->rows;

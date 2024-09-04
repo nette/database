@@ -151,24 +151,6 @@ class Helpers
 	}
 
 
-	/** @internal */
-	public static function normalizeRow(
-		array $row,
-		Result $resultSet,
-	): array
-	{
-		$engine = @$resultSet->getConnection()->getDatabaseEngine();
-		$converter = @$resultSet->getConnection()->getTypeConverter();
-		foreach ($resultSet->getColumnsMeta() as $key => $meta) {
-			$value = $row[$key];
-			$row[$key] = isset($value, $converter)
-				? $engine->convertToPhp($value, $meta, $converter)
-				: $value;
-		}
-		return $row;
-	}
-
-
 	/**
 	 * Import SQL dump from file - extremely fast.
 	 * @param  ?array<callable(int, ?float): void>  $onProgress

@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database;
 
 use JetBrains\PhpStorm\Language;
+use Nette;
 use Nette\Utils\Arrays;
 use PDOException;
 
@@ -40,9 +41,6 @@ class Connection
 	private Drivers\Engine $engine;
 	private SqlPreprocessor $preprocessor;
 	private TypeConverter $typeConverter;
-
-	/** @var callable(array, Result): array */
-	private $rowNormalizer = [Helpers::class, 'normalizeRow'];
 	private ?string $sql = null;
 	private int $transactionDepth = 0;
 
@@ -155,10 +153,10 @@ class Connection
 	}
 
 
+	/** @deprecated */
 	public function setRowNormalizer(?callable $normalizer): static
 	{
-		$this->rowNormalizer = $normalizer;
-		return $this;
+		throw new Nette\DeprecatedException(__METHOD__ . "() is deprecated, configure 'convert*' options instead.");
 	}
 
 
@@ -243,7 +241,7 @@ class Connection
 	{
 		[$this->sql, $params] = $this->preprocess($sql, ...$params);
 		try {
-			$result = new Result($this, $this->sql, $params, $this->rowNormalizer);
+			$result = new Result($this, $this->sql, $params);
 		} catch (PDOException $e) {
 			Arrays::invoke($this->onQuery, $this, $e);
 			throw $e;

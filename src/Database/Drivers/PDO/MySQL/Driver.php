@@ -27,7 +27,6 @@ class Driver extends Drivers\PDO\Driver
 		protected readonly array $options = [],
 		protected readonly ?string $charset = self::DefaultCharset,
 		protected readonly ?string $sqlmode = null,
-		protected readonly ?bool $convertBoolean = null,
 	) {
 	}
 
@@ -47,8 +46,6 @@ class Driver extends Drivers\PDO\Driver
 
 	public function createEngine(Drivers\Connection $connection): MySQLEngine
 	{
-		$engine = new MySQLEngine($connection);
-		$engine->convertBoolean = $this->convertBoolean ?? $engine->convertBoolean;
-		return $engine;
+		return new MySQLEngine($connection);
 	}
 }

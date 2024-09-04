@@ -14,6 +14,9 @@ use function gettype, is_float, is_int;
 
 class Connection implements Drivers\Connection
 {
+	public string $metaTypeKey = 'native_type';
+
+
 	public function __construct(
 		protected readonly PDO $pdo,
 	) {

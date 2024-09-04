@@ -9,7 +9,7 @@ namespace Nette\Database\Drivers\Engines;
 
 use Nette;
 use Nette\Database\Drivers\{Connection, Engine};
-use function count;
+use Nette\Database\TypeConverter;
 
 
 /**
@@ -17,10 +17,6 @@ use function count;
  */
 class PostgreSQLEngine implements Engine
 {
-	/** @var array<string, array<string, string>> query => column types */
-	private array $columnTypesCache = [];
-
-
 	public function __construct(
 		private readonly Connection $connection,
 	) {
@@ -263,14 +259,11 @@ class PostgreSQLEngine implements Engine
 	}
 
 
-	public function getColumnTypes(\PDOStatement $statement): array
+	public function convertToPhp(mixed $value, array $meta, TypeConverter $converter): mixed
 	{
-		// per-instance cache, a process-wide one would leak between connections to different databases
-		if (count($this->columnTypesCache) > 1000) {
-			$this->columnTypesCache = [];
-		}
-
-		return $this->columnTypesCache[$statement->queryString] ??= Nette\Database\Helpers::detectTypes($statement);
+		return $meta['nativeType'] === 'bool'
+			? ($value && $value !== 'f' && $value !== 'F')
+			: $converter->convertToPhp($value, $meta);
 	}
 
 

@@ -55,7 +55,7 @@ class SqlBuilder
 	public function __construct(string $tableName, Explorer $explorer)
 	{
 		$this->tableName = $tableName;
-		$this->engine = $explorer->getConnection()->getDatabaseEngine();
+		$this->engine = $explorer->getDatabaseEngine();
 		$this->conventions = $explorer->getConventions();
 		$this->structure = $explorer->getStructure();
 		$tableNameParts = explode('.', $tableName);

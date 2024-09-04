@@ -9,8 +9,7 @@ namespace Nette\Database;
 
 use Nette;
 use Nette\Utils\Arrays;
-use PDO;
-use function count, gettype, is_float, is_int;
+use function count;
 
 
 /**
@@ -41,23 +40,12 @@ class Result implements \Iterator
 		private readonly ?\Closure $normalizer = null,
 	) {
 		$time = microtime(as_float: true);
-		$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 
 		try {
 			if (str_starts_with($queryString, '::')) {
-				$connection->getPdo()->{substr($queryString, 2)}();
+				$connection->getConnection()->{substr($queryString, 2)}();
 			} else {
-				$this->pdoStatement = $connection->getPdo()->prepare($queryString);
-				foreach ($params as $key => $value) {
-					if (is_float($value)) { // PDO has no float type and would stringify the value with the precision ini
-						$value = Helpers::formatFloat($value);
-					}
-
-					$this->pdoStatement->bindValue(is_int($key) ? $key + 1 : $key, $value, $types[gettype($value)] ?? PDO::PARAM_STR);
-				}
-
-				$this->pdoStatement->setFetchMode(PDO::FETCH_ASSOC);
-				$this->pdoStatement->execute();
+				$this->pdoStatement = $connection->getConnection()->query($queryString, $params);
 			}
 		} catch (\PDOException $e) {
 			$e = $connection->getDatabaseEngine()->convertException($e);

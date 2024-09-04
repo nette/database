@@ -10,7 +10,6 @@ namespace Nette\Database;
 use JetBrains\PhpStorm\Language;
 use Nette;
 use Nette\Utils\{Arrays, DateTime};
-use PDO;
 use PDOException;
 use function func_get_args, is_int;
 
@@ -36,9 +35,9 @@ class Connection
 	/** @var array<callable(static, Result|DriverException): void>  Occurs after query is executed */
 	public array $onQuery = [];
 	private Drivers\Driver $driver;
+	private ?Drivers\Connection $connection = null;
 	private Drivers\Engine $engine;
 	private SqlPreprocessor $preprocessor;
-	private ?PDO $pdo = null;
 
 	/** @var ?\Closure(array<string, mixed>, Result): array<string, mixed> */
 	private ?\Closure $rowNormalizer;
@@ -83,12 +82,12 @@ class Connection
 	 */
 	public function connect(): void
 	{
-		if ($this->pdo) {
+		if ($this->connection) {
 			return;
 		}
 
 		try {
-			$this->pdo = $this->driver->connect();
+			$this->connection = $this->driver->connect();
 		} catch (PDOException $e) {
 			throw ConnectionException::from($e);
 		}
@@ -112,7 +111,7 @@ class Connection
 	 */
 	public function disconnect(): void
 	{
-		$this->pdo = null;
+		$this->connection = null;
 	}
 
 
@@ -122,23 +121,29 @@ class Connection
 	}
 
 
-	public function getPdo(): PDO
+	public function getPdo(): \PDO
 	{
-		$this->connect();
-		return $this->pdo ?? throw new Nette\ShouldNotHappenException;
+		return $this->getConnection()->getNativeConnection();
 	}
 
 
-	#[\Deprecated('use getDriver()')]
-	public function getSupplementalDriver(): Drivers\Engine
+	public function getConnection(): Drivers\Connection
 	{
-		return $this->getDatabaseEngine();
+		$this->connect();
+		return $this->connection;
+	}
+
+
+	#[\Deprecated('use getConnection()')]
+	public function getSupplementalDriver(): Drivers\Connection
+	{
+		return $this->getConnection();
 	}
 
 
 	public function getDatabaseEngine(): Drivers\Engine
 	{
-		return $this->engine ??= $this->driver->createEngine($this);
+		return $this->engine ??= $this->driver->createEngine(new Drivers\Accessory\LazyConnection($this->getConnection(...)));
 	}
 
 
@@ -164,10 +169,9 @@ class Connection
 	 */
 	public function getInsertId(?string $sequence = null): string
 	{
-		$pdo = $this->getPdo(); // ConnectionException is a PDOException, the catch below must not see it
+		$connection = $this->getConnection(); // ConnectionException is a PDOException, the catch below must not see it
 		try {
-			$res = $pdo->lastInsertId($sequence);
-			return $res === false ? '0' : $res;
+			return $connection->getInsertId($sequence);
 		} catch (PDOException $e) {
 			throw $this->getDatabaseEngine()->convertException($e);
 		}
@@ -177,11 +181,11 @@ class Connection
 	/**
 	 * Quotes string for use in SQL.
 	 */
-	public function quote(string $string, int $type = PDO::PARAM_STR): string
+	public function quote(string $string): string
 	{
-		$pdo = $this->getPdo(); // ConnectionException is a PDOException, the catch below must not see it
+		$connection = $this->getConnection(); // ConnectionException is a PDOException, the catch below must not see it
 		try {
-			return $pdo->quote($string, $type);
+			return $connection->quote($string);
 		} catch (PDOException $e) {
 			throw $this->getDatabaseEngine()->convertException($e);
 		}

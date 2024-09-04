@@ -73,7 +73,7 @@ class SqlBuilder
 		protected readonly string $tableName,
 		Explorer $explorer,
 	) {
-		$this->engine = $explorer->getConnection()->getDatabaseEngine();
+		$this->engine = $explorer->getDatabaseEngine();
 		$this->conventions = $explorer->getConventions();
 		$this->structure = $explorer->getStructure();
 		$tableNameParts = explode('.', $tableName);

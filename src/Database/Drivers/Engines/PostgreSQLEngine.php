@@ -12,6 +12,7 @@ namespace Nette\Database\Drivers\Engines;
 use Nette;
 use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
+use Nette\Database\TypeConverter;
 use function array_map, array_values, explode, implode, str_contains, str_replace;
 
 
@@ -239,12 +240,11 @@ class PostgreSQLEngine implements Engine
 	}
 
 
-	public function getColumnTypes(\PDOStatement $statement): array
+	public function convertToPhp(mixed $value, array $meta, TypeConverter $converter): mixed
 	{
-		static $cache;
-		$item = &$cache[$statement->queryString];
-		$item ??= Nette\Database\Helpers::detectTypes($statement);
-		return $item;
+		return $meta['nativeType'] === 'bool'
+			? ($value && $value !== 'f' && $value !== 'F')
+			: $converter->convertToPhp($value, $meta);
 	}
 
 

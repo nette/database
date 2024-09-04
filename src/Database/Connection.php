@@ -11,7 +11,6 @@ namespace Nette\Database;
 
 use JetBrains\PhpStorm\Language;
 use Nette\Utils\Arrays;
-use Nette\Utils\DateTime;
 use PDOException;
 use function func_get_args, str_replace, ucfirst;
 
@@ -30,6 +29,7 @@ class Connection
 		'pdo-sqlite' => Drivers\PDO\SQLite\Driver::class,
 		'pdo-sqlsrv' => Drivers\PDO\SQLSrv\Driver::class,
 	];
+	private const TypeConverterOptions = ['convertBoolean', 'newDateTime'];
 
 	/** @var array<callable(self): void>  Occurs after connection is established */
 	public array $onConnect = [];
@@ -40,6 +40,7 @@ class Connection
 	private ?Drivers\Connection $connection = null;
 	private Drivers\Engine $engine;
 	private SqlPreprocessor $preprocessor;
+	private TypeConverter $typeConverter;
 
 	/** @var ?\Closure(array<string, mixed>, Result): array<string, mixed> */
 	private ?\Closure $rowNormalizer;
@@ -54,23 +55,22 @@ class Connection
 		?string $password = null,
 		array $options = [],
 	) {
-		$this->rowNormalizer = ($options['newDateTime'] ?? null) === false
-			? fn(array $row, ResultSet $resultSet): array => Helpers::normalizeRow($row, $resultSet, DateTime::class)
-			: Helpers::normalizeRow(...);
-
 		$driver = explode(':', $dsn)[0];
 		$class = empty($options['driverClass'])
 			? (self::Drivers['pdo-' . $driver] ?? throw new \LogicException("Unknown PDO driver '$driver'."))
 			: $options['driverClass'];
 		$args = compact('dsn', 'username', 'password', 'options');
-		unset($options['lazy'], $options['newDateTime'], $options['driverClass']);
+		unset($options['lazy'], $options['driverClass']);
 		foreach ($options as $key => $value) {
 			if (!is_int($key) && $value !== null) {
 				$args[$key] = $value;
 				unset($args['options'][$key]);
 			}
 		}
+		$args = array_diff_key($args, array_flip(self::TypeConverterOptions));
 		$this->driver = new $class(...$args);
+		$this->typeConverter = new TypeConverter;
+		array_map(fn($opt) => isset($options[$opt]) && ($this->typeConverter->$opt = (bool) $options[$opt]), self::TypeConverterOptions);
 	}
 
 
@@ -156,6 +156,12 @@ class Connection
 	public function getReflection(): Reflection
 	{
 		return new Reflection($this->getDatabaseEngine());
+	}
+
+
+	public function getTypeConverter(): TypeConverter
+	{
+		return $this->typeConverter;
 	}
 
 

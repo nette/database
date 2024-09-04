@@ -19,12 +19,9 @@ use function array_values, str_replace;
  */
 class SQLServerEngine implements Engine
 {
-	private Nette\Database\Connection $connection;
-
-
-	public function initialize(Nette\Database\Connection $connection, array $options): void
-	{
-		$this->connection = $connection;
+	public function __construct(
+		private readonly Nette\Database\Connection $connection,
+	) {
 	}
 
 

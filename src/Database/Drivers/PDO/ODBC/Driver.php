@@ -18,7 +18,7 @@ use Nette\Database\Drivers\Engines\ODBCEngine;
  */
 class Driver extends Drivers\PDO\Driver
 {
-	public function createEngine(): ODBCEngine
+	public function createEngine($connection): ODBCEngine
 	{
 		return new ODBCEngine;
 	}

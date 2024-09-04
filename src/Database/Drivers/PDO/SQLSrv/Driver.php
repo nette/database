@@ -18,8 +18,8 @@ use Nette\Database\Drivers\Engines\SQLServerEngine;
  */
 class Driver extends Drivers\PDO\Driver
 {
-	public function createEngine(): SQLServerEngine
+	public function createEngine($connection): SQLServerEngine
 	{
-		return new SQLServerEngine;
+		return new SQLServerEngine($connection);
 	}
 }

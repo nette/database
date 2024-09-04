@@ -78,7 +78,7 @@ class SqlBuilder
 		$this->conventions = $explorer->getConventions();
 		$this->structure = $explorer->getStructure();
 		$tableNameParts = explode('.', $tableName);
-		$this->delimitedTable = implode('.', array_map($this->engine->delimite(...), $tableNameParts));
+		$this->delimitedTable = implode('.', array_map($this->engine->delimit(...), $tableNameParts));
 		$this->checkUniqueTableName(end($tableNameParts), $tableName);
 	}
 
@@ -97,7 +97,7 @@ class SqlBuilder
 
 	public function buildUpdateQuery(): string
 	{
-		$query = "UPDATE {$this->delimitedTable} SET ?set" . $this->tryDelimite($this->buildConditions());
+		$query = "UPDATE {$this->delimitedTable} SET ?set" . $this->tryDelimit($this->buildConditions());
 
 		if ($this->order !== []) {
 			$query .= ' ORDER BY ' . implode(', ', $this->order);
@@ -113,7 +113,7 @@ class SqlBuilder
 
 	public function buildDeleteQuery(): string
 	{
-		$query = "DELETE FROM {$this->delimitedTable}" . $this->tryDelimite($this->buildConditions());
+		$query = "DELETE FROM {$this->delimitedTable}" . $this->tryDelimit($this->buildConditions());
 		if ($this->limit !== null || $this->offset) {
 			$query = $this->engine->applyLimit($query, $this->limit, $this->offset);
 		}
@@ -205,7 +205,7 @@ class SqlBuilder
 
 		$query = $this->engine->applyLimit($query, $this->limit, $this->offset);
 
-		return $this->tryDelimite($query);
+		return $this->tryDelimit($query);
 	}
 
 
@@ -897,13 +897,13 @@ class SqlBuilder
 	/**
 	 * Delimits lowercase identifiers in a SQL fragment while leaving uppercase keywords untouched.
 	 */
-	protected function tryDelimite(string $s): string
+	protected function tryDelimit(string $s): string
 	{
 		return preg_replace_callback(
 			'#(?<=[^\w`"\[?:]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|$)#Di',
 			fn(array $m): string => strtoupper($m[0]) === $m[0]
 				? $m[0]
-				: $this->engine->delimite($m[0]),
+				: $this->engine->delimit($m[0]),
 			$s,
 		);
 	}

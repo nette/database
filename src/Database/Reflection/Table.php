@@ -93,8 +93,8 @@ final class Table
 			$id = $row['name'];
 			$foreignTable = $this->reflection->getTable($row['table']);
 			$tmp[$id][0] = $foreignTable;
-			$tmp[$id][1][] = $this->getColumn($row['local']);
-			$tmp[$id][2][] = $foreignTable->getColumn($row['foreign']);
+			$tmp[$id][1] = array_map(fn($name) => $this->getColumn($name), $row['local']);
+			$tmp[$id][2] = array_map(fn($name) => $foreignTable->getColumn($name), $row['foreign']);
 			$tmp[$id][3] = is_string($id) ? $id : null;
 		}
 		$this->foreignKeys = array_map(fn($row) => new ForeignKey(...$row), array_values($tmp));

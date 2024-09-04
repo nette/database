@@ -60,8 +60,8 @@ class StructureSchemasTestCase extends TestCase
 		$this->connection->shouldReceive('getDatabaseEngine')->times(2)->andReturn($this->engine);
 		$this->engine->shouldReceive('getForeignKeys')->with('authors.authors')->once()->andReturn([]);
 		$this->engine->shouldReceive('getForeignKeys')->with('books.books')->once()->andReturn([
-			['local' => 'author_id', 'table' => 'authors.authors', 'foreign' => 'id', 'name' => 'authors_authors_fk1'],
-			['local' => 'translator_id', 'table' => 'authors.authors', 'foreign' => 'id', 'name' => 'authors_authors_fk2'],
+			['local' => ['author_id'], 'table' => 'authors.authors', 'foreign' => ['id'], 'name' => 'authors_authors_fk1'],
+			['local' => ['translator_id'], 'table' => 'authors.authors', 'foreign' => ['id'], 'name' => 'authors_authors_fk2'],
 		]);
 
 		$this->structure = new StructureMock($this->connection, $this->storage);

@@ -97,14 +97,6 @@ class MySqlDriver implements Nette\Database\Driver
 	}
 
 
-	public function formatLike(string $value, int $pos): string
-	{
-		$value = str_replace('\\', '\\\\', $value);
-		$value = addcslashes(substr($this->connection->quote($value), 1, -1), '%_');
-		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
-	}
-
-
 	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
 	{
 		if ($limit < 0 || $offset < 0) {

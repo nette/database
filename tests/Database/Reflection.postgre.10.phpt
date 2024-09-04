@@ -24,13 +24,13 @@ function shortInfo(array $columns): array
 {
 	return array_map(fn(array $col): array => [
 		'name' => $col['name'],
-		'autoincrement' => $col['autoincrement'],
+		'autoIncrement' => $col['autoIncrement'],
 		'sequence' => $col['vendor']['sequence'],
 	], $columns);
 }
 
 
-test('SERIAL and IDENTITY imply autoincrement on primary keys', function () use ($connection) {
+test('SERIAL and IDENTITY imply autoIncrement on primary keys', function () use ($connection) {
 	Nette\Database\Helpers::loadFromFile($connection, Tester\FileMock::create('
 		DROP SCHEMA IF EXISTS "reflection_10" CASCADE;
 		CREATE SCHEMA "reflection_10";
@@ -61,37 +61,37 @@ test('SERIAL and IDENTITY imply autoincrement on primary keys', function () use 
 	Assert::same([
 		'serial' => [[
 			'name' => 'id',
-			'autoincrement' => false,
+			'autoIncrement' => false,
 			'sequence' => 'serial_id_seq',
 		]],
 
 		'serial_pk' => [[
 			'name' => 'id',
-			'autoincrement' => true,
+			'autoIncrement' => true,
 			'sequence' => 'serial_pk_id_seq',
 		]],
 
 		'identity_always' => [[
 			'name' => 'id',
-			'autoincrement' => false,
+			'autoIncrement' => false,
 			'sequence' => 'identity_always_id_seq',
 		]],
 
 		'identity_always_pk' => [[
 			'name' => 'id',
-			'autoincrement' => true,
+			'autoIncrement' => true,
 			'sequence' => 'identity_always_pk_id_seq',
 		]],
 
 		'identity_by_default' => [[
 			'name' => 'id',
-			'autoincrement' => false,
+			'autoIncrement' => false,
 			'sequence' => 'identity_by_default_id_seq',
 		]],
 
 		'identity_by_default_pk' => [[
 			'name' => 'id',
-			'autoincrement' => true,
+			'autoIncrement' => true,
 			'sequence' => 'identity_by_default_pk_id_seq',
 		]],
 	], $columns);

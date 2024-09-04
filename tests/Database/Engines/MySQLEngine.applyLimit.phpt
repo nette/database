@@ -6,7 +6,8 @@ use Tester\Assert;
 
 require __DIR__ . '/../../bootstrap.php';
 
-$engine = new Nette\Database\Drivers\Engines\MySQLEngine;
+$connection = Mockery::mock(Nette\Database\Connection::class);
+$engine = new Nette\Database\Drivers\Engines\MySQLEngine($connection);
 
 $query = 'SELECT 1 FROM t';
 $engine->applyLimit($query, 10, 20);

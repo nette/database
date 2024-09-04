@@ -18,7 +18,7 @@ use Nette\Database\Drivers\Engines\MSSQLEngine;
  */
 class Driver extends Drivers\PDO\Driver
 {
-	public function createEngine($connection): MSSQLEngine
+	public function createEngine(Drivers\Connection $connection): MSSQLEngine
 	{
 		return new MSSQLEngine($connection);
 	}

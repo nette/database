@@ -262,7 +262,7 @@ class Helpers
 		$count = $size = 0;
 		$delimiter = ';';
 		$sql = '';
-		$pdo = $connection->getPdo(); // native query without logging
+		$connection = $connection->getConnection(); // native query without logging
 		while (($s = fgets($handle)) !== false) {
 			$size += strlen($s);
 			if (!strncasecmp($s, 'DELIMITER ', 10)) {
@@ -270,7 +270,7 @@ class Helpers
 
 			} elseif (str_ends_with($ts = rtrim($s), $delimiter)) {
 				$sql .= substr($ts, 0, -strlen($delimiter));
-				$pdo->exec($sql);
+				$connection->query($sql);
 				$sql = '';
 				$count++;
 				if ($onProgress) {
@@ -282,7 +282,7 @@ class Helpers
 		}
 
 		if (rtrim($sql) !== '') {
-			$pdo->exec($sql);
+			$connection->query($sql);
 			$count++;
 			if ($onProgress) {
 				$onProgress($count, isset($stat['size']) ? 100 : null);

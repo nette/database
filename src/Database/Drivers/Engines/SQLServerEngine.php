@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
 
 
@@ -19,7 +20,7 @@ use Nette\Database\Drivers\Engine;
 class SQLServerEngine implements Engine
 {
 	public function __construct(
-		private readonly Nette\Database\Connection $connection,
+		private readonly Connection $connection,
 	) {
 	}
 
@@ -132,13 +133,12 @@ class SQLServerEngine implements Engine
 			WHERE
 				o.type IN ('U', 'V')
 				AND o.name = ?
-			X, $table);
+			X, [$table]);
 
 		while ($row = $rows->fetch()) {
-			$row = (array) $row;
 			$row['vendor'] = $row;
-			$row['size'] = $row['size'] ?: null;
-			$row['scale'] = $row['scale'] ?: null;
+			$row['size'] = $row['size'] ? (int) $row['size'] : null;
+			$row['scale'] = $row['scale'] ? (int) $row['scale'] : null;
 			$row['nullable'] = (bool) $row['nullable'];
 			$row['autoIncrement'] = (bool) $row['autoIncrement'];
 			$row['primary'] = (bool) $row['primary'];
@@ -172,7 +172,7 @@ class SQLServerEngine implements Engine
 			ORDER BY
 				i.index_id,
 				ic.index_column_id
-			X, $table);
+			X, [$table]);
 
 		while ($row = $rows->fetch()) {
 			$id = $row['name'];
@@ -205,10 +205,10 @@ class SQLServerEngine implements Engine
 				JOIN sys.columns cf ON fkc.referenced_object_id = cf.object_id AND fkc.referenced_column_id = cf.column_id
 			WHERE
 				tl.name = ?
-			X, $table);
+			X, [$table]);
 
 		while ($row = $rows->fetch()) {
-			$keys[$row['name']] = (array) $row;
+			$keys[$row['name']] = $row;
 		}
 
 		return array_values($keys);

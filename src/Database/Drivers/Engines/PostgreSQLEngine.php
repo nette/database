@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
 
 
@@ -19,7 +20,7 @@ use Nette\Database\Drivers\Engine;
 class PostgreSQLEngine implements Engine
 {
 	public function __construct(
-		private readonly Nette\Database\Connection $connection,
+		private readonly Connection $connection,
 	) {
 	}
 
@@ -114,7 +115,7 @@ class PostgreSQLEngine implements Engine
 			X);
 
 		while ($row = $rows->fetch()) {
-			$tables[] = (array) $row;
+			$tables[] = $row;
 		}
 
 		return $tables;
@@ -159,10 +160,10 @@ class PostgreSQLEngine implements Engine
 				AND NOT a.attisdropped
 			ORDER BY
 				a.attnum
-			X, $this->delimiteFQN($table));
+			X, [$this->delimiteFQN($table)]);
 
 		while ($row = $rows->fetch()) {
-			$column = (array) $row;
+			$column = $row;
 			$column['vendor'] = $column;
 			unset($column['sequence']);
 
@@ -190,7 +191,7 @@ class PostgreSQLEngine implements Engine
 			WHERE
 				c1.relkind IN ('r', 'p')
 				AND c1.oid = ?::regclass
-			X, $this->delimiteFQN($table));
+			X, [$this->delimiteFQN($table)]);
 
 		while ($row = $rows->fetch()) {
 			$id = $row['name'];
@@ -225,10 +226,10 @@ class PostgreSQLEngine implements Engine
 				co.contype = 'f'
 				AND cl.oid = ?::regclass
 				AND nf.nspname = ANY (pg_catalog.current_schemas(FALSE))
-			X, $this->delimiteFQN($table));
+			X, [$this->delimiteFQN($table)]);
 
 		while ($row = $rows->fetch()) {
-			$keys[] = (array) $row;
+			$keys[] = $row;
 		}
 		return $keys;
 	}

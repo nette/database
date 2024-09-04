@@ -18,11 +18,6 @@ use Nette\Database\Drivers\Engine;
  */
 class ODBCEngine implements Engine
 {
-	public function initialize(Nette\Database\Connection $connection, array $options): void
-	{
-	}
-
-
 	public function isSupported(string $feature): bool
 	{
 		return $feature === self::SupportSubselect;

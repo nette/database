@@ -17,4 +17,18 @@ use Nette\Database\Drivers;
  */
 abstract class Driver implements Drivers\Driver
 {
+	public function __construct(
+		protected readonly string $dsn,
+		protected readonly ?string $username = null,
+		#[\SensitiveParameter]
+		protected readonly ?string $password = null,
+		protected readonly array $options = [],
+	) {
+	}
+
+
+	public function connect()
+	{
+		return new \PDO($this->dsn, $this->username, $this->password, $this->options);
+	}
 }

@@ -49,11 +49,10 @@ class Connection
 
 	public function __construct(
 		private readonly string $dsn,
+		?string $username = null,
 		#[\SensitiveParameter]
-		private readonly ?string $user = null,
-		#[\SensitiveParameter]
-		private readonly ?string $password = null,
-		private readonly array $options = [],
+		?string $password = null,
+		array $options = [],
 	) {
 		if (($options['newDateTime'] ?? null) === false) {
 			$this->rowNormalizer = fn($row, $resultSet) => Helpers::normalizeRow($row, $resultSet, DateTime::class);
@@ -63,7 +62,15 @@ class Connection
 		$class = empty($options['driverClass'])
 			? (self::Drivers['pdo-' . $driver] ?? throw new \LogicException("Unknown PDO driver '$driver'."))
 			: $options['driverClass'];
-		$this->driver = new $class;
+		$args = compact('dsn', 'username', 'password', 'options');
+		unset($options['lazy'], $options['newDateTime'], $options['driverClass']);
+		foreach ($options as $key => $value) {
+			if (!is_int($key) && $value !== null) {
+				$args[$key] = $value;
+				unset($args['options'][$key]);
+			}
+		}
+		$this->driver = new $class(...$args);
 	}
 
 
@@ -74,13 +81,11 @@ class Connection
 		}
 
 		try {
-			$this->pdo = new PDO($this->dsn, $this->user, $this->password, $this->options);
+			$this->pdo = $this->driver->connect();
 		} catch (PDOException $e) {
 			throw ConnectionException::from($e);
 		}
 
-		$this->engine = $this->driver->createEngine();
-		$this->engine->initialize($this, $this->options);
 		Arrays::invoke($this->onConnect, $this);
 	}
 
@@ -115,15 +120,13 @@ class Connection
 	public function getSupplementalDriver(): Drivers\Engine
 	{
 		trigger_error(__METHOD__ . '() is deprecated, use getDriver()', E_USER_DEPRECATED);
-		$this->connect();
-		return $this->engine;
+		return $this->getDatabaseEngine();
 	}
 
 
 	public function getDatabaseEngine(): Drivers\Engine
 	{
-		$this->connect();
-		return $this->engine;
+		return $this->engine ??= $this->driver->createEngine($this);
 	}
 
 
@@ -146,7 +149,7 @@ class Connection
 			$res = $this->getPdo()->lastInsertId($sequence);
 			return $res === false ? '0' : $res;
 		} catch (PDOException $e) {
-			throw $this->engine->convertException($e);
+			throw $this->getDatabaseEngine()->convertException($e);
 		}
 	}
 

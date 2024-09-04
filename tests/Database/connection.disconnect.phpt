@@ -44,12 +44,12 @@ test('connect & disconnect', function () {
 	$driver2 = $connection->getDatabaseEngine();
 
 	Assert::notSame($pdo, $pdo2);
-	Assert::notSame($driver, $driver2);
+	Assert::same($driver, $driver2);
 	Assert::same(2, $connections);
 
 	// third connection
 	$connection->disconnect();
 	Assert::notSame($pdo2, $connection->getPdo());
-	Assert::notSame($driver2, $connection->getDatabaseEngine());
+	Assert::same($driver2, $connection->getDatabaseEngine());
 	Assert::same(3, $connections);
 });

@@ -74,7 +74,7 @@ interface Engine
 
 	/**
 	 * Returns information about foreign keys in a table.
-	 * @return list<array{name: string, local: string, table: string, foreign: string}>
+	 * @return list<array{name: string, local: list<string>, table: string, foreign: list<string>}>
 	 */
 	function getForeignKeys(string $table): array;
 }

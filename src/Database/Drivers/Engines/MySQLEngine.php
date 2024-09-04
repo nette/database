@@ -155,12 +155,12 @@ class MySQLEngine implements Engine
 			  AND TABLE_NAME = ?
 			X, [$table]);
 
-		$id = 0;
 		while ($row = $rows->fetch()) {
-			$keys[$id]['name'] = $row['CONSTRAINT_NAME'];
-			$keys[$id]['local'] = $row['COLUMN_NAME'];
+			$id = $row['CONSTRAINT_NAME'];
+			$keys[$id]['name'] = $id;
+			$keys[$id]['local'][] = $row['COLUMN_NAME'];
 			$keys[$id]['table'] = $row['REFERENCED_TABLE_NAME'];
-			$keys[$id++]['foreign'] = $row['REFERENCED_COLUMN_NAME'];
+			$keys[$id]['foreign'][] = $row['REFERENCED_COLUMN_NAME'];
 		}
 
 		return array_values($keys);

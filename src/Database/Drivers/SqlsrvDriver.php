@@ -62,14 +62,6 @@ class SqlsrvDriver implements Nette\Database\Driver
 	}
 
 
-	public function formatLike(string $value, int $pos): string
-	{
-		/** @see https://msdn.microsoft.com/en-us/library/ms179859.aspx */
-		$value = strtr($value, ["'" => "''", '%' => '[%]', '_' => '[_]', '[' => '[[]']);
-		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
-	}
-
-
 	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
 	{
 		if ($limit < 0 || $offset < 0) {

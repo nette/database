@@ -18,8 +18,23 @@ use Nette\Database\Drivers\Engines\SQLiteEngine;
  */
 class Driver extends Drivers\PDO\Driver
 {
-	public function createEngine(): SQLiteEngine
+	public function __construct(
+		protected readonly string $dsn,
+		protected readonly ?string $username = null,
+		#[\SensitiveParameter]
+		protected readonly ?string $password = null,
+		protected readonly array $options = [],
+		protected readonly ?string $formatDateTime = null,
+	) {
+	}
+
+
+	public function createEngine($connection): SQLiteEngine
 	{
-		return new SQLiteEngine;
+		$engine = new SQLiteEngine($connection);
+		if ($this->formatDateTime) {
+			$engine->formatDateTime = $this->formatDateTime;
+		}
+		return $engine;
 	}
 }

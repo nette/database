@@ -41,7 +41,7 @@ class SQLServerEngine implements Engine
 	/********************* SQL ****************d*g**/
 
 
-	public function delimite(string $name): string
+	public function delimit(string $name): string
 	{
 		/** @see https://msdn.microsoft.com/en-us/library/ms176027.aspx */
 		return '[' . str_replace(']', ']]', $name) . ']';

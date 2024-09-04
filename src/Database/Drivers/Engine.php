@@ -40,7 +40,7 @@ interface Engine
 	/********************* SQL utilities ****************d*g**/
 
 	/** Adds delimiters around database identifier. */
-	function delimite(string $name): string;
+	function delimit(string $name): string;
 
 	/** Formats a date-time value for use in an SQL statement. */
 	function formatDateTime(\DateTimeInterface $value): string;

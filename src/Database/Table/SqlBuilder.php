@@ -808,7 +808,7 @@ class SqlBuilder
 		array &$conditionsParameters,
 	): bool
 	{
-		if ($this->driver->isSupported(Driver::SupportMultiColumnAsOrCond)) {
+		if ($this->driver->isSupported(Driver::SupportMultiColumnAsOrCondition)) {
 			$conditionFragment = '(' . implode(' = ? AND ', $columns) . ' = ?) OR ';
 			$condition = substr(str_repeat($conditionFragment, count($parameters)), 0, -4);
 			return $this->addCondition($condition, [Nette\Utils\Arrays::flatten($parameters)], $conditions, $conditionsParameters);

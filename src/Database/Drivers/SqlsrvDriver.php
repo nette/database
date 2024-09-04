@@ -26,6 +26,12 @@ class SqlsrvDriver implements Nette\Database\Driver
 	}
 
 
+	public function isSupported(string $feature): bool
+	{
+		return $feature === self::SupportSubselect;
+	}
+
+
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		return Nette\Database\DriverException::from($e);
@@ -233,11 +239,5 @@ class SqlsrvDriver implements Nette\Database\Driver
 		}
 
 		return $types;
-	}
-
-
-	public function isSupported(string $item): bool
-	{
-		return $item === self::SupportSubselect;
 	}
 }

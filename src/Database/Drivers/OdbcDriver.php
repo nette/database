@@ -22,6 +22,12 @@ class OdbcDriver implements Nette\Database\Driver
 	}
 
 
+	public function isSupported(string $feature): bool
+	{
+		return $feature === self::SupportSubselect;
+	}
+
+
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		return Nette\Database\DriverException::from($e);
@@ -103,11 +109,5 @@ class OdbcDriver implements Nette\Database\Driver
 	public function getColumnTypes(\PDOStatement $statement): array
 	{
 		return [];
-	}
-
-
-	public function isSupported(string $item): bool
-	{
-		return $item === self::SupportSubselect;
 	}
 }

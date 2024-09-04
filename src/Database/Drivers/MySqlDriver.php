@@ -48,6 +48,16 @@ class MySqlDriver implements Nette\Database\Driver
 	}
 
 
+	public function isSupported(string $feature): bool
+	{
+		// MULTI_COLUMN_AS_OR_COND due to mysql bugs:
+		// - http://bugs.mysql.com/bug.php?id=31188
+		// - http://bugs.mysql.com/bug.php?id=35819
+		// and more.
+		return $feature === self::SupportSelectUngroupedColumns || $feature === self::SupportMultiColumnAsOrCondition;
+	}
+
+
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		$code = $e->errorInfo[1] ?? null;
@@ -210,15 +220,5 @@ class MySqlDriver implements Nette\Database\Driver
 		}
 
 		return $types;
-	}
-
-
-	public function isSupported(string $item): bool
-	{
-		// MULTI_COLUMN_AS_OR_COND due to mysql bugs:
-		// - http://bugs.mysql.com/bug.php?id=31188
-		// - http://bugs.mysql.com/bug.php?id=35819
-		// and more.
-		return $item === self::SupportSelectUngroupedColumns || $item === self::SupportMultiColumnAsOrCond;
 	}
 }

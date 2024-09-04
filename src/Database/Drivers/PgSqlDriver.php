@@ -26,6 +26,12 @@ class PgSqlDriver implements Nette\Database\Driver
 	}
 
 
+	public function isSupported(string $feature): bool
+	{
+		return $feature === self::SupportSequence || $feature === self::SupportSubselect || $feature === self::SupportSchema;
+	}
+
+
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		$code = $e->errorInfo[0] ?? null;
@@ -241,12 +247,6 @@ class PgSqlDriver implements Nette\Database\Driver
 		$item = &$cache[$statement->queryString];
 		$item ??= Nette\Database\Helpers::detectTypes($statement);
 		return $item;
-	}
-
-
-	public function isSupported(string $item): bool
-	{
-		return $item === self::SupportSequence || $item === self::SupportSubselect || $item === self::SupportSchema;
 	}
 
 

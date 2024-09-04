@@ -75,12 +75,6 @@ class OciDriver implements Nette\Database\Driver
 	}
 
 
-	public function formatLike(string $value, int $pos): string
-	{
-		throw new Nette\NotImplementedException;
-	}
-
-
 	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
 	{
 		if ($limit < 0 || $offset < 0) {

@@ -155,11 +155,11 @@ class SqliteDriver implements Nette\Database\Driver
 			$columns[] = [
 				'name' => $column,
 				'table' => $table,
-				'nativetype' => strtoupper($typeInfo['type']),
+				'nativeType' => strtoupper($typeInfo['type']),
 				'size' => $typeInfo['length'],
 				'nullable' => $row['notnull'] == 0,
 				'default' => $row['dflt_value'],
-				'autoincrement' => $createSql && preg_match($pattern, $createSql['sql']),
+				'autoIncrement' => $createSql && preg_match($pattern, $createSql['sql']),
 				'primary' => $row['pk'] > 0,
 				'vendor' => (array) $row,
 			];

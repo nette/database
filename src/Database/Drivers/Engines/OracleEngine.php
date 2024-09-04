@@ -51,7 +51,7 @@ class OracleEngine implements Engine
 	/********************* SQL ****************d*g**/
 
 
-	public function delimite(string $name): string
+	public function delimit(string $name): string
 	{
 		// @see http://download.oracle.com/docs/cd/B10500_01/server.920/a96540/sql_elements9a.htm
 		return '"' . str_replace('"', '""', $name) . '"';

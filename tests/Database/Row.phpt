@@ -14,7 +14,7 @@ require __DIR__ . '/../bootstrap.php';
 $connection = connectToDB();
 
 test('numeric field', function () use ($connection) {
-	$row = $connection->fetch("SELECT 123 AS {$connection->getDatabaseEngine()->delimite('123')}, NULL as nullcol");
+	$row = $connection->fetch("SELECT 123 AS {$connection->getDatabaseEngine()->delimit('123')}, NULL as nullcol");
 	Assert::same(123, $row->{123});
 	Assert::same(123, $row->{'123'});
 	Assert::true(isset($row->{123}));

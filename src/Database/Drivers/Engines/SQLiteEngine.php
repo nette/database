@@ -70,7 +70,7 @@ class SQLiteEngine implements Engine
 	/********************* SQL ****************d*g**/
 
 
-	public function delimite(string $name): string
+	public function delimit(string $name): string
 	{
 		return '[' . strtr($name, '[]', '  ') . ']';
 	}
@@ -143,7 +143,7 @@ class SQLiteEngine implements Engine
 			X, [$table, $table])->fetch();
 
 		$columns = [];
-		$rows = $this->connection->query("PRAGMA table_info({$this->delimite($table)})");
+		$rows = $this->connection->query("PRAGMA table_info({$this->delimit($table)})");
 		while ($row = $rows->fetch()) {
 			$column = $row['name'];
 			$pattern = "/(\"$column\"|`$column`|\\[$column\\]|$column)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";
@@ -169,7 +169,7 @@ class SQLiteEngine implements Engine
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
-		$rows = $this->connection->query("PRAGMA index_list({$this->delimite($table)})");
+		$rows = $this->connection->query("PRAGMA index_list({$this->delimit($table)})");
 		while ($row = $rows->fetch()) {
 			$id = $row['name'];
 			$indexes[$id]['name'] = $id;
@@ -178,7 +178,7 @@ class SQLiteEngine implements Engine
 		}
 
 		foreach ($indexes as $index => $values) {
-			$res = $this->connection->query("PRAGMA index_info({$this->delimite($index)})");
+			$res = $this->connection->query("PRAGMA index_info({$this->delimit($index)})");
 			while ($row = $res->fetch()) {
 				$indexes[$index]['columns'][] = $row['name'];
 			}
@@ -216,7 +216,7 @@ class SQLiteEngine implements Engine
 	public function getForeignKeys(string $table): array
 	{
 		$keys = [];
-		$rows = $this->connection->query("PRAGMA foreign_key_list({$this->delimite($table)})");
+		$rows = $this->connection->query("PRAGMA foreign_key_list({$this->delimit($table)})");
 		while ($row = $rows->fetch()) {
 			$id = $row['id'];
 			$keys[$id]['name'] = $id;

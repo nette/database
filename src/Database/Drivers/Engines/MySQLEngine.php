@@ -52,7 +52,7 @@ class MySQLEngine implements Engine
 	/********************* SQL ****************d*g**/
 
 
-	public function delimite(string $name): string
+	public function delimit(string $name): string
 	{
 		// @see http://dev.mysql.com/doc/refman/5.0/en/identifiers.html
 		return '`' . str_replace('`', '``', $name) . '`';
@@ -108,7 +108,7 @@ class MySQLEngine implements Engine
 	public function getColumns(string $table): array
 	{
 		$columns = [];
-		$rows = $this->connection->query('SHOW FULL COLUMNS FROM ' . $this->delimite($table));
+		$rows = $this->connection->query('SHOW FULL COLUMNS FROM ' . $this->delimit($table));
 		while ($row = $rows->fetch()) {
 			$row = array_change_key_case($row);
 			$typeInfo = Nette\Database\Helpers::parseColumnType($row['type']);
@@ -133,7 +133,7 @@ class MySQLEngine implements Engine
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
-		$rows = $this->connection->query('SHOW INDEX FROM ' . $this->delimite($table));
+		$rows = $this->connection->query('SHOW INDEX FROM ' . $this->delimit($table));
 		while ($row = $rows->fetch()) {
 			$id = $row['Key_name'];
 			$indexes[$id]['name'] = $id;

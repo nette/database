@@ -41,7 +41,7 @@ interface Engine
 	/********************* SQL utilities ****************d*g**/
 
 	/** Escapes an identifier for use in an SQL statement. */
-	function delimite(string $name): string;
+	function delimit(string $name): string;
 
 	/** Formats a date-time value for use in an SQL statement. */
 	function formatDateTime(\DateTimeInterface $value): string;

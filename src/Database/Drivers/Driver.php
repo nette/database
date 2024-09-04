@@ -16,8 +16,8 @@ namespace Nette\Database\Drivers;
 interface Driver
 {
 	/** Establishes a connection to the database. */
-	function connect();
+	function connect(): Connection;
 
 	/** Creates a engine instance for the specific database platform. */
-	function createEngine($connection): Engine;
+	function createEngine(Connection $connection): Engine;
 }

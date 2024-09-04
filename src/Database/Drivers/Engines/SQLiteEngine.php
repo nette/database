@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
 use function array_values, in_array, preg_match, str_contains, strtoupper, strtr;
 
@@ -23,7 +24,7 @@ class SQLiteEngine implements Engine
 
 
 	public function __construct(
-		private readonly Nette\Database\Connection $connection,
+		private readonly Connection $connection,
 	) {
 	}
 
@@ -138,7 +139,7 @@ class SQLiteEngine implements Engine
 			SELECT sql
 			FROM sqlite_temp_master
 			WHERE type = 'table' AND name = ?
-			X, $table, $table)->fetch();
+			X, [$table, $table])->fetch();
 
 		$columns = [];
 		$rows = $this->connection->query("PRAGMA table_info({$this->delimite($table)})");
@@ -157,7 +158,7 @@ class SQLiteEngine implements Engine
 				'autoIncrement' => $createSql && preg_match($pattern, $createSql['sql']),
 				'primary' => $row['pk'] > 0,
 				'comment' => null,
-				'vendor' => (array) $row,
+				'vendor' => $row,
 			];
 		}
 

@@ -34,7 +34,7 @@ class Driver extends Drivers\PDO\Driver
 	}
 
 
-	public function connect()
+	public function connect(): Drivers\PDO\Connection
 	{
 		$connection = parent::connect();
 		if ($this->charset) {
@@ -47,7 +47,7 @@ class Driver extends Drivers\PDO\Driver
 	}
 
 
-	public function createEngine($connection): MySQLEngine
+	public function createEngine(Drivers\Connection $connection): MySQLEngine
 	{
 		$engine = new MySQLEngine($connection);
 		$engine->convertBoolean = $this->convertBoolean ?? $engine->convertBoolean;

@@ -6,7 +6,7 @@ use Tester\Assert;
 
 require __DIR__ . '/../../bootstrap.php';
 
-$connection = Mockery::mock(Nette\Database\Connection::class);
+$connection = Mockery::mock(Nette\Database\Drivers\Connection::class);
 $engine = new Nette\Database\Drivers\Engines\PostgreSQLEngine($connection);
 
 $query = 'SELECT 1 FROM t';

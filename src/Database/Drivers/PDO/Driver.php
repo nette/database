@@ -27,8 +27,8 @@ abstract class Driver implements Drivers\Driver
 	}
 
 
-	public function connect()
+	public function connect(): Connection
 	{
-		return new \PDO($this->dsn, $this->username, $this->password, $this->options);
+		return new Connection(new \PDO($this->dsn, $this->username, $this->password, $this->options));
 	}
 }

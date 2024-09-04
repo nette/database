@@ -17,15 +17,13 @@ use function count;
  */
 class PostgreSQLEngine implements Engine
 {
-	private Nette\Database\Connection $connection;
-
 	/** @var array<string, array<string, string>> query => column types */
 	private array $columnTypesCache = [];
 
 
-	public function initialize(Nette\Database\Connection $connection, array $options): void
-	{
-		$this->connection = $connection;
+	public function __construct(
+		private readonly Nette\Database\Connection $connection,
+	) {
 	}
 
 

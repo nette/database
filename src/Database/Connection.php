@@ -12,7 +12,7 @@ use Nette;
 use Nette\Utils\{Arrays, DateTime};
 use PDO;
 use PDOException;
-use function func_get_args;
+use function func_get_args, is_int;
 
 
 /**
@@ -46,14 +46,13 @@ class Connection
 	private int $transactionDepth = 0;
 
 
+	/** @param array<mixed> $options */
 	public function __construct(
 		private readonly string $dsn,
+		?string $username = null,
 		#[\SensitiveParameter]
-		private readonly ?string $user = null,
-		#[\SensitiveParameter]
-		private readonly ?string $password = null,
-		/** @var array<mixed> */
-		private readonly array $options = [],
+		?string $password = null,
+		array $options = [],
 	) {
 		$this->rowNormalizer = ($options['newDateTime'] ?? null) === false
 			? fn(array $row, ResultSet $resultSet): array => Helpers::normalizeRow($row, $resultSet, DateTime::class)
@@ -66,7 +65,15 @@ class Connection
 		if (!class_exists($class)) {
 			throw new Nette\InvalidStateException("Driver class '$class' not found.");
 		}
-		$this->driver = new $class;
+		$args = compact('dsn', 'username', 'password', 'options');
+		unset($options['lazy'], $options['newDateTime'], $options['driverClass']);
+		foreach ($options as $key => $value) {
+			if (!is_int($key) && $value !== null) {
+				$args[$key] = $value;
+				unset($args['options'][$key]);
+			}
+		}
+		$this->driver = new $class(...$args);
 	}
 
 
@@ -81,13 +88,11 @@ class Connection
 		}
 
 		try {
-			$this->pdo = new PDO($this->dsn, $this->user, $this->password, $this->options);
+			$this->pdo = $this->driver->connect();
 		} catch (PDOException $e) {
 			throw ConnectionException::from($e);
 		}
 
-		$this->engine = $this->driver->createEngine();
-		$this->engine->initialize($this, $this->options);
 		Arrays::invoke($this->onConnect, $this);
 	}
 
@@ -127,15 +132,13 @@ class Connection
 	#[\Deprecated('use getDriver()')]
 	public function getSupplementalDriver(): Drivers\Engine
 	{
-		$this->connect();
-		return $this->engine;
+		return $this->getDatabaseEngine();
 	}
 
 
 	public function getDatabaseEngine(): Drivers\Engine
 	{
-		$this->connect();
-		return $this->engine;
+		return $this->engine ??= $this->driver->createEngine($this);
 	}
 
 
@@ -166,7 +169,7 @@ class Connection
 			$res = $pdo->lastInsertId($sequence);
 			return $res === false ? '0' : $res;
 		} catch (PDOException $e) {
-			throw $this->engine->convertException($e);
+			throw $this->getDatabaseEngine()->convertException($e);
 		}
 	}
 
@@ -180,7 +183,7 @@ class Connection
 		try {
 			return $pdo->quote($string, $type);
 		} catch (PDOException $e) {
-			throw $this->engine->convertException($e);
+			throw $this->getDatabaseEngine()->convertException($e);
 		}
 	}
 

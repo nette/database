@@ -49,9 +49,6 @@ interface Driver
 	/** Formats a date-time interval for use in an SQL statement. */
 	function formatDateInterval(\DateInterval $value): string;
 
-	/** Encodes string for use in a LIKE statement. */
-	function formatLike(string $value, int $pos): string;
-
 	/** Applies LIMIT and OFFSET clauses to an SQL query. */
 	function applyLimit(string &$sql, ?int $limit, ?int $offset): void;
 

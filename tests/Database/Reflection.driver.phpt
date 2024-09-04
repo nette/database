@@ -60,44 +60,44 @@ $expectedColumns = [
 	[
 		'name' => 'id',
 		'table' => 'author',
-		'nativetype' => 'INT',
+		'nativeType' => 'INT',
 		'size' => 11,
 		'nullable' => false,
 		'default' => null,
-		'autoincrement' => true,
+		'autoIncrement' => true,
 		'primary' => true,
 		'comment' => '',
 	],
 	[
 		'name' => 'name',
 		'table' => 'author',
-		'nativetype' => 'VARCHAR',
+		'nativeType' => 'VARCHAR',
 		'size' => 30,
 		'nullable' => false,
 		'default' => null,
-		'autoincrement' => false,
+		'autoIncrement' => false,
 		'primary' => false,
 		'comment' => '',
 	],
 	[
 		'name' => 'web',
 		'table' => 'author',
-		'nativetype' => 'VARCHAR',
+		'nativeType' => 'VARCHAR',
 		'size' => 100,
 		'nullable' => false,
 		'default' => null,
-		'autoincrement' => false,
+		'autoIncrement' => false,
 		'primary' => false,
 		'comment' => 'Author\'s website URL',
 	],
 	[
 		'name' => 'born',
 		'table' => 'author',
-		'nativetype' => 'DATE',
+		'nativeType' => 'DATE',
 		'size' => null,
 		'nullable' => true,
 		'default' => null,
-		'autoincrement' => false,
+		'autoIncrement' => false,
 		'primary' => false,
 		'comment' => '',
 	],
@@ -111,19 +111,20 @@ switch ($driverName) {
 		}
 		break;
 	case 'pgsql':
-		$expectedColumns[0]['nativetype'] = 'INT4';
+		$expectedColumns[0]['nativeType'] = 'INT4';
 		$expectedColumns[0]['default'] = "nextval('author_id_seq'::regclass)";
 		$expectedColumns[0]['size'] = 4;
 		$expectedColumns[3]['size'] = 4;
 		break;
 	case 'sqlite':
-		$expectedColumns[0]['nativetype'] = 'INTEGER';
+		$expectedColumns[0]['nativeType'] = 'INTEGER';
 		$expectedColumns[0]['size'] = null;
+		$expectedColumns[1]['nativeType'] = 'TEXT';
 		$expectedColumns[0]['comment'] = null;
 		$expectedColumns[1]['nativetype'] = 'TEXT';
 		$expectedColumns[1]['size'] = null;
 		$expectedColumns[1]['comment'] = null;
-		$expectedColumns[2]['nativetype'] = 'TEXT';
+		$expectedColumns[2]['nativeType'] = 'TEXT';
 		$expectedColumns[2]['size'] = null;
 		$expectedColumns[2]['comment'] = null;
 		$expectedColumns[3]['comment'] = null;

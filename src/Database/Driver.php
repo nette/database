@@ -66,7 +66,7 @@ interface Driver
 
 	/**
 	 * Returns detailed information about columns in a table.
-	 * @return list<array{name: string, table: string, nativeType: string, size: int|null, nullable: bool, default: mixed, autoIncrement: bool, primary: bool, vendor: array}>
+	 * @return list<array{name: string, table: string, nativeType: string, size: ?int, scale: ?int, nullable: bool, default: mixed, autoIncrement: bool, primary: bool, vendor: array}>
 	 */
 	function getColumns(string $table): array;
 

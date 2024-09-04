@@ -113,6 +113,7 @@ class MsSqlDriver implements Nette\Database\Driver
 				DATA_TYPE,
 				CHARACTER_MAXIMUM_LENGTH,
 				NUMERIC_PRECISION,
+				NUMERIC_SCALE,
 				IS_NULLABLE,
 				COLUMN_DEFAULT,
 				DOMAIN_NAME
@@ -129,6 +130,7 @@ class MsSqlDriver implements Nette\Database\Driver
 				'table' => $table,
 				'nativeType' => strtoupper($row['DATA_TYPE']),
 				'size' => $row['CHARACTER_MAXIMUM_LENGTH'] ?? $row['NUMERIC_PRECISION'],
+				'scale' => $row['NUMERIC_SCALE'],
 				'unsigned' => false,
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],

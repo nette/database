@@ -390,13 +390,13 @@ class Helpers
 	}
 
 
-	/** @return array{type: string, length: ?null, scale: ?null, parameters: ?string} */
+	/** @return array{type: string, size: ?int, scale: ?int, parameters: ?string} */
 	public static function parseColumnType(string $type): array
 	{
 		preg_match('/^([^(]+)(?:\((?:(\d+)(?:,(\d+))?|([^)]+))\))?/', $type, $m, PREG_UNMATCHED_AS_NULL);
 		return [
 			'type' => $m[1],
-			'length' => isset($m[2]) ? (int) $m[2] : null,
+			'size' => isset($m[2]) ? (int) $m[2] : null,
 			'scale' => isset($m[3]) ? (int) $m[3] : null,
 			'parameters' => $m[4] ?? null,
 		];

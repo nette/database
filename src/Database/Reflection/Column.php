@@ -21,6 +21,7 @@ final class Column
 		public readonly ?Table $table = null,
 		public readonly string $nativeType = '',
 		public readonly ?int $size = null,
+		public readonly ?int $scale = null,
 		public readonly bool $nullable = false,
 		public readonly mixed $default = null,
 		public readonly bool $autoIncrement = false,

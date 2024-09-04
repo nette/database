@@ -222,12 +222,12 @@ class MSSQLEngine implements Engine
 				tab1.name = ?
 			X, [$table_name]);
 
-		$id = 0;
 		while ($row = $rows->fetch()) {
-			$keys[$id]['name'] = $row['fk_name'];
-			$keys[$id]['local'] = $row['column'];
+			$id = $row['fk_name'];
+			$keys[$id]['name'] = $id;
+			$keys[$id]['local'][] = $row['column'];
 			$keys[$id]['table'] = $table_schema . '.' . $row['referenced_table'];
-			$keys[$id++]['foreign'] = $row['referenced_column'];
+			$keys[$id]['foreign'][] = $row['referenced_column'];
 		}
 
 		return array_values($keys);

@@ -18,6 +18,14 @@ use Nette\Database\Drivers\Engines\SQLServerEngine;
  */
 class Driver extends Drivers\PDO\Driver
 {
+	public function connect(): Drivers\PDO\Connection
+	{
+		$connection = parent::connect();
+		$connection->metaTypeKey = 'sqlsrv:decl_type';
+		return $connection;
+	}
+
+
 	public function createEngine(Drivers\Connection $connection): SQLServerEngine
 	{
 		return new SQLServerEngine($connection);

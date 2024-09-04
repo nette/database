@@ -36,6 +36,12 @@ class Connection implements Drivers\Connection
 	}
 
 
+	public function execute(string $sql): int
+	{
+		return $this->pdo->exec($sql);
+	}
+
+
 	public function beginTransaction(): void
 	{
 		$this->pdo->beginTransaction();

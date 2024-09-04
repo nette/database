@@ -29,6 +29,14 @@ class Driver extends Drivers\PDO\Driver
 	}
 
 
+	public function connect(): Drivers\PDO\Connection
+	{
+		$connection = parent::connect();
+		$connection->metaTypeKey = 'sqlite:decl_type';
+		return $connection;
+	}
+
+
 	public function createEngine(Drivers\Connection $connection): SQLiteEngine
 	{
 		$engine = new SQLiteEngine($connection);

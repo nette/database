@@ -35,7 +35,7 @@ class ODBCEngine implements Engine
 	/********************* SQL ****************d*g**/
 
 
-	public function delimite(string $name): string
+	public function delimit(string $name): string
 	{
 		return '[' . str_replace(['[', ']'], ['[[', ']]'], $name) . ']';
 	}

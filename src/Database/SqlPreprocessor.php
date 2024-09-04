@@ -48,7 +48,7 @@ class SqlPreprocessor
 		'EXPLAIN' => 1,
 	];
 
-	private readonly Connection $connection;
+	private readonly Drivers\Connection $connection;
 	private readonly Drivers\Engine $engine;
 	private array $params;
 	private array $remaining;
@@ -61,7 +61,7 @@ class SqlPreprocessor
 
 	public function __construct(Connection $connection)
 	{
-		$this->connection = $connection;
+		$this->connection = $connection->getConnection();
 		$this->engine = $connection->getDatabaseEngine();
 	}
 

@@ -11,7 +11,6 @@ namespace Nette\Database;
 
 use Nette;
 use Nette\Utils\Arrays;
-use PDO;
 use function array_values, count, gettype, is_int, iterator_to_array, microtime, reset, str_starts_with, substr;
 
 
@@ -41,20 +40,12 @@ class Result implements \Iterator
 	) {
 		$time = microtime(true);
 		$this->normalizer = $normalizer;
-		$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 
 		try {
 			if (str_starts_with($queryString, '::')) {
-				$connection->getPdo()->{substr($queryString, 2)}();
+				$connection->getConnection()->{substr($queryString, 2)}();
 			} else {
-				$this->pdoStatement = $connection->getPdo()->prepare($queryString);
-				foreach ($params as $key => $value) {
-					$type = gettype($value);
-					$this->pdoStatement->bindValue(is_int($key) ? $key + 1 : $key, $value, $types[$type] ?? PDO::PARAM_STR);
-				}
-
-				$this->pdoStatement->setFetchMode(PDO::FETCH_ASSOC);
-				$this->pdoStatement->execute();
+				$this->pdoStatement = $connection->getConnection()->query($queryString, $params);
 			}
 		} catch (\PDOException $e) {
 			$e = $connection->getDatabaseEngine()->convertException($e);

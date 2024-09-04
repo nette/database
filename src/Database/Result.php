@@ -26,8 +26,8 @@ class Result implements \Iterator
 	private array $rows;
 	private float $time;
 
-	/** @var array<string, string> column name => type */
-	private array $types;
+	/** @var array<string, array{name: string, nativeType: string, table?: string}> */
+	private array $meta;
 
 
 	public function __construct(
@@ -94,18 +94,6 @@ class Result implements \Iterator
 	public function getRowCount(): ?int
 	{
 		return $this->pdoStatement ? $this->pdoStatement->rowCount() : null;
-	}
-
-
-	/** @return array<string, string> */
-	public function getColumnTypes(): array
-	{
-		if ($this->pdoStatement === null) {
-			return [];
-		}
-
-		$this->types ??= $this->connection->getDatabaseEngine()->getColumnTypes($this->pdoStatement);
-		return $this->types;
 	}
 
 
@@ -274,6 +262,29 @@ class Result implements \Iterator
 	{
 		$this->rows ??= iterator_to_array($this, preserve_keys: false);
 		return $this->rows;
+	}
+
+
+	public function getColumnsMeta(): array
+	{
+		if (isset($this->meta)) {
+			return $this->meta;
+		}
+
+		$res = [];
+		$metaTypeKey = $this->connection->getConnection()->metaTypeKey;
+		$count = $this->pdoStatement->columnCount();
+		for ($i = 0; $i < $count; $i++) {
+			$meta = $this->pdoStatement->getColumnMeta($i);
+			if (isset($meta[$metaTypeKey])) {
+				$res[$meta['name']] = [
+					'nativeType' => $meta[$metaTypeKey],
+					'size' => $meta['len'],
+					'scale' => $meta['precision'],
+				];
+			}
+		}
+		return $this->meta = $res;
 	}
 }
 

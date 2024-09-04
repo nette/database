@@ -34,7 +34,7 @@ interface IStructure
 
 	/**
 	 * Returns all columns in a table.
-	 * @return list<array{name: string, table: string, nativetype: string, size: ?int, nullable: bool, default: mixed, autoincrement: bool, primary: bool, comment: ?string, vendor: array<string, mixed>}>
+	 * @return list<array{name: string, table: string, nativeType: string, size: ?int, nullable: bool, default: mixed, autoIncrement: bool, primary: bool, comment: ?string, vendor: array<string, mixed>}>
 	 */
 	function getColumns(string $table): array;
 

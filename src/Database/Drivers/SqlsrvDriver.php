@@ -132,7 +132,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 			SELECT
 				c.name AS name,
 				o.name AS [table],
-				UPPER(t.name) AS nativetype,
+				UPPER(t.name) AS nativeType,
 				CASE
 					WHEN c.precision <> 0 THEN c.precision
 					WHEN c.max_length <> -1 THEN c.max_length
@@ -140,7 +140,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 				END AS size,
 				c.is_nullable AS nullable,
 				OBJECT_DEFINITION(c.default_object_id) AS [default],
-				c.is_identity AS autoincrement,
+				c.is_identity AS autoIncrement,
 				CASE WHEN i.index_id IS NULL
 					THEN 0
 					ELSE 1
@@ -165,11 +165,11 @@ class SqlsrvDriver implements Nette\Database\Driver
 			$columns[] = [
 				'name' => (string) $row['name'],
 				'table' => (string) $row['table'],
-				'nativetype' => (string) $row['nativetype'],
+				'nativeType' => (string) $row['nativeType'],
 				'size' => $row['size'] !== null ? (int) $row['size'] : null,
 				'nullable' => (bool) $row['nullable'],
 				'default' => $row['default'],
-				'autoincrement' => (bool) $row['autoincrement'],
+				'autoIncrement' => (bool) $row['autoIncrement'],
 				'primary' => (bool) $row['primary'],
 				'comment' => (string) ($row['comment'] ?? ''),
 				'vendor' => (array) $row,

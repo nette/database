@@ -158,7 +158,7 @@ class PgSqlDriver implements Nette\Database\Driver
 			SELECT
 				a.attname::varchar AS name,
 				c.relname::varchar AS table,
-				upper(t.typname) AS nativetype,
+				upper(t.typname) AS "nativeType",
 				CASE
 					WHEN a.atttypid IN (1700, 1231) THEN ((a.atttypmod - 4) >> 16) & 65535  -- precision for numeric/decimal
 					WHEN a.atttypmod > 0 THEN a.atttypmod - 4  -- length for varchar etc.
@@ -167,7 +167,7 @@ class PgSqlDriver implements Nette\Database\Driver
 				END AS size,
 				NOT (a.attnotnull OR t.typtype = 'd' AND t.typnotnull) AS nullable,
 				pg_catalog.pg_get_expr(ad.adbin, 'pg_catalog.pg_attrdef'::regclass)::varchar AS default,
-				coalesce(co.contype = 'p' AND (seq.relname IS NOT NULL OR strpos(pg_catalog.pg_get_expr(ad.adbin, ad.adrelid), 'nextval') = 1), FALSE) AS autoincrement,
+				coalesce(co.contype = 'p' AND (seq.relname IS NOT NULL OR strpos(pg_catalog.pg_get_expr(ad.adbin, ad.adrelid), 'nextval') = 1), FALSE) AS "autoIncrement",
 				coalesce(co.contype = 'p', FALSE) AS primary,
 				coalesce(col_description(c.oid, a.attnum)::varchar, '') AS comment,
 				coalesce(seq.relname, substring(pg_catalog.pg_get_expr(ad.adbin, 'pg_catalog.pg_attrdef'::regclass) from 'nextval[(]''"?([^''"]+)')) AS sequence
@@ -193,11 +193,11 @@ class PgSqlDriver implements Nette\Database\Driver
 			$columns[] = [
 				'name' => (string) $row['name'],
 				'table' => (string) $row['table'],
-				'nativetype' => (string) $row['nativetype'],
+				'nativeType' => (string) $row['nativeType'],
 				'size' => $row['size'] !== null ? (int) $row['size'] : null,
 				'nullable' => (bool) $row['nullable'],
 				'default' => $row['default'],
-				'autoincrement' => (bool) $row['autoincrement'],
+				'autoIncrement' => (bool) $row['autoIncrement'],
 				'primary' => (bool) $row['primary'],
 				'comment' => (string) $row['comment'],
 				'vendor' => $vendor,

@@ -78,15 +78,6 @@ class PgSqlDriver implements Nette\Database\Driver
 	}
 
 
-	public function formatLike(string $value, int $pos): string
-	{
-		$bs = substr($this->connection->quote('\\'), 1, -1); // standard_conforming_strings = on/off
-		$value = substr($this->connection->quote($value), 1, -1);
-		$value = strtr($value, ['%' => $bs . '%', '_' => $bs . '_', '\\' => '\\\\']);
-		return ($pos <= 0 ? "'%" : "'") . $value . ($pos >= 0 ? "%'" : "'");
-	}
-
-
 	public function applyLimit(string &$sql, ?int $limit, ?int $offset): void
 	{
 		if ($limit < 0 || $offset < 0) {

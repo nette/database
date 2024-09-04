@@ -12,6 +12,7 @@ namespace Nette\Database\Drivers\Engines;
 use Nette;
 use Nette\Database\Drivers\Connection;
 use Nette\Database\Drivers\Engine;
+use Nette\Database\TypeConverter;
 use function array_values, explode, preg_replace, str_replace, strtoupper;
 
 
@@ -233,8 +234,8 @@ class MSSQLEngine implements Engine
 	}
 
 
-	public function getColumnTypes(\PDOStatement $statement): array
+	public function convertToPhp(mixed $value, array $meta, TypeConverter $converter): mixed
 	{
-		return Nette\Database\Helpers::detectTypes($statement);
+		return $converter->convertToPhp($value, $meta);
 	}
 }

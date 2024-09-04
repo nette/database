@@ -33,6 +33,12 @@ final class LazyConnection implements Drivers\Connection
 	}
 
 
+	public function execute(string $sql): int
+	{
+		return $this->getConnection()->execute($sql);
+	}
+
+
 	public function getNativeConnection(): mixed
 	{
 		return $this->getConnection()->getNativeConnection();

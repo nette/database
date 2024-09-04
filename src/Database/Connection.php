@@ -8,7 +8,6 @@
 namespace Nette\Database;
 
 use JetBrains\PhpStorm\Language;
-use Nette;
 use Nette\Utils\Arrays;
 use Nette\Utils\DateTime;
 use PDOException;
@@ -118,8 +117,10 @@ class Connection
 	}
 
 
+	/** @deprecated use getConnection()->getNativeConnection() */
 	public function getPdo(): \PDO
 	{
+		trigger_error(__METHOD__ . '() is deprecated, use getConnection()->getNativeConnection()', E_USER_DEPRECATED);
 		return $this->getConnection()->getNativeConnection();
 	}
 

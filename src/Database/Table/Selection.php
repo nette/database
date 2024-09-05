@@ -16,10 +16,10 @@ use function array_filter, array_intersect_key, array_keys, array_map, array_mer
  * Represents filtered table result.
  * Selection is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
  * @template T of ActiveRow
- * @implements \Iterator<string|int, T>
+ * @implements \IteratorAggregate<string|int, T>
  * @implements \ArrayAccess<string|int, T>
  */
-class Selection implements \Iterator, \ArrayAccess, \Countable
+class Selection implements \IteratorAggregate, \ArrayAccess, \Countable
 {
 	protected readonly Explorer $explorer;
 	protected readonly ?Nette\Caching\Cache $cache;
@@ -60,9 +60,6 @@ class Selection implements \Iterator, \ArrayAccess, \Countable
 
 	/** @var ?self<ActiveRow> should instance observe accessed columns caching */
 	protected ?self $observeCache = null;
-
-	/** @var list<string|int> of primary key values */
-	protected array $keys = [];
 
 
 	/**
@@ -1003,45 +1000,18 @@ class Selection implements \Iterator, \ArrayAccess, \Countable
 	}
 
 
-	/********************* interface Iterator ****************d*g**/
+	/********************* interface IteratorAggregate ****************d*g**/
 
 
-	public function rewind(): void
+	/** @return \Generator<T> */
+	public function getIterator(): \Generator
 	{
 		$this->execute();
-		$this->keys = array_keys($this->data ?? []);
-		reset($this->keys);
-	}
-
-
-	/** @return T|false */
-	public function current(): ActiveRow|false
-	{
-		$key = current($this->keys);
-		return $key !== false && isset($this->data[$key])
-			? $this->data[$key]
-			: false;
-	}
-
-
-	public function key(): string|int
-	{
-		$key = current($this->keys);
-		return $key === false ? -1 : $key;
-	}
-
-
-	public function next(): void
-	{
-		do {
-			next($this->keys);
-		} while (($key = current($this->keys)) !== false && !isset($this->data[$key]));
-	}
-
-
-	public function valid(): bool
-	{
-		return current($this->keys) !== false;
+		foreach ($this->data as $key => $value) {
+			if (isset($this->data[$key])) { // may be unset by offsetUnset
+				yield $key => $value;
+			}
+		}
 	}
 
 

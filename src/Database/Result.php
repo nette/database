@@ -16,10 +16,9 @@ use Nette\Utils\Arrays;
 /**
  * Represents a result set.
  */
-class Result implements \Iterator
+class Result implements \IteratorAggregate
 {
-	private Row|false|null $lastRow = null;
-	private int $lastRowKey = -1;
+	private bool $fetched = false;
 
 	/** @var Row[] */
 	private array $rows;
@@ -93,42 +92,20 @@ class Result implements \Iterator
 	}
 
 
-	/********************* interface Iterator ****************d*g**/
+	/********************* interface IteratorAggregate ****************d*g**/
 
 
-	public function rewind(): void
+	/** @return \Generator<Row> */
+	public function getIterator(): \Generator
 	{
-		if ($this->lastRow === false) {
+		if ($this->fetched) {
 			throw new Nette\InvalidStateException(self::class . ' implements only one way iterator.');
 		}
-	}
 
-
-	public function current(): Row|false|null
-	{
-		return $this->lastRow;
-	}
-
-
-	public function key(): int
-	{
-		return $this->lastRowKey;
-	}
-
-
-	public function next(): void
-	{
-		$this->lastRow = false;
-	}
-
-
-	public function valid(): bool
-	{
-		if ($this->lastRow) {
-			return true;
+		$counter = 0;
+		while (($row = $this->fetch()) !== null) {
+			yield $counter++ => $row;
 		}
-
-		return $this->fetch() !== null;
 	}
 
 
@@ -146,13 +123,15 @@ class Result implements \Iterator
 
 		$data = $this->result?->fetch();
 		if ($data === null) {
+			$this->fetched = true;
 			return null;
 
-		} elseif ($this->lastRow === null && count($data) !== $this->result->getColumnCount()) {
+		} elseif (!$this->fetched && count($data) !== $this->result->getColumnCount()) {
 			$duplicates = array_filter(array_count_values(array_column($this->result->getColumnsInfo(), 'name')), fn($val) => $val > 1);
 			trigger_error("Found duplicate columns in database result set: '" . implode("', '", array_keys($duplicates)) . "'.");
 		}
 
+		$this->fetched = true;
 		return $this->normalizeRow($data);
 	}
 
@@ -163,12 +142,7 @@ class Result implements \Iterator
 	public function fetch(): ?Row
 	{
 		$data = $this->fetchAssoc();
-		if ($data === null) {
-			return null;
-		}
-
-		$this->lastRowKey++;
-		return $this->lastRow = Arrays::toObject($data, new Row);
+		return $data === null ? null : Arrays::toObject($data, new Row);
 	}
 
 
@@ -216,8 +190,7 @@ class Result implements \Iterator
 	 */
 	public function fetchAll(): array
 	{
-		$this->rows ??= iterator_to_array($this);
-		return $this->rows;
+		return $this->rows ??= iterator_to_array($this);
 	}
 
 

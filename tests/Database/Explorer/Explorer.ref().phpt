@@ -12,9 +12,8 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
 Assert::same('Jakub Vrana', $explorer->table('book')->get(1)->ref('author')->name);
@@ -36,10 +35,10 @@ test('', function () use ($explorer) {
 	Assert::null($explorer->table('book')->get(2)->ref('author', 'translator_id'));
 });
 
-test('', function () use ($explorer, $connection) {
+test('', function () use ($explorer) {
 	$counter = 0;
 
-	$connection->onQuery[] = function ($connection, $result) use (&$counter) {
+	$explorer->onQuery[] = function ($explorer, $result) use (&$counter) {
 		$counter++;
 	};
 

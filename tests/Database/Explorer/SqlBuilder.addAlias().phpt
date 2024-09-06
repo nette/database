@@ -14,9 +14,8 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 class SqlBuilderMock extends SqlBuilder
 {
@@ -32,7 +31,7 @@ class SqlBuilderMock extends SqlBuilder
 	}
 }
 
-$engine = $connection->getDatabaseEngine();
+$engine = $explorer->getDatabaseEngine();
 
 
 test('test duplicated table names throw exception', function () use ($explorer, $engine) {

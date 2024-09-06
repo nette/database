@@ -12,9 +12,8 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
 test('Testing Selection caching', function () use ($explorer) {
@@ -198,7 +197,7 @@ test('Test saving the union of needed cols, the second call is not subset', func
 
 test('Test multiple use of same selection', function () use ($explorer) {
 	$sql = [];
-	$explorer->getConnection()->onQuery[] = function ($_, $result) use (&$sql) {
+	$explorer->onQuery[] = function ($_, $result) use (&$sql) {
 		$sql[] = $result->getQueryString();
 	};
 

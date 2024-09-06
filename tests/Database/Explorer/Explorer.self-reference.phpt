@@ -12,15 +12,14 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
 $explorer->query('UPDATE book SET next_volume = 3 WHERE id IN (2,4)');
 
 
-test('', function () use ($connection, $explorer) {
+test('', function () use ($explorer) {
 	$book = $explorer->table('book')->get(4);
 	Assert::same('Nette', $book->volume->title);
 	Assert::same('Nette', $book->ref('book', 'next_volume')->title);

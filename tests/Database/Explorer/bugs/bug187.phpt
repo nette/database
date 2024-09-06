@@ -13,9 +13,8 @@ use Tester\Assert;
 require __DIR__ . '/../../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-bug187.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../../files/{$driverName}-bug187.sql");
 
 foreach ([true, false] as $published) {
 	$where = $published

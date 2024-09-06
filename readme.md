@@ -59,7 +59,7 @@ Database Core
 To create a new database connection just create a new instance of `Nette\Database\Connection` class:
 
 ```php
-$database = new Nette\Database\Connection($dsn, $user, $password); // the same arguments as uses PDO
+$database = new Nette\Database\Explorer($dsn, $user, $password); // the same arguments as uses PDO
 ```
 
 Connection allows you to easily query your database by calling `query` method:

@@ -13,12 +13,11 @@ use Tester\Assert;
 require __DIR__ . '/../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/files/{$driverName}-nette_test1.sql");
 
 
-$engine = $connection->getDatabaseEngine();
+$engine = $explorer->getDatabaseEngine();
 $tables = $engine->getTables();
 $tables = array_filter($tables, fn($t) => in_array($t['name'], ['author', 'book', 'book_tag', 'tag'], true));
 usort($tables, fn($a, $b) => strcmp($a['name'], $b['name']));
@@ -98,7 +97,7 @@ $expectedColumns = [
 
 switch ($driverName) {
 	case 'mysql':
-		$version = $connection->getServerVersion();
+		$version = $explorer->getServerVersion();
 		if (version_compare($version, '8.0', '>=')) {
 			$expectedColumns[0]['size'] = null;
 		}

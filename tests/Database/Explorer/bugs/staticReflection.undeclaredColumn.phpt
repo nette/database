@@ -12,13 +12,10 @@ use Tester\Assert;
 require __DIR__ . '/../../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-$conventions = new Nette\Database\Conventions\StaticConventions;
-$cache = new Nette\Caching\Cache(new Nette\Caching\Storages\MemoryStorage);
-$explorer = new Nette\Database\Explorer($explorer->getConnection(), $explorer->getStructure(), $conventions, $cache);
+$explorer->setConventions(new Nette\Database\Conventions\StaticConventions);
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../../files/{$driverName}-nette_test1.sql");
 
 
 test('', function () use ($explorer) {

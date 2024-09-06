@@ -12,9 +12,8 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
 test('', function () use ($explorer) {
@@ -90,10 +89,10 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($connection, $explorer, $driverName) {
+test('', function () use ($explorer, $driverName) {
 	if (
 		$driverName === 'mysql' &&
-		($lowerCase = $connection->query('SHOW VARIABLES LIKE "lower_case_table_names"')->fetch()) &&
+		($lowerCase = $explorer->query('SHOW VARIABLES LIKE "lower_case_table_names"')->fetch()) &&
 		$lowerCase->Value != 0
 	) {
 		// tests case-insensitive reflection

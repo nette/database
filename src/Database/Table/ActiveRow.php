@@ -246,7 +246,7 @@ class ActiveRow implements \IteratorAggregate, \ArrayAccess
 	 * @return ActiveRow|mixed
 	 * @throws Nette\MemberAccessException  if the column does not exist and no relationship is found
 	 */
-	public function &__get(string $key): mixed
+	public function __get(string $key): mixed
 	{
 		if ($this->accessColumn($key)) {
 			return $this->data[$key];

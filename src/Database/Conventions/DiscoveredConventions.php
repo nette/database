@@ -85,7 +85,7 @@ class DiscoveredConventions implements Conventions
 		$tableColumns = $this->structure->getBelongsToReference($table);
 
 		foreach ($tableColumns as $column => $targetTable) {
-			if (stripos($column, $key) !== false) {
+			if ($column === $key . '_id' || $column === $key . 'Id' || $column === 'id_' . $key) {
 				return [$targetTable, $column];
 			}
 		}

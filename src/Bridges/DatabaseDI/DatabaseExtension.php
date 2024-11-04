@@ -30,6 +30,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			Expect::structure([
 				'dsn' => Expect::string()->required()->dynamic(),
 				'user' => Expect::string()->nullable()->dynamic(),
+				'username' => Expect::string()->nullable()->dynamic(),
 				'password' => Expect::string()->nullable()->dynamic(),
 				'options' => Expect::array(),
 				'debugger' => Expect::bool(),
@@ -88,7 +89,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		}
 
 		$connection = $builder->addDefinition($this->prefix("$name.connection"))
-			->setFactory(Nette\Database\Connection::class, [$config->dsn, $config->user, $config->password, $config->options])
+			->setFactory(Nette\Database\Connection::class, [$config->dsn, $config->username ?? $config->user, $config->password, $config->options])
 			->setAutowired($config->autowired);
 
 		$structure = $builder->addDefinition($this->prefix("$name.structure"))

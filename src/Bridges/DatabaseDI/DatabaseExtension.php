@@ -31,6 +31,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			Expect::structure([
 				'dsn' => Expect::string()->required()->dynamic(),
 				'user' => Expect::string()->nullable()->dynamic(),
+				'username' => Expect::string()->nullable()->dynamic(),
 				'password' => Expect::string()->nullable()->dynamic(),
 				'options' => Expect::array(),
 				'debugger' => Expect::bool(),
@@ -96,7 +97,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		$cache = new Statement(Nette\Caching\Cache::class, [1 => $cacheId]);
 
 		$explorer = $builder->addDefinition($this->prefix($name))
-			->setFactory(Nette\Database\Explorer::class, [$config->dsn, $config->user, $config->password, $config->options])
+			->setFactory(Nette\Database\Explorer::class, [$config->dsn, $config->username ?? $config->user, $config->password, $config->options])
 			->addSetup('setCache', [$cache])
 			->setAutowired($config->autowired);
 

@@ -60,7 +60,7 @@ class DriverException extends \Exception
 	}
 
 
-	/** @deprecated use getQuery()->getParameters() */
+	#[\Deprecated('use getQuery()->getParameters()')]
 	public function getParameters(): ?array
 	{
 		return $this->query?->getParameters();

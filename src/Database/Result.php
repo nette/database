@@ -36,7 +36,7 @@ class Result implements \IteratorAggregate
 	}
 
 
-	/** @deprecated */
+	#[\Deprecated]
 	public function getConnection(): Explorer
 	{
 		trigger_error(__METHOD__ . '() is deprecated.', E_USER_DEPRECATED);
@@ -57,7 +57,7 @@ class Result implements \IteratorAggregate
 	}
 
 
-	/** @deprecated use getQuery()->getParameters() */
+	#[\Deprecated('use getQuery()->getParameters()')]
 	public function getParameters(): array
 	{
 		return $this->query->getParameters();

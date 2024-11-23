@@ -151,14 +151,14 @@ class Explorer
 	}
 
 
-	/** @deprecated */
+	#[\Deprecated]
 	public function getDsn(): string
 	{
 		throw new Nette\DeprecatedException(__METHOD__ . '() is deprecated.');
 	}
 
 
-	/** @deprecated use getConnection()->getNativeConnection() */
+	#[\Deprecated('use getConnection()->getNativeConnection()')]
 	public function getPdo(): \PDO
 	{
 		trigger_error(__METHOD__ . '() is deprecated, use getConnection()->getNativeConnection()', E_USER_DEPRECATED);
@@ -173,7 +173,7 @@ class Explorer
 	}
 
 
-	/** @deprecated use getConnection() */
+	#[\Deprecated('use getConnection()')]
 	public function getSupplementalDriver(): Drivers\Connection
 	{
 		trigger_error(__METHOD__ . '() is deprecated, use getConnection()', E_USER_DEPRECATED);
@@ -205,7 +205,7 @@ class Explorer
 	}
 
 
-	/** @deprecated */
+	#[\Deprecated]
 	public function setRowNormalizer(?callable $normalizer): static
 	{
 		throw new Nette\DeprecatedException(__METHOD__ . "() is deprecated, configure 'convert*' options instead.");
@@ -322,10 +322,10 @@ class Explorer
 
 
 	/**
-	 * @deprecated  use query()
 	 * @param  literal-string  $sql
 	 * @param  array<mixed>  $params
 	 */
+	#[\Deprecated('use query()')]
 	public function queryArgs(string $sql, array $params): Result
 	{
 		trigger_error(__METHOD__ . '() is deprecated, use query()', E_USER_DEPRECATED);
@@ -373,7 +373,7 @@ class Explorer
 	}
 
 
-	/** @deprecated use getLastQuery()->getSql() */
+	#[\Deprecated('use getLastQuery()->getSql()')]
 	public function getLastQueryString(): ?string
 	{
 		trigger_error(__METHOD__ . '() is deprecated, use getLastQuery()->getSql()', E_USER_DEPRECATED);

@@ -238,11 +238,13 @@ class Explorer
 	 */
 	public function beginTransaction(): void
 	{
-		if ($this->transactionDepth !== 0) {
-			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
+		if ($this->transactionDepth === 0) {
+			$this->logOperation($this->getConnection()->beginTransaction(...), new SqlLiteral('BEGIN TRANSACTION'));
+		} else {
+			$this->createSavepoint($this->transactionDepth - 1);
 		}
 
-		$this->logOperation($this->getConnection()->beginTransaction(...), new SqlLiteral('BEGIN TRANSACTION'));
+		$this->transactionDepth++;
 	}
 
 
@@ -252,11 +254,15 @@ class Explorer
 	 */
 	public function commit(): void
 	{
-		if ($this->transactionDepth !== 0) {
-			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
-		}
+		if ($this->transactionDepth === 0) {
+			throw new \LogicException('No active transaction to commit.');
 
-		$this->logOperation($this->getConnection()->commit(...), new SqlLiteral('COMMIT'));
+		} elseif (--$this->transactionDepth === 0) {
+			$this->logOperation($this->getConnection()->commit(...), new SqlLiteral('COMMIT'));
+
+		} else {
+			$this->releaseSavepoint($this->transactionDepth);
+		}
 	}
 
 
@@ -266,11 +272,15 @@ class Explorer
 	 */
 	public function rollBack(): void
 	{
-		if ($this->transactionDepth !== 0) {
-			throw new \LogicException(__METHOD__ . '() call is forbidden inside a transaction() callback');
-		}
+		if ($this->transactionDepth === 0) {
+			throw new \LogicException('No active transaction to roll back.');
 
-		$this->logOperation($this->getConnection()->rollBack(...), new SqlLiteral('ROLLBACK'));
+		} elseif (--$this->transactionDepth === 0) {
+			$this->logOperation($this->getConnection()->rollBack(...), new SqlLiteral('ROLLBACK'));
+
+		} else {
+			$this->rollbackToSavepoint($this->transactionDepth);
+		}
 	}
 
 
@@ -280,28 +290,27 @@ class Explorer
 	 */
 	public function transaction(callable $callback): mixed
 	{
-		if ($this->transactionDepth === 0) {
-			$this->beginTransaction();
-		}
-
-		$this->transactionDepth++;
+		$this->beginTransaction();
 		try {
 			$res = $callback($this);
+			$this->commit();
+			return $res;
 		} catch (\Throwable $e) {
-			$this->transactionDepth--;
-			if ($this->transactionDepth === 0) {
-				$this->rollback();
-			}
-
+			$this->rollBack();
 			throw $e;
 		}
+	}
 
-		$this->transactionDepth--;
-		if ($this->transactionDepth === 0) {
-			$this->commit();
-		}
 
-		return $res;
+	public function createSavepoint(int $level): void
+	{
+		$this->query('SAVEPOINT LEVEL' . $level); // TODO: to driver, logOperation
+	}
+
+
+	public function releaseSavepoint(int $level): void
+	{
+		$this->query('RELEASE SAVEPOINT LEVEL' . $level);
 	}
 
 

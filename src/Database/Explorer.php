@@ -42,6 +42,7 @@ class Explorer
 	private TypeConverter $typeConverter;
 	private ?SqlLiteral $lastQuery = null;
 	private int $transactionDepth = 0;
+	private bool $autoCommit = true;
 	private ?Cache $cache = null;
 	private ?Conventions $conventions = null;
 	private ?Structure $structure = null;
@@ -75,6 +76,7 @@ class Explorer
 		$args = array_diff_key($params, array_flip(self::TypeConverterOptions));
 		$explorer = new self(new $class(...$args));
 		array_map(fn($opt) => isset($params[$opt]) && ($explorer->typeConverter->$opt = (bool) $params[$opt]), self::TypeConverterOptions);
+		$this->autoCommit = (bool) ($params['autoCommit'] ?? true);
 		return $explorer;
 	}
 
@@ -128,6 +130,9 @@ class Explorer
 			throw ConnectionException::from($e);
 		}
 
+		if (!$this->autoCommit) {
+			$this->beginTransaction();
+		}
 		Arrays::invoke($this->onConnect, $this);
 	}
 
@@ -261,7 +266,9 @@ class Explorer
 
 		} elseif (--$this->transactionDepth === 0) {
 			$this->logOperation($this->getConnection()->commit(...), new SqlLiteral('COMMIT'));
-
+			if (!$this->autoCommit) {
+				$this->beginTransaction();
+			}
 		} else {
 			$this->releaseSavepoint($this->transactionDepth);
 		}
@@ -279,7 +286,9 @@ class Explorer
 
 		} elseif (--$this->transactionDepth === 0) {
 			$this->logOperation($this->getConnection()->rollBack(...), new SqlLiteral('ROLLBACK'));
-
+			if (!$this->autoCommit) {
+				$this->beginTransaction();
+			}
 		} else {
 			$this->rollbackToSavepoint($this->transactionDepth);
 		}
@@ -300,6 +309,27 @@ class Explorer
 		} catch (\Throwable $e) {
 			$this->rollBack();
 			throw $e;
+		}
+	}
+
+
+	public function setAutoCommit(bool $state): void
+	{
+		if ($this->autoCommit === $state) {
+			return;
+		}
+
+		while ($this->transactionDepth > 0) {
+			if (--$this->transactionDepth === 0) {
+				$this->query('::commit');
+			} else {
+				$this->releaseSavepoint($this->transactionDepth);
+			}
+		}
+
+		$this->autoCommit = $state;
+		if (!$state && $this->connection) {
+			$this->beginTransaction();
 		}
 	}
 

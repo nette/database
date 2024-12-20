@@ -25,7 +25,8 @@ CREATE TEMPORARY TABLE types (
 	[decimal_10_5] DECIMAL(10,5),
 	[boolean] BOOLEAN,
 	[date] DATE,
-	[datetime] DATETIME
+	[datetime] DATETIME,
+	[omitted]
 );
 
 
@@ -57,7 +58,8 @@ INSERT INTO types VALUES
 	1.1, --decimal_10_5
 	1, --boolean
 	1350079200, --date
-	1350115810 --datetime
+	1350115810, --datetime
+	'a' --omitted
 );
 
 
@@ -88,7 +90,8 @@ INSERT INTO types VALUES (
 	0.5, --decimal_10_5
 	0, --boolean
 	-3600, --date
-	-3600 --datetime
+	-3600, --datetime
+	'' --omitted
 );
 
 
@@ -119,5 +122,6 @@ INSERT INTO types VALUES (
 	NULL, --decimal_10_5
 	NULL, --boolean
 	NULL, --date
-	NULL --datetime
+	NULL, --datetime
+	NULL --omitted
 );

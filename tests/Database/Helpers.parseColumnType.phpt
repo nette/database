@@ -28,3 +28,7 @@ Assert::same(['type' => 'DECIMAL', 'length' => 10, 'scale' => 2, 'parameters' =>
 // Test type with additional parameters
 $result = Helpers::parseColumnType("ENUM('value1','value2')");
 Assert::same(['type' => 'ENUM', 'length' => null, 'scale' => null, 'parameters' => "'value1','value2'"], $result);
+
+// Test omitted type
+$result = Helpers::parseColumnType('');
+Assert::same(['type' => null, 'length' => null, 'scale' => null, 'parameters' => null], $result);

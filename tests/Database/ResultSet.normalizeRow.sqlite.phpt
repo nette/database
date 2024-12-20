@@ -46,6 +46,7 @@ Assert::equal([
 	'boolean' => true,
 	'date' => new DateTime('2012-10-13'),
 	'datetime' => new DateTime('2012-10-13 10:10:10'),
+	'omitted' => 'a',
 ], (array) $res->fetch());
 
 Assert::equal([
@@ -76,6 +77,7 @@ Assert::equal([
 	'boolean' => false,
 	'date' => new DateTime('1970-01-01'),
 	'datetime' => new DateTime('1970-01-01 00:00:00'),
+	'omitted' => '',
 ], (array) $res->fetch());
 
 Assert::same([
@@ -106,6 +108,7 @@ Assert::same([
 	'boolean' => null,
 	'date' => null,
 	'datetime' => null,
+	'omitted' => null,
 ], (array) $res->fetch());
 
 

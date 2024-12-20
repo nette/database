@@ -289,6 +289,16 @@ $expectedColumns = [
 		'autoIncrement' => false,
 		'primary' => false,
 	],
+	'omitted' => [
+		'name' => 'omitted',
+		'table' => 'types',
+		'nativeType' => 'BLOB',
+		'size' => null,
+		'nullable' => true,
+		'default' => null,
+		'autoIncrement' => false,
+		'primary' => false,
+	],
 ];
 
 Assert::same(

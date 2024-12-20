@@ -155,7 +155,7 @@ class SqliteDriver implements Nette\Database\Driver
 			$columns[] = [
 				'name' => $column,
 				'table' => $table,
-				'nativetype' => strtoupper($typeInfo['type']),
+				'nativetype' => strtoupper($typeInfo['type'] ?? 'BLOB'),
 				'size' => $typeInfo['length'],
 				'nullable' => $row['notnull'] == 0,
 				'default' => $row['dflt_value'],

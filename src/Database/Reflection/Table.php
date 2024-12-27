@@ -57,6 +57,7 @@ final readonly class Table
 				$this,
 				$row['nativetype'],
 				$row['size'],
+				$row['scale'],
 				$row['nullable'],
 				$row['default'],
 				$row['autoincrement'],

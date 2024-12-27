@@ -75,7 +75,7 @@ interface Driver
 
 	/**
 	 * Returns metadata for all columns in a table.
-	 * @return list<array{name: string, table: string, nativetype: string, size: ?int, nullable: bool, default: mixed, autoincrement: bool, primary: bool, comment: ?string, vendor: array<string, mixed>}>
+	 * @return list<array{name: string, table: string, nativetype: string, size: ?int, scale: ?int, nullable: bool, default: mixed, autoincrement: bool, primary: bool, comment: ?string, vendor: array<string, mixed>}>
 	 */
 	function getColumns(string $table): array;
 

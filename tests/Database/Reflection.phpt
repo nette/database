@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-use Nette\Database\Driver;
+use Nette\Database\Drivers\Engine;
 use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
@@ -17,7 +17,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 
 
 $reflection = $connection->getReflection();
-$schemaSupported = $connection->getDriver()->isSupported(Driver::SupportSchema);
+$schemaSupported = $connection->getDatabaseEngine()->isSupported(Engine::SupportSchema);
 
 // table names
 $tableNames = array_keys($reflection->tables);

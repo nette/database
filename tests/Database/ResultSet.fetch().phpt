@@ -15,7 +15,7 @@ $connection = connectToDB()->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($connection, $driverName) {
+test('detects duplicate column names in simple query', function () use ($connection, $driverName) {
 	$res = $connection->query('SELECT name, name FROM author');
 	$message = match ($driverName) {
 		'mysql' => "Found duplicate columns in database result set: 'name' (from author).",
@@ -35,7 +35,7 @@ test('', function () use ($connection, $driverName) {
 });
 
 
-test('tests closeCursor()', function () use ($connection, $driverName) {
+test('handles cursor management in stored procedures', function () use ($connection, $driverName) {
 	if ($driverName === 'mysql') {
 		$connection->query('CREATE DEFINER = CURRENT_USER PROCEDURE `testProc`(IN param int(10) unsigned) BEGIN SELECT * FROM book WHERE id != param; END;;');
 		$connection->getPdo()->setAttribute(PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, false);
@@ -51,7 +51,7 @@ test('tests closeCursor()', function () use ($connection, $driverName) {
 });
 
 
-test('', function () use ($connection, $driverName) {
+test('detects duplicate columns in JOINed tables', function () use ($connection, $driverName) {
 	$res = $connection->query('SELECT book.id, author.id, author.name, translator.name FROM book JOIN author ON (author.id = book.author_id) JOIN author translator ON (translator.id = book.translator_id)');
 	$message = match ($driverName) {
 		'mysql' => "Found duplicate columns in database result set: 'id' (from book, author), 'name' (from author, translator).",
@@ -69,7 +69,7 @@ test('', function () use ($connection, $driverName) {
 });
 
 
-test('', function () use ($connection, $driverName) {
+test('returns null for empty result set', function () use ($connection, $driverName) {
 	$res = $connection->query('SELECT id FROM author WHERE id = ?', 666);
 
 	Assert::null($res->fetch());

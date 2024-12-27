@@ -18,7 +18,7 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($explorer) {
+test('rolls back explorer transaction after manual control', function () use ($explorer) {
 	$explorer->beginTransaction();
 	$explorer->query('DELETE FROM book');
 	$explorer->rollBack();
@@ -27,7 +27,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('rolls back explorer transaction on exception', function () use ($explorer) {
 	Assert::exception(
 		fn() => $explorer->transaction(function (Explorer $explorer) {
 			$explorer->query('DELETE FROM book');
@@ -41,7 +41,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('commits explorer transaction successfully', function () use ($explorer) {
 	$explorer->beginTransaction();
 	$explorer->query('DELETE FROM book');
 	$explorer->commit();

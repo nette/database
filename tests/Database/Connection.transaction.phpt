@@ -16,7 +16,7 @@ $connection = connectToDB()->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($connection) {
+test('rolls back transaction after manual control', function () use ($connection) {
 	$connection->beginTransaction();
 	$connection->query('DELETE FROM book');
 	$connection->rollBack();
@@ -25,7 +25,7 @@ test('', function () use ($connection) {
 });
 
 
-test('', function () use ($connection) {
+test('rolls back transaction on exception', function () use ($connection) {
 	Assert::exception(
 		fn() => $connection->transaction(function (Connection $connection) {
 			$connection->query('DELETE FROM book');
@@ -39,7 +39,7 @@ test('', function () use ($connection) {
 });
 
 
-test('', function () use ($connection) {
+test('commits transaction successfully', function () use ($connection) {
 	$connection->beginTransaction();
 	$connection->query('DELETE FROM book');
 	$connection->commit();

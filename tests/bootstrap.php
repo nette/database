@@ -34,12 +34,7 @@ function connectToDB(array $options = []): Nette\Database\Explorer
 		Tester\Environment::lock($args['dsn'], getTempDir());
 	}
 
-	try {
-		$connection = new Nette\Database\Connection($args['dsn'], $args['username'], $args['password'], $args['options']);
-	} catch (PDOException $e) {
-		Tester\Environment::skip("Connection to '$args[dsn]' failed. Reason: " . $e->getMessage());
-	}
-
+	$connection = new Nette\Database\Connection($args['dsn'], $args['username'], $args['password'], $args['options']);
 	$driverName = $connection->getPdo()->getAttribute(PDO::ATTR_DRIVER_NAME);
 	$cacheMemoryStorage = new Nette\Caching\Storages\MemoryStorage;
 

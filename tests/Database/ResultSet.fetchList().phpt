@@ -15,14 +15,14 @@ $connection = connectToDB()->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($connection) {
+test('fetches array of values from first row', function () use ($connection) {
 	$res = $connection->query('SELECT name, id FROM author ORDER BY id');
 
 	Assert::same(['Jakub Vrana', 11], $res->fetchList());
 });
 
 
-test('', function () use ($connection) {
+test('returns null when no rows found', function () use ($connection) {
 	$res = $connection->query('SELECT id FROM author WHERE id = ?', 666);
 
 	Assert::null($res->fetchList());

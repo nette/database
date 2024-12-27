@@ -18,7 +18,7 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-$cacheStorage = Mockery::mock(Nette\Caching\Istorage::class);
+$cacheStorage = Mockery::mock(Nette\Caching\Storage::class);
 $cacheStorage->shouldReceive('read')->withAnyArgs()->once()->andReturn(['id' => true]);
 $cacheStorage->shouldReceive('read')->withAnyArgs()->times(4)->andReturn(['id' => true, 'author_id' => true]);
 $cacheStorage->shouldReceive('write')->with(Mockery::any(), ['id' => true, 'author_id' => true, 'title' => true], []);

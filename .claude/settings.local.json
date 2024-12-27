@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cat:*)",
+      "Bash(wc:*)",
+      "Bash(composer run phpstan:*)",
+      "mcp__jetbrains__list_directory_tree",
+      "mcp__jetbrains__get_file_text_by_path",
+      "Bash(git stash:*)",
+      "Bash(grep:*)",
+      "Bash(cd W:/Nette/Database/src/Bridges/DatabaseTracy && cmd //c compile.bat 2>&1)",
+      "Bash(cd \"W:/Nette/Database/src/Bridges/DatabaseTracy\" && cmd /c \"compile.bat\" 2>&1)",
+      "Bash(cd:*)"
+    ]
+  }
+}

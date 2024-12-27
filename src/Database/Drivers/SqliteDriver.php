@@ -163,6 +163,7 @@ class SqliteDriver implements Nette\Database\Driver
 				'table' => $table,
 				'nativetype' => strtoupper($typeInfo['type'] ?? 'BLOB'),
 				'size' => $typeInfo['size'],
+				'scale' => $typeInfo['scale'],
 				'nullable' => $row['notnull'] == 0,
 				'default' => $row['dflt_value'],
 				'autoincrement' => $createSql && preg_match($pattern, $createSql['sql']),

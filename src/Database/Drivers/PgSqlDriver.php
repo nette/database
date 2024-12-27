@@ -16,7 +16,7 @@ use function array_map, array_values, explode, implode, str_contains, str_replac
 /**
  * Supplemental PostgreSQL database driver.
  */
-class PgSqlDriver implements Nette\Database\Driver
+class PgSqlDriver implements Engine
 {
 	private Nette\Database\Connection $connection;
 

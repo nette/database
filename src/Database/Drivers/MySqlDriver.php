@@ -16,7 +16,7 @@ use function addcslashes, array_change_key_case, array_values, in_array, str_rep
 /**
  * Supplemental MySQL database driver.
  */
-class MySqlDriver implements Nette\Database\Driver
+class MySqlDriver implements Engine
 {
 	private Nette\Database\Connection $connection;
 	private bool $convertBoolean;

@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-use Nette\Database\Driver;
+use Nette\Database\Drivers\Engine;
 use Tester\Assert;
 
 require __DIR__ . '/../../bootstrap.php';
@@ -16,9 +16,9 @@ $explorer = connectToDB();
 $connection = $explorer->getConnection();
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
-$driver = $connection->getDriver();
-test('', function () use ($explorer, $driver) {
-	$schema = $driver->isSupported(Driver::SupportSchema)
+$engine = $connection->getDatabaseEngine();
+test('', function () use ($explorer, $engine) {
+	$schema = $engine->isSupported(Engine::SupportSchema)
 		? '[public].'
 		: '';
 	$sql = $explorer->table('book')->joinWhere('translator', 'translator.name', 'Geek')->select('book.*')->getSql();
@@ -29,7 +29,7 @@ test('', function () use ($explorer, $driver) {
 	), $sql);
 });
 
-test('', function () use ($explorer, $driver) {
+test('', function () use ($explorer, $engine) {
 	$sql = $explorer->table('tag')
 		->select('tag.name, COUNT(:book_tag.book.id) AS count_of_next_volume_written_by_younger_author')
 		->joinWhere(':book_tag.book.author', ':book_tag.book.author.born < next_volume_author.born')
@@ -37,7 +37,7 @@ test('', function () use ($explorer, $driver) {
 		->where('tag.name', 'PHP')
 		->group('tag.name')
 		->getSql();
-	if ($driver->isSupported(Driver::SupportSchema)) {
+	if ($engine->isSupported(Engine::SupportSchema)) {
 		Assert::same(
 			reformat(
 				'SELECT [tag].[name], COUNT([book].[id]) AS [count_of_next_volume_written_by_younger_author] FROM [tag] ' .

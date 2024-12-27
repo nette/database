@@ -29,19 +29,19 @@ test('connect & disconnect', function () {
 
 	// first connection
 	$pdo = $connection->getPdo();
-	$driver = $connection->getDriver();
+	$driver = $connection->getDatabaseEngine();
 	Assert::same(1, $connections);
 
 	// still first connection
 	$connection->connect();
 	Assert::same($pdo, $connection->getPdo());
-	Assert::same($driver, $connection->getDriver());
+	Assert::same($driver, $connection->getDatabaseEngine());
 	Assert::same(1, $connections);
 
 	// second connection
 	$connection->reconnect();
 	$pdo2 = $connection->getPdo();
-	$driver2 = $connection->getDriver();
+	$driver2 = $connection->getDatabaseEngine();
 
 	Assert::notSame($pdo, $pdo2);
 	Assert::notSame($driver, $driver2);
@@ -50,6 +50,6 @@ test('connect & disconnect', function () {
 	// third connection
 	$connection->disconnect();
 	Assert::notSame($pdo2, $connection->getPdo());
-	Assert::notSame($driver2, $connection->getDriver());
+	Assert::notSame($driver2, $connection->getDatabaseEngine());
 	Assert::same(3, $connections);
 });

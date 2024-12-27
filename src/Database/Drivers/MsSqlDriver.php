@@ -148,6 +148,7 @@ class MsSqlDriver implements Nette\Database\Driver
 				c.DATA_TYPE,
 				c.CHARACTER_MAXIMUM_LENGTH,
 				c.NUMERIC_PRECISION,
+				c.NUMERIC_SCALE,
 				c.IS_NULLABLE,
 				c.COLUMN_DEFAULT,
 				COLUMNPROPERTY(OBJECT_ID(c.TABLE_SCHEMA + '.' + c.TABLE_NAME), c.COLUMN_NAME, 'IsIdentity') AS autoincrement,
@@ -181,6 +182,7 @@ class MsSqlDriver implements Nette\Database\Driver
 				'table' => $table,
 				'nativeType' => strtoupper($row['DATA_TYPE']),
 				'size' => $row['CHARACTER_MAXIMUM_LENGTH'] ?? $row['NUMERIC_PRECISION'],
+				'scale' => $row['NUMERIC_SCALE'],
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],
 				// the query returns ints on purpose: pdo_dblib gives BIT as 'True'/'False' and (bool) 'False' is true

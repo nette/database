@@ -96,7 +96,7 @@ class Structure implements IStructure
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
 
-		if (!$this->connection->getDriver()->isSupported(Driver::SupportSequence)) {
+		if (!$this->connection->getDatabaseEngine()->isSupported(Drivers\Engine::SupportSequence)) {
 			return null;
 		}
 
@@ -165,10 +165,10 @@ class Structure implements IStructure
 	 */
 	protected function loadStructure(): array
 	{
-		$driver = $this->connection->getDriver();
+		$engine = $this->connection->getDatabaseEngine();
 
 		$structure = [];
-		$structure['tables'] = $driver->getTables();
+		$structure['tables'] = $engine->getTables();
 
 		foreach ($structure['tables'] as $tablePair) {
 			if (isset($tablePair['fullName'])) {
@@ -178,7 +178,7 @@ class Structure implements IStructure
 				$table = $tablePair['name'];
 			}
 
-			$structure['columns'][strtolower($table)] = $columns = $driver->getColumns($table);
+			$structure['columns'][strtolower($table)] = $columns = $engine->getColumns($table);
 
 			if (!$tablePair['view']) {
 				$structure['primary'][strtolower($table)] = $this->analyzePrimaryKey($columns);
@@ -222,7 +222,7 @@ class Structure implements IStructure
 	{
 		$lowerTable = strtolower($table);
 
-		$foreignKeys = $this->connection->getDriver()->getForeignKeys($table);
+		$foreignKeys = $this->connection->getDatabaseEngine()->getForeignKeys($table);
 
 		$fksColumnsCounts = [];
 		foreach ($foreignKeys as $foreignKey) {

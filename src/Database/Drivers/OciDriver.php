@@ -16,7 +16,7 @@ use function in_array, str_replace;
 /**
  * Supplemental Oracle database driver.
  */
-class OciDriver implements Nette\Database\Driver
+class OciDriver implements Engine
 {
 	private Nette\Database\Connection $connection;
 	private string $fmtDateTime;

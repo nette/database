@@ -25,7 +25,7 @@ class Connection
 
 	/** @var array<callable(static, Result|DriverException): void>  Occurs after query is executed */
 	public array $onQuery = [];
-	private Driver $driver;
+	private Drivers\Engine $engine;
 	private SqlPreprocessor $preprocessor;
 	private ?PDO $pdo = null;
 
@@ -74,13 +74,13 @@ class Connection
 				? "Driver class '$class' not found, specify it using the 'driverClass' option."
 				: "Driver class '$class' not found.");
 		}
-		$driver = new $class;
-		if (!$driver instanceof Driver) {
-			throw new Nette\InvalidStateException("Driver class '$class' does not implement " . Driver::class . '.');
+		$this->engine = new $class;
+		if (!$this->engine instanceof Drivers\Engine) {
+			throw new Nette\InvalidStateException("Driver class '$class' does not implement " . Drivers\Engine::class . '.');
 		}
-		$this->driver = $driver;
+
 		$this->preprocessor = new SqlPreprocessor($this);
-		$this->driver->initialize($this, $this->options);
+		$this->engine->initialize($this, $this->options);
 		Arrays::invoke($this->onConnect, $this);
 	}
 
@@ -117,24 +117,24 @@ class Connection
 	}
 
 
-	public function getDriver(): Driver
+	#[\Deprecated('use getDriver()')]
+	public function getSupplementalDriver(): Drivers\Engine
 	{
 		$this->connect();
-		return $this->driver;
+		return $this->engine;
 	}
 
 
-	#[\Deprecated('use getDriver()')]
-	public function getSupplementalDriver(): Driver
+	public function getDatabaseEngine(): Drivers\Engine
 	{
 		$this->connect();
-		return $this->driver;
+		return $this->engine;
 	}
 
 
 	public function getReflection(): Reflection
 	{
-		return new Reflection($this->getDriver());
+		return new Reflection($this->getDatabaseEngine());
 	}
 
 
@@ -159,7 +159,7 @@ class Connection
 			$res = $pdo->lastInsertId($sequence);
 			return $res === false ? '0' : $res;
 		} catch (PDOException $e) {
-			throw $this->driver->convertException($e);
+			throw $this->engine->convertException($e);
 		}
 	}
 
@@ -173,7 +173,7 @@ class Connection
 		try {
 			return $pdo->quote($string, $type);
 		} catch (PDOException $e) {
-			throw $this->driver->convertException($e);
+			throw $this->engine->convertException($e);
 		}
 	}
 

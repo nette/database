@@ -10,7 +10,7 @@ use Tester\Assert;
 require __DIR__ . '/../bootstrap.php';
 
 $connection = connectToDB()->getConnection();
-$driver = $connection->getDriver();
+$driver = $connection->getDatabaseEngine();
 
 
 test('generated columns are listed', function () use ($connection, $driver) {

@@ -14,7 +14,7 @@ use function in_array;
 /**
  * Supplemental Oracle database driver.
  */
-class OciDriver implements Nette\Database\Driver
+class OciDriver implements Engine
 {
 	private Nette\Database\Connection $connection;
 	private string $fmtDateTime;

@@ -14,6 +14,7 @@ use Nette;
 
 /**
  * Processes SQL queries with parameter substitution.
+ * Supports named parameters, array expansions and other SQL preprocessing features.
  */
 class SqlPreprocessor
 {
@@ -24,11 +25,9 @@ class SqlPreprocessor
 		ModeValues = 'values', // (key, key, ...) VALUES (value, value, ...)
 		ModeOrder = 'order',   // key, key DESC, ...
 		ModeList = 'list',     // value, value, ...  |  (tuple), (tuple), ...
-		ModeAuto = 'auto';     // arrayMode for arrays
+		ModeName = 'name';     // `name`
 
-	private const Modes = [self::ModeAnd, self::ModeOr, self::ModeSet, self::ModeValues, self::ModeOrder, self::ModeList];
-
-	private const ArrayModes = [
+	private const CommandToMode = [
 		'INSERT' => self::ModeValues,
 		'REPLACE' => self::ModeValues,
 		'KEY UPDATE' => self::ModeSet,
@@ -67,6 +66,7 @@ class SqlPreprocessor
 
 
 	/**
+	 * Processes SQL query with parameter substitution.
 	 * @return array{string, array}
 	 */
 	public function process(array $params, bool $useParams = false): array
@@ -83,7 +83,7 @@ class SqlPreprocessor
 			$param = $params[$this->counter++];
 
 			if (($this->counter === 2 && count($params) === 2) || !is_scalar($param)) {
-				$res[] = $this->formatValue($param, self::ModeAuto);
+				$res[] = $this->formatParameter($param);
 
 			} elseif (is_string($param) && $this->counter > $prev + 1) {
 				$prev = $this->counter;
@@ -102,7 +102,7 @@ class SqlPreprocessor
 							|--[^\n]*
 						~Dsix
 						X,
-					$this->callback(...),
+					$this->parsePart(...),
 				);
 			} else {
 				throw new Nette\InvalidArgumentException('There are more parameters than placeholders.');
@@ -113,215 +113,237 @@ class SqlPreprocessor
 	}
 
 
-	private function callback(array $m): string
+	/**
+	 * Handles SQL placeholders and skips string literals and comments.
+	 */
+	private function parsePart(array $match): string
 	{
-		$m = $m[0];
-		if ($m[0] === '?') { // placeholder
-			if ($this->counter >= count($this->params)) {
-				throw new Nette\InvalidArgumentException('There are more placeholders than passed parameters.');
-			}
+		$match = $match[0];
+		if (in_array($match[0], ["'", '"', '/', '-'], true)) { // string or comment
+			return $match;
 
-			return $this->formatValue($this->params[$this->counter++], substr($m, 1) ?: self::ModeAuto);
+		} elseif (!str_contains($match, '?')) { // command
+			$command = ltrim(strtoupper($match), "\t\n\r (");
+			$this->arrayMode = self::CommandToMode[$command] ?? null;
+			$this->useParams = isset(self::ParametricCommands[$command]) || $this->useParams;
+			return $match;
 
-		} elseif ($m[0] === "'" || $m[0] === '"' || $m[0] === '/' || $m[0] === '-') { // string or comment
-			return $m;
-
-		} elseif (preg_match('~^IN\s~i', $m)) { // IN (?)
-			if ($this->counter >= count($this->params)) {
-				throw new Nette\InvalidArgumentException('There are more placeholders than passed parameters.');
-			}
-
-			$param = $this->params[$this->counter++];
-			return 'IN (' . $this->formatValue($param, is_array($param) ? self::ModeList : null) . ')';
-
-		} else { // command
-			$cmd = ltrim(strtoupper($m), "\t\n\r (");
-			$this->arrayMode = self::ArrayModes[$cmd] ?? null;
-			$this->useParams = isset(self::ParametricCommands[$cmd]) || $this->useParams;
-			return $m;
-		}
-	}
-
-
-	private function formatValue(mixed $value, ?string $mode = null): string
-	{
-		if (!$mode || $mode === self::ModeAuto) {
-			if (is_scalar($value) || is_resource($value)) {
-				if ($this->useParams) {
-					$this->remaining[] = $value;
-					return '?';
-
-				} elseif (is_int($value) || is_bool($value)) {
-					return (string) (int) $value;
-
-				} elseif (is_float($value)) {
-					return rtrim(rtrim(number_format($value, 10, '.', ''), '0'), '.');
-
-				} elseif (is_resource($value)) {
-					return $this->connection->quote(stream_get_contents($value));
-
-				} else {
-					return $this->connection->quote((string) $value);
-				}
-			} elseif ($value === null) {
-				return 'NULL';
-
-			} elseif ($value instanceof Table\ActiveRow) {
-				$this->remaining[] = $value->getPrimary();
-				return '?';
-
-			} elseif ($value instanceof SqlLiteral) {
-				$prep = clone $this;
-				[$res, $params] = $prep->process(array_merge([$value->__toString()], $value->getParameters()), $this->useParams);
-				$this->remaining = array_merge($this->remaining, $params);
-				return $res;
-
-			} elseif ($value instanceof \DateTimeInterface) {
-				return $this->driver->formatDateTime($value);
-
-			} elseif ($value instanceof \DateInterval) {
-				return $this->driver->formatDateInterval($value);
-
-			} elseif ($value instanceof \BackedEnum && is_scalar($value->value)) {
-				$this->remaining[] = $value->value;
-				return '?';
-
-			} elseif ($value instanceof \Stringable) {
-				$this->remaining[] = (string) $value;
-				return '?';
-			}
-		} elseif ($mode === 'name') {
-			if (!is_string($value)) {
-				$type = get_debug_type($value);
-				throw new Nette\InvalidArgumentException("Placeholder ?$mode expects string, $type given.");
-			}
-
-			return $this->delimite($value);
+		} elseif ($this->counter >= count($this->params)) {
+			throw new Nette\InvalidArgumentException('There are more placeholders than passed parameters.');
 		}
 
-		if ($value instanceof \Traversable && !$value instanceof Table\ActiveRow) {
-			$value = iterator_to_array($value);
-		}
-
-		if ($mode && is_array($value)) {
-			$vx = $kx = [];
-			if ($mode === self::ModeAuto) {
-				$mode = $this->arrayMode ?? self::ModeSet;
-			}
-
-			if ($mode === self::ModeValues) { // (key, key, ...) VALUES (value, value, ...)
-				if (array_key_exists(0, $value)) { // multi-insert
-					if (!is_array($value[0]) && !$value[0] instanceof Row) {
-						throw new Nette\InvalidArgumentException(
-							'Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?['
-							. implode('|', self::Modes) . ']". Mode "' . $mode . '" was used.',
-						);
-					}
-
-					foreach ($value[0] as $k => $v) {
-						$kx[] = $this->delimite($k);
-					}
-
-					foreach ($value as $val) {
-						$vx2 = [];
-						foreach ($value[0] as $k => $foo) {
-							$vx2[] = $this->formatValue($val[$k]);
-						}
-
-						$vx[] = implode(', ', $vx2);
-					}
-
-					$select = $this->driver->isSupported(Driver::SupportMultiInsertAsSelect);
-					return '(' . implode(', ', $kx) . ($select ? ') SELECT ' : ') VALUES (')
-						. implode($select ? ' UNION ALL SELECT ' : '), (', $vx) . ($select ? '' : ')');
-				}
-
-				foreach ($value as $k => $v) {
-					$kx[] = $this->delimite($k);
-					$vx[] = $this->formatValue($v);
-				}
-
-				return '(' . implode(', ', $kx) . ') VALUES (' . implode(', ', $vx) . ')';
-
-			} elseif ($mode === self::ModeSet) {
-				foreach ($value as $k => $v) {
-					if (is_int($k)) { // value, value, ...
-						$vx[] = $this->formatValue($v);
-					} elseif (str_ends_with($k, '=')) { // key+=value, key-=value, ...
-						$k2 = $this->delimite(substr($k, 0, -2));
-						$vx[] = $k2 . '=' . $k2 . ' ' . substr($k, -2, 1) . ' ' . $this->formatValue($v);
-					} else { // key=value, key=value, ...
-						$vx[] = $this->delimite($k) . '=' . $this->formatValue($v);
-					}
-				}
-
-				return implode(', ', $vx);
-
-			} elseif ($mode === self::ModeList) { // value, value, ...  |  (tuple), (tuple), ...
-				foreach ($value as $v) {
-					$vx[] = is_array($v)
-						? '(' . $this->formatValue($v, self::ModeList) . ')'
-						: $this->formatValue($v);
-				}
-
-				return implode(', ', $vx);
-
-			} elseif ($mode === self::ModeAnd || $mode === self::ModeOr) { // (key [operator] value) AND ...
-				foreach ($value as $k => $v) {
-					if (is_int($k)) {
-						$vx[] = $this->formatValue($v);
-						continue;
-					}
-
-					[$k, $operator] = explode(' ', $k . ' ');
-					$k = $this->delimite($k);
-					if (is_array($v)) {
-						if ($v) {
-							$vx[] = $k . ' ' . ($operator ? $operator . ' ' : '') . 'IN (' . $this->formatValue(array_values($v), self::ModeList) . ')';
-						} elseif ($operator === 'NOT') {
-						} else {
-							$vx[] = '1=0';
-						}
-					} else {
-						$v = $this->formatValue($v);
-						$operator = $v === 'NULL'
-							? ($operator === 'NOT' ? 'IS NOT' : ($operator ?: 'IS'))
-							: ($operator ?: '=');
-						$vx[] = $k . ' ' . $operator . ' ' . $v;
-					}
-				}
-
-				return $value
-					? '(' . implode(') ' . strtoupper($mode) . ' (', $vx) . ')'
-					: '1=1';
-
-			} elseif ($mode === self::ModeOrder) { // key, key DESC, ...
-				foreach ($value as $k => $v) {
-					$vx[] = $this->delimite($k) . ($v > 0 ? '' : ' DESC');
-				}
-
-				return implode(', ', $vx);
-
-			} else {
-				throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
-			}
-		} elseif (in_array($mode, self::Modes, strict: true)) {
-			$type = get_debug_type($value);
-			throw new Nette\InvalidArgumentException("Placeholder ?$mode expects array or Traversable object, $type given.");
-
-		} elseif ($mode && $mode !== self::ModeAuto) {
-			throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode.");
-
-		} else {
-			throw new Nette\InvalidArgumentException('Unexpected type of parameter: ' . get_debug_type($value));
+		$param = $this->params[$this->counter++];
+		if ($match[0] === '?') { // ?[mode]
+			return $this->formatParameter($param, substr($match, 1) ?: null);
+		} else { // IN (?)
+			return 'IN (' . (is_array($param) ? $this->formatList($param) : $this->formatValue($param)) . ')';
 		}
 	}
 
 
 	/**
-	 * Adds delimiters around database identifier.
+	 * Formats a value for use in SQL query where ? placeholder is used.
+	 * For arrays, the formatting is determined by $mode or last SQL keyword before the placeholder
 	 */
-	private function delimite(string $name): string
+	private function formatParameter(mixed $value, ?string $mode = null): string
+	{
+		if ($value instanceof \Traversable && !$value instanceof \Stringable) {
+			$value = iterator_to_array($value);
+		}
+		if (is_array($value)) {
+			$mode ??= $this->arrayMode ?? self::ModeSet;
+		}
+
+		$check = fn($value, $type) => "is_$type"($value)
+			? $value
+			: throw new Nette\InvalidArgumentException("Placeholder ?$mode expects $type, " . get_debug_type($value) . ' given.');
+
+		return match ($mode) {
+			null => $this->formatValue($value),
+			self::ModeValues => array_key_exists(0, $check($value, 'iterable')) ? $this->formatMultiInsert($value) : $this->formatInsert($value),
+			self::ModeSet => $this->formatSet($check($value, 'iterable')),
+			self::ModeList => $this->formatList($check($value, 'iterable')),
+			self::ModeAnd, self::ModeOr => $this->formatWhere($check($value, 'iterable'), $mode),
+			self::ModeOrder => $this->formatOrderBy($check($value, 'iterable')),
+			self::ModeName => $this->delimit($check($value, 'string')),
+			default => throw new Nette\InvalidArgumentException("Unknown placeholder ?$mode."),
+		};
+	}
+
+
+	/**
+	 * Formats a single value for use in SQL query.
+	 */
+	private function formatValue(mixed $value): string
+	{
+		if ($this->useParams && (is_scalar($value) || is_resource($value))) {
+			$this->remaining[] = $value;
+			return '?';
+		}
+
+		return match (true) {
+			is_int($value) => (string) $value,
+			is_bool($value) => (string) (int) $value,
+			is_float($value) => rtrim(rtrim(number_format($value, 10, '.', ''), '0'), '.'),
+			is_resource($value) => $this->connection->quote(stream_get_contents($value)),
+			is_string($value) => $this->connection->quote($value),
+			$value === null => 'NULL',
+			$value instanceof SqlLiteral => $this->formatLiteral($value),
+			$value instanceof Table\ActiveRow => $this->formatValue($value->getPrimary()),
+			$value instanceof \DateTimeInterface => $this->driver->formatDateTime($value),
+			$value instanceof \DateInterval => $this->driver->formatDateInterval($value),
+			$value instanceof \BackedEnum && is_scalar($value->value) => $this->formatValue($value->value),
+			$value instanceof \Stringable => $this->formatValue((string) $value),
+			default => throw new Nette\InvalidArgumentException('Unexpected type of parameter: ' . get_debug_type($value))
+		};
+	}
+
+
+	/**
+	 * Output: value, value, ... | (tuple), (tuple), ...
+	 */
+	private function formatList(array $values): string
+	{
+		$res = [];
+		foreach ($values as $v) {
+			$res[] = is_array($v)
+				? '(' . $this->formatList($v) . ')'
+				: $this->formatValue($v);
+		}
+
+		return implode(', ', $res);
+	}
+
+
+	/**
+	 * Output format: (key, key, ...) VALUES (value, value, ...)
+	 */
+	private function formatInsert(array $items): string
+	{
+		$cols = $vals = [];
+		foreach ($items as $k => $v) {
+			$cols[] = $this->delimit($k);
+			$vals[] = $this->formatValue($v);
+		}
+
+		return '(' . implode(', ', $cols) . ') VALUES (' . implode(', ', $vals) . ')';
+	}
+
+
+	/**
+	 * Output format: (key, key, ...) VALUES (value, value, ...), (value, value, ...), ...
+	 */
+	private function formatMultiInsert(array $groups): string
+	{
+		if (!is_array($groups[0]) && !$groups[0] instanceof Row) {
+			throw new Nette\InvalidArgumentException('Automaticaly detected multi-insert, but values aren\'t array. If you need try to change ?mode.');
+		}
+
+		$cols = array_keys(is_array($groups[0]) ? $groups[0] : iterator_to_array($groups[0]));
+		$vals = [];
+		foreach ($groups as $group) {
+			$rowVals = [];
+			foreach ($cols as $k) {
+				$rowVals[] = $this->formatValue($group[$k]);
+			}
+
+			$vals[] = implode(', ', $rowVals);
+		}
+
+		$useSelect = $this->driver->isSupported(Driver::SupportMultiInsertAsSelect);
+		return '(' . implode(', ', array_map($this->delimit(...), $cols))
+			. ($useSelect ? ') SELECT ' : ') VALUES (')
+			. implode($useSelect ? ' UNION ALL SELECT ' : '), (', $vals)
+			. ($useSelect ? '' : ')');
+	}
+
+
+	/**
+	 * Output format: key=value, key=value, ...
+	 */
+	private function formatSet(array $items): string
+	{
+		$res = [];
+		foreach ($items as $k => $v) {
+			if (is_int($k)) { // value, value, ...
+				$res[] = $this->formatValue($v);
+			} elseif (str_ends_with($k, '=')) { // key+=value, key-=value, ...
+				$col = $this->delimit(substr($k, 0, -2));
+				$res[] = $col . '=' . $col . ' ' . substr($k, -2, 1) . ' ' . $this->formatValue($v);
+			} else { // key=value, key=value, ...
+				$res[] = $this->delimit($k) . '=' . $this->formatValue($v);
+			}
+		}
+
+		return implode(', ', $res);
+	}
+
+
+	/**
+	 * Output format: (key [operator] value) AND/OR ...
+	 */
+	private function formatWhere(array $items, string $mode): string
+	{
+		$res = [];
+		foreach ($items as $k => $v) {
+			if (is_int($k)) {
+				$res[] = $this->formatValue($v);
+				continue;
+			}
+
+			[$k, $operator] = explode(' ', $k . ' ');
+			$k = $this->delimit($k);
+			if (is_array($v)) {
+				if ($v) {
+					$res[] = $k . ' ' . ($operator ? $operator . ' ' : '') . 'IN (' . $this->formatList(array_values($v)) . ')';
+				} elseif ($operator === 'NOT') {
+				} else {
+					$res[] = '1=0';
+				}
+			} else {
+				$v = $this->formatValue($v);
+				$operator = $v === 'NULL'
+					? ($operator === 'NOT' ? 'IS NOT' : ($operator ?: 'IS'))
+					: ($operator ?: '=');
+				$res[] = $k . ' ' . $operator . ' ' . $v;
+			}
+		}
+
+		return $items
+			? '(' . implode(') ' . strtoupper($mode) . ' (', $res) . ')'
+			: '1=1';
+	}
+
+
+	/**
+	 * Output format: key, key DESC, ...
+	 */
+	private function formatOrderBy(array $items): string
+	{
+		$res = [];
+		foreach ($items as $k => $v) {
+			$res[] = $this->delimit($k) . ($v > 0 ? '' : ' DESC');
+		}
+
+		return implode(', ', $res);
+	}
+
+
+	/**
+	 * Incorporates literal into SQL query.
+	 */
+	private function formatLiteral(SqlLiteral $value): string
+	{
+		[$res, $params] = (clone $this)->process([$value->getSql(), ...$value->getParameters()], $this->useParams);
+		$this->remaining = array_merge($this->remaining, $params);
+		return $res;
+	}
+
+
+	/**
+	 * Escapes and delimits identifier for use in SQL query.
+	 */
+	private function delimit(string $name): string
 	{
 		return implode('.', array_map($this->driver->delimite(...), explode('.', $name)));
 	}

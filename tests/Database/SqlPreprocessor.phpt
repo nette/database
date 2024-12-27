@@ -475,7 +475,7 @@ test('Detects incorrect multi-insert usage', function () use ($preprocessor) {
 	Assert::exception(
 		fn() => $preprocessor->process(['INSERT INTO author (name) SELECT name FROM user WHERE id ?', [11, 12]]),
 		Nette\InvalidArgumentException::class,
-		'Automaticaly detected multi-insert, but values aren\'t array. If you need try to change mode like "?[and|or|set|values|order|list]". Mode "values" was used.',
+		'Automaticaly detected multi-insert, but values aren\'t array. If you need try to change ?mode.',
 	);
 });
 
@@ -606,7 +606,7 @@ test('Validates parameters for special placeholders', function () use ($preproce
 		Assert::exception(
 			fn() => $preprocessor->process([$mode, 'string']),
 			Nette\InvalidArgumentException::class,
-			"Placeholder $mode expects array or Traversable object, string given.",
+			"Placeholder $mode expects iterable, string given.",
 		);
 	}
 

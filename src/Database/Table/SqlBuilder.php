@@ -835,7 +835,7 @@ class SqlBuilder
 			if ($parameter instanceof Selection) {
 				$parameter = $this->getConditionHash($parameter->getSql(), $parameter->getSqlBuilder()->getParameters());
 			} elseif ($parameter instanceof SqlLiteral) {
-				$parameter = $this->getConditionHash($parameter->__toString(), $parameter->getParameters());
+				$parameter = $this->getConditionHash($parameter->getSql(), $parameter->getParameters());
 			} elseif ($parameter instanceof \Stringable) {
 				$parameter = $parameter->__toString();
 			} elseif (is_array($parameter) || $parameter instanceof \ArrayAccess) {

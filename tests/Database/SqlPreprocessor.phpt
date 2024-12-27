@@ -131,7 +131,7 @@ test('Auto-detects operator in WHERE conditions', function () use ($preprocessor
 		'col_arr' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM tbl WHERE ([col_null] IS NULL) AND ([x].[col_val] = ?) AND ([col_arr] IN (?, ?))'), $sql);
+	Assert::same(reformat('SELECT id FROM tbl WHERE (([col_null] IS NULL) AND ([x].[col_val] = ?) AND ([col_arr] IN (?, ?)))'), $sql);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE', [
 		'col_null NOT' => null,
@@ -139,7 +139,7 @@ test('Auto-detects operator in WHERE conditions', function () use ($preprocessor
 		'col_arr NOT' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM tbl WHERE ([col_null] IS NOT NULL) AND ([x].[col_val] != ?) AND ([col_arr] NOT IN (?, ?))'), $sql);
+	Assert::same(reformat('SELECT id FROM tbl WHERE (([col_null] IS NOT NULL) AND ([x].[col_val] != ?) AND ([col_arr] NOT IN (?, ?)))'), $sql);
 });
 
 
@@ -153,7 +153,7 @@ test('Supports explicit operators in WHERE conditions', function () use ($prepro
 		'col_arr =' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM tbl WHERE ([col_is] = ?) AND ([col_not] <> ?) AND ([col_like] LIKE ?) AND ([col_like] NOT LIKE ?) AND ([col_null] = NULL) AND ([col_arr] = (?, ?))'), $sql);
+	Assert::same(reformat('SELECT id FROM tbl WHERE (([col_is] = ?) AND ([col_not] <> ?) AND ([col_like] LIKE ?) AND ([col_like] NOT LIKE ?) AND ([col_null] = NULL) AND ([col_arr] = (?, ?)))'), $sql);
 });
 
 
@@ -230,21 +230,21 @@ test('WHERE conditions with indexed items', function () use ($preprocessor) {
 		new SqlLiteral('foo'),
 		'foo', // using values other than `SqlLiteral` is not useful, but it would be dangerous to interpret strings as SQL literals
 	]]);
-	Assert::same(reformat('SELECT id FROM tbl WHERE (foo) AND (?)'), $sql);
+	Assert::same(reformat('SELECT id FROM tbl WHERE ((foo) AND (?))'), $sql);
 	Assert::same(['foo'], $params);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE ?or', [
 		new SqlLiteral('foo'),
 		'foo',
 	]]);
-	Assert::same(reformat('SELECT id FROM tbl WHERE (foo) OR (?)'), $sql);
+	Assert::same(reformat('SELECT id FROM tbl WHERE ((foo) OR (?))'), $sql);
 	Assert::same(['foo'], $params);
 });
 
 
 test('Combines WHERE conditions with array & direct SQL', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE id=?', 10, 'AND ?and', ['c1' => null, 'c2' => 2], 'AND ?or', ['c3' => null, 'c4' => 4]]);
-	Assert::same(reformat('SELECT id FROM tbl WHERE id=? AND ([c1] IS NULL) AND ([c2] = ?) AND ([c3] IS NULL) OR ([c4] = ?)'), $sql); // is not properly clamped
+	Assert::same(reformat('SELECT id FROM tbl WHERE id=? AND (([c1] IS NULL) AND ([c2] = ?)) AND (([c3] IS NULL) OR ([c4] = ?))'), $sql);
 	Assert::same([10, 2, 4], $params);
 });
 
@@ -291,7 +291,7 @@ test('WHERE conditions with ORDER BY', function () use ($preprocessor) {
 		'name' => false,
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE ([id] = ?) AND ([web] = ?) ORDER BY [name] DESC'), $sql);
+	Assert::same(reformat('SELECT id FROM author WHERE (([id] = ?) AND ([web] = ?)) ORDER BY [name] DESC'), $sql);
 	Assert::same([1, 'web'], $params);
 });
 
@@ -368,7 +368,7 @@ test('WHERE conditions with SQL literals', function () use ($preprocessor) {
 		'web' => new SqlLiteral('NOW()'),
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NULL) AND ([born] IN (?, ?, 3+1)) AND ([web] = NOW())'), $sql);
+	Assert::same(reformat('SELECT id FROM author WHERE (([id] IS NULL) AND ([born] IN (?, ?, 3+1)) AND ([web] = NOW()))'), $sql);
 	Assert::same([1, 2], $params);
 });
 
@@ -387,7 +387,7 @@ test('AND operator in WHERE conditions', function () use ($preprocessor) {
 		'born' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NULL) AND ([born] IN (?, ?))'), $sql);
+	Assert::same(reformat('SELECT id FROM author WHERE (([id] IS NULL) AND ([born] IN (?, ?)))'), $sql);
 	Assert::same([1, 2], $params);
 });
 
@@ -398,7 +398,7 @@ test('OR operator in WHERE conditions', function () use ($preprocessor) {
 		'born' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE ([id] IS NULL) OR ([born] IN (?, ?))'), $sql);
+	Assert::same(reformat('SELECT id FROM author WHERE (([id] IS NULL) OR ([born] IN (?, ?)))'), $sql);
 	Assert::same([1, 2], $params);
 });
 
@@ -623,7 +623,7 @@ test('nested SQL literals with special placeholders', function () use ($preproce
 		new SqlLiteral('max > ?', [10]),
 		new SqlLiteral('min < ?', [20]),
 	]]);
-	Assert::same(reformat('SELECT id FROM author WHERE (max > ?) OR (min < ?)'), $sql);
+	Assert::same(reformat('SELECT id FROM author WHERE ((max > ?) OR (min < ?))'), $sql);
 	Assert::same([10, 20], $params);
 });
 
@@ -633,7 +633,7 @@ test('complex nested conditions with SQL literals', function () use ($preprocess
 		new SqlLiteral('?and', [['a' => 1, 'b' => 2]]),
 		new SqlLiteral('?and', [['c' => 3, 'd' => 4]]),
 	]])]);
-	Assert::same(reformat('SELECT id FROM author WHERE (([a] = ?) AND ([b] = ?)) OR (([c] = ?) AND ([d] = ?))'), $sql);
+	Assert::same(reformat('SELECT id FROM author WHERE (((([a] = ?) AND ([b] = ?))) OR ((([c] = ?) AND ([d] = ?))))'), $sql);
 	Assert::same([1, 2, 3, 4], $params);
 });
 

@@ -313,7 +313,9 @@ class SqlPreprocessor
 			}
 		}
 
-		return '(' . implode(') ' . strtoupper($mode) . ' (', $res ?: [$default]) . ')';
+		return count($res) > 1
+			? '((' . implode(') ' . strtoupper($mode) . ' (', $res) . '))'
+			: '(' . ($res[0] ?? $default) . ')';
 	}
 
 

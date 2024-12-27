@@ -49,7 +49,7 @@ class SqlPreprocessor
 	];
 
 	private readonly Connection $connection;
-	private readonly Driver $driver;
+	private readonly Drivers\Engine $engine;
 	private array $params;
 	private array $remaining;
 	private int $counter;
@@ -62,7 +62,7 @@ class SqlPreprocessor
 	public function __construct(Connection $connection)
 	{
 		$this->connection = $connection;
-		$this->driver = $connection->getDriver();
+		$this->engine = $connection->getDatabaseEngine();
 	}
 
 
@@ -193,8 +193,8 @@ class SqlPreprocessor
 			$value === null => 'NULL',
 			$value instanceof SqlLiteral => $this->formatLiteral($value),
 			$value instanceof Table\ActiveRow => $this->formatValue($value->getPrimary()),
-			$value instanceof \DateTimeInterface => $this->driver->formatDateTime($value),
-			$value instanceof \DateInterval => $this->driver->formatDateInterval($value),
+			$value instanceof \DateTimeInterface => $this->engine->formatDateTime($value),
+			$value instanceof \DateInterval => $this->engine->formatDateInterval($value),
 			$value instanceof \BackedEnum && is_scalar($value->value) => $this->formatValue($value->value),
 			$value instanceof \Stringable => $this->formatValue((string) $value),
 			default => throw new Nette\InvalidArgumentException('Unexpected type of parameter: ' . get_debug_type($value))
@@ -258,7 +258,7 @@ class SqlPreprocessor
 			$vals[] = implode(', ', $rowVals);
 		}
 
-		$useSelect = $this->driver->isSupported(Driver::SupportMultiInsertAsSelect);
+		$useSelect = $this->engine->isSupported(Drivers\Engine::SupportMultiInsertAsSelect);
 		return '(' . implode(', ', array_map($this->delimit(...), $cols))
 			. ($useSelect ? ') SELECT ' : ') VALUES (')
 			. implode($useSelect ? ' UNION ALL SELECT ' : '), (', $vals)
@@ -360,6 +360,6 @@ class SqlPreprocessor
 	 */
 	private function delimit(string $name): string
 	{
-		return implode('.', array_map($this->driver->delimite(...), explode('.', $name)));
+		return implode('.', array_map($this->engine->delimite(...), explode('.', $name)));
 	}
 }

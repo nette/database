@@ -135,11 +135,11 @@ test('Auto-detects operator in WHERE conditions', function () use ($preprocessor
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE', [
 		'col_null NOT' => null,
-		'x.col_val NOT' => 'a', // not supported
+		'x.col_val NOT' => 'a',
 		'col_arr NOT' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM tbl WHERE ([col_null] IS NOT NULL) AND ([x].[col_val] NOT ?) AND ([col_arr] NOT IN (?, ?))'), $sql);
+	Assert::same(reformat('SELECT id FROM tbl WHERE ([col_null] IS NOT NULL) AND ([x].[col_val] != ?) AND ([col_arr] NOT IN (?, ?))'), $sql);
 });
 
 
@@ -148,12 +148,12 @@ test('Supports explicit operators in WHERE conditions', function () use ($prepro
 		'col_is =' => 1,
 		'col_not <>' => 1,
 		'col_like LIKE' => 'a',
-		'col_like NOT LIKE' => 'a', // not supported
+		'col_like NOT LIKE' => 'a',
 		'col_null =' => null, // always false
-		'col_arr =' => [1, 2], // not supported
+		'col_arr =' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM tbl WHERE ([col_is] = ?) AND ([col_not] <> ?) AND ([col_like] LIKE ?) AND ([col_like] NOT ?) AND ([col_null] = NULL) AND ([col_arr] = IN (?, ?))'), $sql);
+	Assert::same(reformat('SELECT id FROM tbl WHERE ([col_is] = ?) AND ([col_not] <> ?) AND ([col_like] LIKE ?) AND ([col_like] NOT LIKE ?) AND ([col_null] = NULL) AND ([col_arr] = (?, ?))'), $sql);
 });
 
 
@@ -166,7 +166,7 @@ test('Redundant WHERE operators', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE', [
 		'col_arr NOT IN' => [],
 	]]);
-	Assert::same(reformat('SELECT id FROM tbl WHERE ()'), $sql); // buggy
+	Assert::same(reformat('SELECT id FROM tbl WHERE (1=1)'), $sql);
 });
 
 
@@ -175,7 +175,7 @@ test('Empty WHERE conditions', function () use ($preprocessor) {
 		'col_empty' => [],
 		'foo',
 	]]);
-	Assert::same(reformat('SELECT id FROM tbl WHERE (1=0) AND (?)'), $sql);
+	Assert::same(reformat('SELECT id FROM tbl WHERE (1=0)'), $sql);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE', [
 		'col_empty' => [],
@@ -190,12 +190,12 @@ test('Empty WHERE conditions', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE', [
 		'col_empty NOT' => [],
 	]]);
-	Assert::same(reformat('SELECT id FROM tbl WHERE ()'), $sql); // buggy
+	Assert::same(reformat('SELECT id FROM tbl WHERE (1=1)'), $sql);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE', [
 		'col_empty NOT IN' => [],
 	]]);
-	Assert::same(reformat('SELECT id FROM tbl WHERE ()'), $sql); // buggy
+	Assert::same(reformat('SELECT id FROM tbl WHERE (1=1)'), $sql);
 });
 
 
@@ -204,7 +204,7 @@ test('Empty WHERE conditions joined with OR', function () use ($preprocessor) {
 		'col_empty' => [],
 		new SqlLiteral('foo'),
 	]]);
-	Assert::same(reformat('SELECT id FROM tbl WHERE (1=0) OR (foo)'), $sql);
+	Assert::same(reformat('SELECT id FROM tbl WHERE (foo)'), $sql);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE ?or', [
 		'col_empty' => [],
@@ -215,13 +215,13 @@ test('Empty WHERE conditions joined with OR', function () use ($preprocessor) {
 		'col_empty' => [],
 		'col_empty NOT' => [],
 	]]);
-	Assert::same(reformat('SELECT id FROM tbl WHERE (1=0)'), $sql); // buggy
+	Assert::same(reformat('SELECT id FROM tbl WHERE (1=1)'), $sql);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE ?or', [
 		'col_empty IN' => [],
 		'col_empty NOT IN' => [],
 	]]);
-	Assert::same(reformat('SELECT id FROM tbl WHERE (1=0)'), $sql); // buggy
+	Assert::same(reformat('SELECT id FROM tbl WHERE (1=1)'), $sql);
 });
 
 
@@ -376,7 +376,7 @@ test('WHERE conditions with SQL literals', function () use ($preprocessor) {
 test('empty WHERE conditions array', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE', []]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE 1=1'), $sql);
+	Assert::same(reformat('SELECT id FROM author WHERE (1=1)'), $sql);
 	Assert::same([], $params);
 });
 

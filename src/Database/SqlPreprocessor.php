@@ -284,6 +284,7 @@ class SqlPreprocessor
 	 */
 	private function formatWhere(array $items, string $mode): string
 	{
+		$default = '1=1';
 		$res = [];
 		foreach ($items as $k => $v) {
 			if (is_int($k)) {
@@ -291,27 +292,28 @@ class SqlPreprocessor
 				continue;
 			}
 
-			[$k, $operator] = explode(' ', $k . ' ');
+			[$k, $operator] = explode(' ', $k, 2) + [1 => ''];
 			$k = $this->delimit($k);
 			if (is_array($v)) {
-				if ($v) {
-					$res[] = $k . ' ' . ($operator ? $operator . ' ' : '') . 'IN (' . $this->formatList(array_values($v)) . ')';
-				} elseif ($operator === 'NOT') {
+				$kind = ['' => true, 'IN' => true, 'NOT' => false, 'NOT IN' => false][$operator] ?? null;
+				if ($v || $kind === null) {
+					$res[] = $k . ' ' . ($kind === null ? $operator : ($kind ? 'IN' : 'NOT IN')) . ' (' . $this->formatList(array_values($v)) . ')';
+
 				} else {
-					$res[] = '1=0';
+					$default = $kind ? '1=0' : '1=1';
+					if ($kind === ($mode === self::ModeAnd)) {
+						return "($default)";
+					}
 				}
+
 			} else {
 				$v = $this->formatValue($v);
-				$operator = $v === 'NULL'
-					? ($operator === 'NOT' ? 'IS NOT' : ($operator ?: 'IS'))
-					: ($operator ?: '=');
+				$operator = ['' => ['=', 'IS'], 'NOT' => ['!=', 'IS NOT']][$operator][$v === 'NULL'] ?? $operator;
 				$res[] = $k . ' ' . $operator . ' ' . $v;
 			}
 		}
 
-		return $items
-			? '(' . implode(') ' . strtoupper($mode) . ' (', $res) . ')'
-			: '1=1';
+		return '(' . implode(') ' . strtoupper($mode) . ' (', $res ?: [$default]) . ')';
 	}
 
 

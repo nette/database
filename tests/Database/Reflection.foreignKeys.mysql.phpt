@@ -10,7 +10,7 @@ use Tester\Assert;
 require __DIR__ . '/../bootstrap.php';
 
 $connection = connectToDB()->getConnection();
-$driver = $connection->getDriver();
+$driver = $connection->getDatabaseEngine();
 
 $connection->query('SET foreign_key_checks = 0');
 $connection->query('DROP TABLE IF EXISTS fk_child, fk_parent');

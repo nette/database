@@ -14,7 +14,7 @@ use function count;
 /**
  * Supplemental PostgreSQL database driver.
  */
-class PgSqlDriver implements Nette\Database\Driver
+class PgSqlDriver implements Engine
 {
 	private Nette\Database\Connection $connection;
 

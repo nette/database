@@ -14,7 +14,7 @@ use function in_array;
 /**
  * Supplemental SQLite3 database driver.
  */
-class SqliteDriver implements Nette\Database\Driver
+class SqliteDriver implements Engine
 {
 	private Nette\Database\Connection $connection;
 	private string $fmtDateTime;

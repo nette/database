@@ -14,7 +14,7 @@ use function in_array;
 /**
  * Supplemental MySQL database driver.
  */
-class MySqlDriver implements Nette\Database\Driver
+class MySqlDriver implements Engine
 {
 	private Nette\Database\Connection $connection;
 	private bool $convertBoolean;

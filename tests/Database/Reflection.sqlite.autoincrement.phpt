@@ -10,7 +10,7 @@ use Tester\Assert;
 require __DIR__ . '/../bootstrap.php';
 
 $connection = connectToDB()->getConnection();
-$driver = $connection->getDriver();
+$driver = $connection->getDatabaseEngine();
 
 
 test('a column whose name is a substring of the autoincrement column is not flagged', function () use ($connection, $driver) {

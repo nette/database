@@ -149,6 +149,10 @@ class PgSqlDriver implements Nette\Database\Driver
 					WHEN t.typlen > 0 THEN t.typlen  -- length for fixed-length types
 					ELSE NULL
 				END AS size,
+				CASE
+					WHEN a.atttypid IN (1700, 1231) THEN (a.atttypmod - 4) & 65535
+					ELSE null
+				END AS scale,
 				NOT (a.attnotnull OR t.typtype = 'd' AND t.typnotnull) AS nullable,
 				pg_catalog.pg_get_expr(ad.adbin, 'pg_catalog.pg_attrdef'::regclass)::varchar AS default,
 				coalesce(co.contype = 'p' AND (seq.relname IS NOT NULL OR strpos(pg_catalog.pg_get_expr(ad.adbin, ad.adrelid), 'nextval') = 1), FALSE) AS "autoIncrement",

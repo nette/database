@@ -52,7 +52,7 @@ final class Table
 	private function initColumns(): void
 	{
 		$res = [];
-		foreach ($this->reflection->getDriver()->getColumns($this->name) as $row) {
+		foreach ($this->reflection->getDatabaseEngine()->getColumns($this->name) as $row) {
 			$row['table'] = $this;
 			$res[$row['name']] = new Column(...$row);
 		}
@@ -69,7 +69,7 @@ final class Table
 				$row['primary'],
 				$row['name'],
 			),
-			$this->reflection->getDriver()->getIndexes($this->name),
+			$this->reflection->getDatabaseEngine()->getIndexes($this->name),
 		);
 	}
 
@@ -87,7 +87,7 @@ final class Table
 	private function initForeignKeys(): void
 	{
 		$tmp = [];
-		foreach ($this->reflection->getDriver()->getForeignKeys($this->name) as $row) {
+		foreach ($this->reflection->getDatabaseEngine()->getForeignKeys($this->name) as $row) {
 			$id = $row['name'];
 			$foreignTable = $this->reflection->getTable($row['table']);
 			$tmp[$id][0] = $foreignTable;

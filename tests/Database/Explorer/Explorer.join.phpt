@@ -5,7 +5,7 @@
  * @dataProvider? ../databases.ini
  */
 
-use Nette\Database\Driver;
+use Nette\Database\Drivers\Engine;
 use Tester\Assert;
 
 require __DIR__ . '/../../bootstrap.php';
@@ -14,7 +14,7 @@ $explorer = connectToDB();
 $connection = $explorer->getConnection();
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
-$driver = $connection->getDriver();
+$engine = $connection->getDatabaseEngine();
 
 
 test('join with order by related column', function () use ($explorer) {
@@ -32,10 +32,10 @@ test('join with order by related column', function () use ($explorer) {
 });
 
 
-test('join SQL structure verification', function () use ($explorer, $driver) {
+test('join SQL structure verification', function () use ($explorer, $engine) {
 	$joinSql = $explorer->table('book_tag')->where('book_id', 1)->select('tag.*')->getSql();
 
-	if ($driver->isSupported(Driver::SupportSchema)) {
+	if ($engine->isSupported(Engine::SupportSchema)) {
 		Assert::same(
 			reformat('SELECT [tag].* FROM [book_tag] LEFT JOIN [public].[tag] [tag] ON [book_tag].[tag_id] = [tag].[id] WHERE ([book_id] = ?)'),
 			$joinSql,
@@ -49,10 +49,10 @@ test('join SQL structure verification', function () use ($explorer, $driver) {
 });
 
 
-test('aliased column selection in join', function () use ($explorer, $driver) {
+test('aliased column selection in join', function () use ($explorer, $engine) {
 	$joinSql = $explorer->table('book_tag')->where('book_id', 1)->select('Tag.id')->getSql();
 
-	if ($driver->isSupported(Driver::SupportSchema)) {
+	if ($engine->isSupported(Engine::SupportSchema)) {
 		Assert::same(
 			reformat('SELECT [Tag].[id] FROM [book_tag] LEFT JOIN [public].[tag] [Tag] ON [book_tag].[tag_id] = [Tag].[id] WHERE ([book_id] = ?)'),
 			$joinSql,

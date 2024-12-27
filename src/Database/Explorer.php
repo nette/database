@@ -103,6 +103,12 @@ class Explorer
 	}
 
 
+	public function getDatabaseEngine(): Drivers\Engine
+	{
+		return $this->connection->getDatabaseEngine();
+	}
+
+
 	public function getStructure(): IStructure
 	{
 		return $this->structure;

@@ -56,7 +56,7 @@ class Result implements \Iterator
 				$this->pdoStatement->execute();
 			}
 		} catch (\PDOException $e) {
-			$e = $connection->getDriver()->convertException($e);
+			$e = $connection->getDatabaseEngine()->convertException($e);
 			$e->queryString = $queryString;
 			$e->params = $params;
 			throw $e;
@@ -113,7 +113,7 @@ class Result implements \Iterator
 			return [];
 		}
 
-		$this->types ??= $this->connection->getDriver()->getColumnTypes($this->pdoStatement);
+		$this->types ??= $this->connection->getDatabaseEngine()->getColumnTypes($this->pdoStatement);
 		return $this->types;
 	}
 

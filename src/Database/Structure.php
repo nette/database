@@ -114,41 +114,19 @@ class Structure implements IStructure
 	}
 
 
-	public function getHasManyReference(string $table, ?string $targetTable = null): ?array
+	public function getHasManyReference(string $table): array
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
-
-		if ($targetTable) {
-			$targetTable = $this->resolveFQTableName($targetTable);
-			foreach ($this->structure['hasMany'][$table] as $key => $value) {
-				if (strtolower($key) === $targetTable) {
-					return $this->structure['hasMany'][$table][$key];
-				}
-			}
-
-			return null;
-
-		} else {
-			return $this->structure['hasMany'][$table] ?? [];
-		}
+		return $this->structure['hasMany'][$table] ?? [];
 	}
 
 
-	public function getBelongsToReference(string $table, ?string $column = null): ?array
+	public function getBelongsToReference(string $table): array
 	{
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
-
-		if ($column) {
-			$column = strtolower($column);
-			return isset($this->structure['belongsTo'][$table][$column])
-				? [$this->structure['belongsTo'][$table][$column], $column]
-				: null;
-
-		} else {
-			return $this->structure['belongsTo'][$table] ?? [];
-		}
+		return $this->structure['belongsTo'][$table] ?? [];
 	}
 
 

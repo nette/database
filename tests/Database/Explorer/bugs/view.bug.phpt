@@ -23,8 +23,8 @@ test('', function () use ($explorer) {
 });
 
 test('', function () use ($connection) {
-	$driver = $connection->getDriver();
-	$columns = $driver->getColumns('books_view');
+	$engine = $connection->getDatabaseEngine();
+	$columns = $engine->getColumns('books_view');
 	$columnsNames = array_map(fn($item) => $item['name'], $columns);
 	Assert::same(['id', 'author_id', 'translator_id', 'title', 'next_volume'], $columnsNames);
 });

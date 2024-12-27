@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-use Nette\Database\Driver;
+use Nette\Database\Drivers\Engine;
 use Tester\Assert;
 
 require __DIR__ . '/../../bootstrap.php';
@@ -16,7 +16,7 @@ $explorer = connectToDB();
 $connection = $explorer->getConnection();
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
-$driver = $connection->getDriver();
+$engine = $connection->getDatabaseEngine();
 
 
 test('backward join aggregation with having', function () use ($explorer) {
@@ -39,10 +39,10 @@ test('backward join aggregation with having', function () use ($explorer) {
 });
 
 
-test('left join SQL structure verification', function () use ($explorer, $driver) {
+test('left join SQL structure verification', function () use ($explorer, $engine) {
 	$authorsSelection = $explorer->table('author')->where(':book.translator_id IS NOT NULL')->wherePrimary(12);
 
-	if ($driver->isSupported(Driver::SupportSchema)) {
+	if ($engine->isSupported(Engine::SupportSchema)) {
 		Assert::same(
 			reformat('SELECT [author].* FROM [author] LEFT JOIN [public].[book] [book] ON [author].[id] = [book].[author_id] WHERE ([book].[translator_id] IS NOT NULL) AND ([author].[id] = ?)'),
 			$authorsSelection->getSql(),

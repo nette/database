@@ -7,7 +7,7 @@
 
 declare(strict_types=1);
 
-use Nette\Database\Driver;
+use Nette\Database\Drivers\Engine;
 use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
@@ -18,12 +18,12 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
 
 
-$driver = $connection->getDriver();
-$tables = $driver->getTables();
+$engine = $connection->getDatabaseEngine();
+$tables = $engine->getTables();
 $tables = array_filter($tables, fn($t) => in_array($t['name'], ['author', 'book', 'book_tag', 'tag'], true));
 usort($tables, fn($a, $b) => strcmp($a['name'], $b['name']));
 
-if ($driver->isSupported(Driver::SupportSchema)) {
+if ($engine->isSupported(Engine::SupportSchema)) {
 	Assert::same(
 		[
 			['name' => 'author', 'view' => false, 'fullName' => 'public.author', 'comment' => 'Table containing book authors'],
@@ -50,7 +50,7 @@ if ($driver->isSupported(Driver::SupportSchema)) {
 }
 
 
-$columns = $driver->getColumns('author');
+$columns = $engine->getColumns('author');
 array_walk($columns, function (&$item) {
 	Assert::type('array', $item['vendor']);
 	unset($item['vendor']);
@@ -144,7 +144,7 @@ switch ($driverName) {
 Assert::same($expectedColumns, $columns);
 
 
-$indexes = $driver->getIndexes('book_tag');
+$indexes = $engine->getIndexes('book_tag');
 switch ($driverName) {
 	case 'pgsql':
 		Assert::same([

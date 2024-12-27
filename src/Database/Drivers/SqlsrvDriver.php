@@ -16,7 +16,7 @@ use function array_values, str_replace, strtr;
 /**
  * Supplemental SQL Server 2005 and later database driver.
  */
-class SqlsrvDriver implements Nette\Database\Driver
+class SqlsrvDriver implements Engine
 {
 	private Nette\Database\Connection $connection;
 

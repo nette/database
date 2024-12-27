@@ -16,7 +16,7 @@ use function addcslashes, array_values, in_array, preg_match, str_contains, strt
 /**
  * Supplemental SQLite3 database driver.
  */
-class SqliteDriver implements Nette\Database\Driver
+class SqliteDriver implements Engine
 {
 	private Nette\Database\Connection $connection;
 	private string $fmtDateTime;

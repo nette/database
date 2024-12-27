@@ -16,7 +16,7 @@ use function array_values, explode, preg_replace, str_replace, strtoupper, strtr
 /**
  * Supplemental MS SQL database driver.
  */
-class MsSqlDriver implements Nette\Database\Driver
+class MsSqlDriver implements Engine
 {
 	private Nette\Database\Connection $connection;
 

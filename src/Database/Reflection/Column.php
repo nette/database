@@ -19,6 +19,7 @@ final readonly class Column
 		public ?Table $table = null,
 		public string $nativeType = '',
 		public ?int $size = null,
+		public ?int $scale = null,
 		public bool $nullable = false,
 		public mixed $default = null,
 		public bool $autoIncrement = false,

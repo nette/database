@@ -204,7 +204,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * Returns the next row as an object Row or null if there are no more rows.
+	 * Returns the next row as a Row object or null if there are no more rows.
 	 */
 	public function fetch(): ?Row
 	{
@@ -248,7 +248,9 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * Returns all rows as associative array.
+	 * Returns all rows as associative array, where first argument specifies key column and second value column.
+	 * For duplicate keys, the last value is used. When using null as key, array is indexed from zero.
+	 * Alternatively accepts callback returning value or key-value pairs.
 	 */
 	public function fetchPairs(string|int|\Closure|null $keyOrCallback = null, string|int|null $value = null): array
 	{
@@ -257,7 +259,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * Returns all rows.
+	 * Returns all remaining rows as array of Row objects.
 	 * @return Row[]
 	 */
 	public function fetchAll(): array

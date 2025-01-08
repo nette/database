@@ -989,6 +989,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		if (!$prototype) {
 			$prototype = $this->createGroupedSelectionInstance($table, $column);
 			$prototype->where("$table.$column", array_keys((array) $this->rows));
+			$prototype->getSpecificCacheKey();
 		}
 
 		$clone = clone $prototype;

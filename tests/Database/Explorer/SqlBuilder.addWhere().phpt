@@ -40,10 +40,7 @@ test('?name', function () use ($explorer) {
 test('test Selection as a parameter', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id', $explorer->table('book'));
-	Assert::same(reformat([
-		'mysql' => 'SELECT * FROM `book` WHERE (`id` IN (?))',
-		'SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book]))',
-	]), $sqlBuilder->buildSelectQuery());
+	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book]))'), $sqlBuilder->buildSelectQuery());
 });
 
 
@@ -51,20 +48,14 @@ test('test more Selection as a parameter', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id', $explorer->table('book'));
 	$sqlBuilder->addWhere('id', $explorer->table('book_tag')->select('book_id'));
-	Assert::same(reformat([
-		'mysql' => 'SELECT * FROM `book` WHERE (`id` IN (?)) AND (`id` IN (?))',
-		'SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book])) AND ([id] IN (SELECT [book_id] FROM [book_tag]))',
-	]), $sqlBuilder->buildSelectQuery());
+	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book])) AND ([id] IN (SELECT [book_id] FROM [book_tag]))'), $sqlBuilder->buildSelectQuery());
 });
 
 
 test('test more Selection as one of more argument', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id ? AND id ?', $explorer->table('book')->where('id', 2), $explorer->table('book_tag')->select('book_id'));
-	Assert::same(reformat([
-		'mysql' => 'SELECT * FROM `book` WHERE (`id` IN (?) AND `id` IN (?))',
-		'SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book] WHERE ([id] = ?)) AND [id] IN (SELECT [book_id] FROM [book_tag]))',
-	]), $sqlBuilder->buildSelectQuery());
+	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book] WHERE ([id] = ?)) AND [id] IN (SELECT [book_id] FROM [book_tag]))'), $sqlBuilder->buildSelectQuery());
 });
 
 
@@ -83,10 +74,7 @@ test('test Selection with parameters as a parameter', function () use ($explorer
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id', $explorer->table('book')->having('COUNT(:book_tag.tag_id) >', 1));
 	$schemaSupported = $explorer->getConnection()->getDriver()->isSupported(Driver::SupportSchema);
-	Assert::same(reformat([
-		'mysql' => 'SELECT * FROM `book` WHERE (`id` IN (?))',
-		'SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book] LEFT JOIN ' . ($schemaSupported ? '[public].[book_tag] ' : '') . '[book_tag] ON [book].[id] = [book_tag].[book_id] HAVING COUNT([book_tag].[tag_id]) > ?))',
-	]), $sqlBuilder->buildSelectQuery());
+	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book] LEFT JOIN ' . ($schemaSupported ? '[public].[book_tag] ' : '') . '[book_tag] ON [book].[id] = [book_tag].[book_id] HAVING COUNT([book_tag].[tag_id]) > ?))'), $sqlBuilder->buildSelectQuery());
 	Assert::count(1, $sqlBuilder->getParameters());
 });
 
@@ -94,20 +82,14 @@ test('test Selection with parameters as a parameter', function () use ($explorer
 test('test Selection with column as a parameter', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id', $explorer->table('book')->select('id'));
-	Assert::same(reformat([
-		'mysql' => 'SELECT * FROM `book` WHERE (`id` IN (?))',
-		'SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book]))',
-	]), $sqlBuilder->buildSelectQuery());
+	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book]))'), $sqlBuilder->buildSelectQuery());
 });
 
 
 test('test multiple placeholder parameter', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id ? OR id ?', null, $explorer->table('book'));
-	Assert::same(reformat([
-		'mysql' => 'SELECT * FROM `book` WHERE (`id` IS NULL OR `id` IN (?))',
-		'SELECT * FROM [book] WHERE ([id] IS NULL OR [id] IN (SELECT [id] FROM [book]))',
-	]), $sqlBuilder->buildSelectQuery());
+	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] IS NULL OR [id] IN (SELECT [id] FROM [book]))'), $sqlBuilder->buildSelectQuery());
 });
 
 
@@ -181,10 +163,7 @@ test('tests NOT', function () use ($explorer) {
 	$sqlBuilder->addWhere('id NOT', [1, 2]);
 	$sqlBuilder->addWhere('id NOT', null);
 	$sqlBuilder->addWhere('id NOT', $explorer->table('book')->select('id'));
-	Assert::same(reformat([
-		'mysql' => 'SELECT * FROM `book` WHERE (`id` NOT IN (?)) AND (`id` IS NOT NULL) AND (`id` NOT IN (?))',
-		'SELECT * FROM [book] WHERE ([id] NOT IN (?)) AND ([id] IS NOT NULL) AND ([id] NOT IN (SELECT [id] FROM [book]))',
-	]), $sqlBuilder->buildSelectQuery());
+	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] NOT IN (?)) AND ([id] IS NOT NULL) AND ([id] NOT IN (SELECT [id] FROM [book]))'), $sqlBuilder->buildSelectQuery());
 });
 
 

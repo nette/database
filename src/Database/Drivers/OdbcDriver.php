@@ -24,7 +24,7 @@ class OdbcDriver implements Nette\Database\Driver
 
 	public function isSupported(string $feature): bool
 	{
-		return $feature === self::SupportSubselect;
+		return false;
 	}
 
 

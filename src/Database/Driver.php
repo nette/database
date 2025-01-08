@@ -20,7 +20,6 @@ interface Driver
 		SupportSelectUngroupedColumns = 'ungrouped_cols',
 		SupportMultiInsertAsSelect = 'insert_as_select',
 		SupportMultiColumnAsOrCondition = 'multi_column_as_or',
-		SupportSubselect = 'subselect',
 		SupportSchema = 'schema';
 
 	/** @deprecated use Driver::Support* */
@@ -30,7 +29,8 @@ interface Driver
 		SUPPORT_MULTI_INSERT_AS_SELECT = 'insert_as_select',
 		SUPPORT_MULTI_COLUMN_AS_OR_COND = 'multi_column_as_or',
 		SUPPORT_SUBSELECT = 'subselect',
-		SUPPORT_SCHEMA = 'schema';
+		SUPPORT_SCHEMA = 'schema',
+		SupportSubselect = 'subselect';
 
 	/**
 	 * Checks if the engine supports a specific feature.

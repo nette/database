@@ -30,7 +30,7 @@ class OciDriver implements Nette\Database\Driver
 
 	public function isSupported(string $feature): bool
 	{
-		return $feature === self::SupportSequence || $feature === self::SupportSubselect;
+		return $feature === self::SupportSequence;
 	}
 
 

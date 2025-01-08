@@ -30,7 +30,7 @@ class SqliteDriver implements Nette\Database\Driver
 
 	public function isSupported(string $feature): bool
 	{
-		return $feature === self::SupportMultiInsertAsSelect || $feature === self::SupportSubselect || $feature === self::SupportMultiColumnAsOrCondition;
+		return $feature === self::SupportMultiInsertAsSelect || $feature === self::SupportMultiColumnAsOrCondition;
 	}
 
 

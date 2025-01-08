@@ -352,18 +352,11 @@ class SqlBuilder
 						}
 					}
 
-					if ($this->driver->isSupported(Driver::SupportSubselect)) {
-						$arg = null;
-						$subSelectPlaceholderCount = substr_count($clone->getSql(), '?');
-						$replace = $match[2][0] . '(' . $clone->getSql() . (!$subSelectPlaceholderCount && count($clone->getSqlBuilder()->getParameters()) === 1 ? ' ?' : '') . ')';
-						if (count($clone->getSqlBuilder()->getParameters())) {
-							array_unshift($params, ...$clone->getSqlBuilder()->getParameters());
-						}
-					} else {
-						$arg = [];
-						foreach ($clone as $row) {
-							$arg[] = array_values(iterator_to_array($row));
-						}
+					$arg = null;
+					$subSelectPlaceholderCount = substr_count($clone->getSql(), '?');
+					$replace = $match[2][0] . '(' . $clone->getSql() . (!$subSelectPlaceholderCount && count($clone->getSqlBuilder()->getParameters()) === 1 ? ' ?' : '') . ')';
+					if (count($clone->getSqlBuilder()->getParameters())) {
+						array_unshift($params, ...$clone->getSqlBuilder()->getParameters());
 					}
 				}
 

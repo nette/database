@@ -215,7 +215,6 @@ class GroupedSelection extends Selection
 		$this->observeCache = &$referencing['observeCache'];
 		$this->refCacheCurrent = &$referencing[$hash];
 		$this->accessedColumns = &$referencing[$hash]['accessed'];
-		$this->specificCacheKey = &$referencing[$hash]['specificCacheKey'];
 		$this->rows = &$referencing[$hash]['rows'];
 
 		if (isset($referencing[$hash]['data'][$this->active])) {

@@ -20,7 +20,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 $cacheStorage = Mockery::mock(Nette\Caching\Storage::class);
 $cacheStorage->shouldReceive('read')->withAnyArgs()->once()->andReturn(['id' => true]);
-$cacheStorage->shouldReceive('read')->withAnyArgs()->times(4)->andReturn(['id' => true, 'author_id' => true]);
+$cacheStorage->shouldReceive('read')->withAnyArgs()->times(2)->andReturn(['id' => true, 'author_id' => true]);
 $cacheStorage->shouldReceive('write')->with(Mockery::any(), ['id' => true, 'author_id' => true, 'title' => true], []);
 
 $explorer = new Nette\Database\Explorer($connection, $explorer->getStructure(), $explorer->getConventions(), $cacheStorage);

@@ -3,12 +3,12 @@ name: Tests
 on: [push, pull_request]
 
 env:
-    php-extensions: mbstring, intl, pdo_sqlsrv-5.10.0beta2
+    php-extensions: mbstring, intl, pdo_sqlsrv-5.12.0
     php-tools: "composer:v2, pecl"
 
 jobs:
     tests:
-        runs-on: ubuntu-latest
+        runs-on: ubuntu-22.04
         strategy:
             matrix:
                 php: ['7.2', '7.3', '7.4', '8.0', '8.1', '8.2', '8.3']
@@ -43,7 +43,6 @@ jobs:
                     --health-retries=5
                     -e MYSQL_ROOT_PASSWORD=root
                     -e MYSQL_DATABASE=nette_test
-                    --entrypoint sh mysql:8 -c "exec docker-entrypoint.sh mysqld --default-authentication-plugin=mysql_native_password"
 
             postgres96:
                 image: postgres:9.6
@@ -83,13 +82,13 @@ jobs:
                     - 1433:1433
                 options: >-
                     --name=mssql
-                    --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1'"
+                    --health-cmd "/opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1' -N -C"
                     --health-interval 10s
                     --health-timeout 5s
                     --health-retries 5
 
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - uses: shivammathur/setup-php@v2
               with:
                   php-version: ${{ matrix.php }}
@@ -101,7 +100,7 @@ jobs:
               run: cp ./tests/databases.github.ini ./tests/Database/databases.ini
 
             - name: Create MS SQL Database
-              run: docker exec -i mssql /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE nette_test'
+              run: docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE nette_test' -N -C
 
             - run: composer install --no-progress --prefer-dist
             - run: vendor/bin/tester tests -s -C
@@ -116,7 +115,7 @@ jobs:
         name: Lowest Dependencies
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
             - uses: shivammathur/setup-php@v2
               with:
                   php-version: 8.0

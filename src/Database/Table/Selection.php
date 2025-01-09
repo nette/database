@@ -235,6 +235,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns all rows as associative tree.
+	 * @deprecated
 	 */
 	public function fetchAssoc(string $path): array
 	{

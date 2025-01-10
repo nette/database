@@ -5,32 +5,57 @@
 <div class="tracy-inner-container">
 	<table class="tracy-sortable">
 %A%
-		<td %a%>%A%</td>
-		<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-"><pre class="dump">::beginTransaction</pre>
-				<a class="nette-DbConnectionPanel-source" href="%a%" title="%a%Connection.php:%d%" class="tracy-editor">%a%<b>Connection.php</b>:%d%</a>		</td>
-		<td></td>
-		</tr>
-				<tr>
-		<td %a%>%A%</td>
-		<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-select"><pre class="dump"><strong style="color:blue">SELECT</strong> 1</pre>
-					<table class="tracy-collapsed nette-DbConnectionPanel-explain">%A%</table>
-				<a class="nette-DbConnectionPanel-source" href="%a%" title="%a%Connection.php:%d%" class="tracy-editor">%a%<b>Connection.php</b>:%d%</a>		</td>
-		<td>0</td>
-		</tr>
-				<tr>
-		<td %a%>%A%</td>
-		<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-"><pre class="dump">::commit</pre>
-				<a class="nette-DbConnectionPanel-source" href="%a%" title="%a%Connection.php:%d%" class="tracy-editor">%a%<b>Connection.php</b>:%d%</a>		</td>
-		<td></td>
-		</tr>
-				<tr>
-		<td %a%>
-					<span title="SQLSTATE[HY000]: %a%">ERROR</span>
-						</td>
-		<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-"><pre class="dump"><strong style="color:blue">SELECT</strong></pre>
-				<a class="nette-DbConnectionPanel-source" href="%a%" title="%a%SqliteDriver.php:%d%" class="tracy-editor">%a%<b>SqliteDriver.php</b>:%d%</a>		</td>
-		<td></td>
-		</tr>
-			</table>
-	</div>
+				<td %a%>%A%</td>
+
+				<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-">
+					<pre class="dump">::beginTransaction</pre>
+
+
+					<a class="nette-DbConnectionPanel-source" href="%a%" title="%a%Connection.php:%d%" class="tracy-editor">%a%<b>Connection.php</b>:%d%</a>
+				</td>
+
+				<td></td>
+			</tr>
+			<tr>
+				<td %a%>%A%</td>
+
+				<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-select">
+					<pre class="dump"><strong style="color:blue">SELECT</strong> 1</pre>
+
+
+						<table class="tracy-collapsed nette-DbConnectionPanel-explain">%A%</table>
+					<a class="nette-DbConnectionPanel-source" href="%a%" title="%a%Connection.php:%d%" class="tracy-editor">%a%<b>Connection.php</b>:%d%</a>
+				</td>
+
+				<td>0</td>
+			</tr>
+			<tr>
+				<td %a%>%A%</td>
+
+				<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-">
+					<pre class="dump">::commit</pre>
+
+
+					<a class="nette-DbConnectionPanel-source" href="%a%" title="%a%Connection.php:%d%" class="tracy-editor">%a%<b>Connection.php</b>:%d%</a>
+				</td>
+
+				<td></td>
+			</tr>
+			<tr>
+				<td %a%>
+						<span title="SQLSTATE[HY000]: General error: 1 incomplete input">ERROR</span>
+				</td>
+
+				<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-">
+					<pre class="dump"><strong style="color:blue">SELECT</strong></pre>
+
+
+					<a class="nette-DbConnectionPanel-source" href="%a%" title="%a%SqliteDriver.php:%d%" class="tracy-editor">%a%<b>SqliteDriver.php</b>:%d%</a>
+				</td>
+
+				<td></td>
+			</tr>
+	</table>
+
+</div>
 </div>

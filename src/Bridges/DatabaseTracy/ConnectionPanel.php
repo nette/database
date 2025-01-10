@@ -21,21 +21,13 @@ use Tracy;
 class ConnectionPanel implements Tracy\IBarPanel
 {
 	public int $maxQueries = 100;
-
 	public string $name;
-
 	public bool|string $explain = true;
-
 	public bool $disabled = false;
-
 	public float $performanceScale = 0.25;
-
 	private float $totalTime = 0;
-
 	private int $count = 0;
-
 	private array $queries = [];
-
 	private Tracy\BlueScreen $blueScreen;
 
 
@@ -132,7 +124,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 			$name = $this->name;
 			$count = $this->count;
 			$totalTime = $this->totalTime;
-			require __DIR__ . '/templates/ConnectionPanel.tab.phtml';
+			require __DIR__ . '/dist/tab.phtml';
 		});
 	}
 
@@ -170,7 +162,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 			$count = $this->count;
 			$totalTime = $this->totalTime;
 			$performanceScale = $this->performanceScale;
-			require __DIR__ . '/templates/ConnectionPanel.panel.phtml';
+			require __DIR__ . '/dist/panel.phtml';
 		});
 	}
 }

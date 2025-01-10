@@ -1,0 +1,74 @@
+<?php
+declare(strict_types=1);
+?>
+<style class="tracy-debug">
+	#tracy-debug td.nette-DbConnectionPanel-sql { background: white !important }
+	#tracy-debug .nette-DbConnectionPanel-source { color: #BBB !important }
+	#tracy-debug .nette-DbConnectionPanel-explain td { white-space: pre }
+	#tracy-debug td.nette-DbConnectionPanel-sql-insert { background: #E7ffE7 !important }
+	#tracy-debug td.nette-DbConnectionPanel-sql-delete { background: #FFE7E7 !important }
+	#tracy-debug td.nette-DbConnectionPanel-sql-update { background: #E7FBFF !important }
+</style>
+
+<h1 title="<?= Tracy\Helpers::escapeHtml($connection->getDsn()) ?>
+">Queries: <?= Tracy\Helpers::escapeHtml($count) ?>
+<?= Tracy\Helpers::escapeHtml($totalTime ? sprintf(', time: %0.3f ms', $totalTime * 1000) : '') ?>
+, <?= Tracy\Helpers::escapeHtml($name) ?>
+</h1>
+
+<div class="tracy-inner">
+<div class="tracy-inner-container">
+	<table class="tracy-sortable">
+		<tr>
+			<th>Time&nbsp;ms</th>
+			<th>SQL Query</th>
+			<th>Rows</th>
+		</tr>
+
+<?php foreach ($queries as [$connection, $sql, $params, $source, $time, $rows, $error, $command, $explain]): ?>			<tr>
+				<td style="background:rgba(255, 95, 23, <?= Tracy\Helpers::escapeHtml(sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale)) ?>
+)" data-order="<?= Tracy\Helpers::escapeHtml((float) $time) ?>
+">
+<?php if ($error): ?>						<span title="<?= Tracy\Helpers::escapeHtml($error) ?>
+">ERROR</span>
+<?php elseif ($time !== null): ?>
+					<?= Tracy\Helpers::escapeHtml(sprintf('%0.3f', $time * 1000)) ?>
+
+<?php endif ?>
+<?php if ($explain): ?>
+					<br><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-explain">explain</a>
+<?php endif ?>
+				</td>
+
+				<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-<?= Tracy\Helpers::escapeHtml($command) ?>
+">
+					<?= Nette\Database\Helpers::dumpSql($sql, $params, $connection) ?>
+
+
+<?php if ($explain): ?>						<table class="tracy-collapsed nette-DbConnectionPanel-explain">
+							<tr>
+<?php foreach ($explain[0] as $col => $foo): ?>									<th><?= Tracy\Helpers::escapeHtml($col) ?>
+</th>
+<?php endforeach ?>							</tr>
+<?php foreach ($explain as $row): ?>								<tr>
+<?php foreach ($row as $col): ?>										<td><?= Tracy\Helpers::escapeHtml($col) ?>
+</td>
+<?php endforeach ?>								</tr>
+<?php endforeach ?>						</table>
+<?php endif ?>
+<?php if ($source): ?>
+					<?= substr_replace(Tracy\Helpers::editorLink($source[0], $source[1]), ' class="nette-DbConnectionPanel-source"', 2, 0) ?>
+
+<?php endif ?>
+				</td>
+
+				<td><?= Tracy\Helpers::escapeHtml($rows) ?>
+</td>
+			</tr>
+<?php endforeach ?>	</table>
+
+<?php if (count($queries) < $count): ?>
+	<p>...and more</p>
+<?php endif ?>
+</div>
+</div>

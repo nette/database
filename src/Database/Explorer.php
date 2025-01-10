@@ -106,6 +106,23 @@ class Explorer
 	}
 
 
+	public function createActiveRow(array $data, Table\Selection $selection): Table\ActiveRow
+	{
+		return new Table\ActiveRow($data, $selection);
+	}
+
+
+	/** @internal */
+	public function createGroupedSelection(
+		Table\Selection $refSelection,
+		string $table,
+		string $column,
+	): Table\GroupedSelection
+	{
+		return new Table\GroupedSelection($this, $this->conventions, $table, $column, $refSelection, $this->cacheStorage);
+	}
+
+
 	/********************* shortcuts ****************d*g**/
 
 

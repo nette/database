@@ -549,21 +549,24 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	}
 
 
+	/** @deprecated */
 	protected function createRow(array $row): ActiveRow
 	{
-		return new ActiveRow($row, $this);
+		return $this->explorer->createActiveRow($row, $this);
 	}
 
 
+	/** @deprecated */
 	public function createSelectionInstance(?string $table = null): self
 	{
-		return new self($this->explorer, $this->conventions, $table ?: $this->name, $this->cache?->getStorage());
+		return $this->explorer->table($table ?: $this->name);
 	}
 
 
+	/** @deprecated */
 	protected function createGroupedSelectionInstance(string $table, string $column): GroupedSelection
 	{
-		return new GroupedSelection($this->explorer, $this->conventions, $table, $column, $this, $this->cache?->getStorage());
+		return $this->explorer->createGroupedSelection($this, $table, $column);
 	}
 
 

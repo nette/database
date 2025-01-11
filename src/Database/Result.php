@@ -18,13 +18,11 @@ use Nette\Utils\Arrays;
  */
 class Result implements \Iterator
 {
-	private ?Drivers\Result $result = null;
 	private Row|false|null $lastRow = null;
 	private int $lastRowKey = -1;
 
 	/** @var Row[] */
 	private array $rows;
-	private float $time;
 	private array $meta;
 
 
@@ -32,20 +30,9 @@ class Result implements \Iterator
 		private readonly Connection $connection,
 		private readonly string $queryString,
 		private readonly array $params,
+		private readonly ?Drivers\Result $result,
+		private float $time,
 	) {
-		$time = microtime(true);
-
-		try {
-			if (str_starts_with($queryString, '::')) {
-				$connection->getConnection()->{substr($queryString, 2)}();
-			} else {
-				$this->result = $connection->getConnection()->query($queryString, $params);
-			}
-		} catch (DriverException $e) {
-			throw $connection->convertException($e);
-		}
-
-		$this->time = microtime(true) - $time;
 	}
 
 

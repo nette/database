@@ -12,7 +12,7 @@ use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
-$connection = connectToDB()->getConnection();
+$connection = connectToDB();
 $preprocessor = new Nette\Database\SqlPreprocessor($connection);
 
 test('Processes basic SQL query with single parameter', function () use ($preprocessor) {

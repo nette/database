@@ -12,13 +12,12 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-if ($driverName === 'sqlsrv' && $connection->getServerVersion() < 11) {
+if ($driverName === 'sqlsrv' && $explorer->getServerVersion() < 11) {
 	Tester\Environment::skip('Offset is supported since SQL Server 2012');
 }
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 //public function page($page, $itemsPerPage, &$numOfPages = null)
 

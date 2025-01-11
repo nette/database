@@ -15,8 +15,8 @@ $explorer = connectToDB();
 $connection = $explorer->getConnection();
 
 $conventions = new Nette\Database\Conventions\StaticConventions;
-$cacheStorage = new Nette\Caching\Storages\MemoryStorage;
-$explorer = new Nette\Database\Explorer($explorer->getConnection(), $explorer->getStructure(), $conventions, $cacheStorage);
+$cache = new Nette\Caching\Cache(new Nette\Caching\Storages\MemoryStorage);
+$explorer = new Nette\Database\Explorer($explorer->getConnection(), $explorer->getStructure(), $conventions, $cache);
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-nette_test1.sql");
 

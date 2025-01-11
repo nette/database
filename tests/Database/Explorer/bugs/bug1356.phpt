@@ -12,9 +12,8 @@ use Tester\Assert;
 require __DIR__ . '/../../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../../files/{$driverName}-nette_test1.sql");
 
 
 $books = $explorer->table('book')->limit(1);
@@ -31,7 +30,7 @@ foreach ($books as $book) {
 }
 
 Assert::same(reformat([
-	'sqlsrv' => $connection->getServerVersion() < 11
+	'sqlsrv' => $explorer->getServerVersion() < 11
 		? 'SELECT TOP 1 * FROM [book] ORDER BY [book].[id]'
 		: 'SELECT * FROM [book] ORDER BY [book].[id] OFFSET 0 ROWS FETCH NEXT 1 ROWS ONLY',
 	'SELECT * FROM [book] ORDER BY [book].[id] LIMIT 1',

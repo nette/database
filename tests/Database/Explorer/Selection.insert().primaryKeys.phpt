@@ -12,9 +12,8 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test4.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test4.sql");
 
 test('insert into table with simple primary index (autoincrement)', function () use ($explorer) {
 	$simplePkAutoincrementResult = $explorer->table('simple_pk_autoincrement')->insert([

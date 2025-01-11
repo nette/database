@@ -12,9 +12,8 @@ use Tester\Assert;
 require __DIR__ . '/../../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-nette_test5.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../../files/{$driverName}-nette_test5.sql");
 
 
 test('referencing table with integer primary key', function () use ($explorer) {

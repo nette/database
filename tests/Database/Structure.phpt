@@ -4,6 +4,7 @@
  * Test: Nette\Database\Structure
  */
 
+use Mockery\MockInterface;
 use Nette\Database\Structure;
 use Tester\Assert;
 use Tester\TestCase;
@@ -27,21 +28,17 @@ class StructureMock extends Structure
  */
 class StructureTestCase extends TestCase
 {
-	private Nette\Database\Connection $connection;
-	private Nette\Database\Drivers\Engine $engine;
-	private Nette\Caching\Storage $storage;
-	private Structure $structure;
+	private Nette\Database\Drivers\Engine|MockInterface $engine;
+	private Nette\Caching\Cache|MockInterface $cache;
+	private Structure|MockInterface $structure;
 
 
 	protected function setUp()
 	{
 		parent::setUp();
 		$this->engine = Mockery::mock(Nette\Database\Drivers\Engine::class);
-		$this->connection = Mockery::mock(Nette\Database\Connection::class);
-		$this->storage = Mockery::mock(Nette\Caching\Storage::class);
+		$this->cache = Mockery::mock(Nette\Caching\Cache::class);
 
-		$this->connection->shouldReceive('getDsn')->once()->andReturn('');
-		$this->connection->shouldReceive('getDatabaseEngine')->once()->andReturn($this->engine);
 		$this->engine->shouldReceive('getTables')->once()->andReturn([
 			['name' => 'authors', 'view' => false],
 			['name' => 'Books', 'view' => false],
@@ -69,7 +66,6 @@ class StructureTestCase extends TestCase
 			['name' => 'id', 'primary' => false, 'autoIncrement' => false, 'vendor' => []],
 			['name' => 'title', 'primary' => false, 'autoIncrement' => false, 'vendor' => []],
 		]);
-		$this->connection->shouldReceive('getDatabaseEngine')->times(4)->andReturn($this->engine);
 		$this->engine->shouldReceive('getForeignKeys')->with('authors')->once()->andReturn([]);
 		$this->engine->shouldReceive('getForeignKeys')->with('Books')->once()->andReturn([
 			['local' => ['author_id'], 'table' => 'authors', 'foreign' => ['id'], 'name' => 'authors_fk1'],
@@ -81,7 +77,7 @@ class StructureTestCase extends TestCase
 			['local' => ['tag_id'], 'table' => 'tags', 'foreign' => ['id'], 'name' => 'books_x_tags_fk2'],
 		]);
 
-		$this->structure = new StructureMock($this->connection, $this->storage);
+		$this->structure = new StructureMock($this->engine, $this->cache);
 	}
 
 
@@ -130,7 +126,6 @@ class StructureTestCase extends TestCase
 
 	public function testGetPrimaryKeySequence()
 	{
-		$this->connection->shouldReceive('getDatabaseEngine')->times(4)->andReturn($this->engine);
 		$this->engine->shouldReceive('isSupported')->with('sequence')->once()->andReturn(false);
 		$this->engine->shouldReceive('isSupported')->with('sequence')->times(3)->andReturn(true);
 

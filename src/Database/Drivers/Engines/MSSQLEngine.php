@@ -33,9 +33,9 @@ class MSSQLEngine implements Engine
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public function classifyException(Nette\Database\DriverException $e): ?string
 	{
-		return Nette\Database\DriverException::from($e);
+		return null;
 	}
 
 

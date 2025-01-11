@@ -36,18 +36,14 @@ class Result implements \Iterator
 	) {
 		$time = microtime(true);
 
-
 		try {
 			if (str_starts_with($queryString, '::')) {
 				$connection->getConnection()->{substr($queryString, 2)}();
 			} else {
 				$this->result = $connection->getConnection()->query($queryString, $params);
 			}
-		} catch (\PDOException $e) {
-			$e = $connection->getDatabaseEngine()->convertException($e);
-			$e->queryString = $queryString;
-			$e->params = $params;
-			throw $e;
+		} catch (DriverException $e) {
+			throw $connection->convertException($e);
 		}
 
 		$this->time = microtime(true) - $time;

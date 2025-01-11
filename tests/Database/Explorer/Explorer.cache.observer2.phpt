@@ -7,6 +7,7 @@
 
 declare(strict_types=1);
 
+use Nette\Caching\Cache;
 use Nette\Caching\Storages\MemoryStorage;
 use Tester\Assert;
 
@@ -18,20 +19,20 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-class CacheMock extends MemoryStorage
+class CacheMock extends Cache
 {
 	public int $writes = 0;
 
 
-	public function write(string $key, $data, array $dependencies): void
+	public function save(mixed $key, mixed $data, ?array $dependencies = null): mixed
 	{
 		$this->writes++;
-		parent::write($key, $data, $dependencies);
+		return parent::save($key, $data, $dependencies);
 	}
 }
 
-$cacheStorage = new CacheMock;
-$explorer = new Nette\Database\Explorer($connection, $explorer->getStructure(), $explorer->getConventions(), $cacheStorage);
+$cache = new CacheMock(new MemoryStorage);
+$explorer = new Nette\Database\Explorer($connection, $explorer->getStructure(), $explorer->getConventions(), $cache);
 
 for ($i = 0; $i < 2; ++$i) {
 	$authors = $explorer->table('author');
@@ -52,4 +53,4 @@ for ($i = 0; $i < 2; ++$i) {
 }
 
 Assert::same(reformat('SELECT [id], [name] FROM [author]'), $sql);
-Assert::same(2, $cacheStorage->writes);
+Assert::same(2, $cache->writes);

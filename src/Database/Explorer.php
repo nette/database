@@ -27,7 +27,7 @@ class Explorer
 		private readonly Connection $connection,
 		private readonly IStructure $structure,
 		?Conventions $conventions = null,
-		private readonly ?Nette\Caching\Storage $cacheStorage = null,
+		private readonly ?Nette\Caching\Cache $cache = null,
 	) {
 		$this->conventions = $conventions ?: new StaticConventions;
 	}
@@ -88,7 +88,7 @@ class Explorer
 	 */
 	public function table(string $table): Table\Selection
 	{
-		return new Table\Selection($this, $this->conventions, $table, $this->cacheStorage);
+		return new Table\Selection($this, $table);
 	}
 
 
@@ -130,7 +130,13 @@ class Explorer
 		string $column,
 	): Table\GroupedSelection
 	{
-		return new Table\GroupedSelection($this, $this->conventions, $table, $column, $refSelection, $this->cacheStorage);
+		return new Table\GroupedSelection($this, $table, $column, $refSelection);
+	}
+
+
+	public function getCache(): ?Nette\Caching\Cache
+	{
+		return $this->cache;
 	}
 
 

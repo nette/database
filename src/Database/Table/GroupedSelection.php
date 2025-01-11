@@ -10,7 +10,6 @@ declare(strict_types=1);
 namespace Nette\Database\Table;
 
 use Nette;
-use Nette\Database\Conventions;
 use Nette\Database\Explorer;
 use function array_keys, count, iterator_to_array, preg_match, reset;
 
@@ -33,15 +32,13 @@ class GroupedSelection extends Selection
 	 */
 	public function __construct(
 		Explorer $explorer,
-		Conventions $conventions,
 		string $tableName,
 		/** grouping column name */
 		protected readonly string $column,
 		/** referenced table */
 		protected readonly Selection $refTable,
-		?Nette\Caching\Storage $cacheStorage = null,
 	) {
-		parent::__construct($explorer, $conventions, $tableName, $cacheStorage);
+		parent::__construct($explorer, $tableName);
 	}
 
 

@@ -41,7 +41,7 @@ $book2 = $books->insert([
 Assert::same('eddard stark', $book2->author->name);  // SELECT * FROM `author` WHERE (`author`.`id` IN (11, 15))
 
 
-// SQL Server throw PDOException because does not allow insert explicit value for IDENTITY column.
+// SQL Server throw exception because does not allow insert explicit value for IDENTITY column.
 // This exception is about primary key violation.
 if ($driverName !== 'sqlsrv') {
 	Assert::exception(
@@ -50,7 +50,7 @@ if ($driverName !== 'sqlsrv') {
 			'name' => 'Jon Snow',
 			'web' => 'http://example.com',
 		]),
-		PDOException::class,
+		Nette\Database\UniqueConstraintViolationException::class,
 	);
 }
 

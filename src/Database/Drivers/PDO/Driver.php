@@ -9,7 +9,10 @@ declare(strict_types=1);
 
 namespace Nette\Database\Drivers\PDO;
 
+use Nette\Database\DriverException;
 use Nette\Database\Drivers;
+use Nette\Database\SqlLiteral;
+use PDOException;
 
 
 /**
@@ -29,6 +32,17 @@ abstract class Driver implements Drivers\Driver
 
 	public function connect(): Connection
 	{
-		return new Connection(new \PDO($this->dsn, $this->username, $this->password, $this->options));
+		try {
+			$pdo = new \PDO($this->dsn, $this->username, $this->password, $this->options);
+		} catch (PDOException $e) {
+			throw new DriverException(...self::exceptionArgs($e));
+		}
+		return new Connection($pdo);
+	}
+
+
+	public static function exceptionArgs(PDOException $e, ?SqlLiteral $query = null): array
+	{
+		return [$e->getMessage(), $e->errorInfo[0] ?? null, $e->errorInfo[1] ?? 0, $query, $e];
 	}
 }

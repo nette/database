@@ -40,7 +40,7 @@ test('', function () use ($explorer) {
 		$book->id;
 
 		if ($i === 1) {
-			$book->getTable()->createSelectionInstance()
+			$explorer->table('book')
 				->wherePrimary($book->id)
 				->delete();
 

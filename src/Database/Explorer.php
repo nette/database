@@ -11,6 +11,7 @@ namespace Nette\Database;
 
 use JetBrains\PhpStorm\Language;
 use Nette;
+use Nette\Caching\Cache;
 use Nette\Utils\Arrays;
 use function func_get_args, str_replace, ucfirst;
 
@@ -18,7 +19,7 @@ use function func_get_args, str_replace, ucfirst;
 /**
  * Manages database connection and executes SQL queries.
  */
-class Connection
+class Explorer
 {
 	private const Drivers = [
 		'pdo-mssql' => Drivers\PDO\MSSQL\Driver::class,
@@ -43,6 +44,9 @@ class Connection
 	private TypeConverter $typeConverter;
 	private ?SqlLiteral $lastQuery = null;
 	private int $transactionDepth = 0;
+	private ?Cache $cache = null;
+	private ?Conventions $conventions = null;
+	private ?IStructure $structure = null;
 
 
 	public function __construct(
@@ -416,4 +420,75 @@ class Connection
 	{
 		return new SqlLiteral($value, $params);
 	}
+
+
+	/********************* active row ****************d*g**/
+
+
+	public function table(string $table): Table\Selection
+	{
+		return new Table\Selection($this, $table);
+	}
+
+
+	public function setCache(Cache $cache): static
+	{
+		if (isset($this->structure)) {
+			throw new \LogicException('Cannot set cache after structure is created.');
+		}
+		$this->cache = $cache;
+		return $this;
+	}
+
+
+	/** @internal */
+	public function getCache(): ?Cache
+	{
+		return $this->cache;
+	}
+
+
+	public function setConventions(Conventions $conventions): static
+	{
+		if (isset($this->conventions)) {
+			throw new \LogicException('Conventions are already set.');
+		}
+		$this->conventions = $conventions;
+		return $this;
+	}
+
+
+	/** @internal */
+	public function getConventions(): Conventions
+	{
+		return $this->conventions ??= new Conventions\DiscoveredConventions($this->getStructure());
+	}
+
+
+	/** @internal */
+	public function getStructure(): IStructure
+	{
+		return $this->structure ??= new Structure($this->getDatabaseEngine(), $this->getCache());
+	}
+
+
+	/** @internal */
+	public function createActiveRow(Table\Selection $selection, array $row): Table\ActiveRow
+	{
+		return new Table\ActiveRow($row, $selection);
+	}
+
+
+	/** @internal */
+	public function createGroupedSelectionInstance(
+		Table\Selection $selection,
+		string $table,
+		string $column,
+	): Table\GroupedSelection
+	{
+		return new Table\GroupedSelection($this, $table, $column, $selection);
+	}
 }
+
+
+class_exists(Connection::class);

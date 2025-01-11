@@ -11,9 +11,8 @@ use Tester\Assert;
 require __DIR__ . '/../../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../../files/{$driverName}-nette_test1.sql");
 
 $explorer->query('CREATE VIEW books_view AS SELECT * FROM book');
 
@@ -22,8 +21,8 @@ test('', function () use ($explorer) {
 	Assert::same(1, $selection->count());
 });
 
-test('', function () use ($connection) {
-	$engine = $connection->getDatabaseEngine();
+test('', function () use ($explorer) {
+	$engine = $explorer->getDatabaseEngine();
 	$columns = $engine->getColumns('books_view');
 	$columnsNames = array_map(fn($item) => $item['name'], $columns);
 	Assert::same(['id', 'author_id', 'translator_id', 'title', 'next_volume'], $columnsNames);

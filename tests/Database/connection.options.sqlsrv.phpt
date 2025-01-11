@@ -13,7 +13,7 @@ require __DIR__ . '/../bootstrap.php';
 
 
 test('default convertDecimal', function () {
-	$connection = connectToDB(['convertDecimal' => null])->getConnection();
+	$connection = connectToDB(['convertDecimal' => null]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlsrv-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::same(1, $row->decimal);
@@ -22,7 +22,7 @@ test('default convertDecimal', function () {
 });
 
 test('convertDecimal = true', function () {
-	$connection = connectToDB(['convertDecimal' => true])->getConnection();
+	$connection = connectToDB(['convertDecimal' => true]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlsrv-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::same(1, $row->decimal);
@@ -31,7 +31,7 @@ test('convertDecimal = true', function () {
 });
 
 test('convertDecimal = false', function () {
-	$connection = connectToDB(['convertDecimal' => false])->getConnection();
+	$connection = connectToDB(['convertDecimal' => false]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlsrv-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::same('1', $row->decimal);
@@ -41,21 +41,21 @@ test('convertDecimal = false', function () {
 
 
 test('default convertBoolean', function () {
-	$connection = connectToDB(['convertBoolean' => null])->getConnection();
+	$connection = connectToDB(['convertBoolean' => null]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlsrv-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::equal(true, $row->bit);
 });
 
 test('convertBoolean = true', function () {
-	$connection = connectToDB(['convertBoolean' => true])->getConnection();
+	$connection = connectToDB(['convertBoolean' => true]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlsrv-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::equal(true, $row->bit);
 });
 
 test('convertBoolean = false', function () {
-	$connection = connectToDB(['convertBoolean' => false])->getConnection();
+	$connection = connectToDB(['convertBoolean' => false]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlsrv-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::equal(1, $row->bit);

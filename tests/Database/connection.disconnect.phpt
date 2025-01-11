@@ -16,7 +16,7 @@ test('connect & disconnect', function () {
 	$options = Tester\Environment::loadData() + ['username' => null, 'password' => null];
 	$connections = 1;
 
-	$connection = new Nette\Database\Connection($options['dsn'], $options['username'], $options['password']);
+	$connection = new Nette\Database\Explorer($options['dsn'], $options['username'], $options['password']);
 	try {
 		$connection->connect();
 	} catch (Nette\Database\DriverException $e) {

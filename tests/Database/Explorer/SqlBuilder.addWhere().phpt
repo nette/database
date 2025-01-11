@@ -15,9 +15,8 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
 test('combine duplicate where conditions, ignoring repetition', function () use ($explorer) {
@@ -222,7 +221,7 @@ Assert::exception(function () use ($explorer) {
 }, Nette\InvalidArgumentException::class, 'Column operator does not accept array argument.');
 
 
-test('missing primary key triggers selection argument exception', function () use ($driverName, $explorer, $connection) {
+test('missing primary key triggers selection argument exception', function () use ($driverName, $explorer) {
 	$structure = $explorer->getStructure();
 	switch ($driverName) {
 		case 'mysql':

@@ -34,14 +34,10 @@ function connectToDB(array $options = []): Nette\Database\Explorer
 		Tester\Environment::lock($args['dsn'], getTempDir());
 	}
 
-	$connection = new Nette\Database\Connection($args['dsn'], $args['username'], $args['password'], $args['options']);
+	$explorer = new Nette\Database\Explorer($args['dsn'], $args['username'], $args['password'], $args['options']);
 	$connection->connect();
-	$driverName = $connection->getConnection()->getNativeConnection()->getAttribute(PDO::ATTR_DRIVER_NAME);
-
-	$cacheMemoryStorage = new Nette\Caching\Cache(new Nette\Caching\Storages\MemoryStorage);
-	$structure = new Nette\Database\Structure($connection->getDatabaseEngine(), $cacheMemoryStorage);
-	$conventions = new Nette\Database\Conventions\DiscoveredConventions($structure);
-	$explorer = new Nette\Database\Explorer($connection, $structure, $conventions, $cacheMemoryStorage);
+	$driverName = $explorer->getConnection()->getNativeConnection()->getAttribute(PDO::ATTR_DRIVER_NAME);
+	$explorer->setCache(new Nette\Caching\Cache(new Nette\Caching\Storages\MemoryStorage));
 
 	echo "Driver: $driverName\n";
 	$GLOBALS['driverName'] = $driverName;

@@ -11,14 +11,14 @@ use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
-$connection = connectToDB()->getConnection();
+$connection = connectToDB();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName}-nette_test1.sql");
 
 
 test('Exception thrown for invalid database credentials', function () {
 	$options = Tester\Environment::loadData();
 	$e = Assert::exception(
-		fn() => (new Nette\Database\Connection($options['dsn'], 'unknown', 'unknown'))->connect(),
+		fn() => (new Nette\Database\Explorer($options['dsn'], 'unknown', 'unknown'))->connect(),
 		Nette\Database\ConnectionException::class,
 		null,
 		7,

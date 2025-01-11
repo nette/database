@@ -13,20 +13,20 @@ require __DIR__ . '/../bootstrap.php';
 
 
 test('formatDateTime', function () {
-	$connection = connectToDB(['formatDateTime' => 'U'])->getConnection();
+	$connection = connectToDB(['formatDateTime' => 'U']);
 	$engine = $connection->getDatabaseEngine();
 	Assert::same('254358000', $engine->formatDateTime(new DateTime('1978-01-23 00:00:00')));
 });
 
 test('formatDateTime', function () {
-	$connection = connectToDB(['formatDateTime' => 'Y-m-d'])->getConnection();
+	$connection = connectToDB(['formatDateTime' => 'Y-m-d']);
 	$engine = $connection->getDatabaseEngine();
 	Assert::same('1978-01-23', $engine->formatDateTime(new DateTime('1978-01-23 00:00:00')));
 });
 
 
 test('default convertDateTime', function () {
-	$connection = connectToDB(['convertDateTime' => null])->getConnection();
+	$connection = connectToDB(['convertDateTime' => null]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlite-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::type(Nette\Database\DateTime::class, $row->date);
@@ -34,7 +34,7 @@ test('default convertDateTime', function () {
 });
 
 test('convertDateTime = false', function () {
-	$connection = connectToDB(['convertDateTime' => false])->getConnection();
+	$connection = connectToDB(['convertDateTime' => false]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlite-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::type('int', $row->date);
@@ -42,7 +42,7 @@ test('convertDateTime = false', function () {
 });
 
 test('convertDateTime = true', function () {
-	$connection = connectToDB(['convertDateTime' => true])->getConnection();
+	$connection = connectToDB(['convertDateTime' => true]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlite-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::type(Nette\Database\DateTime::class, $row->date);

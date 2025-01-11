@@ -26,3 +26,11 @@ if (false) {
 } elseif (!class_exists(ResultSet::class)) {
 	class_alias(Result::class, ResultSet::class);
 }
+
+if (false) {
+	class Connection extends Explorer
+	{
+	}
+} elseif (!class_exists(Connection::class)) {
+	class_alias(Explorer::class, Connection::class);
+}

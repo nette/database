@@ -18,18 +18,15 @@ use function array_flip, count, hash, is_array, reset, strlen, strtolower, uksor
  */
 class Structure implements IStructure
 {
-	protected readonly Connection $connection;
-	protected readonly Nette\Caching\Cache $cache;
-
 	/** @var array{tables: array, columns: array, primary: array, aliases: array, hasMany: array, belongsTo: array} */
 	protected array $structure;
 	protected bool $isRebuilt = false;
 
 
-	public function __construct(Connection $connection, Nette\Caching\Storage $cacheStorage)
-	{
-		$this->connection = $connection;
-		$this->cache = new Nette\Caching\Cache($cacheStorage, 'Nette.Database.Structure.' . hash('xxh128', $connection->getDsn()));
+	public function __construct(
+		protected readonly Drivers\Engine $engine,
+		protected readonly Nette\Caching\Cache $cache,
+	) {
 	}
 
 
@@ -95,7 +92,7 @@ class Structure implements IStructure
 		$this->needStructure();
 		$table = $this->resolveFQTableName($table);
 
-		if (!$this->connection->getDatabaseEngine()->isSupported(Drivers\Engine::SupportSequence)) {
+		if (!$this->engine->isSupported(Drivers\Engine::SupportSequence)) {
 			return null;
 		}
 
@@ -162,10 +159,8 @@ class Structure implements IStructure
 	 */
 	protected function loadStructure(): array
 	{
-		$engine = $this->connection->getDatabaseEngine();
-
 		$structure = [];
-		$structure['tables'] = $engine->getTables();
+		$structure['tables'] = $this->engine->getTables();
 
 		foreach ($structure['tables'] as $tablePair) {
 			if (isset($tablePair['fullName'])) {
@@ -175,7 +170,7 @@ class Structure implements IStructure
 				$table = $tablePair['name'];
 			}
 
-			$structure['columns'][strtolower($table)] = $columns = $engine->getColumns($table);
+			$structure['columns'][strtolower($table)] = $columns = $this->engine->getColumns($table);
 
 			if (!$tablePair['view']) {
 				$structure['primary'][strtolower($table)] = $this->analyzePrimaryKey($columns);
@@ -218,7 +213,7 @@ class Structure implements IStructure
 	{
 		$lowerTable = strtolower($table);
 
-		$foreignKeys = $this->connection->getDatabaseEngine()->getForeignKeys($table);
+		$foreignKeys = $this->engine->getForeignKeys($table);
 
 		usort($foreignKeys, fn($a, $b): int => count($b['local']) <=> count($a['local']));
 

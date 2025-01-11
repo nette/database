@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Bridges\DatabaseDI;
 
 use Nette;
+use Nette\DI\Definitions\Statement;
 use Nette\Schema\Expect;
 use Tracy;
 use function is_array, is_string;
@@ -95,13 +96,16 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			}
 		}
 
+		$cacheId = 'Nette.Database.' . hash('xxh128', $name . $config->dsn);
+		$cache = new Statement(Nette\Caching\Cache::class, [1 => $cacheId]);
+
 		$connection = $builder->addDefinition($this->prefix("$name.connection"))
 			->setFactory(Nette\Database\Connection::class, [$config->dsn, $config->user, $config->password, $config->options])
 			->setAutowired($config->autowired);
 
 		$structure = $builder->addDefinition($this->prefix("$name.structure"))
 			->setFactory(Nette\Database\Structure::class)
-			->setArguments([$connection])
+			->setArguments([new Statement([$connection, 'getDatabaseEngine']), $cache])
 			->setAutowired($config->autowired);
 
 		if (!$config->conventions) {
@@ -120,7 +124,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		}
 
 		$builder->addDefinition($this->prefix("$name.explorer"))
-			->setFactory(Nette\Database\Explorer::class, [$connection, $structure, $conventions])
+			->setFactory(Nette\Database\Explorer::class, [$connection, $structure, $conventions, $cache])
 			->setAutowired($config->autowired);
 
 		$builder->addAlias($this->prefix("$name.context"), $this->prefix("$name.explorer"));

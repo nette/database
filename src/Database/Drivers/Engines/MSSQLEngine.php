@@ -31,17 +31,9 @@ class MSSQLEngine implements Engine
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public function classifyException(Nette\Database\DriverException $e): ?string
 	{
-		$code = $e->errorInfo[1] ?? null;
-		if ($code === 1205) {
-			return Nette\Database\DeadlockException::from($e);
-
-		} elseif ($code === 1222) {
-			return Nette\Database\LockTimeoutException::from($e);
-		}
-
-		return Nette\Database\DriverException::from($e);
+		return null;
 	}
 
 

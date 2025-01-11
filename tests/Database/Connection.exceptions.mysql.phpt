@@ -31,7 +31,6 @@ test('Exception thrown when calling rollback with no active transaction', functi
 		fn() => $connection->rollback(),
 		Nette\Database\DriverException::class,
 		'There is no active transaction',
-		0,
 	);
 	Assert::same(null, $e->getDriverCode());
 });

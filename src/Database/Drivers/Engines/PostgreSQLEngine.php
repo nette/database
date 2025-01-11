@@ -31,40 +31,16 @@ class PostgreSQLEngine implements Engine
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public function classifyException(Nette\Database\DriverException $e): ?string
 	{
-		$code = $e->errorInfo[0] ?? null;
-		if ($code === '0A000' && str_contains($e->getMessage(), 'truncate')) {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
-
-		} elseif ($code === '23502') {
-			return Nette\Database\NotNullConstraintViolationException::from($e);
-
-		} elseif ($code === '23503') {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
-
-		} elseif ($code === '23505') {
-			return Nette\Database\UniqueConstraintViolationException::from($e);
-
-		} elseif ($code === '23514') {
-			return Nette\Database\CheckConstraintViolationException::from($e);
-
-		} elseif ($code === '40001' || $code === '40P01') {
-			return Nette\Database\DeadlockException::from($e);
-
-		} elseif ($code === '55P03') {
-			return Nette\Database\LockTimeoutException::from($e);
-
-		} elseif (
-			$code === '08003'
-			|| $code === '08006'
-			|| ($code === 'HY000' && str_contains($e->getMessage(), 'server closed the connection unexpectedly'))
-		) {
-			return Nette\Database\ConnectionLostException::from($e);
-
-		} else {
-			return Nette\Database\DriverException::from($e);
-		}
+		return match ($e->getSqlState()) {
+			'0A000' => str_contains($e->getMessage(), 'truncate') ? Nette\Database\ForeignKeyConstraintViolationException::class : null,
+			'23502' => Nette\Database\NotNullConstraintViolationException::class,
+			'23503' => Nette\Database\ForeignKeyConstraintViolationException::class,
+			'23505' => Nette\Database\UniqueConstraintViolationException::class,
+			'08006' => Nette\Database\ConnectionException::class,
+			default => null,
+		};
 	}
 
 

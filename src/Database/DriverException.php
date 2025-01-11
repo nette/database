@@ -13,33 +13,23 @@ use function array_slice;
 /**
  * Base class for all errors in the driver or SQL server.
  */
-class DriverException extends \PDOException
+class DriverException extends \Exception
 {
-	public ?string $queryString = null;
-
-	/** @var array<mixed>|null */
-	public ?array $params = null;
-
-
-	/**
-	 * Creates a DriverException from a PDOException, preserving error info and stack trace location.
-	 */
-	public static function from(\PDOException $src): static
+	public static function from(self $e): static
 	{
-		$e = new static($src->message, 0, $src);
-		$e->file = $src->file;
-		$e->line = $src->line;
-		if (!$src->errorInfo && preg_match('#SQLSTATE\[(.*?)\] \[(.*?)\] (.*)#A', $src->message, $m)) {
-			$m[2] = (int) $m[2];
-			$e->errorInfo = array_slice($m, 1);
-			$e->code = $m[1];
-		} else {
-			$e->errorInfo = $src->errorInfo;
-			$e->code = $src->code;
-			$e->code = $e->errorInfo[0] ?? $src->code;
-		}
+		return new static($e->getMessage(), $e->sqlState, $e->getDriverCode() ?? 0, $e->query, $e);
+	}
 
-		return $e;
+
+	public function __construct(
+		string $message,
+		private readonly ?string $sqlState = null,
+		private int $driverCode = 0,
+		private readonly ?SqlLiteral $query = null,
+		?\Throwable $previous = null,
+	) {
+		parent::__construct($message, 0, $previous);
+		$this->code = $sqlState ?: null;
 	}
 
 
@@ -48,7 +38,7 @@ class DriverException extends \PDOException
 	 */
 	public function getDriverCode(): int|string|null
 	{
-		return $this->errorInfo[1] ?? null;
+		return $this->driverCode ?: null;
 	}
 
 
@@ -57,19 +47,19 @@ class DriverException extends \PDOException
 	 */
 	public function getSqlState(): ?string
 	{
-		return $this->errorInfo[0] ?? null;
+		return $this->sqlState;
 	}
 
 
 	public function getQueryString(): ?string
 	{
-		return $this->queryString;
+		return $this->query?->getSql();
 	}
 
 
 	/** @return array<mixed>|null */
 	public function getParameters(): ?array
 	{
-		return $this->params;
+		return $this->query?->getParameters();
 	}
 }

@@ -13,13 +13,13 @@ require __DIR__ . '/../bootstrap.php';
 
 
 test('default charset', function () {
-	$connection = connectToDB(['charset' => null])->getConnection();
+	$connection = connectToDB(['charset' => null]);
 	$row = $connection->fetch("SHOW VARIABLES LIKE 'character_set_client'");
 	Assert::same('utf8mb4', $row->Value);
 });
 
 test('custom charset', function () {
-	$connection = connectToDB(['charset' => 'latin2'])->getConnection();
+	$connection = connectToDB(['charset' => 'latin2']);
 	$row = $connection->fetch("SHOW VARIABLES LIKE 'character_set_client'");
 	Assert::same('latin2', $row->Value);
 });
@@ -27,28 +27,28 @@ test('custom charset', function () {
 
 test('custom sqlmode', function () {
 	$desiredMode = 'STRICT_TRANS_TABLES,NO_ENGINE_SUBSTITUTION';
-	$connection = connectToDB(['sqlmode' => $desiredMode])->getConnection();
+	$connection = connectToDB(['sqlmode' => $desiredMode]);
 	$field = $connection->fetchField('SELECT @@sql_mode');
 	Assert::same($desiredMode, $field);
 });
 
 
 test('default convertBoolean', function () {
-	$connection = connectToDB(['convertBoolean' => null])->getConnection();
+	$connection = connectToDB(['convertBoolean' => null]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::same(true, $row->bool);
 });
 
 test('convertBoolean = true', function () {
-	$connection = connectToDB(['convertBoolean' => true])->getConnection();
+	$connection = connectToDB(['convertBoolean' => true]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::same(true, $row->bool);
 });
 
 test('convertBoolean = false', function () {
-	$connection = connectToDB(['convertBoolean' => false])->getConnection();
+	$connection = connectToDB(['convertBoolean' => false]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::same(1, $row->bool);
@@ -56,45 +56,45 @@ test('convertBoolean = false', function () {
 
 
 test('default newDateTime', function () {
-	$connection = connectToDB(['newDateTime' => null])->getConnection();
+	$connection = connectToDB(['newDateTime' => null]);
 	$field = $connection->fetchField('SELECT NOW()');
 	Assert::type(Nette\Database\DateTime::class, $field);
 });
 
 test('newDateTime = false', function () {
-	$connection = connectToDB(['newDateTime' => false])->getConnection();
+	$connection = connectToDB(['newDateTime' => false]);
 	$field = $connection->fetchField('SELECT NOW()');
 	Assert::type(Nette\Utils\DateTime::class, $field);
 });
 
 test('newDateTime = true', function () {
-	$connection = connectToDB(['newDateTime' => true])->getConnection();
+	$connection = connectToDB(['newDateTime' => true]);
 	$field = $connection->fetchField('SELECT NOW()');
 	Assert::type(Nette\Database\DateTime::class, $field);
 });
 
 
 test('default convertDateTime', function () {
-	$connection = connectToDB(['convertDateTime' => null])->getConnection();
+	$connection = connectToDB(['convertDateTime' => null]);
 	$field = $connection->fetchField('SELECT NOW()');
 	Assert::type(Nette\Database\DateTime::class, $field);
 });
 
 test('convertDateTime = false', function () {
-	$connection = connectToDB(['convertDateTime' => false])->getConnection();
+	$connection = connectToDB(['convertDateTime' => false]);
 	$field = $connection->fetchField('SELECT NOW()');
 	Assert::type('string', $field);
 });
 
 test('convertDateTime = true', function () {
-	$connection = connectToDB(['convertDateTime' => true])->getConnection();
+	$connection = connectToDB(['convertDateTime' => true]);
 	$field = $connection->fetchField('SELECT NOW()');
 	Assert::type(Nette\Database\DateTime::class, $field);
 });
 
 
 test('default convertDecimal', function () {
-	$connection = connectToDB(['convertDecimal' => null])->getConnection();
+	$connection = connectToDB(['convertDecimal' => null]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::same(1, $row->decimal);
@@ -105,7 +105,7 @@ test('default convertDecimal', function () {
 });
 
 test('convertDecimal = false', function () {
-	$connection = connectToDB(['convertDecimal' => false])->getConnection();
+	$connection = connectToDB(['convertDecimal' => false]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::same('1', $row->decimal);
@@ -116,7 +116,7 @@ test('convertDecimal = false', function () {
 });
 
 test('convertDecimal = true', function () {
-	$connection = connectToDB(['convertDecimal' => true])->getConnection();
+	$connection = connectToDB(['convertDecimal' => true]);
 	Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/mysql-nette_test3.sql');
 	$row = $connection->fetch('SELECT * FROM types');
 	Assert::same(1, $row->decimal);

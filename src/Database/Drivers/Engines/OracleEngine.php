@@ -7,15 +7,16 @@
 
 declare(strict_types=1);
 
-namespace Nette\Database\Drivers;
+namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Engine;
 
 
 /**
- * Supplemental Oracle database driver.
+ * Oracle database platform.
  */
-class OciDriver implements Engine
+class OracleEngine implements Engine
 {
 	private Nette\Database\Connection $connection;
 	private string $fmtDateTime;

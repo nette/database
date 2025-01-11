@@ -9,8 +9,11 @@ declare(strict_types=1);
 
 namespace Nette\Database\Drivers\PDO;
 
+use Nette\Database\DriverException;
 use Nette\Database\Drivers;
+use Nette\Database\SqlLiteral;
 use PDO;
+use PDOException;
 
 
 class Connection implements Drivers\Connection
@@ -29,48 +32,68 @@ class Connection implements Drivers\Connection
 	{
 		$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 
-		$statement = $this->pdo->prepare($sql);
-		foreach ($params as $key => $value) {
-			$statement->bindValue(is_int($key) ? $key + 1 : $key, $value, $types[gettype($value)] ?? PDO::PARAM_STR);
-		}
+		try {
+			$statement = $this->pdo->prepare($sql);
+			foreach ($params as $key => $value) {
+				$statement->bindValue(is_int($key) ? $key + 1 : $key, $value, $types[gettype($value)] ?? PDO::PARAM_STR);
+			}
+			$statement->execute();
+			return new ($this->resultClass)($statement, $this);
 
-		$statement->execute();
-		return new ($this->resultClass)($statement, $this);
+		} catch (PDOException $e) {
+			throw new DriverException(...Driver::exceptionArgs($e, new SqlLiteral($sql, $params)));
+		}
 	}
 
 
 	public function execute(string $sql): int
 	{
-		return $this->pdo->exec($sql);
+		try {
+			return $this->pdo->exec($sql);
+		} catch (PDOException $e) {
+			throw new DriverException(...Driver::exceptionArgs($e, new SqlLiteral($sql)));
+		}
 	}
 
 
 	public function beginTransaction(): void
 	{
-		$this->pdo->beginTransaction();
-
+		try {
+			$this->pdo->beginTransaction();
+		} catch (PDOException $e) {
+			throw new DriverException(...Driver::exceptionArgs($e));
+		}
 	}
 
 
 	public function commit(): void
 	{
-		$this->pdo->commit();
-
+		try {
+			$this->pdo->commit();
+		} catch (PDOException $e) {
+			throw new DriverException(...Driver::exceptionArgs($e));
+		}
 	}
 
 
 	public function rollBack(): void
 	{
-		$this->pdo->rollBack();
-
+		try {
+			$this->pdo->rollBack();
+		} catch (PDOException $e) {
+			throw new DriverException(...Driver::exceptionArgs($e));
+		}
 	}
 
 
 	public function getInsertId(?string $sequence = null): string
 	{
-		$res = $this->pdo->lastInsertId($sequence);
-		return $res === false ? '0' : $res;
-
+		try {
+			$res = $this->pdo->lastInsertId($sequence);
+			return $res === false ? '0' : $res;
+		} catch (PDOException $e) {
+			throw new DriverException(...Driver::exceptionArgs($e));
+		}
 	}
 
 

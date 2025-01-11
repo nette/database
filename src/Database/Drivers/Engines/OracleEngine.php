@@ -33,24 +33,16 @@ class OracleEngine implements Engine
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public function classifyException(Nette\Database\DriverException $e): ?string
 	{
-		$code = $e->errorInfo[1] ?? null;
-		if (in_array($code, [1, 2299, 38911], true)) {
-			return Nette\Database\UniqueConstraintViolationException::from($e);
-
-		} elseif ($code === 1400) {
-			return Nette\Database\NotNullConstraintViolationException::from($e);
-
-		} elseif (in_array($code, [2266, 2291, 2292], true)) {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
-
-		} elseif ($code === 60) {
-			return Nette\Database\DeadlockException::from($e);
-
-		} else {
-			return Nette\Database\DriverException::from($e);
-		}
+		$code = $e->getDriverCode();
+		return match (true) {
+			in_array($code, [1, 2299, 38911], true) => Nette\Database\UniqueConstraintViolationException::class,
+			$code === 1400 => Nette\Database\NotNullConstraintViolationException::class,
+			in_array($code, [2266, 2291, 2292], true) => Nette\Database\ForeignKeyConstraintViolationException::class,
+			$code === 60 => Nette\Database\DeadlockException::class,
+			default => null,
+		};
 	}
 
 

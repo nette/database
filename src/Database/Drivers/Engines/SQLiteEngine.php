@@ -35,37 +35,36 @@ class SQLiteEngine implements Engine
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public function classifyException(Nette\Database\DriverException $e): ?string
 	{
-		$code = $e->errorInfo[1] ?? null;
-		$msg = $e->getMessage();
-		if ($code !== 19) {
-			return Nette\Database\DriverException::from($e);
+		$message = $e->getMessage();
+		if ($e->getDriverCode() !== 19) {
+			return null;
 
 		} elseif (
-			str_contains($msg, 'must be unique')
-			|| str_contains($msg, 'is not unique')
-			|| str_contains($msg, 'UNIQUE constraint failed')
+			str_contains($message, 'must be unique')
+			|| str_contains($message, 'is not unique')
+			|| str_contains($message, 'UNIQUE constraint failed')
 		) {
-			return Nette\Database\UniqueConstraintViolationException::from($e);
+			return Nette\Database\UniqueConstraintViolationException::class;
 
 		} elseif (
-			str_contains($msg, 'may not be NULL')
-			|| str_contains($msg, 'NOT NULL constraint failed')
+			str_contains($message, 'may not be NULL')
+			|| str_contains($message, 'NOT NULL constraint failed')
 		) {
-			return Nette\Database\NotNullConstraintViolationException::from($e);
+			return Nette\Database\NotNullConstraintViolationException::class;
 
 		} elseif (
-			str_contains($msg, 'foreign key constraint failed')
-			|| str_contains($msg, 'FOREIGN KEY constraint failed')
+			str_contains($message, 'foreign key constraint failed')
+			|| str_contains($message, 'FOREIGN KEY constraint failed')
 		) {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
+			return Nette\Database\ForeignKeyConstraintViolationException::class;
 
-		} elseif (str_contains($msg, 'CHECK constraint failed')) {
-			return Nette\Database\CheckConstraintViolationException::from($e);
+		} elseif (str_contains($message, 'CHECK constraint failed')) {
+			return Nette\Database\CheckConstraintViolationException::class;
 
 		} else {
-			return Nette\Database\ConstraintViolationException::from($e);
+			return Nette\Database\ConstraintViolationException::class;
 		}
 	}
 

@@ -34,41 +34,23 @@ class MySQLEngine implements Engine
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public function classifyException(Nette\Database\DriverException $e): ?string
 	{
-		$code = $e->errorInfo[1] ?? null;
-		if (in_array($code, [1216, 1217, 1451, 1452, 1701], true)) {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
-
-		} elseif (in_array($code, [1062, 1557, 1569, 1586], true)) {
-			return Nette\Database\UniqueConstraintViolationException::from($e);
-
-		} elseif ($code === 3819 || $code === 4025) { // 3819 = MySQL, 4025 = MariaDB
-			return Nette\Database\CheckConstraintViolationException::from($e);
-
-		} elseif ($code === 1213) {
-			return Nette\Database\DeadlockException::from($e);
-
-		} elseif ($code === 1205) {
-			return Nette\Database\LockTimeoutException::from($e);
-
-		} elseif (
-			$code === 2006
-			|| $code === 2013
+		$code = $e->getDriverCode();
+		return match (true) {
+			in_array($code, [1216, 1217, 1451, 1452, 1701], true) => Nette\Database\ForeignKeyConstraintViolationException::class,
+			in_array($code, [1062, 1557, 1569, 1586], true) => Nette\Database\UniqueConstraintViolationException::class,
+			$code === 3819 || $code === 4025 => Nette\Database\CheckConstraintViolationException::class, // 3819 = MySQL, 4025 = MariaDB
+			$code === 1213 => Nette\Database\DeadlockException::class,
+			$code === 1205 => Nette\Database\LockTimeoutException::class,
+			$code === 2006,
+			$code === 2013,
 			// ER_CLIENT_INTERACTION_TIMEOUT (MySQL 8.0.24+); on MariaDB 4031 is an unrelated trigger error
-			|| ($code === 4031 && str_contains($e->getMessage(), 'disconnected'))
-		) {
-			return Nette\Database\ConnectionLostException::from($e);
-
-		} elseif ($code >= 2001 && $code <= 2028) {
-			return Nette\Database\ConnectionException::from($e);
-
-		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], true)) {
-			return Nette\Database\NotNullConstraintViolationException::from($e);
-
-		} else {
-			return Nette\Database\DriverException::from($e);
-		}
+			$code === 4031 && str_contains($e->getMessage(), 'disconnected') => Nette\Database\ConnectionLostException::class,
+			$code >= 2001 && $code <= 2028 => Nette\Database\ConnectionException::class,
+			in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], true) => Nette\Database\NotNullConstraintViolationException::class,
+			default => null,
+		};
 	}
 
 

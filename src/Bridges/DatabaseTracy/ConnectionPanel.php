@@ -8,7 +8,7 @@
 namespace Nette\Bridges\DatabaseTracy;
 
 use Nette;
-use Nette\Database\{Connection, Helpers, Result};
+use Nette\Database\{Connection, DriverException, Helpers, Result};
 use Tracy;
 use function is_string;
 
@@ -85,7 +85,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 			return;
 		}
 
-		$trace = $result instanceof \PDOException
+		$trace = $result instanceof DriverException
 			? array_map(fn($row) => array_diff_key($row, ['args' => null]), $result->getTrace())
 			: debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 
@@ -103,25 +103,19 @@ class ConnectionPanel implements Tracy\IBarPanel
 
 		$this->events[] = $result instanceof Result
 			? [$connection, $result->getQueryString(), $result->getParameters(), $trace, $result->getTime(), $result->getRowCount(), null]
-			: [$connection, $result->queryString, null, $trace, null, null, $result->getMessage()];
+			: [$connection, $result->getQueryString(), null, $trace, null, null, $result->getMessage()];
 	}
 
 
 	/** @return array{tab: string, panel: string}|null */
 	public static function renderException(?\Throwable $e): ?array
 	{
-		if (!$e instanceof \PDOException) {
+		if (!$e instanceof DriverException) {
 			return null;
 		}
 
-		if (isset($e->queryString)) {
-			$sql = $e->queryString;
-
-		} elseif (($item = Tracy\Helpers::findTrace($e->getTrace(), 'PDO::prepare')) && isset($item['args'][0])) {
-			$sql = $item['args'][0];
-		}
-
-		return isset($sql)
+		$sql = $e->getQueryString();
+		return $sql
 			? [
 				'tab' => 'SQL',
 				'panel' => Helpers::dumpSql($sql, $e->params ?? []),
@@ -162,7 +156,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 						: 'EXPLAIN';
 					$rows = $connection->getConnection()->query("$cmd $sql", $params);
 					for ($explain = []; $row = $rows->fetch(); $explain[] = $row);
-				} catch (\PDOException) {
+				} catch (DriverException) {
 				}
 			}
 

@@ -29,32 +29,23 @@ class SQLServerEngine implements Engine
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public function classifyException(Nette\Database\DriverException $e): ?string
 	{
-		$code = $e->errorInfo[1] ?? null;
-		if ($code === 2627 || $code === 2601) {
-			return Nette\Database\UniqueConstraintViolationException::from($e);
-
-		} elseif ($code === 515) {
-			return Nette\Database\NotNullConstraintViolationException::from($e);
-
-		} elseif ($code === 547) {
-			return match (true) {
-				str_contains($e->getMessage(), 'CHECK constraint') => Nette\Database\CheckConstraintViolationException::from($e),
-				str_contains($e->getMessage(), 'FOREIGN KEY constraint'),
-				str_contains($e->getMessage(), 'REFERENCE constraint') => Nette\Database\ForeignKeyConstraintViolationException::from($e),
+		$message = $e->getMessage();
+		return match ($e->getDriverCode()) {
+			2627, 2601 => Nette\Database\UniqueConstraintViolationException::class,
+			515 => Nette\Database\NotNullConstraintViolationException::class,
+			547 => match (true) {
+				str_contains($message, 'CHECK constraint') => Nette\Database\CheckConstraintViolationException::class,
+				str_contains($message, 'FOREIGN KEY constraint'),
+				str_contains($message, 'REFERENCE constraint') => Nette\Database\ForeignKeyConstraintViolationException::class,
 				// the message is localized per login language and cannot be classified further
-				default => Nette\Database\ConstraintViolationException::from($e),
-			};
-
-		} elseif ($code === 1205) {
-			return Nette\Database\DeadlockException::from($e);
-
-		} elseif ($code === 1222) {
-			return Nette\Database\LockTimeoutException::from($e);
-		}
-
-		return Nette\Database\DriverException::from($e);
+				default => Nette\Database\ConstraintViolationException::class,
+			},
+			1205 => Nette\Database\DeadlockException::class,
+			1222 => Nette\Database\LockTimeoutException::class,
+			default => null,
+		};
 	}
 
 

@@ -29,43 +29,25 @@ class PostgreSQLEngine implements Engine
 	}
 
 
-	public function convertException(\PDOException $e): Nette\Database\DriverException
+	public function classifyException(Nette\Database\DriverException $e): ?string
 	{
-		$code = $e->errorInfo[0] ?? null;
-		if ($code === '0A000' && str_contains($e->getMessage(), 'truncate')) {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
-
-		} elseif ($code === '23502') {
-			return Nette\Database\NotNullConstraintViolationException::from($e);
-
-		} elseif ($code === '23503') {
-			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
-
-		} elseif ($code === '23505') {
-			return Nette\Database\UniqueConstraintViolationException::from($e);
-
-		} elseif ($code === '23514') {
-			return Nette\Database\CheckConstraintViolationException::from($e);
-
-		} elseif ($code === '40001' || $code === '40P01') {
-			return Nette\Database\DeadlockException::from($e);
-
-		} elseif ($code === '55P03') {
-			return Nette\Database\LockTimeoutException::from($e);
-
-		} elseif (
-			$code === '08003'
-			|| $code === '08006'
-			|| $code === '57P01' // admin_shutdown, e.g. pg_terminate_backend() or server restart
-			|| $code === '57P02' // crash_shutdown
-			|| $code === '57P03' // cannot_connect_now
-			|| ($code === 'HY000' && str_contains($e->getMessage(), 'server closed the connection unexpectedly'))
-		) {
-			return Nette\Database\ConnectionLostException::from($e);
-
-		} else {
-			return Nette\Database\DriverException::from($e);
-		}
+		return match ($e->getSqlState()) {
+			'0A000' => str_contains($e->getMessage(), 'truncate') ? Nette\Database\ForeignKeyConstraintViolationException::class : null,
+			'23502' => Nette\Database\NotNullConstraintViolationException::class,
+			'23503' => Nette\Database\ForeignKeyConstraintViolationException::class,
+			'23505' => Nette\Database\UniqueConstraintViolationException::class,
+			'23514' => Nette\Database\CheckConstraintViolationException::class,
+			'40001', '40P01' => Nette\Database\DeadlockException::class,
+			'55P03' => Nette\Database\LockTimeoutException::class,
+			'08003', '08006',
+			'57P01', // admin_shutdown, e.g. pg_terminate_backend() or server restart
+			'57P02', // crash_shutdown
+			'57P03' /* cannot_connect_now */ => Nette\Database\ConnectionLostException::class,
+			'HY000' => str_contains($e->getMessage(), 'server closed the connection unexpectedly')
+				? Nette\Database\ConnectionLostException::class
+				: null,
+			default => null,
+		};
 	}
 
 

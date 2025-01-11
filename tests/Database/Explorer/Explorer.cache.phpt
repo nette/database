@@ -12,9 +12,8 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
 test('column access caching across queries', function () use ($explorer) {
@@ -197,7 +196,7 @@ test('incremental column access tracking', function () use ($explorer) {
 
 test('SQL query logging with caching', function () use ($explorer) {
 	$sql = [];
-	$explorer->getConnection()->onQuery[] = function ($_, $result) use (&$sql) {
+	$explorer->onQuery[] = function ($_, $result) use (&$sql) {
 		$sql[] = $result->getQueryString();
 	};
 

@@ -12,9 +12,8 @@ use Tester\Assert;
 require __DIR__ . '/../../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../../files/{$driverName}-bug170.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../../files/{$driverName}-bug170.sql");
 
 Assert::noError(function () use ($explorer) {
 	// this bug is about picking the right foreign key to specified table regardless FKs definition order

@@ -10,7 +10,7 @@ use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
-$connection = connectToDB()->getConnection();
+$connection = connectToDB();
 
 enum EnumInt: int
 {

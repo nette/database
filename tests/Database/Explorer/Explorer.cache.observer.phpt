@@ -13,21 +13,24 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
 $cache = Mockery::mock(Nette\Caching\Cache::class);
+$cache->shouldReceive('load')->withAnyArgs()->once()->andReturn([]);
 $cache->shouldReceive('load')->withAnyArgs()->once()->andReturn(['id' => true]);
 $cache->shouldReceive('load')->withAnyArgs()->times(2)->andReturn(['id' => true, 'author_id' => true]);
+$cache->shouldReceive('save')->with('structure', Mockery::any());
 $cache->shouldReceive('save')->with(Mockery::any(), ['id' => true, 'author_id' => true, 'title' => true]);
-
-$explorer = new Nette\Database\Explorer($connection, $explorer->getStructure(), $explorer->getConventions(), $cache);
+$explorer->setCache($cache);
 
 $queries = 0;
-$connection->onQuery[] = function ($dao, Result $result) use (&$queries) {
-	if (!preg_match('#SHOW|CONSTRAINT_NAME|information_schema|pg_catalog|sys\.|SET|PRAGMA|FROM sqlite_#i', $result->getQuery()->getSql())) {
+$explorer->onQuery[] = function ($explorer, $result) use (&$queries) {
+	if (
+		$result instanceof Result
+		&& !preg_match('#SHOW|CONSTRAINT_NAME|information_schema|pg_catalog|sys\.|SET|PRAGMA|FROM sqlite_#i', $result->getQuery()->getSql())
+	) {
 		$queries++;
 	}
 };

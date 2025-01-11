@@ -13,10 +13,9 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
-$engine = $connection->getDatabaseEngine();
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+$engine = $explorer->getDatabaseEngine();
 
 
 test('join with order by related column', function () use ($explorer) {

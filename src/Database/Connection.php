@@ -12,7 +12,6 @@ namespace Nette\Database;
 use JetBrains\PhpStorm\Language;
 use Nette;
 use Nette\Utils\Arrays;
-use PDOException;
 use function func_get_args, str_replace, ucfirst;
 
 
@@ -83,7 +82,7 @@ class Connection
 
 		try {
 			$this->connection = $this->driver->connect();
-		} catch (PDOException $e) {
+		} catch (DriverException $e) {
 			throw ConnectionException::from($e);
 		}
 
@@ -177,8 +176,8 @@ class Connection
 	{
 		try {
 			return $this->getConnection()->getInsertId($sequence);
-		} catch (PDOException $e) {
-			throw $this->getDatabaseEngine()->convertException($e);
+		} catch (DriverException $e) {
+			throw $this->convertException($e);
 		}
 	}
 
@@ -274,7 +273,7 @@ class Connection
 		[$this->sql, $params] = $this->preprocess($sql, ...$params);
 		try {
 			$result = new Result($this, $this->sql, $params);
-		} catch (PDOException $e) {
+		} catch (DriverException $e) {
 			Arrays::invoke($this->onQuery, $this, $e);
 			throw $e;
 		}
@@ -309,6 +308,13 @@ class Connection
 	public function getLastQueryString(): ?string
 	{
 		return $this->sql;
+	}
+
+
+	public function convertException(DriverException $e): DriverException
+	{
+		$class = $this->getDatabaseEngine()->classifyException($e);
+		return $class ? $class::from($e) : $e;
 	}
 
 

@@ -43,11 +43,8 @@ class Result implements \Iterator
 			} else {
 				$this->result = $connection->getConnection()->query($queryString, $params);
 			}
-		} catch (\PDOException $e) {
-			$e = $connection->getDatabaseEngine()->convertException($e);
-			$e->queryString = $queryString;
-			$e->params = $params;
-			throw $e;
+		} catch (DriverException $e) {
+			throw $connection->convertException($e);
 		}
 
 		$this->time = microtime(as_float: true) - $time;

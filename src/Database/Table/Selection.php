@@ -8,7 +8,7 @@
 namespace Nette\Database\Table;
 
 use Nette;
-use Nette\Database\{Conventions, Explorer};
+use Nette\Database\Explorer;
 use function count, func_num_args, is_array, is_int;
 
 
@@ -21,10 +21,6 @@ use function count, func_num_args, is_array, is_int;
  */
 class Selection implements \Iterator, \ArrayAccess, \Countable
 {
-	protected readonly Explorer $explorer;
-
-	/** back compatibility */
-	protected Explorer $context;
 	protected readonly ?Nette\Caching\Cache $cache;
 	protected SqlBuilder $sqlBuilder;
 
@@ -72,18 +68,12 @@ class Selection implements \Iterator, \ArrayAccess, \Countable
 	 * Creates filtered table representation.
 	 */
 	public function __construct(
-		Explorer $explorer,
-		protected readonly Conventions $conventions,
+		protected readonly Explorer $explorer,
 		string $tableName,
-		?Nette\Caching\Storage $cacheStorage = null,
 	) {
-		$this->explorer = $this->context = $explorer;
 		$this->name = $tableName;
-
-		$this->cache = $cacheStorage
-			? new Nette\Caching\Cache($cacheStorage, 'Nette.Database.' . hash('xxh128', $explorer->getConnection()->getDsn()))
-			: null;
-		$this->primary = $conventions->getPrimary($tableName);
+		$this->cache = $explorer->getCache();
+		$this->primary = $explorer->getConventions()->getPrimary($tableName);
 		$this->sqlBuilder = new SqlBuilder($tableName, $explorer);
 		$this->refCache = &$this->getRefTable($refPath)->globalRefCache[$refPath];
 	}
@@ -959,7 +949,7 @@ class Selection implements \Iterator, \ArrayAccess, \Countable
 				return false;
 			}
 
-			$belongsTo = $this->conventions->getBelongsToReference($this->name, $table);
+			$belongsTo = $this->explorer->getConventions()->getBelongsToReference($this->name, $table);
 			if (!$belongsTo) {
 				return false;
 			}
@@ -1013,7 +1003,7 @@ class Selection implements \Iterator, \ArrayAccess, \Countable
 		if (str_contains($table, '.')) {
 			[$table, $column] = explode('.', $table);
 		} elseif (!$column) {
-			$hasMany = $this->conventions->getHasManyReference($this->name, $table);
+			$hasMany = $this->explorer->getConventions()->getHasManyReference($this->name, $table);
 			if (!$hasMany) {
 				return null;
 			}

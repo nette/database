@@ -7,8 +7,7 @@
 
 namespace Nette\Database\Table;
 
-use Nette;
-use Nette\Database\{Conventions, Explorer};
+use Nette\Database\Explorer;
 use function count;
 
 
@@ -32,15 +31,13 @@ class GroupedSelection extends Selection
 	 */
 	public function __construct(
 		Explorer $explorer,
-		Conventions $conventions,
 		string $tableName,
 		/** grouping column name */
 		protected readonly string $column,
 		/** @var Selection<ActiveRow> referenced table */
 		protected readonly Selection $refTable,
-		?Nette\Caching\Storage $cacheStorage = null,
 	) {
-		parent::__construct($explorer, $conventions, $tableName, $cacheStorage);
+		parent::__construct($explorer, $tableName);
 	}
 
 

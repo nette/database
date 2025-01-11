@@ -13,9 +13,8 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test2.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test2.sql");
 
 
 class SqlBuilderMock extends SqlBuilder
@@ -35,7 +34,7 @@ class SqlBuilderMock extends SqlBuilder
 $structure = $explorer->getStructure();
 $conventions = new DiscoveredConventions($structure);
 $sqlBuilder = new SqlBuilderMock('nUsers', $explorer);
-$engine = $connection->getDatabaseEngine();
+$engine = $explorer->getDatabaseEngine();
 
 
 $joins = [];
@@ -44,7 +43,7 @@ $sqlBuilder->parseJoins($joins, $query);
 $join = $sqlBuilder->buildQueryJoins($joins);
 Assert::same('WHERE priorit.id IS NULL', $query);
 
-$tables = $connection->getDatabaseEngine()->getTables();
+$tables = $explorer->getDatabaseEngine()->getTables();
 if (!in_array($tables[0]['name'], ['npriorities', 'ntopics', 'nusers', 'nusers_ntopics', 'nusers_ntopics_alt'], true)) {
 	if ($engine->isSupported(Engine::SupportSchema)) {
 		Assert::same(
@@ -73,7 +72,7 @@ if (!in_array($tables[0]['name'], ['npriorities', 'ntopics', 'nusers', 'nusers_n
 }
 
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 $structure->rebuild();
 
 $sqlBuilder = new SqlBuilderMock('author', $explorer);

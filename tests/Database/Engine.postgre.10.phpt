@@ -10,7 +10,7 @@ use Tester\Environment;
 
 require __DIR__ . '/../bootstrap.php';
 
-$connection = connectToDB()->getConnection();
+$connection = connectToDB();
 
 $ver = $connection->query('SHOW server_version')->fetchField();
 if (version_compare($ver, '10') < 0) {

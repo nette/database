@@ -12,9 +12,8 @@ use Tester\Assert;
 require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
-$connection = $explorer->getConnection();
 
-Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
 class CacheMock extends Cache
@@ -30,7 +29,7 @@ class CacheMock extends Cache
 }
 
 $cache = new CacheMock(new MemoryStorage);
-$explorer = new Nette\Database\Explorer($connection, $explorer->getStructure(), $explorer->getConventions(), $cache);
+$explorer->setCache($cache);
 
 for ($i = 0; $i < 2; ++$i) {
 	$authors = $explorer->table('author');
@@ -51,4 +50,4 @@ for ($i = 0; $i < 2; ++$i) {
 }
 
 Assert::same(reformat('SELECT [id], [name] FROM [author]'), $sql);
-Assert::same(2, $cache->writes);
+Assert::same(3, $cache->writes); // Structure + 2x Selection

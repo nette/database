@@ -33,7 +33,7 @@ echo '</h1>
 		</tr>
 
 ';
-foreach ($events as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]) /* pos 26:3 */ {
+foreach ($events as [$connection, $query, $trace, $time, $rows, $error, $command, $explain]) /* pos 26:3 */ {
 	echo '		<tr>
 			<td style="background:rgba(255, 95, 23, ';
 	echo Tracy\Helpers::escapeHtml(sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale)) /* pos 28:45 */;
@@ -66,7 +66,7 @@ foreach ($events as [$connection, $sql, $params, $trace, $time, $rows, $error, $
 	echo Tracy\Helpers::escapeHtml($command) /* pos 38:72 */;
 	echo '">
 				';
-	echo Nette\Database\Helpers::dumpSql($sql, $params, $connection) /* pos 39:6 */;
+	echo Nette\Database\Helpers::dumpSql($query, $connection) /* pos 39:6 */;
 	echo '
 
 ';

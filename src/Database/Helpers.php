@@ -30,7 +30,7 @@ class Helpers
 	 */
 	public static function dumpResult(Result $result): void
 	{
-		echo "\n<table class=\"dump\">\n<caption>" . htmlspecialchars($result->getQueryString(), ENT_IGNORE, 'UTF-8') . "</caption>\n";
+		echo "\n<table class=\"dump\">\n<caption>" . htmlspecialchars($result->getQuery()->getSql(), ENT_IGNORE, 'UTF-8') . "</caption>\n";
 		if (!$result->getColumnCount()) {
 			echo "\t<tr>\n\t\t<th>Affected rows:</th>\n\t\t<td>", $result->getRowCount(), "</td>\n\t</tr>\n</table>\n";
 			return;
@@ -75,12 +75,13 @@ class Helpers
 	/**
 	 * Returns syntax highlighted SQL command.
 	 */
-	public static function dumpSql(string $sql, ?array $params = null, ?Connection $connection = null): string
+	public static function dumpSql(SqlLiteral $query, ?Connection $connection = null): string
 	{
 		$keywords1 = 'SELECT|(?:ON\s+DUPLICATE\s+KEY)?UPDATE|INSERT(?:\s+INTO)?|REPLACE(?:\s+INTO)?|DELETE|CALL|UNION|FROM|WHERE|HAVING|GROUP\s+BY|ORDER\s+BY|LIMIT|OFFSET|SET|VALUES|LEFT\s+JOIN|INNER\s+JOIN|TRUNCATE';
 		$keywords2 = 'ALL|DISTINCT|DISTINCTROW|IGNORE|AS|USING|ON|AND|OR|IN|IS|NOT|NULL|[RI]?LIKE|REGEXP|TRUE|FALSE';
 
 		// insert new lines
+		$sql = $query->getSql();
 		$sql = " $sql ";
 		$sql = preg_replace("#(?<=[\\s,(])($keywords1)(?=[\\s,)])#i", "\n\$1", $sql);
 
@@ -108,14 +109,14 @@ class Helpers
 		}, $sql);
 
 		// parameters
+		$params = $query->getParameters();
 		$sql = preg_replace_callback('#\?#', function () use ($params, $connection): string {
 			static $i = 0;
-			if (!isset($params[$i])) {
+			$param = $params[$i++] ?? null;
+			if ($param === null) {
 				return '?';
-			}
 
-			$param = $params[$i++];
-			if (
+			} elseif (
 				is_string($param)
 				&& (
 					preg_match('#[^\x09\x0A\x0D\x20-\x7E\xA0-\x{10FFFF}]#u', $param)

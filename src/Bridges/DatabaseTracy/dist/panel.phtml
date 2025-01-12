@@ -24,7 +24,7 @@ declare(strict_types=1);
 			<th style="width: 1%">Rows</th>
 		</tr>
 
-<?php foreach ($queries as [$connection, $sql, $params, $source, $time, $rows, $error, $command, $explain]): ?>			<tr>
+<?php foreach ($queries as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]): ?>			<tr>
 				<td style="background:rgba(255, 95, 23, <?= Tracy\Helpers::escapeHtml(sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale)) ?>
 )" data-order="<?= Tracy\Helpers::escapeHtml((float) $time) ?>
 ">
@@ -36,6 +36,9 @@ declare(strict_types=1);
 <?php endif ?>
 <?php if ($explain): ?>
 					<br><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-explain">explain</a>
+<?php endif ?>
+<?php if ($trace): ?>
+					<br><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-trace">trace</a>
 <?php endif ?>
 				</td>
 
@@ -55,11 +58,19 @@ declare(strict_types=1);
 <?php endforeach ?>								</tr>
 <?php endforeach ?>						</table>
 <?php endif ?>
-<?php if ($source): ?>
-					<?= substr_replace(Tracy\Helpers::editorLink($source[0], $source[1]), ' class="nette-DbConnectionPanel-source"', 2, 0) ?>
+<?php if ($trace): ?>						<?= substr_replace(Tracy\Helpers::editorLink($trace[0]['file'], $trace[0]['line']), ' class="nette-DbConnectionPanel-source"', 2, 0) ?>
 
-<?php endif ?>
-				</td>
+						<table class="tracy-collapsed nette-DbConnectionPanel-trace">
+<?php foreach ($trace as $row): ?>								<tr>
+									<td><?= isset($row['file']) ? Tracy\Helpers::editorLink($row['file'], $row['line']) : '' ?>
+</td>
+									<td><?= Tracy\Helpers::escapeHtml($row['class'] ?? '') ?>
+<?= Tracy\Helpers::escapeHtml($row['type'] ?? '') ?>
+<?= Tracy\Helpers::escapeHtml($row['function']) ?>
+()</td>
+								</tr>
+<?php endforeach ?>						</table>
+<?php endif ?>				</td>
 
 				<td><?= Tracy\Helpers::escapeHtml($rows) ?>
 </td>

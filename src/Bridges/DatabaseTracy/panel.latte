@@ -17,7 +17,7 @@
 			<th style="width: 1%">Rows</th>
 		</tr>
 
-		{foreach $queries as [$connection, $sql, $params, $source, $time, $rows, $error, $command, $explain]}
+		{foreach $queries as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]}
 			<tr>
 				<td style="background:rgba(255, 95, 23, {sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale)})" data-order="{=(float) $time}">
 					{if $error}
@@ -26,6 +26,7 @@
 					{/if}
 
 					{if $explain}<br><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-explain">explain</a>{/if}
+					{if $trace}<br><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-trace">trace</a>{/if}
 				</td>
 
 				<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-{$command}">
@@ -48,7 +49,17 @@
 						</table>
 					{/if}
 
-					{if $source}{substr_replace(Tracy\Helpers::editorLink($source[0], $source[1]), ' class="nette-DbConnectionPanel-source"', 2, 0)}{/if}
+					{if $trace}
+						{substr_replace(Tracy\Helpers::editorLink($trace[0][file], $trace[0][line]), ' class="nette-DbConnectionPanel-source"', 2, 0)}
+						<table class="tracy-collapsed nette-DbConnectionPanel-trace">
+							{foreach $trace as $row}
+								<tr>
+									<td>{isset($row[file]) ? Tracy\Helpers::editorLink($row[file], $row[line]) : ''}</td>
+									<td>{$row[class] ?? ''}{$row[type] ?? ''}{$row[function]}()</td>
+								</tr>
+							{/foreach}
+						</table>
+					{/if}
 				</td>
 
 				<td>{$rows}</td>

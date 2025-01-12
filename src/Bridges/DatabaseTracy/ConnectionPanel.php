@@ -70,24 +70,24 @@ class ConnectionPanel implements Tracy\IBarPanel
 
 		$this->count++;
 
-		$source = null;
 		$trace = $result instanceof \PDOException
-			? $result->getTrace()
+			? array_map(fn($row) => array_diff_key($row, ['args' => null]), $result->getTrace())
 			: debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+
 		foreach ($trace as $row) {
 			if (preg_match('~\.(php.?|phtml)$~', $row['file'] ?? '') && !$this->blueScreen->isCollapsed($row['file'])) {
-				$source = [$row['file'], (int) $row['line']];
 				break;
 			}
+			array_shift($trace);
 		}
 
 		if ($result instanceof Nette\Database\ResultSet) {
 			$this->totalTime += $result->getTime();
 			if ($this->count < $this->maxQueries) {
-				$this->queries[] = [$connection, $result->getQueryString(), $result->getParameters(), $source, $result->getTime(), $result->getRowCount(), null];
+				$this->queries[] = [$connection, $result->getQueryString(), $result->getParameters(), $trace, $result->getTime(), $result->getRowCount(), null];
 			}
 		} elseif ($result instanceof \PDOException && $this->count < $this->maxQueries) {
-			$this->queries[] = [$connection, $result->queryString, null, $source, null, null, $result->getMessage()];
+			$this->queries[] = [$connection, $result->queryString, null, $trace, null, null, $result->getMessage()];
 		}
 	}
 

@@ -28,15 +28,13 @@ class ConnectionPanel implements Tracy\IBarPanel
 	public float $performanceScale = 0.25;
 	private float $totalTime = 0;
 	private int $count = 0;
-
-	/** @var list<array{Connection, string, ?array<mixed>, list<array<string, mixed>>, ?float, ?int, ?string}> */
-	private array $queries = [];
+	private array $events = [];
 	private Tracy\BlueScreen $blueScreen;
 
 
 	public static function initialize(
 		Connection $connection,
-		bool $addBarPanel = false,
+		bool $addBarPanel = true,
 		string $name = '',
 		bool $explain = true,
 		?Tracy\Bar $bar = null,
@@ -87,10 +85,10 @@ class ConnectionPanel implements Tracy\IBarPanel
 		if ($result instanceof Nette\Database\ResultSet) {
 			$this->totalTime += $result->getTime();
 			if ($this->count < $this->maxQueries) {
-				$this->queries[] = [$connection, $result->getQueryString(), $result->getParameters(), $trace, $result->getTime(), $result->getRowCount(), null];
+				$this->events[] = [$connection, $result->getQueryString(), $result->getParameters(), $trace, $result->getTime(), $result->getRowCount(), null];
 			}
 		} elseif ($result instanceof \PDOException && $this->count < $this->maxQueries) {
-			$this->queries[] = [$connection, $result->queryString, null, $trace, null, null, $result->getMessage()];
+			$this->events[] = [$connection, $result->queryString, null, $trace, null, null, $result->getMessage()];
 		}
 	}
 
@@ -132,9 +130,9 @@ class ConnectionPanel implements Tracy\IBarPanel
 			return null;
 		}
 
-		$queries = [];
-		foreach ($this->queries as $query) {
-			[$connection, $sql, $params, , , , $error] = $query;
+		$events = [];
+		foreach ($this->events as $event) {
+			[$connection, $sql, $params, , , , $error] = $event;
 			$explain = null;
 			$command = preg_match('#\s*\(?\s*(SELECT|INSERT|UPDATE|DELETE)\s#iA', $sql, $m)
 				? strtolower($m[1])
@@ -149,12 +147,12 @@ class ConnectionPanel implements Tracy\IBarPanel
 				}
 			}
 
-			$query[] = $command;
-			$query[] = $explain;
-			$queries[] = $query;
+			$event[] = $command;
+			$event[] = $explain;
+			$events[] = $event;
 		}
 
-		return Nette\Utils\Helpers::capture(function () use ($queries, $connection) {
+		return Nette\Utils\Helpers::capture(function () use ($events, $connection) {
 			$name = $this->name;
 			$count = $this->count;
 			$totalTime = $this->totalTime;

@@ -15,7 +15,7 @@ require __DIR__ . '/../bootstrap.php';
 
 test('Tracy Bar', function () {
 	$connection = new Connection('sqlite::memory:');
-	$panel = ConnectionPanel::initialize($connection, addBarPanel: true, name: 'foo');
+	$panel = ConnectionPanel::initialize($connection, name: 'foo');
 
 	$connection->beginTransaction();
 	$connection->query('SELECT 1');

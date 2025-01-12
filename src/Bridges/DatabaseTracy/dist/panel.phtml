@@ -24,7 +24,7 @@ declare(strict_types=1);
 			<th style="width: 1%">Rows</th>
 		</tr>
 
-<?php foreach ($events as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]): ?>			<tr>
+<?php foreach ($events as [$connection, $query, $trace, $time, $rows, $error, $command, $explain]): ?>			<tr>
 				<td style="background:rgba(255, 95, 23, <?= Tracy\Helpers::escapeHtml(sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale)) ?>
 )" data-order="<?= Tracy\Helpers::escapeHtml((float) $time) ?>
 ">
@@ -44,7 +44,7 @@ declare(strict_types=1);
 
 				<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-<?= Tracy\Helpers::escapeHtml($command) ?>
 ">
-					<?= Nette\Database\Helpers::dumpSql($sql, $params, $connection) ?>
+					<?= Nette\Database\Helpers::dumpSql($query, $connection) ?>
 
 
 <?php if ($explain): ?>						<table class="tracy-collapsed nette-DbConnectionPanel-explain">

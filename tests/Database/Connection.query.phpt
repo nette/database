@@ -18,21 +18,21 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/files/{$driverName
 test('executes parameterized query and returns ResultSet', function () use ($connection) {
 	$res = $connection->query('SELECT id FROM author WHERE id = ?', 11);
 	Assert::type(Nette\Database\Result::class, $res);
-	Assert::same('SELECT id FROM author WHERE id = ?', $res->getQueryString());
-	Assert::same([11], $res->getParameters());
-	Assert::same('SELECT id FROM author WHERE id = ?', $connection->getLastQueryString());
+	Assert::same('SELECT id FROM author WHERE id = ?', $res->getQuery()->getSql());
+	Assert::same([11], $res->getQuery()->getParameters());
+	Assert::same('SELECT id FROM author WHERE id = ?', $connection->getLastQuery()->getSql());
 });
 
 
 test('multiple query parameters', function () use ($connection) {
 	$res = $connection->query('SELECT id FROM author WHERE id = ? OR id = ?', 11, 12);
-	Assert::same('SELECT id FROM author WHERE id = ? OR id = ?', $res->getQueryString());
-	Assert::same([11, 12], $res->getParameters());
+	Assert::same('SELECT id FROM author WHERE id = ? OR id = ?', $res->getQuery()->getSql());
+	Assert::same([11, 12], $res->getQuery()->getParameters());
 });
 
 
 test('query with array of parameters', function () use ($connection) {
 	$res = @$connection->queryArgs('SELECT id FROM author WHERE id = ? OR id = ?', [11, 12]); // is deprecated
-	Assert::same('SELECT id FROM author WHERE id = ? OR id = ?', $res->getQueryString());
-	Assert::same([11, 12], $res->getParameters());
+	Assert::same('SELECT id FROM author WHERE id = ? OR id = ?', $res->getQuery()->getSql());
+	Assert::same([11, 12], $res->getQuery()->getParameters());
 });

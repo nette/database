@@ -15,13 +15,11 @@ echo '<style class="tracy-debug">
 	#tracy-debug td.nette-DbConnectionPanel-sql-update { background: #E7FBFF !important }
 </style>
 
-<h1';
-echo ($ʟ_tmp = ($connection->getDsn())) === null ? '' : ' title="' . Tracy\Helpers::escapeHtml($ʟ_tmp) . '"' /* pos 16:13 */;
-echo '>Queries: ';
-echo Tracy\Helpers::escapeHtml($count) /* pos 16:46 */;
-echo Tracy\Helpers::escapeHtml($totalTime ? sprintf(', time: %0.3f ms', $totalTime * 1000) : '') /* pos 16:54 */;
+<h1>Queries: ';
+echo Tracy\Helpers::escapeHtml($count) /* pos 16:14 */;
+echo Tracy\Helpers::escapeHtml($totalTime ? sprintf(', time: %0.3f ms', $totalTime * 1000) : '') /* pos 16:22 */;
 echo ', ';
-echo Tracy\Helpers::escapeHtml($name) /* pos 16:122 */;
+echo Tracy\Helpers::escapeHtml($name) /* pos 16:90 */;
 echo '</h1>
 
 <div class="tracy-inner" style="min-width: 600px">

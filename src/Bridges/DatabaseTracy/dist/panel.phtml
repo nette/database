@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /** @var Nette\Database\Connection $connection */
-/** @var list<array> $queries */
+/** @var list<array> $events */
 /** @var string $name */
 /** @var int $count */
 /** @var float $totalTime */
@@ -33,7 +33,7 @@ echo '</h1>
 		</tr>
 
 ';
-foreach ($queries as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]) /* pos 26:3 */ {
+foreach ($events as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]) /* pos 26:3 */ {
 	echo '		<tr>
 			<td style="background:rgba(255, 95, 23, ';
 	echo Tracy\Helpers::escapeHtml(sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale)) /* pos 28:45 */;
@@ -141,7 +141,7 @@ foreach ($queries as [$connection, $sql, $params, $trace, $time, $rows, $error, 
 echo '	</table>
 
 ';
-if (count($queries) < $count) /* pos 76:2 */ {
+if (count($events) < $count) /* pos 76:2 */ {
 	echo '	<p>...and more</p>';
 }
 echo '

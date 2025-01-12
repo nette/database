@@ -7,7 +7,7 @@
 	#tracy-debug td.nette-DbConnectionPanel-sql-update { background: #E7FBFF !important }
 </style>
 
-<h1 title="{$connection->getDsn()}">Queries: {$count}{$totalTime ? sprintf(', time: %0.3f ms', $totalTime * 1000) : ''}, {$name}</h1>
+<h1>Queries: {$count}{$totalTime ? sprintf(', time: %0.3f ms', $totalTime * 1000) : ''}, {$name}</h1>
 
 <div class="tracy-inner" style="min-width: 600px">
 	<table class="tracy-sortable">

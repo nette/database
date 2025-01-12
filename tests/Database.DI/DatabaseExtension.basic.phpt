@@ -38,7 +38,6 @@ test('', function () {
 
 	$connection = $container->getService('database.default');
 	Assert::type(Nette\Database\Connection::class, $connection);
-	Assert::same('sqlite::memory:', $connection->getDsn());
 
 	$explorer = $container->getService('database.default.explorer');
 	Assert::type(Nette\Database\Explorer::class, $explorer);

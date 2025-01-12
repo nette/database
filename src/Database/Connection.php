@@ -46,7 +46,7 @@ class Connection
 
 
 	public function __construct(
-		private readonly string $dsn,
+		string $dsn,
 		?string $username = null,
 		#[\SensitiveParameter]
 		?string $password = null,
@@ -109,9 +109,10 @@ class Connection
 	}
 
 
+	/** @deprecated */
 	public function getDsn(): string
 	{
-		return $this->dsn;
+		throw new Nette\DeprecatedException(__METHOD__ . '() is deprecated.');
 	}
 
 

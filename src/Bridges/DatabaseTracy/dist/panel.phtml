@@ -10,8 +10,7 @@ declare(strict_types=1);
 	#tracy-debug td.nette-DbConnectionPanel-sql-update { background: #E7FBFF !important }
 </style>
 
-<h1 title="<?= Tracy\Helpers::escapeHtml($connection->getDsn()) ?>
-">Queries: <?= Tracy\Helpers::escapeHtml($count) ?>
+<h1>Queries: <?= Tracy\Helpers::escapeHtml($count) ?>
 <?= Tracy\Helpers::escapeHtml($totalTime ? sprintf(', time: %0.3f ms', $totalTime * 1000) : '') ?>
 , <?= Tracy\Helpers::escapeHtml($name) ?>
 </h1>

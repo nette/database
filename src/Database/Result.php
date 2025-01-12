@@ -29,8 +29,7 @@ class Result implements \Iterator
 
 	public function __construct(
 		private readonly Connection $connection,
-		private readonly string $queryString,
-		private readonly array $params,
+		private readonly SqlLiteral $query,
 		private readonly ?Drivers\Result $result,
 		private float $time,
 	) {
@@ -45,15 +44,23 @@ class Result implements \Iterator
 	}
 
 
-	public function getQueryString(): string
+	public function getQuery(): SqlLiteral
 	{
-		return $this->queryString;
+		return $this->query;
 	}
 
 
+	/** @deprecated use getQuery()->getSql() */
+	public function getQueryString(): string
+	{
+		return $this->query->getSql();
+	}
+
+
+	/** @deprecated use getQuery()->getParameters() */
 	public function getParameters(): array
 	{
-		return $this->params;
+		return $this->query->getParameters();
 	}
 
 

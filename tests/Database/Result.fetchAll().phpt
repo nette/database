@@ -24,7 +24,7 @@ match ($driverName) {
 };
 
 Assert::same(1, $res->getColumnCount());
-Assert::same('SELECT id FROM book ORDER BY id', $res->getQueryString());
+Assert::same('SELECT id FROM book ORDER BY id', $res->getQuery()->getSql());
 
 Assert::equal([
 	Nette\Database\Row::from(['id' => 1]),

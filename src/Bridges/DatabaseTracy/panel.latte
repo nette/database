@@ -1,5 +1,5 @@
 <style class="tracy-debug">
-	#tracy-debug td.nette-DbConnectionPanel-sql { background: white !important }
+	#tracy-debug td.nette-DbConnectionPanel-sql { background: white !important; overflow-x: auto; max-width: 0; }
 	#tracy-debug .nette-DbConnectionPanel-source { color: #BBB !important }
 	#tracy-debug .nette-DbConnectionPanel-explain td { white-space: pre }
 	#tracy-debug td.nette-DbConnectionPanel-sql-insert { background: #E7ffE7 !important }
@@ -9,13 +9,12 @@
 
 <h1 title="{$connection->getDsn()}">Queries: {$count}{$totalTime ? sprintf(', time: %0.3f ms', $totalTime * 1000) : ''}, {$name}</h1>
 
-<div class="tracy-inner">
-<div class="tracy-inner-container">
+<div class="tracy-inner" style="min-width: 600px">
 	<table class="tracy-sortable">
 		<tr>
-			<th>Time&nbsp;ms</th>
+			<th style="width: 1%">Time&nbsp;ms</th>
 			<th>SQL Query</th>
-			<th>Rows</th>
+			<th style="width: 1%">Rows</th>
 		</tr>
 
 		{foreach $queries as [$connection, $sql, $params, $source, $time, $rows, $error, $command, $explain]}
@@ -58,5 +57,4 @@
 	</table>
 
 	{if count($queries) < $count}<p>...and more</p>{/if}
-</div>
 </div>

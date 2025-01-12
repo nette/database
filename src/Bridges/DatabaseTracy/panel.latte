@@ -17,7 +17,7 @@
 			<th style="width: 1%">Rows</th>
 		</tr>
 
-		{foreach $queries as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]}
+		{foreach $events as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]}
 			<tr>
 				<td style="background:rgba(255, 95, 23, {sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale)})" data-order="{=(float) $time}">
 					{if $error}
@@ -67,5 +67,5 @@
 		{/foreach}
 	</table>
 
-	{if count($queries) < $count}<p>...and more</p>{/if}
+	{if count($events) < $count}<p>...and more</p>{/if}
 </div>

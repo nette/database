@@ -27,7 +27,7 @@ $explorer = new Nette\Database\Explorer($connection, $explorer->getStructure(), 
 
 $queries = 0;
 $connection->onQuery[] = function ($dao, Result $result) use (&$queries) {
-	if (!preg_match('#SHOW|CONSTRAINT_NAME|information_schema|pg_catalog|sys\.|SET|PRAGMA|FROM sqlite_#i', $result->getQueryString())) {
+	if (!preg_match('#SHOW|CONSTRAINT_NAME|information_schema|pg_catalog|sys\.|SET|PRAGMA|FROM sqlite_#i', $result->getQuery()->getSql())) {
 		$queries++;
 	}
 };

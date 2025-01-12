@@ -87,10 +87,10 @@ class ConnectionPanel implements Tracy\IBarPanel
 		if ($result instanceof Result) {
 			$this->totalTime += $result->getTime();
 			if ($this->count < $this->maxQueries) {
-				$this->events[] = [$connection, $result->getQueryString(), $result->getParameters(), $trace, $result->getTime(), $result->getRowCount(), null];
+				$this->events[] = [$connection, $result->getQuery(), $trace, $result->getTime(), $result->getRowCount(), null];
 			}
 		} elseif ($result instanceof DriverException && $this->count < $this->maxQueries) {
-			$this->events[] = [$connection, $result->getQueryString(), null, $trace, null, null, $result->getMessage()];
+			$this->events[] = [$connection, $result->getQuery(), $trace, null, null, $result->getMessage()];
 		}
 	}
 
@@ -101,10 +101,9 @@ class ConnectionPanel implements Tracy\IBarPanel
 			return null;
 		}
 
-		$sql = $e->getQueryString();
-		return $sql ? [
+		return $e->getQuery() ? [
 			'tab' => 'SQL',
-			'panel' => Helpers::dumpSql($sql, $e->params ?? []),
+			'panel' => Helpers::dumpSql($e->getQuery()),
 		] : null;
 	}
 
@@ -128,8 +127,9 @@ class ConnectionPanel implements Tracy\IBarPanel
 
 		$events = [];
 		foreach ($this->events as $event) {
-			[$connection, $sql, $params, , , , $error] = $event;
+			[$connection, $query, , , , $error] = $event;
 			$explain = null;
+			$sql = $query->getSql();
 			$command = preg_match('#\s*\(?\s*(SELECT|INSERT|UPDATE|DELETE)\s#iA', $sql, $m)
 				? strtolower($m[1])
 				: null;
@@ -138,7 +138,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 					$cmd = is_string($this->explain)
 						? $this->explain
 						: 'EXPLAIN';
-					$rows = $connection->getConnection()->query("$cmd $sql", $params);
+					$rows = $connection->getConnection()->query("$cmd $sql", $query->getParameters());
 					for ($explain = []; $row = $rows->fetch(); $explain[] = $row);
 				} catch (DriverException) {
 				}

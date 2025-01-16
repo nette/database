@@ -315,7 +315,21 @@ class SqlBuilder
 		while (count($params)) {
 			$arg = array_shift($params);
 			preg_match(
-				'#(?:.*?\?.*?){' . $placeholderNum . '}(((?:&|\||^|~|\+|-|\*|/|%|\(|,|<|>|=|(?<=\W|^)(?:REGEXP|ALL|AND|ANY|BETWEEN|EXISTS|IN|[IR]?LIKE|OR|NOT|SOME|INTERVAL))\s*)?(?:\(\?\)|\?))#s',
+				'#
+				(?:.*?\?.*?){' . $placeholderNum . '}
+				(
+					(
+						(?:
+							&|\||^|~|\+|-|\*|/|%|\(|,|<|>|=
+							|
+							(?<=\W|^)
+							(?:REGEXP|ALL|AND|ANY|BETWEEN|EXISTS|IN|[IR]?LIKE|OR|NOT|SOME|INTERVAL)
+						)
+						\s*
+					)?
+					(?:\(\?\)|\?)
+				)
+				#xs',
 				$condition,
 				$match,
 				PREG_OFFSET_CAPTURE,

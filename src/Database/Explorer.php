@@ -81,6 +81,7 @@ class Explorer
 
 	/**
 	 * Returns table selection.
+	 * @return Table\Selection<Table\ActiveRow>
 	 */
 	public function table(string $table): Table\Selection
 	{

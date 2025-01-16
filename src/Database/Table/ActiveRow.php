@@ -121,7 +121,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 */
 	public function related(string $key, ?string $throughColumn = null): GroupedSelection
 	{
-		$groupedSelection = $this->table->getReferencingTable($key, $throughColumn, $this[$this->table->getPrimary()]);
+		$groupedSelection = $this->table->getReferencingTable($key, $throughColumn, $this->__get($this->table->getPrimary()));
 		if (!$groupedSelection) {
 			throw new Nette\MemberAccessException("No reference found for \${$this->table->getName()}->related($key).");
 		}

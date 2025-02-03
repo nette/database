@@ -19,7 +19,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 $driver = $connection->getDriver();
 
 
-test('', function () use ($explorer) {
+test('backward join aggregation with having', function () use ($explorer) {
 	$authorTagsCount = [];
 	$authors = $explorer
 		->table('author')
@@ -39,7 +39,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer, $driver) {
+test('left join SQL structure verification', function () use ($explorer, $driver) {
 	$authorsSelection = $explorer->table('author')->where(':book.translator_id IS NOT NULL')->wherePrimary(12);
 
 	if ($driver->isSupported(Driver::SupportSchema)) {
@@ -63,7 +63,7 @@ test('', function () use ($explorer, $driver) {
 });
 
 
-test('', function () use ($explorer) {
+test('join condition with translated book', function () use ($explorer) {
 	$count = $explorer->table('author')->where(':book(translator).title LIKE ?', '%JUSH%')->count('*'); // by translator_id
 	Assert::same(0, $count);
 });

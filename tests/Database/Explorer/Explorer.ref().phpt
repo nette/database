@@ -20,7 +20,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 Assert::same('Jakub Vrana', $explorer->table('book')->get(1)->ref('author')->name);
 
 
-test('', function () use ($explorer) {
+test('reference update and retrieval', function () use ($explorer) {
 	$book = $explorer->table('book')->get(1);
 	$book->update([
 		'translator_id' => 12,
@@ -32,11 +32,11 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('null reference handling', function () use ($explorer) {
 	Assert::null($explorer->table('book')->get(2)->ref('author', 'translator_id'));
 });
 
-test('', function () use ($explorer, $connection) {
+test('query count on reference access', function () use ($explorer, $connection) {
 	$counter = 0;
 
 	$connection->onQuery[] = function ($connection, $result) use (&$counter) {

@@ -17,13 +17,13 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($explorer) {
+test('basic count aggregation', function () use ($explorer) {
 	$count = $explorer->table('book')->count('*');  // SELECT COUNT(*) FROM `book`
 	Assert::same(4, $count);
 });
 
 
-test('', function () use ($explorer) {
+test('related count aggregation', function () use ($explorer) {
 	$tags = [];
 	foreach ($explorer->table('book') as $book) {  // SELECT * FROM `book`
 		$count = $book->related('book_tag')->count('*');  // SELECT COUNT(*), `book_id` FROM `book_tag` WHERE (`book_tag`.`book_id` IN (1, 2, 3, 4)) GROUP BY `book_id`
@@ -39,21 +39,21 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('group by with join condition', function () use ($explorer) {
 	$authors = $explorer->table('author')->where(':book.translator_id IS NOT NULL')->group('author.id');  // SELECT `author`.* FROM `author` INNER JOIN `book` ON `author`.`id` = `book`.`author_id` WHERE (`book`.`translator_id` IS NOT NULL) GROUP BY `author`.`id`
 	Assert::count(2, $authors);
 	Assert::same(2, $authors->count('DISTINCT author.id'));  // SELECT COUNT(DISTINCT author.id) FROM `author` INNER JOIN `book` ON `author`.`id` = `book`.`author_id` WHERE (`book`.`translator_id` IS NOT NULL)
 });
 
 
-test('', function () use ($explorer) {
+test('having clause with group by', function () use ($explorer) {
 	$authors = $explorer->table('book')->group('book.id')->having('COUNT(DISTINCT :book_tag.tag_id) < 2');  // SELECT `author`.* FROM `author` INNER JOIN `book` ON `author`.`id` = `book`.`author_id` WHERE (`book`.`translator_id` IS NOT NULL) GROUP BY `author`.`id`
 	Assert::count(2, $authors);
 	Assert::same(2, $authors->count('DISTINCT author.id'));  // SELECT COUNT(DISTINCT author.id) FROM `author` INNER JOIN `book` ON `author`.`id` = `book`.`author_id` WHERE (`book`.`translator_id` IS NOT NULL)
 });
 
 
-test('', function () use ($explorer) {
+test('distinct count in related aggregation', function () use ($explorer) {
 	$bookTags = [];
 	foreach ($explorer->table('book') as $book) {
 		$book_tags = $book->related('book_tag');
@@ -69,7 +69,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('filtering groups by related count', function () use ($explorer) {
 	$bookTags = [];
 	foreach ($explorer->table('book')->group('book.id, book.title')->having('COUNT(DISTINCT :book_tag.tag_id) < 2') as $book) {
 		$book_tags = $book->related('book_tag');
@@ -82,7 +82,7 @@ test('', function () use ($explorer) {
 	], $bookTags);
 });
 
-test('', function () use ($explorer) {
+test('nested group by and having', function () use ($explorer) {
 	$bookTags = [];
 	foreach ($explorer->table('author') as $author) {
 		$books = $author->related('book');

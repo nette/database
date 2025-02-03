@@ -17,7 +17,7 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($explorer) {
+test('select specific columns', function () use ($explorer) {
 	$book = $explorer->table('book')->where('id = ?', 1)->select('id, title')->fetch()->toArray();  // SELECT `id`, `title` FROM `book` WHERE (`id` = ?)
 	Assert::same([
 		'id' => 1,
@@ -26,7 +26,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('select and where clause ordering', function () use ($explorer) {
 	$book = $explorer->table('book')->select('id, title')->where('id = ?', 1)->fetch()->toArray();  // SELECT `id`, `title` FROM `book` WHERE (`id` = ?)
 	Assert::same([
 		'id' => 1,
@@ -35,7 +35,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('undefined column access exception', function () use ($explorer) {
 	$book = $explorer->table('book')->get(1);
 	Assert::exception(
 		fn() => $book->unknown_column,
@@ -45,7 +45,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('related data fetching with joins', function () use ($explorer) {
 	$bookTags = [];
 	foreach ($explorer->table('book') as $book) {  // SELECT * FROM `book`
 		$bookTags[$book->title] = [
@@ -79,7 +79,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('error handling for invalid properties', function () use ($explorer) {
 	$book = $explorer->table('book')->get(1);
 	Assert::exception(
 		fn() => $book->test,

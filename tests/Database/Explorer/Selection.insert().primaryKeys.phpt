@@ -16,7 +16,7 @@ $connection = $explorer->getConnection();
 
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test4.sql");
 
-test('Insert into table with simple primary index (autoincrement)', function () use ($explorer) {
+test('insert into table with simple primary index (autoincrement)', function () use ($explorer) {
 	$simplePkAutoincrementResult = $explorer->table('simple_pk_autoincrement')->insert([
 		'note' => 'Some note here',
 	]);
@@ -34,7 +34,7 @@ test('Insert into table with simple primary index (autoincrement)', function () 
 	Assert::same('Some note here 2', $simplePkAutoincrementResult2->note);
 });
 
-test('Insert into table with simple primary index (no autoincrement)', function () use ($explorer) {
+test('insert into table with simple primary index (no autoincrement)', function () use ($explorer) {
 	$simplePkNoAutoincrementResult = $explorer->table('simple_pk_no_autoincrement')->insert([
 		'identifier1' => 100,
 		'note' => 'Some note here',
@@ -54,7 +54,7 @@ test('Insert into table with simple primary index (no autoincrement)', function 
 	Assert::same('Some note here 2', $simplePkNoAutoincrementResult2->note);
 });
 
-test('Insert into table with multi column primary index (no autoincrement)', function () use ($explorer) {
+test('insert into table with multi column primary index (no autoincrement)', function () use ($explorer) {
 	$multiPkNoAutoincrementResult = $explorer->table('multi_pk_no_autoincrement')->insert([
 		'identifier1' => 5,
 		'identifier2' => 10,
@@ -78,7 +78,7 @@ test('Insert into table with multi column primary index (no autoincrement)', fun
 	Assert::same('Some note here 2', $multiPkNoAutoincrementResult2->note);
 });
 
-test('Insert into table with multi column primary index (autoincrement)', function () use ($driverName, $explorer) {
+test('insert into table with multi column primary index (autoincrement)', function () use ($driverName, $explorer) {
 	if (in_array($driverName, ['mysql', 'pgsql'], strict: true)) {
 		$multiPkAutoincrementResult = $explorer->table('multi_pk_autoincrement')->insert([
 			'identifier2' => 999,
@@ -102,7 +102,7 @@ test('Insert into table with multi column primary index (autoincrement)', functi
 	}
 });
 
-test('Insert into table without primary key', function () use ($explorer) {
+test('insert into table without primary key', function () use ($explorer) {
 	$noPkResult1 = $explorer->table('no_pk')->insert([
 		'note' => 'Some note here',
 	]);

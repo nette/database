@@ -17,7 +17,7 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($explorer) {
+test('various related method usages', function () use ($explorer) {
 	$books1 = $books2 = $books3 = [];
 
 	foreach ($explorer->table('author') as $author) {  // SELECT * FROM `author`
@@ -52,7 +52,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('group by multiple columns in relation', function () use ($explorer) {
 	$tagsAuthors = [];
 	foreach ($explorer->table('tag') as $tag) {
 		$book_tags = $tag->related('book_tag')->group('book_tag.tag_id, book.author_id, book.author.name')->select('book.author_id')->order('book.author.name');
@@ -77,7 +77,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('related entry counts with conditions', function () use ($explorer) {
 	$counts1 = $counts2 = [];
 	foreach ($explorer->table('author')->order('id') as $author) {
 		$counts1[] = $author->related('book.author_id')->count('id');
@@ -89,7 +89,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('conditional related entry fetching', function () use ($explorer) {
 	$author = $explorer->table('author')->get(11);
 	$books = $author->related('book')->where('translator_id', 11);
 	Assert::same('1001 tipu a triku pro PHP', $books->fetch()->title);

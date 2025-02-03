@@ -17,7 +17,7 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($explorer) {
+test('deletion through multi-key relation', function () use ($explorer) {
 	$book = $explorer->table('book')->get(1);
 	foreach ($book->related('book_tag') as $bookTag) {
 		if ($bookTag->tag->name === 'PHP') {
@@ -36,7 +36,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('alternate key relation iteration', function () use ($explorer) {
 	$book = $explorer->table('book')->get(3);
 	foreach ($related = $book->related('book_tag_alt') as $bookTag) {
 	}
@@ -58,7 +58,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('insert into multi-key table', function () use ($explorer) {
 	$explorer->table('book_tag')->insert([
 		'book_id' => 1,
 		'tag_id' => 21, // PHP tag

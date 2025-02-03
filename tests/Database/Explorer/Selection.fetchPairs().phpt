@@ -17,7 +17,7 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($explorer) {
+test('fetch id-title pairs ordered by title', function () use ($explorer) {
 	$apps = $explorer->table('book')->order('title')->fetchPairs('id', 'title');  // SELECT * FROM `book` ORDER BY `title`
 	Assert::same([
 		1 => '1001 tipu a triku pro PHP',
@@ -28,7 +28,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('fetch pairs with identical keys and values', function () use ($explorer) {
 	$ids = $explorer->table('book')->order('id')->fetchPairs('id', 'id');  // SELECT * FROM `book` ORDER BY `id`
 	Assert::same([
 		1 => 1,
@@ -39,7 +39,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('fetch pairs of birth date and author name', function () use ($explorer) {
 	$explorer->table('author')->get(11)->update(['born' => new DateTime('2002-02-20')]);
 	$explorer->table('author')->get(12)->update(['born' => new DateTime('2002-02-02')]);
 	$list = $explorer->table('author')->where('born IS NOT NULL')->order('born')->fetchPairs('born', 'name');
@@ -50,7 +50,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('with callback', function () use ($explorer) {
+test('fetch pairs with callback transforming title', function () use ($explorer) {
 	$pairs = $explorer->table('book')->order('title')->fetchPairs(fn($row) => [$row->id, substr($row->title, 0, 4)]);
 	Assert::same([
 		1 => '1001',

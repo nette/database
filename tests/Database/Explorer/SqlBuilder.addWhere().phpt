@@ -20,7 +20,7 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('test paramateres with null', function () use ($explorer) {
+test('combine duplicate where conditions, ignoring repetition', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id ? OR id ?', [1, null]);
 	$sqlBuilder->addWhere('id ? OR id ?', [1, null]); // duplicit condition
@@ -28,7 +28,7 @@ test('test paramateres with null', function () use ($explorer) {
 });
 
 
-test('?name', function () use ($explorer) {
+test('handle named placeholders with mixed conditions', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('?name ?', 'id', 3);
 	$sqlBuilder->addWhere('?name = ?', 'number', 4);
@@ -37,14 +37,14 @@ test('?name', function () use ($explorer) {
 });
 
 
-test('test Selection as a parameter', function () use ($explorer) {
+test('apply where condition with subquery selection', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id', $explorer->table('book'));
 	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book]))'), $sqlBuilder->buildSelectQuery());
 });
 
 
-test('test more Selection as a parameter', function () use ($explorer) {
+test('apply multiple subquery conditions in where clause', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id', $explorer->table('book'));
 	$sqlBuilder->addWhere('id', $explorer->table('book_tag')->select('book_id'));
@@ -52,14 +52,14 @@ test('test more Selection as a parameter', function () use ($explorer) {
 });
 
 
-test('test more Selection as one of more argument', function () use ($explorer) {
+test('complex where with subqueries and AND operator', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id ? AND id ?', $explorer->table('book')->where('id', 2), $explorer->table('book_tag')->select('book_id'));
 	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book] WHERE ([id] = ?)) AND [id] IN (SELECT [book_id] FROM [book_tag]))'), $sqlBuilder->buildSelectQuery());
 });
 
 
-test('test more ActiveRow as a parameter', function () use ($explorer) {
+test('build where condition with direct values from selection', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$books = $explorer->table('book')->where('id', [1, 2])->fetchPairs('id');
 	$sqlBuilder->addWhere('id ?', $books[1]);
@@ -70,7 +70,7 @@ test('test more ActiveRow as a parameter', function () use ($explorer) {
 });
 
 
-test('test Selection with parameters as a parameter', function () use ($explorer) {
+test('where with HAVING subquery and parameter handling', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id', $explorer->table('book')->having('COUNT(:book_tag.tag_id) >', 1));
 	$schemaSupported = $explorer->getConnection()->getDriver()->isSupported(Driver::SupportSchema);
@@ -79,35 +79,35 @@ test('test Selection with parameters as a parameter', function () use ($explorer
 });
 
 
-test('test Selection with column as a parameter', function () use ($explorer) {
+test('use subquery in IN clause within where condition', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id', $explorer->table('book')->select('id'));
 	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] IN (SELECT [id] FROM [book]))'), $sqlBuilder->buildSelectQuery());
 });
 
 
-test('test multiple placeholder parameter', function () use ($explorer) {
+test('handle null and subquery in OR condition', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id ? OR id ?', null, $explorer->table('book'));
 	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] IS NULL OR [id] IN (SELECT [id] FROM [book]))'), $sqlBuilder->buildSelectQuery());
 });
 
 
-test('test SqlLiteral', function () use ($explorer) {
+test('where condition using SQL literal for IN clause', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id IN (?)', new SqlLiteral('1, 2, 3'));
 	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] IN (?))'), $sqlBuilder->buildSelectQuery());
 });
 
 
-test('test auto type detection', function () use ($explorer) {
+test('where with mixed operators and array parameter', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id ? OR id ? OR id ?', 1, 'test', [1, 2]);
 	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] = ? OR [id] = ? OR [id] IN (?))'), $sqlBuilder->buildSelectQuery());
 });
 
 
-test('test empty array', function () use ($explorer) {
+test('throw exception for ambiguous SQL requiring parentheses', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id', []);
 	$sqlBuilder->addWhere('id NOT', []);
@@ -129,7 +129,7 @@ test('test empty array', function () use ($explorer) {
 });
 
 
-test('backward compatibility', function () use ($explorer) {
+test('mix operators including LIKE and IN in where clause', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id = ? OR id ? OR id IN ? OR id LIKE ? OR id > ?', 1, 2, [1, 2], '%test', 3);
 	$sqlBuilder->addWhere('name', 'var');
@@ -139,7 +139,7 @@ test('backward compatibility', function () use ($explorer) {
 });
 
 
-test('auto operator tests', function () use ($explorer) {
+test('support functions and arithmetic in where expressions', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('FOO(?)', 1);
 	$sqlBuilder->addWhere('FOO(id, ?)', 1);
@@ -151,14 +151,14 @@ test('auto operator tests', function () use ($explorer) {
 });
 
 
-test('tests multiline condition', function () use ($explorer) {
+test('preserve newline formatting in where clause', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere("\ncol1 ?\nOR col2 ?\n", 1, 1);
 	Assert::same(reformat("SELECT * FROM [book] WHERE ([col1] = ?\nOR [col2] = ?)"), $sqlBuilder->buildSelectQuery());
 });
 
 
-test('tests NOT', function () use ($explorer) {
+test('handle NOT operator with IN and null conditions', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id NOT', [1, 2]);
 	$sqlBuilder->addWhere('id NOT', null);
@@ -167,7 +167,7 @@ test('tests NOT', function () use ($explorer) {
 });
 
 
-test('tests multi column IN clause', function () use ($explorer) {
+test('apply composite column IN clause for multiple rows', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book_tag', $explorer);
 	$sqlBuilder->addWhere(['book_id', 'tag_id'], [[1, 11], [2, 12]]);
 	Assert::same(reformat([
@@ -178,14 +178,14 @@ test('tests multi column IN clause', function () use ($explorer) {
 });
 
 
-test('tests operator suffix', function () use ($explorer) {
+test('handle inequality and greater-than operators', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('id <> ? OR id >= ?', 1, 2);
 	Assert::same(reformat('SELECT * FROM [book] WHERE ([id] <> ? OR [id] >= ?)'), $sqlBuilder->buildSelectQuery());
 });
 
 
-test('', function () use ($explorer) {
+test('filter records using subquery in where clause', function () use ($explorer) {
 	$books = $explorer->table('book')->where(
 		'id',
 		$explorer->table('book_tag')->select('book_id')->where('tag_id', 21),
@@ -222,7 +222,7 @@ Assert::exception(function () use ($explorer) {
 }, Nette\InvalidArgumentException::class, 'Column operator does not accept array argument.');
 
 
-test('', function () use ($driverName, $explorer, $connection) {
+test('missing primary key triggers selection argument exception', function () use ($driverName, $explorer, $connection) {
 	$structure = $explorer->getStructure();
 	switch ($driverName) {
 		case 'mysql':

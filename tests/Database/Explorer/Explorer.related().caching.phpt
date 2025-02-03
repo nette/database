@@ -17,7 +17,7 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($explorer) {
+test('cached related data consistency', function () use ($explorer) {
 	$books = $explorer->table('book');
 	foreach ($books as $book) {
 		foreach ($book->related('book_tag') as $bookTag) {
@@ -41,7 +41,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('filtered related entries with caching', function () use ($explorer) {
 	$authors = $explorer->table('author')->where('id', 11);
 	$books = [];
 	foreach ($authors as $author) {
@@ -66,7 +66,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('cached references after update', function () use ($explorer) {
 	$explorer->query('UPDATE book SET translator_id = 12 WHERE id = 2');
 	$author = $explorer->table('author')->get(11);
 

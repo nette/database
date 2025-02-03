@@ -14,7 +14,7 @@ require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
 
-test('', function () use ($explorer) {
+test('add multiple order conditions with parameters', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addOrder('id');
 	$sqlBuilder->addOrder('title DESC');
@@ -25,7 +25,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('set order conditions replacing previous orders', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addOrder('id');
 	$sqlBuilder->addOrder('title DESC');

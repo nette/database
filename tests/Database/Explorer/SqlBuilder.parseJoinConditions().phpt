@@ -46,7 +46,7 @@ class SqlBuilderMock extends SqlBuilder
 
 $driver = $connection->getDriver();
 
-test('test circular reference', function () use ($explorer) {
+test('detect circular join reference in nested conditions', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilderMock('author', $explorer);
 	$sqlBuilder->addJoinCondition(':book(translator)', ':book(translator).translator_id = :book(translator).next_volume.translator_id');
 	Assert::exception(
@@ -75,7 +75,7 @@ test('test circular reference', function () use ($explorer) {
 	);
 });
 
-test('', function () use ($explorer, $driver) {
+test('combine join conditions with extra filters and parameters', function () use ($explorer, $driver) {
 	$sqlBuilder = new SqlBuilderMock('author', $explorer);
 	$sqlBuilder->addJoinCondition(':book(translator)', ':book(translator).id > ?', 2);
 	$sqlBuilder->addJoinCondition(':book(translator):book_tag_alt', ':book(translator):book_tag_alt.state ?', 'private');
@@ -100,7 +100,7 @@ test('', function () use ($explorer, $driver) {
 	Assert::same([2, 'private'], $sqlBuilder->getParameters());
 });
 
-test('', function () use ($explorer) {
+test('apply date filter on related author in join condition', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilderMock('book', $explorer);
 	$sqlBuilder->addJoinCondition('next_volume.author', 'next_volume.author.born >', '2000-01-01');
 

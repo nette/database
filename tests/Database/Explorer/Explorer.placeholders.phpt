@@ -18,7 +18,7 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('Leave literals lower-cased, also not-delimiting them is tested.', function () use ($explorer, $driverName) {
+test('dynamic SQL function placeholders', function () use ($explorer, $driverName) {
 	$literal = match ($driverName) {
 		'mysql' => new SqlLiteral('year(now())'),
 		'pgsql' => new SqlLiteral('extract(year from now())::int'),
@@ -38,7 +38,7 @@ test('Leave literals lower-cased, also not-delimiting them is tested.', function
 });
 
 
-test('', function () use ($explorer) {
+test('group by with having on related count', function () use ($explorer) {
 	$bookTagsCount = [];
 	$books = $explorer
 		->table('book')
@@ -58,7 +58,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer, $driverName) {
+test('custom field order with placeholders', function () use ($explorer, $driverName) {
 	if ($driverName === 'mysql') {
 		$authors = [];
 		$selection = $explorer->table('author')->order('FIELD(name, ?)', ['Jakub Vrana', 'David Grudl', 'Geek']);
@@ -71,7 +71,7 @@ test('', function () use ($explorer, $driverName) {
 });
 
 
-test('Test placeholder for GroupedSelection', function () use ($explorer, $driverName) {
+test('unsupported syntax handling', function () use ($explorer, $driverName) {
 	if ($driverName === 'sqlsrv') { // This syntax is not supported on SQL Server
 		return;
 	}

@@ -17,7 +17,7 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('', function () use ($explorer) {
+test('reflection-based related data fetching', function () use ($explorer) {
 	$appTags = [];
 	foreach ($explorer->table('book') as $book) {
 		$appTags[$book->title] = [
@@ -51,7 +51,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('reflection in related entity iteration', function () use ($explorer) {
 	$books = [];
 	foreach ($explorer->table('author') as $author) {
 		foreach ($author->related('book') as $book) {
@@ -68,13 +68,13 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('reflection-based translator access', function () use ($explorer) {
 	$book = $explorer->table('book')->get(1);
 	Assert::same('Jakub Vrana', $book->translator->name);
 });
 
 
-test('', function () use ($explorer) {
+test('property existence and empty checks', function () use ($explorer) {
 	$book = $explorer->table('book')->get(2);
 	Assert::true(isset($book->author_id));
 	Assert::false(empty($book->author_id));
@@ -90,7 +90,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($connection, $explorer, $driverName) {
+test('case-insensitive table reflection', function () use ($connection, $explorer, $driverName) {
 	if (
 		$driverName === 'mysql' &&
 		($lowerCase = $connection->query('SHOW VARIABLES LIKE "lower_case_table_names"')->fetch()) &&
@@ -114,7 +114,7 @@ test('', function () use ($connection, $explorer, $driverName) {
 });
 
 
-test('', function () use ($explorer) {
+test('where clause with related model attribute', function () use ($explorer) {
 	$count = $explorer->table('book')->where('translator.name LIKE ?', '%David%')->count();
 	Assert::same(2, $count);
 	$count = $explorer->table('book')->where('author.name LIKE ?', '%David%')->count();

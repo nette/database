@@ -17,7 +17,7 @@ $connection = $explorer->getConnection();
 Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 
-test('Testing Selection caching', function () use ($explorer) {
+test('column access caching across queries', function () use ($explorer) {
 	$sql = [];
 	for ($i = 0; $i < 4; ++$i) {
 		if ($i !== 2) {
@@ -56,7 +56,7 @@ test('Testing Selection caching', function () use ($explorer) {
 });
 
 
-test('Testing GroupedSelection reinvalidation caching', function () use ($explorer) {
+test('related selection caching consistency', function () use ($explorer) {
 	foreach ($explorer->table('author') as $author) {
 		$stack[] = $selection = $author->related('book.author_id')->order('title');
 		foreach ($selection as $book) {
@@ -86,7 +86,7 @@ $cacheMemoryStorage = new Nette\Caching\Storages\MemoryStorage;
 setUp(fn() => $cacheMemoryStorage->clean([Nette\Caching\Cache::ALL => true]));
 
 
-test('', function () use ($explorer) {
+test('cache invalidation after destruction', function () use ($explorer) {
 	$selection = $explorer->table('book');
 	foreach ($selection as $book) {
 		$book->id;
@@ -109,7 +109,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('', function () use ($explorer) {
+test('shared accessed columns in related instances', function () use ($explorer) {
 	$relatedStack = [];
 	foreach ($explorer->table('author') as $author) {
 		$relatedStack[] = $related = $author->related('book.author_id');
@@ -127,7 +127,7 @@ test('', function () use ($explorer) {
 });
 
 
-test('Test saving joining keys even with 0 rows', function () use ($explorer) {
+test('previous accessed columns tracking', function () use ($explorer) {
 	$cols = [];
 	for ($i = 0; $i < 2; ++$i) {
 		$author = $explorer->table('author')->get(11);
@@ -146,7 +146,7 @@ test('Test saving joining keys even with 0 rows', function () use ($explorer) {
 });
 
 
-test('Test saving the union of needed cols, the second call is subset', function () use ($explorer) {
+test('accessed columns across iterations', function () use ($explorer) {
 	$cols = [];
 	for ($i = 0; $i < 3; ++$i) {
 		$author = $explorer->table('author')->get(11);
@@ -171,7 +171,7 @@ test('Test saving the union of needed cols, the second call is subset', function
 });
 
 
-test('Test saving the union of needed cols, the second call is not subset', function () use ($explorer) {
+test('incremental column access tracking', function () use ($explorer) {
 	$cols = [];
 	for ($i = 0; $i < 3; ++$i) {
 		$author = $explorer->table('author')->get(11);
@@ -196,7 +196,7 @@ test('Test saving the union of needed cols, the second call is not subset', func
 });
 
 
-test('Test multiple use of same selection', function () use ($explorer) {
+test('SQL query logging with caching', function () use ($explorer) {
 	$sql = [];
 	$explorer->getConnection()->onQuery[] = function ($_, $result) use (&$sql) {
 		$sql[] = $result->getQueryString();

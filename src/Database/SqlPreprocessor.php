@@ -206,9 +206,11 @@ class SqlPreprocessor
 	{
 		$res = [];
 		foreach ($values as $v) {
-			$res[] = is_array($v)
-				? '(' . $this->formatList($v) . ')'
-				: $this->formatValue($v);
+			$res[] = match (true) {
+				is_array($v) => '(' . $this->formatList($v) . ')',
+				is_int($v) => (string) $v,
+				default => $this->formatValue($v),
+			};
 		}
 
 		return implode(', ', $res);

@@ -70,28 +70,28 @@ test('Processes array conditions after WHERE clause', function () use ($preproce
 
 test('Handles IN operator with array values', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id IN (?)', [10, 11]]);
-	Assert::same('SELECT id FROM author WHERE id IN (?, ?)', $sql);
-	Assert::same([10, 11], $params);
+	Assert::same('SELECT id FROM author WHERE id IN (10, 11)', $sql);
+	Assert::same([], $params);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE (id, name) IN (?)', [[10, 'a'], [11, 'b']]]);
-	Assert::same('SELECT id FROM author WHERE (id, name) IN ((?, ?), (?, ?))', $sql);
-	Assert::same([10, 'a', 11, 'b'], $params);
+	Assert::same('SELECT id FROM author WHERE (id, name) IN ((10, ?), (11, ?))', $sql);
+	Assert::same(['a', 'b'], $params);
 
 	[$sql, $params] = $preprocessor->process(['SELECT * FROM table WHERE ? AND id IN (?) AND ?', ['a' => 111], [3, 4], ['b' => 222]]);
-	Assert::same(reformat('SELECT * FROM table WHERE ([a] = ?) AND id IN (?, ?) AND ([b] = ?)'), $sql);
-	Assert::same([111, 3, 4, 222], $params);
+	Assert::same(reformat('SELECT * FROM table WHERE ([a] = ?) AND id IN (3, 4) AND ([b] = ?)'), $sql);
+	Assert::same([111, 222], $params);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id IN ?', [10, 11]]); // without ()
-	Assert::same('SELECT id FROM author WHERE id IN (?, ?)', $sql);
-	Assert::same([10, 11], $params);
+	Assert::same('SELECT id FROM author WHERE id IN (10, 11)', $sql);
+	Assert::same([], $params);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id IN (?)', 10]); // single item in ()
 	Assert::same('SELECT id FROM author WHERE id IN (?)', $sql);
 	Assert::same([10], $params);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM author WHERE id IN (?)', [10, 11]]); // array in ()
-	Assert::same('SELECT id FROM author WHERE id IN (?, ?)', $sql);
-	Assert::same([10, 11], $params);
+	Assert::same('SELECT id FROM author WHERE id IN (10, 11)', $sql);
+	Assert::same([], $params);
 });
 
 
@@ -131,7 +131,7 @@ test('Auto-detects operator in WHERE conditions', function () use ($preprocessor
 		'col_arr' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM tbl WHERE (([col_null] IS NULL) AND ([x].[col_val] = ?) AND ([col_arr] IN (?, ?)))'), $sql);
+	Assert::same(reformat('SELECT id FROM tbl WHERE (([col_null] IS NULL) AND ([x].[col_val] = ?) AND ([col_arr] IN (1, 2)))'), $sql);
 
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE', [
 		'col_null NOT' => null,
@@ -139,7 +139,7 @@ test('Auto-detects operator in WHERE conditions', function () use ($preprocessor
 		'col_arr NOT' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM tbl WHERE (([col_null] IS NOT NULL) AND ([x].[col_val] != ?) AND ([col_arr] NOT IN (?, ?)))'), $sql);
+	Assert::same(reformat('SELECT id FROM tbl WHERE (([col_null] IS NOT NULL) AND ([x].[col_val] != ?) AND ([col_arr] NOT IN (1, 2)))'), $sql);
 });
 
 
@@ -153,7 +153,7 @@ test('Supports explicit operators in WHERE conditions', function () use ($prepro
 		'col_arr =' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM tbl WHERE (([col_is] = ?) AND ([col_not] <> ?) AND ([col_like] LIKE ?) AND ([col_like] NOT LIKE ?) AND ([col_null] = NULL) AND ([col_arr] = (?, ?)))'), $sql);
+	Assert::same(reformat('SELECT id FROM tbl WHERE (([col_is] = ?) AND ([col_not] <> ?) AND ([col_like] LIKE ?) AND ([col_like] NOT LIKE ?) AND ([col_null] = NULL) AND ([col_arr] = (1, 2)))'), $sql);
 });
 
 
@@ -256,8 +256,8 @@ test('multi-value IN conditions (tuples)', function () use ($preprocessor) {
 		[5, 6],
 	]]);
 
-	Assert::same(reformat('SELECT * FROM book_tag WHERE (book_id, tag_id) IN ((?, ?), (?, ?), (?, ?))'), $sql);
-	Assert::same([1, 2, 3, 4, 5, 6], $params);
+	Assert::same(reformat('SELECT * FROM book_tag WHERE (book_id, tag_id) IN ((1, 2), (3, 4), (5, 6))'), $sql);
+	Assert::same([], $params);
 });
 
 
@@ -368,8 +368,8 @@ test('WHERE conditions with SQL literals', function () use ($preprocessor) {
 		'web' => new SqlLiteral('NOW()'),
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE (([id] IS NULL) AND ([born] IN (?, ?, 3+1)) AND ([web] = NOW()))'), $sql);
-	Assert::same([1, 2], $params);
+	Assert::same(reformat('SELECT id FROM author WHERE (([id] IS NULL) AND ([born] IN (1, 2, 3+1)) AND ([web] = NOW()))'), $sql);
+	Assert::same([], $params);
 });
 
 
@@ -387,8 +387,8 @@ test('AND operator in WHERE conditions', function () use ($preprocessor) {
 		'born' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE (([id] IS NULL) AND ([born] IN (?, ?)))'), $sql);
-	Assert::same([1, 2], $params);
+	Assert::same(reformat('SELECT id FROM author WHERE (([id] IS NULL) AND ([born] IN (1, 2)))'), $sql);
+	Assert::same([], $params);
 });
 
 
@@ -398,8 +398,8 @@ test('OR operator in WHERE conditions', function () use ($preprocessor) {
 		'born' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM author WHERE (([id] IS NULL) OR ([born] IN (?, ?)))'), $sql);
-	Assert::same([1, 2], $params);
+	Assert::same(reformat('SELECT id FROM author WHERE (([id] IS NULL) OR ([born] IN (1, 2)))'), $sql);
+	Assert::same([], $params);
 });
 
 

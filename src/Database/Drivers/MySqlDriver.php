@@ -128,11 +128,17 @@ class MySqlDriver implements Nette\Database\Driver
 	public function getTables(): array
 	{
 		$tables = [];
-		$rows = $this->connection->query('SHOW FULL TABLES');
-		while ($row = $rows->fetch()) {
+		$query = $this->connection->query(<<<'XX'
+			SELECT TABLE_NAME, TABLE_TYPE, TABLE_COMMENT
+			FROM information_schema.TABLES
+			WHERE TABLE_SCHEMA = DATABASE()
+			XX);
+
+		while ($row = $query->fetch()) {
 			$tables[] = [
-				'name' => $row[0],
-				'view' => ($row[1] ?? null) === 'VIEW',
+				'name' => $row['TABLE_NAME'],
+				'view' => $row['TABLE_TYPE'] === 'VIEW',
+				'comment' => $row['TABLE_COMMENT'],
 			];
 		}
 
@@ -145,7 +151,7 @@ class MySqlDriver implements Nette\Database\Driver
 		$columns = [];
 		$rows = $this->connection->query('SHOW FULL COLUMNS FROM ' . $this->delimite($table));
 		while ($row = $rows->fetch()) {
-			$row = array_change_key_case((array) $row, CASE_LOWER);
+			$row = array_change_key_case((array) $row);
 			$typeInfo = Nette\Database\Helpers::parseColumnType($row['type']);
 			$columns[] = [
 				'name' => $row['field'],
@@ -156,6 +162,7 @@ class MySqlDriver implements Nette\Database\Driver
 				'default' => $row['default'],
 				'autoincrement' => $row['extra'] === 'auto_increment',
 				'primary' => $row['key'] === 'PRI',
+				'comment' => $row['comment'],
 				'vendor' => $row,
 			];
 		}

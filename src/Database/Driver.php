@@ -69,13 +69,13 @@ interface Driver
 
 	/**
 	 * Returns a list of all tables in the database.
-	 * @return list<array{name: string, fullName: string, view: bool}>
+	 * @return list<array{name: string, fullName: ?string, view: bool, comment: ?string}>
 	 */
 	function getTables(): array;
 
 	/**
 	 * Returns metadata for all columns in a table.
-	 * @return list<array{name: string, table: string, nativetype: string, size: int|null, nullable: bool, default: mixed, autoincrement: bool, primary: bool, vendor: array}>
+	 * @return list<array{name: string, table: string, nativetype: string, size: ?int, nullable: bool, default: mixed, autoincrement: bool, primary: bool, comment: ?string, vendor: array}>
 	 */
 	function getColumns(string $table): array;
 

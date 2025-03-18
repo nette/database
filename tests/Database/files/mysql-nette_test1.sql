@@ -11,10 +11,10 @@ SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE author (
 	id int NOT NULL AUTO_INCREMENT,
 	name varchar(30) NOT NULL,
-	web varchar(100) NOT NULL,
+	web varchar(100) NOT NULL COMMENT 'Author\'s website URL',
 	born date DEFAULT NULL,
 	PRIMARY KEY(id)
-) ENGINE=InnoDB AUTO_INCREMENT=13;
+) ENGINE=InnoDB AUTO_INCREMENT=13 COMMENT='Table containing book authors';
 
 INSERT INTO author (id, name, web, born) VALUES (11, 'Jakub Vrana', 'http://www.vrana.cz/', NULL);
 INSERT INTO author (id, name, web, born) VALUES (12, 'David Grudl', 'http://davidgrudl.com/', NULL);

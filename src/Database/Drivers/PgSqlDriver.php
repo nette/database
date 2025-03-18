@@ -113,10 +113,12 @@ class PgSqlDriver implements Nette\Database\Driver
 			SELECT DISTINCT ON (c.relname)
 				c.relname::varchar AS name,
 				c.relkind IN ('v', 'm') AS view,
-				n.nspname::varchar || '.' || c.relname::varchar AS "fullName"
+				n.nspname::varchar || '.' || c.relname::varchar AS "fullName",
+				coalesce(d.description, '') AS comment
 			FROM
 				pg_catalog.pg_class AS c
 				JOIN pg_catalog.pg_namespace AS n ON n.oid = c.relnamespace
+				LEFT JOIN pg_catalog.pg_description d ON d.objoid = c.oid AND d.objsubid = 0
 			WHERE
 				c.relkind IN ('r', 'v', 'm', 'p')
 				AND n.nspname = ANY (pg_catalog.current_schemas(FALSE))
@@ -150,6 +152,7 @@ class PgSqlDriver implements Nette\Database\Driver
 				pg_catalog.pg_get_expr(ad.adbin, 'pg_catalog.pg_attrdef'::regclass)::varchar AS default,
 				coalesce(co.contype = 'p' AND (seq.relname IS NOT NULL OR strpos(pg_catalog.pg_get_expr(ad.adbin, ad.adrelid), 'nextval') = 1), FALSE) AS autoincrement,
 				coalesce(co.contype = 'p', FALSE) AS primary,
+				coalesce(col_description(c.oid, a.attnum)::varchar, '') AS comment,
 				coalesce(seq.relname, substring(pg_catalog.pg_get_expr(ad.adbin, 'pg_catalog.pg_attrdef'::regclass) from 'nextval[(]''"?([^''"]+)')) AS sequence
 			FROM
 				pg_catalog.pg_attribute AS a

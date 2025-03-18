@@ -90,21 +90,27 @@ class SqlsrvDriver implements Nette\Database\Driver
 		$tables = [];
 		$rows = $this->connection->query(<<<'X'
 			SELECT
-				name,
-				CASE type
+				o.name,
+				CASE o.type
 					WHEN 'U' THEN 0
 					WHEN 'V' THEN 1
-				END AS [view]
+				END AS [view],
+				CAST(p.value AS VARCHAR(255)) AS comment
 			FROM
-				sys.objects
+				sys.objects o
+			LEFT JOIN
+				sys.extended_properties p ON p.major_id = o.object_id
+				AND p.minor_id = 0
+				AND p.name = 'MS_Description'
 			WHERE
-				type IN ('U', 'V')
+				o.type IN ('U', 'V')
 			X);
 
 		while ($row = $rows->fetch()) {
 			$tables[] = [
 				'name' => $row['name'],
 				'view' => (bool) $row['view'],
+				'comment' => $row['comment'] ?? '',
 			];
 		}
 
@@ -131,13 +137,18 @@ class SqlsrvDriver implements Nette\Database\Driver
 				CASE WHEN i.index_id IS NULL
 					THEN 0
 					ELSE 1
-				END AS [primary]
+				END AS [primary],
+				CAST(ep.value AS VARCHAR(255)) AS comment
 			FROM
 				sys.columns c
 				JOIN sys.objects o ON c.object_id = o.object_id
 				LEFT JOIN sys.types t ON c.user_type_id = t.user_type_id
 				LEFT JOIN sys.key_constraints k ON o.object_id = k.parent_object_id AND k.type = 'PK'
 				LEFT JOIN sys.index_columns i ON k.parent_object_id = i.object_id AND i.index_id = k.unique_index_id AND i.column_id = c.column_id
+				LEFT JOIN sys.extended_properties ep ON
+					ep.major_id = c.object_id AND
+					ep.minor_id = c.column_id AND
+					ep.name = 'MS_Description'
 			WHERE
 				o.type IN ('U', 'V')
 				AND o.name = ?
@@ -149,6 +160,7 @@ class SqlsrvDriver implements Nette\Database\Driver
 			$row['nullable'] = (bool) $row['nullable'];
 			$row['autoincrement'] = (bool) $row['autoincrement'];
 			$row['primary'] = (bool) $row['primary'];
+			$row['comment'] ??= '';
 
 			$columns[] = $row;
 		}

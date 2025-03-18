@@ -26,19 +26,26 @@ usort($tables, fn($a, $b) => strcmp($a['name'], $b['name']));
 if ($driver->isSupported(Driver::SupportSchema)) {
 	Assert::same(
 		[
-			['name' => 'author', 'view' => false, 'fullName' => 'public.author'],
-			['name' => 'book', 'view' => false, 'fullName' => 'public.book'],
-			['name' => 'book_tag', 'view' => false, 'fullName' => 'public.book_tag'],
-			['name' => 'tag', 'view' => false, 'fullName' => 'public.tag'],
+			['name' => 'author', 'view' => false, 'fullName' => 'public.author', 'comment' => 'Table containing book authors'],
+			['name' => 'book', 'view' => false, 'fullName' => 'public.book', 'comment' => ''],
+			['name' => 'book_tag', 'view' => false, 'fullName' => 'public.book_tag', 'comment' => ''],
+			['name' => 'tag', 'view' => false, 'fullName' => 'public.tag', 'comment' => ''],
 		],
 		$tables,
 	);
+} elseif ($driverName === 'sqlite') {
+	Assert::same([
+		['name' => 'author', 'view' => false, 'comment' => null],
+		['name' => 'book', 'view' => false, 'comment' => null],
+		['name' => 'book_tag', 'view' => false, 'comment' => null],
+		['name' => 'tag', 'view' => false, 'comment' => null],
+	], $tables);
 } else {
 	Assert::same([
-		['name' => 'author', 'view' => false],
-		['name' => 'book', 'view' => false],
-		['name' => 'book_tag', 'view' => false],
-		['name' => 'tag', 'view' => false],
+		['name' => 'author', 'view' => false, 'comment' => 'Table containing book authors'],
+		['name' => 'book', 'view' => false, 'comment' => ''],
+		['name' => 'book_tag', 'view' => false, 'comment' => ''],
+		['name' => 'tag', 'view' => false, 'comment' => ''],
 	], $tables);
 }
 
@@ -59,6 +66,7 @@ $expectedColumns = [
 		'default' => null,
 		'autoincrement' => true,
 		'primary' => true,
+		'comment' => '',
 	],
 	[
 		'name' => 'name',
@@ -69,6 +77,7 @@ $expectedColumns = [
 		'default' => null,
 		'autoincrement' => false,
 		'primary' => false,
+		'comment' => '',
 	],
 	[
 		'name' => 'web',
@@ -79,6 +88,7 @@ $expectedColumns = [
 		'default' => null,
 		'autoincrement' => false,
 		'primary' => false,
+		'comment' => 'Author\'s website URL',
 	],
 	[
 		'name' => 'born',
@@ -89,6 +99,7 @@ $expectedColumns = [
 		'default' => null,
 		'autoincrement' => false,
 		'primary' => false,
+		'comment' => '',
 	],
 ];
 
@@ -108,10 +119,14 @@ switch ($driverName) {
 	case 'sqlite':
 		$expectedColumns[0]['nativetype'] = 'INTEGER';
 		$expectedColumns[0]['size'] = null;
+		$expectedColumns[0]['comment'] = null;
 		$expectedColumns[1]['nativetype'] = 'TEXT';
 		$expectedColumns[1]['size'] = null;
+		$expectedColumns[1]['comment'] = null;
 		$expectedColumns[2]['nativetype'] = 'TEXT';
 		$expectedColumns[2]['size'] = null;
+		$expectedColumns[2]['comment'] = null;
+		$expectedColumns[3]['comment'] = null;
 		break;
 	case 'sqlsrv':
 		$expectedColumns[0]['size'] = 10;

@@ -65,6 +65,14 @@ if ($schemaSupported) {
 	);
 }
 
+// comments
+if (in_array($driverName, ['mysql', 'pgsql', 'sqlsrv'], true)) {
+	Assert::same('Table containing book authors', $tables[0]->comment);
+
+	$column = $tables[0]->getColumn('web');
+	Assert::same('Author\'s website URL', $column->comment);
+}
+
 
 // columns
 $table = $reflection->getTable('author');

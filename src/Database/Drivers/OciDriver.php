@@ -109,6 +109,7 @@ class OciDriver implements Nette\Database\Driver
 				$tables[] = [
 					'name' => $row[0],
 					'view' => $row[1] === 'VIEW',
+					'comment' => null,
 				];
 			}
 		}

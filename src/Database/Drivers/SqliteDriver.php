@@ -127,6 +127,7 @@ class SqliteDriver implements Nette\Database\Driver
 			$tables[] = [
 				'name' => $row['name'],
 				'view' => (bool) $row['view'],
+				'comment' => null,
 			];
 		}
 
@@ -161,6 +162,7 @@ class SqliteDriver implements Nette\Database\Driver
 				'default' => $row['dflt_value'],
 				'autoincrement' => $createSql && preg_match($pattern, $createSql['sql']),
 				'primary' => $row['pk'] > 0,
+				'comment' => null,
 				'vendor' => (array) $row,
 			];
 		}

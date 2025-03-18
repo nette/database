@@ -10,6 +10,9 @@ CREATE TABLE author (
 	PRIMARY KEY(id)
 );
 
+COMMENT ON TABLE author IS 'Table containing book authors';
+COMMENT ON COLUMN author.web IS 'Author''s website URL';
+
 INSERT INTO author (id, name, web, born) VALUES (11, 'Jakub Vrana', 'http://www.vrana.cz/', NULL);
 INSERT INTO author (id, name, web, born) VALUES (12, 'David Grudl', 'http://davidgrudl.com/', NULL);
 INSERT INTO author (id, name, web, born) VALUES (13, 'Geek', 'http://example.com', NULL);

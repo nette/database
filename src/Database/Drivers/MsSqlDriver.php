@@ -90,11 +90,25 @@ class MsSqlDriver implements Nette\Database\Driver
 	public function getTables(): array
 	{
 		$tables = [];
-		$rows = $this->connection->query('SELECT TABLE_SCHEMA, TABLE_NAME, TABLE_TYPE FROM INFORMATION_SCHEMA.TABLES');
+		$rows = $this->connection->query(<<<'X'
+			SELECT
+				TABLE_SCHEMA,
+				TABLE_NAME,
+				TABLE_TYPE,
+				CAST(ISNULL(p.value, '') AS VARCHAR(255)) AS comment
+			FROM
+				INFORMATION_SCHEMA.TABLES t
+			LEFT JOIN
+				sys.extended_properties p ON p.major_id = OBJECT_ID(TABLE_SCHEMA + '.' + TABLE_NAME)
+				AND p.minor_id = 0
+				AND p.name = 'MS_Description'
+			X);
+
 		while ($row = $rows->fetch()) {
 			$tables[] = [
 				'name' => $row['TABLE_SCHEMA'] . '.' . $row['TABLE_NAME'],
 				'view' => ($row['TABLE_TYPE'] ?? null) === 'VIEW',
+				'comment' => $row['comment'] ?? '',
 			];
 		}
 
@@ -109,18 +123,23 @@ class MsSqlDriver implements Nette\Database\Driver
 
 		$rows = $this->connection->query(<<<'X'
 			SELECT
-				COLUMN_NAME,
-				DATA_TYPE,
-				CHARACTER_MAXIMUM_LENGTH,
-				NUMERIC_PRECISION,
-				IS_NULLABLE,
-				COLUMN_DEFAULT,
-				DOMAIN_NAME
+				c.COLUMN_NAME,
+				c.DATA_TYPE,
+				c.CHARACTER_MAXIMUM_LENGTH,
+				c.NUMERIC_PRECISION,
+				c.IS_NULLABLE,
+				c.COLUMN_DEFAULT,
+				c.DOMAIN_NAME,
+				CAST(p.value AS NVARCHAR(4000)) AS comment
 			FROM
-				INFORMATION_SCHEMA.COLUMNS
+				INFORMATION_SCHEMA.COLUMNS c
+				LEFT JOIN sys.extended_properties p ON
+					p.major_id = OBJECT_ID(c.TABLE_SCHEMA + '.' + c.TABLE_NAME) AND
+					p.minor_id = COLUMNPROPERTY(OBJECT_ID(c.TABLE_SCHEMA + '.' + c.TABLE_NAME), c.COLUMN_NAME, 'ColumnId') AND
+					p.name = 'MS_Description'
 			WHERE
-				TABLE_SCHEMA = ?
-				AND TABLE_NAME = ?
+				c.TABLE_SCHEMA = ?
+				AND c.TABLE_NAME = ?
 			X, $table_schema, $table_name);
 
 		while ($row = $rows->fetch()) {
@@ -134,6 +153,7 @@ class MsSqlDriver implements Nette\Database\Driver
 				'default' => $row['COLUMN_DEFAULT'],
 				'autoincrement' => $row['DOMAIN_NAME'] === 'COUNTER',
 				'primary' => $row['COLUMN_NAME'] === 'ID',
+				'comment' => $row['comment'] ?? '',
 				'vendor' => (array) $row,
 			];
 		}

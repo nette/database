@@ -15,6 +15,19 @@ CREATE TABLE author (
 	PRIMARY KEY(id)
 );
 
+EXEC sp_addextendedproperty
+	@name = N'MS_Description',
+	@value = N'Table containing book authors',
+	@level0type = N'SCHEMA', @level0name = N'dbo',
+	@level1type = N'TABLE', @level1name = N'author';
+
+EXEC sp_addextendedproperty
+	@name = N'MS_Description',
+	@value = N'Author''s website URL',
+	@level0type = N'SCHEMA', @level0name = N'dbo',
+	@level1type = N'TABLE', @level1name = N'author',
+	@level2type = N'COLUMN', @level2name = N'web';
+
 INSERT INTO author (name, web, born) VALUES
 ('Jakub Vrana', 'http://www.vrana.cz/', NULL),
 ('David Grudl', 'http://davidgrudl.com/', NULL),

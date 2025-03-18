@@ -116,8 +116,8 @@ test('Materialized view columns', function () use ($connection) {
 	$connection->query('SET search_path TO reflection_10');
 
 	Assert::same([
-		['name' => 'source', 'view' => false, 'fullName' => 'reflection_10.source'],
-		['name' => 'source_mt', 'view' => true, 'fullName' => 'reflection_10.source_mt'],
+		['name' => 'source', 'view' => false, 'fullName' => 'reflection_10.source', 'comment' => ''],
+		['name' => 'source_mt', 'view' => true, 'fullName' => 'reflection_10.source_mt', 'comment' => ''],
 	], $driver->getTables());
 
 	Assert::same(
@@ -145,8 +145,8 @@ test('Partitioned table', function () use ($connection) {
 	$connection->query('SET search_path TO reflection_10');
 
 	Assert::same([
-		['name' => 'part_1', 'view' => false, 'fullName' => 'reflection_10.part_1'],
-		['name' => 'parted', 'view' => false, 'fullName' => 'reflection_10.parted'],
+		['name' => 'part_1', 'view' => false, 'fullName' => 'reflection_10.part_1', 'comment' => ''],
+		['name' => 'parted', 'view' => false, 'fullName' => 'reflection_10.parted', 'comment' => ''],
 	], $driver->getTables());
 
 	Assert::same(['id', 'value'], array_column($driver->getColumns('parted'), 'name'));

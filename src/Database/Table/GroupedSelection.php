@@ -83,6 +83,13 @@ class GroupedSelection extends Selection
 	}
 
 
+	public function refreshData(): void
+	{
+		unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
+		$this->data = $this->rows = null;
+	}
+
+
 	/********************* aggregations ****************d*g**/
 
 

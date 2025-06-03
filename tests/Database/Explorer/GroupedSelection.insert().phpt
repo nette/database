@@ -25,6 +25,10 @@ test('grouped selection insert increases count', function () use ($explorer) {
 	Assert::same(3, $book->related('book_tag')->count('*'));
 
 	$book->related('book_tag')->where('tag_id', 23)->delete();
+
+	Assert::same(3, $book->related('book_tag')->count());
+	$book->related('book_tag')->refreshData();
+	Assert::same(2, $book->related('book_tag')->count());
 });
 
 

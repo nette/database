@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers;
 
 use Nette;
+use function preg_replace, str_replace, strtr;
 
 
 /**

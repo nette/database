@@ -12,6 +12,7 @@ namespace Nette\Bridges\DatabaseDI;
 use Nette;
 use Nette\Schema\Expect;
 use Tracy;
+use function is_array, is_string;
 
 
 /**

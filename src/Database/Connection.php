@@ -13,6 +13,7 @@ use JetBrains\PhpStorm\Language;
 use Nette\Utils\Arrays;
 use PDO;
 use PDOException;
+use function func_get_args, str_replace, ucfirst;
 
 
 /**

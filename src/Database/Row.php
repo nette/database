@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database;
 
 use Nette;
+use function array_keys, array_map, array_slice, current, is_int;
 
 
 /**

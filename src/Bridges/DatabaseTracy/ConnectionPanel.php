@@ -13,6 +13,7 @@ use Nette;
 use Nette\Database\Connection;
 use Nette\Database\Helpers;
 use Tracy;
+use function is_string;
 
 
 /**

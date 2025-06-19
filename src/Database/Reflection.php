@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database;
 
 use Nette\Database\Reflection\Table;
+use function array_values;
 
 
 /**

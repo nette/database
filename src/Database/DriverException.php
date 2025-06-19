@@ -9,6 +9,8 @@ declare(strict_types=1);
 
 namespace Nette\Database;
 
+use function array_slice;
+
 
 /**
  * Base class for all errors in the driver or SQL server.

@@ -15,6 +15,8 @@ use Nette\Database\Driver;
 use Nette\Database\Explorer;
 use Nette\Database\IStructure;
 use Nette\Database\SqlLiteral;
+use function array_flip, array_keys, array_map, array_merge, array_pop, array_shift, array_unshift, array_values, count, end, explode, hash, implode, is_array, is_string, json_encode, key, preg_match, preg_match_all, preg_replace, preg_replace_callback, rtrim, str_contains, str_repeat, strlen, strtoupper, substr, substr_count, substr_replace, trim;
+use const PREG_OFFSET_CAPTURE, PREG_SET_ORDER;
 
 
 /**

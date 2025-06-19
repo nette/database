@@ -12,6 +12,7 @@ namespace Nette\Database;
 use Nette;
 use Nette\Utils\Arrays;
 use PDO;
+use function array_values, count, gettype, is_int, iterator_to_array, microtime, reset, str_starts_with, substr;
 
 
 /**

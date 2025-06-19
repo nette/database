@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers;
 
 use Nette;
+use function array_map, array_values, explode, implode, str_contains, str_replace, strtr, substr;
 
 
 /**

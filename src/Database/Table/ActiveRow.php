@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Table;
 
 use Nette;
+use function array_intersect_key, array_key_exists, array_keys, implode, is_array, iterator_to_array;
 
 
 /**

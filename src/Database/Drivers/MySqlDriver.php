@@ -10,6 +10,7 @@ declare(strict_types=1);
 namespace Nette\Database\Drivers;
 
 use Nette;
+use function addcslashes, array_change_key_case, array_values, in_array, str_replace, strtoupper, substr;
 
 
 /**

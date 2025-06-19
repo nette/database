@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Test: MySqlDriver::getForeignKeys() column order
+ * Test: MySQLEngine::getForeignKeys() column order
  * @dataProvider? databases.ini  mysql
  */
 

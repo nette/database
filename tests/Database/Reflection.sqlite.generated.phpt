@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Test: SqliteDriver::getColumns() generated and hidden columns
+ * Test: SQLiteEngine::getColumns() generated and hidden columns
  * @dataProvider? databases.ini  sqlite
  */
 

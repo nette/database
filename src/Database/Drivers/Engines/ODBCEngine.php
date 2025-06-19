@@ -5,15 +5,16 @@
  * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
-namespace Nette\Database\Drivers;
+namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Engine;
 
 
 /**
- * Supplemental ODBC database driver.
+ * Microsoft ODBC database platform.
  */
-class OdbcDriver implements Engine
+class ODBCEngine implements Engine
 {
 	public function initialize(Nette\Database\Connection $connection, array $options): void
 	{

@@ -7,16 +7,17 @@
 
 declare(strict_types=1);
 
-namespace Nette\Database\Drivers;
+namespace Nette\Database\Drivers\Engines;
 
 use Nette;
-use function array_values, str_replace, strtr;
+use Nette\Database\Drivers\Engine;
+use function array_values, str_replace;
 
 
 /**
- * Supplemental SQL Server 2005 and later database driver.
+ * Microsoft SQL Server database platform.
  */
-class SqlsrvDriver implements Engine
+class SQLServerEngine implements Engine
 {
 	private Nette\Database\Connection $connection;
 

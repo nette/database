@@ -7,16 +7,17 @@
 
 declare(strict_types=1);
 
-namespace Nette\Database\Drivers;
+namespace Nette\Database\Drivers\Engines;
 
 use Nette;
-use function addcslashes, array_values, in_array, preg_match, str_contains, strtoupper, strtr, substr;
+use Nette\Database\Drivers\Engine;
+use function array_values, in_array, preg_match, str_contains, strtoupper, strtr;
 
 
 /**
- * Supplemental SQLite3 database driver.
+ * SQLite database platform.
  */
-class SqliteDriver implements Engine
+class SQLiteEngine implements Engine
 {
 	private Nette\Database\Connection $connection;
 	private string $fmtDateTime;

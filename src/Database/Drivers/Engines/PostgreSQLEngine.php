@@ -7,16 +7,17 @@
 
 declare(strict_types=1);
 
-namespace Nette\Database\Drivers;
+namespace Nette\Database\Drivers\Engines;
 
 use Nette;
-use function array_map, array_values, explode, implode, str_contains, str_replace, strtr, substr;
+use Nette\Database\Drivers\Engine;
+use function array_map, array_values, explode, implode, str_contains, str_replace;
 
 
 /**
- * Supplemental PostgreSQL database driver.
+ * PostgreSQL database platform.
  */
-class PgSqlDriver implements Engine
+class PostgreSQLEngine implements Engine
 {
 	private Nette\Database\Connection $connection;
 

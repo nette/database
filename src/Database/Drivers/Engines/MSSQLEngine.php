@@ -7,16 +7,17 @@
 
 declare(strict_types=1);
 
-namespace Nette\Database\Drivers;
+namespace Nette\Database\Drivers\Engines;
 
 use Nette;
-use function array_values, explode, preg_replace, str_replace, strtoupper, strtr;
+use Nette\Database\Drivers\Engine;
+use function array_values, explode, preg_replace, str_replace, strtoupper;
 
 
 /**
- * Supplemental MS SQL database driver.
+ * MS SQL database platform.
  */
-class MsSqlDriver implements Engine
+class MSSQLEngine implements Engine
 {
 	private Nette\Database\Connection $connection;
 

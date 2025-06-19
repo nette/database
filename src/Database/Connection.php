@@ -20,6 +20,16 @@ use function func_get_args;
  */
 class Connection
 {
+	private const Drivers = [
+		'pdo-mssql' => Drivers\Engines\MSSQLEngine::class,
+		'pdo-mysql' => Drivers\Engines\MySQLEngine::class,
+		'pdo-oci' => Drivers\Engines\OracleEngine::class,
+		'pdo-odbc' => Drivers\Engines\ODBCEngine::class,
+		'pdo-pgsql' => Drivers\Engines\PostgreSQLEngine::class,
+		'pdo-sqlite' => Drivers\Engines\SQLiteEngine::class,
+		'pdo-sqlsrv' => Drivers\Engines\SQLServerEngine::class,
+	];
+
 	/** @var array<callable(static): void>  Occurs after connection is established */
 	public array $onConnect = [];
 
@@ -66,8 +76,9 @@ class Connection
 			throw ConnectionException::from($e);
 		}
 
+		$driver = explode(':', $this->dsn)[0];
 		$class = empty($this->options['driverClass'])
-			? 'Nette\Database\Drivers\\' . ucfirst(str_replace('sql', 'Sql', $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) . 'Driver'
+			? (self::Drivers['pdo-' . $driver] ?? throw new \LogicException("Unknown PDO driver '$driver'."))
 			: $this->options['driverClass'];
 		if (!class_exists($class)) {
 			throw new Nette\InvalidStateException(empty($this->options['driverClass'])

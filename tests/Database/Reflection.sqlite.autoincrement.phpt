@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Test: SqliteDriver::getColumns() autoincrement detection
+ * Test: SQLiteEngine::getColumns() autoincrement detection
  * @dataProvider? databases.ini  sqlite
  */
 

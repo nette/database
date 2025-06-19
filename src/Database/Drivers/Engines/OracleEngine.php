@@ -5,16 +5,17 @@
  * Copyright (c) 2004 David Grudl (https://davidgrudl.com)
  */
 
-namespace Nette\Database\Drivers;
+namespace Nette\Database\Drivers\Engines;
 
 use Nette;
+use Nette\Database\Drivers\Engine;
 use function in_array, str_replace;
 
 
 /**
- * Supplemental Oracle database driver.
+ * Oracle database platform.
  */
-class OciDriver implements Engine
+class OracleEngine implements Engine
 {
 	private Nette\Database\Connection $connection;
 	private string $fmtDateTime;

@@ -6,35 +6,34 @@ use Tester\Assert;
 
 require __DIR__ . '/../../bootstrap.php';
 
-
-$driver = new Nette\Database\Drivers\OciDriver;
+$engine = new Nette\Database\Drivers\Engines\OracleEngine;
 
 $query = 'SELECT 1 FROM t';
-$driver->applyLimit($query, 10, 20);
+$engine->applyLimit($query, 10, 20);
 Assert::same('SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (SELECT 1 FROM t) t ) WHERE "__rnum" > 20 AND "__rnum" <= 30', $query);
 
 $query = 'SELECT 1 FROM t';
-$driver->applyLimit($query, 0, 20);
+$engine->applyLimit($query, 0, 20);
 Assert::same('SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (SELECT 1 FROM t) t ) WHERE "__rnum" > 20 AND "__rnum" <= 20', $query);
 
 $query = 'SELECT 1 FROM t';
-$driver->applyLimit($query, 10, 0);
+$engine->applyLimit($query, 10, 0);
 Assert::same('SELECT * FROM (SELECT 1 FROM t) WHERE ROWNUM <= 10', $query);
 
 $query = 'SELECT 1 FROM t';
-$driver->applyLimit($query, null, 20);
+$engine->applyLimit($query, null, 20);
 Assert::same('SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (SELECT 1 FROM t) t ) WHERE "__rnum" > 20', $query);
 
 $query = 'SELECT 1 FROM t';
-$driver->applyLimit($query, 10, null);
+$engine->applyLimit($query, 10, null);
 Assert::same('SELECT * FROM (SELECT 1 FROM t) WHERE ROWNUM <= 10', $query);
 
-Assert::exception(function () use ($driver) {
+Assert::exception(function () use ($engine) {
 	$query = 'SELECT 1 FROM t';
-	$driver->applyLimit($query, -1, null);
+	$engine->applyLimit($query, -1, null);
 }, Nette\InvalidArgumentException::class, 'Negative offset or limit.');
 
-Assert::exception(function () use ($driver) {
+Assert::exception(function () use ($engine) {
 	$query = 'SELECT 1 FROM t';
-	$driver->applyLimit($query, null, -1);
+	$engine->applyLimit($query, null, -1);
 }, Nette\InvalidArgumentException::class, 'Negative offset or limit.');

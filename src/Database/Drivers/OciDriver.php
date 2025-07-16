@@ -89,8 +89,8 @@ class OciDriver implements Nette\Database\Driver
 		} elseif ($offset) {
 			// see http://www.oracle.com/technology/oramag/oracle/06-sep/o56asktom.html
 			$sql = 'SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (' . $sql . ') t '
-				. ($limit !== null ? 'WHERE ROWNUM <= ' . ($offset + $limit) : '')
-				. ') WHERE "__rnum" > ' . $offset;
+				. ') WHERE "__rnum" > ' . $offset
+				. ($limit !== null ? ' AND "__rnum" <= ' . ($offset + $limit) : '');
 
 		} elseif ($limit !== null) {
 			$sql = 'SELECT * FROM (' . $sql . ') WHERE ROWNUM <= ' . $limit;

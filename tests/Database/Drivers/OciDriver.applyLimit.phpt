@@ -11,11 +11,11 @@ $driver = new Nette\Database\Drivers\OciDriver;
 
 $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, 10, 20);
-Assert::same('SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (SELECT 1 FROM t) t WHERE ROWNUM <= 30) WHERE "__rnum" > 20', $query);
+Assert::same('SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (SELECT 1 FROM t) t ) WHERE "__rnum" > 20 AND "__rnum" <= 30', $query);
 
 $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, 0, 20);
-Assert::same('SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (SELECT 1 FROM t) t WHERE ROWNUM <= 20) WHERE "__rnum" > 20', $query);
+Assert::same('SELECT * FROM (SELECT t.*, ROWNUM AS "__rnum" FROM (SELECT 1 FROM t) t ) WHERE "__rnum" > 20 AND "__rnum" <= 20', $query);
 
 $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, 10, 0);

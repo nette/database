@@ -644,6 +644,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	protected function getRefTable(&$refPath): self
 	{
+		$refPath = '';
 		return $this;
 	}
 
@@ -944,7 +945,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			}
 		}
 
-		return $selection[$checkPrimaryKey] ?? null;
+		return $selection[$checkPrimaryKey ?? ''] ?? null;
 	}
 
 

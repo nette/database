@@ -15,7 +15,6 @@ $explorer = connectToDB();
 
 $sqlBuilder = new Nette\Database\Table\SqlBuilder('book', $explorer);
 $tryDelimite = (new ReflectionClass($sqlBuilder))->getMethod('tryDelimite');
-$tryDelimite->setAccessible(true);
 
 Assert::same(reformat('[hello]'), $tryDelimite->invoke($sqlBuilder, 'hello'));
 Assert::same(reformat(' [hello] '), $tryDelimite->invoke($sqlBuilder, ' hello '));

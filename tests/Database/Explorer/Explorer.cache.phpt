@@ -120,7 +120,6 @@ test('shared accessed columns in related instances', function () use ($explorer)
 
 	foreach ($relatedStack as $related) {
 		$property = (new ReflectionClass($related))->getProperty('accessedColumns');
-		$property->setAccessible(true);
 		// checks if instances have shared data of accessed columns
 		Assert::same(['id', 'author_id'], array_keys((array) $property->getValue($related)));
 	}

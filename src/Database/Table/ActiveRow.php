@@ -285,6 +285,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 			$this->dataRefreshed = true;
 		}
 
+		$key ??= '';
 		return isset($this->data[$key]) || array_key_exists($key, $this->data);
 	}
 

@@ -1,7 +1,6 @@
 <?php
 
 /**
- * @phpVersion 8.1
  * @dataProvider? databases.ini
  */
 

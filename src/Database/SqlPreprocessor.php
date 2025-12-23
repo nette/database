@@ -257,7 +257,7 @@ class SqlPreprocessor
 			throw new Nette\InvalidArgumentException("Automatically detected multi-insert, but values aren't array. Use an explicit ?mode placeholder if needed.");
 		}
 
-		$cols = array_keys(is_array($groups[0]) ? $groups[0] : iterator_to_array($groups[0]));
+		$cols = array_keys(iterator_to_array($groups[0]));
 		$vals = [];
 		foreach ($groups as $group) {
 			$rowVals = [];

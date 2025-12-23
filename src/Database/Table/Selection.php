@@ -942,10 +942,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function update(iterable $data): int
 	{
-		if ($data instanceof \Traversable) {
-			$data = iterator_to_array($data);
-		}
-
+		$data = iterator_to_array($data);
 		if (!$data) {
 			return 0;
 		}

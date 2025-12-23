@@ -805,10 +805,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), ...$data->getSqlBuilder()->getParameters());
 
 		} else {
-			if ($data instanceof \Traversable) {
-				$data = iterator_to_array($data);
-			}
-
+			$data = iterator_to_array($data);
 			$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ?values', $data);
 		}
 
@@ -879,10 +876,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function update(iterable $data): int
 	{
-		if ($data instanceof \Traversable) {
-			$data = iterator_to_array($data);
-		}
-
+		$data = iterator_to_array($data);
 		if (!$data) {
 			return 0;
 		}

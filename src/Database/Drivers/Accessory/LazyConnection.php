@@ -15,7 +15,7 @@ use Nette\Database\Drivers;
 final class LazyConnection implements Drivers\Connection
 {
 	public function __construct(
-		private \Closure $callback,
+		private readonly \Closure $callback,
 	) {
 	}
 

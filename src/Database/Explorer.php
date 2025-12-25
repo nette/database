@@ -21,8 +21,6 @@ use function func_get_args, str_replace, ucfirst;
  */
 class Explorer extends Database
 {
-
-
 	/** @internal */
 	public function createActiveRow(Table\Selection $selection, array $row): Table\ActiveRow
 	{

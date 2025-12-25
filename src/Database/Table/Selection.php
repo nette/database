@@ -669,7 +669,7 @@ class Selection implements \IteratorAggregate, \ArrayAccess, \Countable
 
 	/**
 	 * @internal
-	 * @param  string|null column name or null to reload all columns
+	 * @param  string|null  $key column name or null to reload all columns
 	 * @return bool if selection requeried for more columns.
 	 */
 	public function accessColumn(?string $key, bool $selectColumn = true): bool

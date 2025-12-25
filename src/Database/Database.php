@@ -325,7 +325,7 @@ class Database
 
 		$this->autoCommit = $state;
 		if (!$state && $this->connection) {
-			$$this->beginTransaction();
+			$this->beginTransaction();
 		}
 	}
 
@@ -381,9 +381,9 @@ class Database
 	private function logOperation(\Closure $callback, SqlLiteral $query): Result
 	{
 		try {
-			$time = microtime(true);
+			$time = microtime(as_float: true);
 			$result = $callback();
-			$time = microtime(true) - $time;
+			$time = microtime(as_float: true) - $time;
 		} catch (DriverException $e) {
 			$e = $this->convertException($e);
 			Arrays::invoke($this->onQuery, $this, $e);

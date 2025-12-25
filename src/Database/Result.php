@@ -30,7 +30,7 @@ class Result implements \IteratorAggregate
 		private readonly Explorer $explorer,
 		private readonly SqlLiteral $query,
 		private readonly ?Drivers\Result $result,
-		private float $time,
+		private readonly float $time,
 	) {
 	}
 

@@ -14,5 +14,5 @@ require __DIR__ . '/../bootstrap.php';
 $connection = connectToDB();
 
 Assert::noError(
-	fn() => Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlsrv-loadFromFile.sql')
+	fn() => Nette\Database\Helpers::loadFromFile($connection, __DIR__ . '/files/sqlsrv-loadFromFile.sql'),
 );

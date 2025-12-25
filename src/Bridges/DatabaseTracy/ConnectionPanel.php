@@ -31,7 +31,6 @@ class ConnectionPanel implements Tracy\IBarPanel
 	private float $totalTime = 0;
 	private int $count = 0;
 	private array $events = [];
-	private Tracy\BlueScreen $blueScreen;
 
 
 	public static function initialize(
@@ -58,10 +57,11 @@ class ConnectionPanel implements Tracy\IBarPanel
 	}
 
 
-	public function __construct(Explorer $explorer, Tracy\BlueScreen $blueScreen)
-	{
+	public function __construct(
+		Explorer $explorer,
+		private readonly Tracy\BlueScreen $blueScreen,
+	) {
 		$explorer->onQuery[] = $this->logQuery(...);
-		$this->blueScreen = $blueScreen;
 	}
 
 

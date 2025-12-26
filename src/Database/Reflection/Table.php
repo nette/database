@@ -79,7 +79,7 @@ final class Table
 			$this->columns,
 			fn($row) => $row->primary,
 		);
-		$this->primaryKey = $res ? new Index(array_values($res), true, true) : null;
+		$this->primaryKey = $res ? new Index(array_values($res), unique: true, primary: true) : null;
 	}
 
 
@@ -98,7 +98,7 @@ final class Table
 	}
 
 
-	public function __get($name): mixed
+	public function __get(string $name): mixed
 	{
 		match ($name) {
 			'columns' => $this->initColumns(),

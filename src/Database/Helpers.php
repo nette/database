@@ -11,7 +11,6 @@ use Nette;
 use Nette\Bridges\DatabaseTracy\ConnectionPanel;
 use Tracy;
 use function array_filter, array_keys, array_unique, count, fclose, fgets, fopen, fstat, get_resource_type, htmlspecialchars, implode, is_bool, is_float, is_resource, is_string, preg_last_error, preg_match, preg_replace, preg_replace_callback, reset, rtrim, set_time_limit, str_ends_with, str_starts_with, stream_get_meta_data, strlen, strncasecmp, substr, trim, wordwrap;
-use const ENT_IGNORE, ENT_NOQUOTES, PREG_UNMATCHED_AS_NULL;
 
 
 /**
@@ -205,7 +204,7 @@ class Helpers
 	public static function normalizeRow(
 		array $row,
 		ResultSet $resultSet,
-		$dateTimeClass = Nette\Utils\DateTime::class,
+		string $dateTimeClass = Nette\Utils\DateTime::class,
 	): array
 	{
 		foreach ($resultSet->getColumnTypes() as $key => $type) {

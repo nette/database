@@ -61,7 +61,7 @@ class ResultSet implements \Iterator, IRowContainer
 			throw $e;
 		}
 
-		$this->time = microtime(true) - $time;
+		$this->time = microtime(as_float: true) - $time;
 	}
 
 

@@ -223,7 +223,7 @@ class Connection
 		} catch (\Throwable $e) {
 			$this->transactionDepth--;
 			if ($this->transactionDepth === 0) {
-				$this->rollback();
+				$this->rollBack();
 			}
 
 			throw $e;

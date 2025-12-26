@@ -259,6 +259,6 @@ class PgSqlDriver implements Nette\Database\Driver
 	 */
 	private function delimiteFQN(string $name): string
 	{
-		return implode('.', array_map([$this, 'delimite'], explode('.', $name)));
+		return implode('.', array_map($this->delimite(...), explode('.', $name)));
 	}
 }

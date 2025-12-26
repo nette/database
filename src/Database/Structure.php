@@ -18,7 +18,6 @@ use function array_flip, count, hash, is_array, reset, strlen, strtolower, uksor
  */
 class Structure implements IStructure
 {
-	protected readonly Connection $connection;
 	protected readonly Nette\Caching\Cache $cache;
 
 	/** @var array{tables: array, columns: array, primary: array, aliases: array, hasMany: array, belongsTo: array} */
@@ -26,9 +25,10 @@ class Structure implements IStructure
 	protected bool $isRebuilt = false;
 
 
-	public function __construct(Connection $connection, Nette\Caching\Storage $cacheStorage)
-	{
-		$this->connection = $connection;
+	public function __construct(
+		protected readonly Connection $connection,
+		Nette\Caching\Storage $cacheStorage,
+	) {
 		$this->cache = new Nette\Caching\Cache($cacheStorage, 'Nette.Database.Structure.' . hash('xxh128', $connection->getDsn()));
 	}
 

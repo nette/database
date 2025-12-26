@@ -244,7 +244,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function fetchAssoc(string $path): array
 	{
-		$rows = array_map('iterator_to_array', $this->fetchAll());
+		$rows = array_map(iterator_to_array(...), $this->fetchAll());
 		return Nette\Utils\Arrays::associate($rows, $path);
 	}
 
@@ -550,7 +550,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		$usedPrimary = true;
 		foreach ($result->getPdoStatement() as $key => $row) {
 			$row = $this->createRow($result->normalizeRow($row));
-			$primary = $row->getSignature(false);
+			$primary = $row->getSignature(throw: false);
 			$usedPrimary = $usedPrimary && $primary !== '';
 			$this->rows[$usedPrimary ? $primary : $key] = $row;
 		}
@@ -733,7 +733,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 						: $primary;
 				}
 
-				$this->emptyResultSet(false);
+				$this->emptyResultSet(clearCache: false);
 				$this->sqlBuilder = clone $this->sqlBuilder;
 				$this->sqlBuilder->setLimit(null, null);
 				$this->wherePrimary($primaryValues);
@@ -743,7 +743,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 				$this->execute();
 				$this->sqlBuilder = $sqlBuilder;
 			} else {
-				$this->emptyResultSet(false);
+				$this->emptyResultSet(clearCache: false);
 				$this->previousAccessedColumns = [];
 				$this->execute();
 			}

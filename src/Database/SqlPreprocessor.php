@@ -120,7 +120,7 @@ class SqlPreprocessor
 	private function parsePart(array $match): string
 	{
 		$match = $match[0];
-		if (in_array($match[0], ["'", '"', '/', '-'], true)) { // string or comment
+		if (in_array($match[0], ["'", '"', '/', '-'], strict: true)) { // string or comment
 			return $match;
 
 		} elseif (!str_contains($match, '?')) { // command

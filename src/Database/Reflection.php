@@ -91,7 +91,7 @@ final class Reflection
 	}
 
 
-	public function __get($name): mixed
+	public function __get(string $name): mixed
 	{
 		match ($name) {
 			'tables' => $this->initTables(),

@@ -21,14 +21,8 @@ use function array_keys, count, iterator_to_array, preg_match, reset;
  */
 class GroupedSelection extends Selection
 {
-	/** referenced table */
-	protected readonly Selection $refTable;
-
 	/** current assigned referencing array */
 	protected mixed $refCacheCurrent;
-
-	/** grouping column name */
-	protected readonly string $column;
 
 	/** primary key */
 	protected int|string $active;
@@ -41,12 +35,12 @@ class GroupedSelection extends Selection
 		Explorer $explorer,
 		Conventions $conventions,
 		string $tableName,
-		string $column,
-		Selection $refTable,
+		/** grouping column name */
+		protected readonly string $column,
+		/** referenced table */
+		protected readonly Selection $refTable,
 		?Nette\Caching\Storage $cacheStorage = null,
 	) {
-		$this->refTable = $refTable;
-		$this->column = $column;
 		parent::__construct($explorer, $conventions, $tableName, $cacheStorage);
 	}
 

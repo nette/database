@@ -43,7 +43,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
-	public function __toString()
+	public function __toString(): string
 	{
 		return (string) $this->getPrimary();
 	}
@@ -177,7 +177,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 			->wherePrimary($this->getPrimary())
 			->delete();
 
-		if ($res > 0 && ($signature = $this->getSignature(false))) {
+		if ($res > 0 && ($signature = $this->getSignature(throw: false))) {
 			unset($this->table[$signature]);
 		}
 

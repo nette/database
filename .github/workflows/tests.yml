@@ -103,7 +103,7 @@ jobs:
               run: docker exec -i mssql /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE nette_test' -N -C
 
             - run: composer install --no-progress --prefer-dist
-            - run: vendor/bin/tester tests -s -C
+            - run: composer tester
             - if: failure()
               uses: actions/upload-artifact@v4
               with:
@@ -125,4 +125,4 @@ jobs:
               run: cp ./tests/databases.sqlite.ini ./tests/Database/databases.ini
 
             - run: composer update --no-progress --prefer-dist --prefer-lowest --prefer-stable
-            - run: vendor/bin/tester tests -s -C
+            - run: composer tester

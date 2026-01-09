@@ -41,10 +41,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/** primary column sequence name, false for autodetection */
 	protected string|bool|null $primarySequence = false;
 
-	/** @var array<T>|null data read from database in [primary key => ActiveRow] format */
+	/** @var ?array<T> data read from database in [primary key => ActiveRow] format */
 	protected ?array $rows = null;
 
-	/** @var array<T>|null modifiable data in [primary key => ActiveRow] format */
+	/** @var ?array<T> modifiable data in [primary key => ActiveRow] format */
 	protected ?array $data = null;
 
 	protected bool $dataRefreshed = false;
@@ -56,15 +56,19 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	protected ?string $generalCacheKey = null;
 	protected ?string $specificCacheKey = null;
 
-	/** of [conditions => [key => ActiveRow]]; used by GroupedSelection */
+	/** @var array<string, array<int|string, ActiveRow>> of [conditions => [key => ActiveRow]]; used by GroupedSelection */
 	protected array $aggregation = [];
+
+	/** @var array<string, bool>|false|null column => selected */
 	protected array|false|null $accessedColumns = null;
+
+	/** @var array<string, bool>|false|null */
 	protected array|false|null $previousAccessedColumns = null;
 
 	/** should instance observe accessed columns caching */
 	protected ?self $observeCache = null;
 
-	/** of primary key values */
+	/** @var list<string|int> of primary key values */
 	protected array $keys = [];
 
 
@@ -149,6 +153,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Loads cache of previous accessed columns and returns it.
 	 * @internal
+	 * @return list<string>|false
 	 */
 	public function getPreviousAccessedColumns(): array|bool
 	{
@@ -175,7 +180,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns row specified by primary key.
-	 * @return T|null
+	 * @return ?T
 	 */
 	public function get(mixed $key): ?ActiveRow
 	{
@@ -186,7 +191,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns the next row or null if there are no more rows.
-	 * @return T|null
+	 * @return ?T
 	 */
 	public function fetch(): ?ActiveRow
 	{
@@ -317,6 +322,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Adds condition, more calls appends with AND.
 	 * @param  string|string[]  $condition  possibly containing ?
+	 * @param  mixed[]  $params
 	 */
 	protected function condition(string|array $condition, array $params, ?string $tableChain = null): void
 	{
@@ -696,7 +702,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * @internal
-	 * @param  string|null column name or null to reload all columns
+	 * @param  ?string  $key column name or null to reload all columns
 	 * @return bool if selection requeried for more columns.
 	 */
 	public function accessColumn(?string $key, bool $selectColumn = true): bool
@@ -787,8 +793,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Inserts row in a table. Returns ActiveRow or number of affected rows for Selection or table without primary key.
-	 * @param  iterable|Selection  $data
-	 * @return T|array|int|bool
+	 * @param  iterable<string, mixed>|self  $data
 	 */
 	public function insert(iterable $data): ActiveRow|array|int|bool
 	{
@@ -869,6 +874,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Updates all rows in result set.
 	 * Joins in UPDATE are supported only in MySQL
+	 * @param  iterable<string, mixed>  $data
 	 * @return int number of affected rows
 	 */
 	public function update(iterable $data): int

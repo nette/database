@@ -30,12 +30,15 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @var Row[] */
 	private array $rows;
 	private float $time;
+
+	/** @var array<string, string> column name => type */
 	private array $types;
 
 
 	public function __construct(
 		private readonly Connection $connection,
 		private readonly string $queryString,
+		/** @var  mixed[] */
 		private readonly array $params,
 		?callable $normalizer = null,
 	) {
@@ -87,6 +90,7 @@ class ResultSet implements \Iterator, IRowContainer
 	}
 
 
+	/** @return mixed[] */
 	public function getParameters(): array
 	{
 		return $this->params;
@@ -105,6 +109,7 @@ class ResultSet implements \Iterator, IRowContainer
 	}
 
 
+	/** @return array<string, string> */
 	public function getColumnTypes(): array
 	{
 		$this->types ??= $this->connection->getDriver()->getColumnTypes($this->pdoStatement);
@@ -231,6 +236,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 	/**
 	 * Returns the next row as indexed array or null if there are no more rows.
+	 * @return ?list<mixed>
 	 */
 	public function fetchList(): ?array
 	{
@@ -241,6 +247,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 	/**
 	 * Alias for fetchList().
+	 * @return ?list<mixed>
 	 */
 	public function fetchFields(): ?array
 	{
@@ -252,6 +259,7 @@ class ResultSet implements \Iterator, IRowContainer
 	 * Returns all rows as associative array, where first argument specifies key column and second value column.
 	 * For duplicate keys, the last value is used. When using null as key, array is indexed from zero.
 	 * Alternatively accepts callback returning value or key-value pairs.
+	 * @return array<mixed, mixed>
 	 */
 	public function fetchPairs(string|int|\Closure|null $keyOrCallback = null, string|int|null $value = null): array
 	{

@@ -18,9 +18,9 @@ final class ForeignKey
 	/** @internal */
 	public function __construct(
 		public readonly Table $foreignTable,
-		/** @var Column[] */
+		/** @var list<Column> */
 		public readonly array $localColumns,
-		/** @var Column[] */
+		/** @var list<Column> */
 		public readonly array $foreignColumns,
 		public readonly ?string $name = null,
 	) {

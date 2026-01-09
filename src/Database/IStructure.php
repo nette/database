@@ -30,11 +30,13 @@ interface IStructure
 
 	/**
 	 * Returns tables list.
+	 * @return list<array{name: string, fullName?: string, view: bool}>
 	 */
 	function getTables(): array;
 
 	/**
 	 * Returns table columns list.
+	 * @return list<array{name: string, table: string, nativetype: string, size: ?int, nullable: bool, default: mixed, autoincrement: bool, primary: bool, vendor: array<string, mixed>}>
 	 */
 	function getColumns(string $table): array;
 
@@ -57,12 +59,14 @@ interface IStructure
 	/**
 	 * Returns hasMany reference.
 	 * If a targetTable is not provided, returns references for all tables.
+	 * @return array<string, list<string>>|null  table name => list of referencing columns
 	 */
 	function getHasManyReference(string $table): ?array;
 
 	/**
 	 * Returns belongsTo reference.
 	 * If a column is not provided, returns references for all columns.
+	 * @return ?array<string, string>  column name => referenced table name
 	 */
 	function getBelongsToReference(string $table): ?array;
 

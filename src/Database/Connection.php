@@ -212,6 +212,7 @@ class Connection
 
 	/**
 	 * Executes callback inside a transaction.
+	 * @param  callable(static): mixed  $callback
 	 */
 	public function transaction(callable $callback): mixed
 	{
@@ -321,6 +322,7 @@ class Connection
 	/**
 	 * Shortcut for query()->fetchList()
 	 * @param  literal-string  $sql
+	 * @return ?list<mixed>
 	 */
 	public function fetchList(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
 	{
@@ -331,6 +333,7 @@ class Connection
 	/**
 	 * Shortcut for query()->fetchList()
 	 * @param  literal-string  $sql
+	 * @return ?list<mixed>
 	 */
 	public function fetchFields(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
 	{
@@ -341,6 +344,7 @@ class Connection
 	/**
 	 * Shortcut for query()->fetchPairs()
 	 * @param  literal-string  $sql
+	 * @return array<mixed, mixed>
 	 */
 	public function fetchPairs(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
 	{
@@ -351,6 +355,7 @@ class Connection
 	/**
 	 * Shortcut for query()->fetchAll()
 	 * @param  literal-string  $sql
+	 * @return Row[]
 	 */
 	public function fetchAll(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
 	{

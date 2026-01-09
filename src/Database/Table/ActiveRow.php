@@ -23,6 +23,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 
 	public function __construct(
+		/** @var  array<string, mixed> */
 		private array $data,
 		private Selection $table,
 	) {
@@ -49,6 +50,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
+	/** @return array<string, mixed> */
 	public function toArray(): array
 	{
 		$this->accessColumn(null);
@@ -104,7 +106,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Returns referenced row.
-	 * @return self|null if the row does not exist
+	 * @return ?self if the row does not exist
 	 */
 	public function ref(string $key, ?string $throughColumn = null): ?self
 	{
@@ -133,6 +135,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Updates row data.
+	 * @param  iterable<string, mixed>  $data
 	 */
 	public function update(iterable $data): bool
 	{

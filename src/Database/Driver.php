@@ -40,6 +40,7 @@ interface Driver
 
 	/**
 	 * Initializes connection.
+	 * @param  array<string, mixed>  $options
 	 */
 	function initialize(Connection $connection, array $options): void;
 
@@ -75,7 +76,7 @@ interface Driver
 
 	/**
 	 * Returns metadata for all columns in a table.
-	 * @return list<array{name: string, table: string, nativetype: string, size: ?int, nullable: bool, default: mixed, autoincrement: bool, primary: bool, comment: ?string, vendor: array}>
+	 * @return list<array{name: string, table: string, nativetype: string, size: ?int, nullable: bool, default: mixed, autoincrement: bool, primary: bool, comment: ?string, vendor: array<string, mixed>}>
 	 */
 	function getColumns(string $table): array;
 

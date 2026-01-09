@@ -13,6 +13,7 @@ use function array_keys, array_map, array_slice, current, is_int, strval;
 
 /**
  * Represents a single database table row.
+ * @extends Nette\Utils\ArrayHash<mixed>
  */
 class Row extends Nette\Utils\ArrayHash implements IRow
 {

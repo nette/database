@@ -38,6 +38,7 @@ interface Driver
 
 	/**
 	 * Initializes connection.
+	 * @param  array<string, mixed>  $options
 	 */
 	function initialize(Connection $connection, array $options): void;
 
@@ -67,13 +68,13 @@ interface Driver
 
 	/**
 	 * Returns a list of all tables in the database.
-	 * @return list<array{name: string, fullName: ?string, view: bool, comment: ?string}>
+	 * @return list<array{name: string, fullName?: string, view: bool, comment: ?string}>
 	 */
 	function getTables(): array;
 
 	/**
 	 * Returns metadata for all columns in a table.
-	 * @return list<array{name: string, table: string, nativetype: string, size: ?int, nullable: bool, default: mixed, autoincrement: bool, primary: bool, comment: ?string, vendor: array}>
+	 * @return list<array{name: string, table: string, nativetype: string, size: ?int, nullable: bool, default: mixed, autoincrement: bool, primary: bool, comment: ?string, vendor: array<string, mixed>}>
 	 */
 	function getColumns(string $table): array;
 

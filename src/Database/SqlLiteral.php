@@ -15,6 +15,7 @@ class SqlLiteral
 {
 	public function __construct(
 		private readonly string $value,
+		/** @var  mixed[] */
 		private readonly array $parameters = [],
 	) {
 	}
@@ -26,6 +27,7 @@ class SqlLiteral
 	}
 
 
+	/** @return mixed[] */
 	public function getParameters(): array
 	{
 		return $this->parameters;

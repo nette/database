@@ -16,6 +16,8 @@ use function array_keys, count, iterator_to_array, preg_match, reset;
 /**
  * Represents filtered table grouped by referencing table.
  * GroupedSelection is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
+ * @template T of ActiveRow
+ * @extends Selection<T>
  */
 class GroupedSelection extends Selection
 {
@@ -28,6 +30,7 @@ class GroupedSelection extends Selection
 
 	/**
 	 * Creates filtered and grouped table representation.
+	 * @param Selection<ActiveRow> $refTable
 	 */
 	public function __construct(
 		Explorer $explorer,
@@ -195,6 +198,10 @@ class GroupedSelection extends Selection
 	}
 
 
+	/**
+	 * @param-out string  $refPath
+	 * @return Selection<ActiveRow>
+	 */
 	protected function getRefTable(&$refPath): Selection
 	{
 		$refObj = $this->refTable;
@@ -232,6 +239,9 @@ class GroupedSelection extends Selection
 	/********************* manipulation ****************d*g**/
 
 
+	/**
+	 * @param  iterable<mixed>|Selection<ActiveRow>  $data
+	 */
 	public function insert(iterable $data): ActiveRow|array|int|bool
 	{
 		if ($data instanceof \Traversable && !$data instanceof Selection) {

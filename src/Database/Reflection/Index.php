@@ -15,7 +15,7 @@ final class Index
 {
 	/** @internal */
 	public function __construct(
-		/** @var Column[] */
+		/** @var list<Column> */
 		public readonly array $columns,
 		public readonly bool $unique = false,
 		public readonly bool $primary = false,

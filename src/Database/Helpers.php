@@ -23,6 +23,7 @@ class Helpers
 	/** maximum SQL length */
 	public static int $maxLength = 100;
 
+	/** @var array<string, string> */
 	public static array $typePatterns = [
 		'^_' => IStructure::FIELD_TEXT, // PostgreSQL arrays
 		'(TINY|SMALL|SHORT|MEDIUM|BIG|LONG)(INT)?|INT(EGER|\d+| IDENTITY| UNSIGNED)?|(SMALL|BIG|)SERIAL\d*|COUNTER|YEAR|BYTE|LONGLONG|UNSIGNED BIG INT' => IStructure::FIELD_INTEGER,
@@ -85,6 +86,7 @@ class Helpers
 
 	/**
 	 * Returns syntax highlighted SQL command.
+	 * @param ?array<mixed> $params
 	 */
 	public static function dumpSql(string $sql, ?array $params = null, ?Connection $connection = null): string
 	{
@@ -164,6 +166,7 @@ class Helpers
 
 	/**
 	 * Returns column types from result set.
+	 * @return array<string, string>  column name => type
 	 */
 	public static function detectTypes(\PDOStatement $statement): array
 	{
@@ -200,7 +203,12 @@ class Helpers
 	}
 
 
-	/** @internal */
+	/**
+	 * @internal
+	 * @param  array<mixed>  $row
+	 * @param  class-string<\DateTime|\DateTimeImmutable>  $dateTimeClass
+	 * @return array<mixed>
+	 */
 	public static function normalizeRow(
 		array $row,
 		ResultSet $resultSet,
@@ -245,7 +253,7 @@ class Helpers
 
 	/**
 	 * Imports SQL dump from file.
-	 * @param  ?array<callable(int, ?float): void>  $onProgress  Called after each query
+	 * @param  ?(callable(int, ?float): void)  $onProgress  Called after each query
 	 * @return int  Number of executed commands
 	 * @throws Nette\FileNotFoundException
 	 */
@@ -323,6 +331,10 @@ class Helpers
 
 	/**
 	 * Converts rows to key-value pairs.
+	 * @template TRow of Row|Table\ActiveRow|array<string, mixed>
+	 * @param  array<TRow>  $rows
+	 * @param  string|int|(\Closure(TRow): array{0: mixed, 1?: mixed})|null  $key
+	 * @return array<mixed, mixed>
 	 */
 	public static function toPairs(array $rows, string|int|\Closure|null $key, string|int|null $value): array
 	{
@@ -388,7 +400,7 @@ class Helpers
 	}
 
 
-	/** @return array{type: ?string, length: ?null, scale: ?null, parameters: ?string} */
+	/** @return array{type: ?string, length: ?int, scale: ?int, parameters: ?string} */
 	public static function parseColumnType(string $type): array
 	{
 		preg_match('/^([^(]+)(?:\((?:(\d+)(?:,(\d+))?|([^)]+))\))?/', $type, $m, PREG_UNMATCHED_AS_NULL);

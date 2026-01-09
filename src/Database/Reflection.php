@@ -27,7 +27,7 @@ final class Reflection
 	}
 
 
-	/** @return Table[] */
+	/** @return list<Table> */
 	public function getTables(): array
 	{
 		return array_values($this->tables);

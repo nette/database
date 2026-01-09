@@ -24,6 +24,7 @@ final class Column
 		public readonly bool $autoIncrement = false,
 		public readonly bool $primary = false,
 		public readonly ?string $comment = null,
+		/** @var array<string, mixed> */
 		public readonly array $vendor = [],
 	) {
 	}

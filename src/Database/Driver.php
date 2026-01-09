@@ -40,6 +40,7 @@ interface Driver
 
 	/**
 	 * Initializes connection.
+	 * @param  array<string, mixed>  $options
 	 */
 	function initialize(Connection $connection, array $options): void;
 

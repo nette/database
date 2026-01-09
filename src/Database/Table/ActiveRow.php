@@ -23,6 +23,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 
 	public function __construct(
+		/** @var  array<string, mixed> */
 		private array $data,
 		private Selection $table,
 	) {
@@ -49,6 +50,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
+	/** @return array<string, mixed> */
 	public function toArray(): array
 	{
 		$this->accessColumn(null);

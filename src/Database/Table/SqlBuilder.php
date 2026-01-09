@@ -28,9 +28,17 @@ class SqlBuilder
 	protected readonly string $tableName;
 	protected readonly Conventions $conventions;
 	protected readonly string $delimitedTable;
+
+	/** @var string[] */
 	protected array $select = [];
+
+	/** @var string[] */
 	protected array $where = [];
+
+	/** @var array<string, string[]> table chain => conditions */
 	protected array $joinCondition = [];
+
+	/** @var array<string, string|string[]> condition hash => condition */
 	protected array $conditions = [];
 	protected array $parameters = [
 		'select' => [],
@@ -40,17 +48,27 @@ class SqlBuilder
 		'having' => [],
 		'order' => [],
 	];
+
+	/** @var string[] */
 	protected array $order = [];
 	protected ?int $limit = null;
 	protected ?int $offset = null;
 	protected string $group = '';
 	protected string $having = '';
+
+	/** @var array<string, string> table name => chain */
 	protected array $reservedTableNames = [];
+
+	/** @var array<string, string> alias => chain */
 	protected array $aliases = [];
 	protected string $currentAlias = '';
 	private readonly Driver $driver;
 	private readonly IStructure $structure;
+
+	/** @var array<string, int> table fullName => exists */
 	private array $cacheTableList = [];
+
+	/** @var array<string, true> tables being expanded (cycle detection) */
 	private array $expandingJoins = [];
 
 
@@ -107,6 +125,7 @@ class SqlBuilder
 
 	/**
 	 * Returns select query hash for caching.
+	 * @param  string[]|null  $columns
 	 */
 	public function getSelectQueryHash(?array $columns = null): string
 	{
@@ -191,6 +210,7 @@ class SqlBuilder
 	}
 
 
+	/** @return mixed[] */
 	public function getParameters(): array
 	{
 		if (!isset($this->parameters['joinConditionSorted'])) {
@@ -247,6 +267,7 @@ class SqlBuilder
 	}
 
 
+	/** @return string[] */
 	public function getSelect(): array
 	{
 		return $this->select;
@@ -420,6 +441,7 @@ class SqlBuilder
 	}
 
 
+	/** @return list<string|string[]> */
 	public function getConditions(): array
 	{
 		return array_values($this->conditions);
@@ -468,6 +490,10 @@ class SqlBuilder
 	}
 
 
+	/**
+	 * @param  string[]  $columns
+	 * @param  mixed[]  $parameters
+	 */
 	public function setOrder(array $columns, array $parameters): void
 	{
 		$this->order = $columns;
@@ -475,6 +501,7 @@ class SqlBuilder
 	}
 
 
+	/** @return string[] */
 	public function getOrder(): array
 	{
 		return $this->order;
@@ -535,6 +562,7 @@ class SqlBuilder
 	/********************* SQL building ****************d*g**/
 
 
+	/** @param  string[]  $columns */
 	protected function buildSelect(array $columns): string
 	{
 		return 'SELECT ' . implode(', ', $columns);
@@ -778,6 +806,9 @@ class SqlBuilder
 	}
 
 
+	/**
+	 * @return array<string, string>  table chain => condition SQL
+	 */
 	protected function buildJoinConditions(): array
 	{
 		$conditions = [];
@@ -828,6 +859,12 @@ class SqlBuilder
 	}
 
 
+	/**
+	 * @param  string[]  $columns
+	 * @param  list<array<int|string, mixed>>  $parameters
+	 * @param  string[]  &$conditions
+	 * @param  mixed[]  &$conditionsParameters
+	 */
 	protected function addConditionComposition(
 		array $columns,
 		array $parameters,
@@ -845,6 +882,7 @@ class SqlBuilder
 	}
 
 
+	/** @param  mixed[]  $parameters */
 	private function getConditionHash(string $condition, array $parameters): string
 	{
 		foreach ($parameters as $key => &$parameter) {
@@ -863,6 +901,7 @@ class SqlBuilder
 	}
 
 
+	/** @return array<string, int> */
 	private function getCachedTableList(): array
 	{
 		if (!$this->cacheTableList) {

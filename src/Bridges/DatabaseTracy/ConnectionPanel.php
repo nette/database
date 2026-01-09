@@ -28,6 +28,8 @@ class ConnectionPanel implements Tracy\IBarPanel
 	public float $performanceScale = 0.25;
 	private float $totalTime = 0;
 	private int $count = 0;
+
+	/** @var list<array{Connection, string, ?array<mixed>, list<array<string, mixed>>, ?float, ?int, ?string}> */
 	private array $queries = [];
 	private Tracy\BlueScreen $blueScreen;
 

@@ -108,6 +108,7 @@ class Explorer
 	}
 
 
+	/** @param  array<string, mixed>  $data */
 	public function createActiveRow(array $data, Table\Selection $selection): Table\ActiveRow
 	{
 		return new Table\ActiveRow($data, $selection);
@@ -161,6 +162,7 @@ class Explorer
 	/**
 	 * Shortcut for query()->fetchList()
 	 * @param  literal-string  $sql
+	 * @return list<mixed>|null
 	 */
 	public function fetchList(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
 	{
@@ -171,6 +173,7 @@ class Explorer
 	/**
 	 * Shortcut for query()->fetchList()
 	 * @param  literal-string  $sql
+	 * @return list<mixed>|null
 	 */
 	public function fetchFields(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
 	{
@@ -181,6 +184,7 @@ class Explorer
 	/**
 	 * Shortcut for query()->fetchPairs()
 	 * @param  literal-string  $sql
+	 * @return array<mixed, mixed>
 	 */
 	public function fetchPairs(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
 	{
@@ -191,6 +195,7 @@ class Explorer
 	/**
 	 * Shortcut for query()->fetchAll()
 	 * @param  literal-string  $sql
+	 * @return Row[]
 	 */
 	public function fetchAll(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
 	{

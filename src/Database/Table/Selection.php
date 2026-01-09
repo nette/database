@@ -56,15 +56,19 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	protected ?string $generalCacheKey = null;
 	protected ?string $specificCacheKey = null;
 
-	/** of [conditions => [key => ActiveRow]]; used by GroupedSelection */
+	/** @var array<string, array<int|string, ActiveRow>> of [conditions => [key => ActiveRow]]; used by GroupedSelection */
 	protected array $aggregation = [];
+
+	/** @var array<string, bool>|false|null column => selected */
 	protected array|false|null $accessedColumns = null;
+
+	/** @var array<string, bool>|false|null */
 	protected array|false|null $previousAccessedColumns = null;
 
 	/** should instance observe accessed columns caching */
 	protected ?self $observeCache = null;
 
-	/** of primary key values */
+	/** @var list<string|int> of primary key values */
 	protected array $keys = [];
 
 
@@ -149,6 +153,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Loads cache of previous accessed columns and returns it.
 	 * @internal
+	 * @return list<string>|false
 	 */
 	public function getPreviousAccessedColumns(): array|bool
 	{
@@ -317,6 +322,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Adds condition, more calls appends with AND.
 	 * @param  string|string[]  $condition  possibly containing ?
+	 * @param  mixed[]  $params
 	 */
 	protected function condition(string|array $condition, array $params, ?string $tableChain = null): void
 	{

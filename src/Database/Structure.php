@@ -33,6 +33,7 @@ class Structure implements IStructure
 	}
 
 
+	/** @return list<array{name: string, fullName?: string, view: bool}> */
 	public function getTables(): array
 	{
 		$this->needStructure();
@@ -115,6 +116,7 @@ class Structure implements IStructure
 	}
 
 
+	/** @return array<string, list<string>>  table name => list of referencing columns */
 	public function getHasManyReference(string $table): array
 	{
 		$this->needStructure();
@@ -123,6 +125,7 @@ class Structure implements IStructure
 	}
 
 
+	/** @return array<string, string>  column name => referenced table name */
 	public function getBelongsToReference(string $table): array
 	{
 		$this->needStructure();
@@ -195,6 +198,7 @@ class Structure implements IStructure
 	}
 
 
+	/** @param  list<array{name: string, primary: bool}>  $columns */
 	protected function analyzePrimaryKey(array $columns): string|array|null
 	{
 		$primary = [];

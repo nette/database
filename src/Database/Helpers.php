@@ -167,6 +167,7 @@ class Helpers
 
 	/**
 	 * Returns column types from result set.
+	 * @return array<string, string>  column name => type
 	 */
 	public static function detectTypes(\PDOStatement $statement): array
 	{
@@ -326,6 +327,8 @@ class Helpers
 
 	/**
 	 * Converts rows to key-value pairs.
+	 * @param  array<Row|Table\ActiveRow|array<string, mixed>>  $rows
+	 * @return array<mixed, mixed>
 	 */
 	public static function toPairs(array $rows, string|int|\Closure|null $key, string|int|null $value): array
 	{

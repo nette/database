@@ -58,7 +58,7 @@ class GroupedSelection extends Selection
 	}
 
 
-	public function select(string $columns, ...$params): static
+	public function select(string $columns, mixed ...$params): static
 	{
 		if (!$this->sqlBuilder->getSelect()) {
 			$this->sqlBuilder->addSelect("$this->name.$this->column");
@@ -68,7 +68,7 @@ class GroupedSelection extends Selection
 	}
 
 
-	public function order(string $columns, ...$params): static
+	public function order(string $columns, mixed ...$params): static
 	{
 		if (!$this->sqlBuilder->getOrder()) {
 			// improve index utilization
@@ -198,7 +198,7 @@ class GroupedSelection extends Selection
 	}
 
 
-	protected function getRefTable(&$refPath): Selection
+	protected function getRefTable(mixed &$refPath): Selection
 	{
 		$refObj = $this->refTable;
 		$refPath = $this->name . '.';
@@ -235,7 +235,7 @@ class GroupedSelection extends Selection
 	/********************* manipulation ****************d*g**/
 
 
-	public function insert(iterable $data): ActiveRow|array|int|bool
+	public function insert(iterable $data): ActiveRow|array|int
 	{
 		if ($data instanceof \Traversable && !$data instanceof Selection) {
 			$data = iterator_to_array($data);

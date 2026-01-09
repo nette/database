@@ -63,7 +63,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 	}
 
 
-	private function logQuery(Connection $connection, $result): void
+	private function logQuery(Connection $connection, Nette\Database\ResultSet|\PDOException $result): void
 	{
 		if ($this->disabled) {
 			return;

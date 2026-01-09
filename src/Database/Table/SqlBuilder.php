@@ -259,7 +259,7 @@ class SqlBuilder
 	/**
 	 * Adds SELECT clause, more calls append to the end.
 	 */
-	public function addSelect(string $columns, ...$params): void
+	public function addSelect(string $columns, mixed ...$params): void
 	{
 		$this->select[] = $columns;
 		$this->parameters['select'] = array_merge($this->parameters['select'], $params);
@@ -284,7 +284,7 @@ class SqlBuilder
 	 * Adds WHERE condition, more calls append with AND.
 	 * @param  array<mixed>|string  $condition
 	 */
-	public function addWhere(string|array $condition, ...$params): bool
+	public function addWhere(string|array $condition, mixed ...$params): bool
 	{
 		return $this->addCondition($condition, $params, $this->where, $this->parameters['where']);
 	}
@@ -294,7 +294,7 @@ class SqlBuilder
 	 * Adds JOIN condition.
 	 * @param  array<mixed>|string  $condition
 	 */
-	public function addJoinCondition(string $tableChain, string|array $condition, ...$params): bool
+	public function addJoinCondition(string $tableChain, string|array $condition, mixed ...$params): bool
 	{
 		$this->parameters['joinConditionSorted'] = null;
 		if (!isset($this->joinCondition[$tableChain])) {
@@ -490,7 +490,7 @@ class SqlBuilder
 	/**
 	 * Adds ORDER BY clause, more calls append to the end.
 	 */
-	public function addOrder(string|array $columns, ...$params): void
+	public function addOrder(string $columns, mixed ...$params): void
 	{
 		$this->order[] = $columns;
 		$this->parameters['order'] = array_merge($this->parameters['order'], $params);
@@ -540,7 +540,7 @@ class SqlBuilder
 	/**
 	 * Sets GROUP BY and HAVING clause.
 	 */
-	public function setGroup(string|array $columns, ...$params): void
+	public function setGroup(string $columns, mixed ...$params): void
 	{
 		$this->group = $columns;
 		$this->parameters['group'] = $params;
@@ -553,7 +553,7 @@ class SqlBuilder
 	}
 
 
-	public function setHaving(string $having, ...$params): void
+	public function setHaving(string $having, mixed ...$params): void
 	{
 		$this->having = $having;
 		$this->parameters['having'] = $params;

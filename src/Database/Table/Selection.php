@@ -152,7 +152,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * @internal
 	 * @return list<string>
 	 */
-	public function getPreviousAccessedColumns(): array|bool
+	public function getPreviousAccessedColumns(): array
 	{
 		if ($this->cache && $this->previousAccessedColumns === null) {
 			$this->accessedColumns = $this->previousAccessedColumns = $this->cache->load($this->getGeneralCacheKey());
@@ -260,7 +260,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Adds select clause, more calls append to the end.
 	 * @param  string  $columns  for example "column, MD5(column) AS column_md5"
 	 */
-	public function select(string $columns, ...$params): static
+	public function select(string $columns, mixed ...$params): static
 	{
 		$this->emptyResultSet();
 		$this->sqlBuilder->addSelect($columns, ...$params);
@@ -295,7 +295,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Adds where condition, more calls append with AND.
 	 * @param  string|array<mixed>  $condition  possibly containing ?
 	 */
-	public function where(string|array $condition, ...$params): static
+	public function where(string|array $condition, mixed ...$params): static
 	{
 		$this->condition($condition, $params);
 		return $this;
@@ -307,7 +307,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * @param  string  $tableChain  table chain or table alias for which you need additional left join condition
 	 * @param  string  $condition  possibly containing ?
 	 */
-	public function joinWhere(string $tableChain, string $condition, ...$params): static
+	public function joinWhere(string $tableChain, string $condition, mixed ...$params): static
 	{
 		$this->condition($condition, $params, $tableChain);
 		return $this;
@@ -378,7 +378,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Adds ORDER BY clause, more calls appends to the end.
 	 * @param  string  $columns  for example 'column1, column2 DESC'
 	 */
-	public function order(string $columns, ...$params): static
+	public function order(string $columns, mixed ...$params): static
 	{
 		$this->emptyResultSet();
 		$this->sqlBuilder->addOrder($columns, ...$params);
@@ -400,7 +400,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Sets OFFSET using page number, more calls rewrite old values.
 	 */
-	public function page(int $page, int $itemsPerPage, &$numOfPages = null): static
+	public function page(int $page, int $itemsPerPage, ?int &$numOfPages = null): static
 	{
 		if (func_num_args() > 2) {
 			$numOfPages = (int) ceil($this->count('*') / $itemsPerPage);
@@ -417,7 +417,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Sets GROUP BY clause, more calls rewrite old value.
 	 */
-	public function group(string $columns, ...$params): static
+	public function group(string $columns, mixed ...$params): static
 	{
 		$this->emptyResultSet();
 		$this->sqlBuilder->setGroup($columns, ...$params);
@@ -428,7 +428,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Sets HAVING clause, more calls rewrite old value.
 	 */
-	public function having(string $having, ...$params): static
+	public function having(string $having, mixed ...$params): static
 	{
 		$this->emptyResultSet();
 		$this->sqlBuilder->setHaving($having, ...$params);
@@ -648,7 +648,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * @param-out  string  $refPath
 	 * @return Selection<ActiveRow>
 	 */
-	protected function getRefTable(&$refPath): self
+	protected function getRefTable(mixed &$refPath): self
 	{
 		$refPath = '';
 		return $this;
@@ -796,7 +796,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * @param  iterable<string, mixed>|Selection<ActiveRow>  $data
 	 * @return ($data is array<string, mixed> ? T|array<string, mixed> : int)
 	 */
-	public function insert(iterable $data): ActiveRow|array|int|bool
+	public function insert(iterable $data): ActiveRow|array|int
 	{
 		//should be called before query for not to spoil PDO::lastInsertId
 		$primarySequenceName = $this->getPrimarySequence();

@@ -66,7 +66,7 @@ class Explorer
 	 * Generates and executes SQL query.
 	 * @param  literal-string  $sql
 	 */
-	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ResultSet
+	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): ResultSet
 	{
 		return $this->connection->query($sql, ...$params);
 	}
@@ -143,7 +143,7 @@ class Explorer
 	 * Shortcut for query()->fetch()
 	 * @param  literal-string  $sql
 	 */
-	public function fetch(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?Row
+	public function fetch(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): ?Row
 	{
 		return $this->connection->query($sql, ...$params)->fetch();
 	}
@@ -154,7 +154,7 @@ class Explorer
 	 * @param  literal-string  $sql
 	 * @return ?array<mixed>
 	 */
-	public function fetchAssoc(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
+	public function fetchAssoc(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): ?array
 	{
 		return $this->connection->query($sql, ...$params)->fetchAssoc();
 	}
@@ -164,7 +164,7 @@ class Explorer
 	 * Shortcut for query()->fetchField()
 	 * @param  literal-string  $sql
 	 */
-	public function fetchField(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): mixed
+	public function fetchField(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): mixed
 	{
 		return $this->connection->query($sql, ...$params)->fetchField();
 	}
@@ -175,7 +175,7 @@ class Explorer
 	 * @param  literal-string  $sql
 	 * @return ?list<mixed>
 	 */
-	public function fetchList(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
+	public function fetchList(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): ?array
 	{
 		return $this->connection->query($sql, ...$params)->fetchList();
 	}
@@ -186,7 +186,7 @@ class Explorer
 	 * @param  literal-string  $sql
 	 * @return ?list<mixed>
 	 */
-	public function fetchFields(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
+	public function fetchFields(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): ?array
 	{
 		return $this->connection->query($sql, ...$params)->fetchList();
 	}
@@ -197,7 +197,7 @@ class Explorer
 	 * @param  literal-string  $sql
 	 * @return array<mixed, mixed>
 	 */
-	public function fetchPairs(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
+	public function fetchPairs(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): array
 	{
 		return $this->connection->query($sql, ...$params)->fetchPairs();
 	}
@@ -208,7 +208,7 @@ class Explorer
 	 * @param  literal-string  $sql
 	 * @return list<Row>
 	 */
-	public function fetchAll(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
+	public function fetchAll(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): array
 	{
 		return $this->connection->query($sql, ...$params)->fetchAll();
 	}
@@ -217,7 +217,7 @@ class Explorer
 	/**
 	 * Creates SQL literal value.
 	 */
-	public static function literal(string $value, ...$params): SqlLiteral
+	public static function literal(string $value, mixed ...$params): SqlLiteral
 	{
 		return new SqlLiteral($value, $params);
 	}

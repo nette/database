@@ -245,7 +245,7 @@ class Connection
 	 * Generates and executes SQL query.
 	 * @param  literal-string  $sql
 	 */
-	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ResultSet
+	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): ResultSet
 	{
 		[$this->sql, $params] = $this->preprocess($sql, ...$params);
 		try {
@@ -275,7 +275,7 @@ class Connection
 	 * @param  literal-string  $sql
 	 * @return array{string, array<mixed>}
 	 */
-	public function preprocess(string $sql, ...$params): array
+	public function preprocess(string $sql, mixed ...$params): array
 	{
 		$this->connect();
 		return $params
@@ -297,7 +297,7 @@ class Connection
 	 * Shortcut for query()->fetch()
 	 * @param  literal-string  $sql
 	 */
-	public function fetch(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?Row
+	public function fetch(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): ?Row
 	{
 		return $this->query($sql, ...$params)->fetch();
 	}
@@ -308,7 +308,7 @@ class Connection
 	 * @param  literal-string  $sql
 	 * @return ?array<mixed>
 	 */
-	public function fetchAssoc(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
+	public function fetchAssoc(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): ?array
 	{
 		return $this->query($sql, ...$params)->fetchAssoc();
 	}
@@ -318,7 +318,7 @@ class Connection
 	 * Shortcut for query()->fetchField()
 	 * @param  literal-string  $sql
 	 */
-	public function fetchField(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): mixed
+	public function fetchField(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): mixed
 	{
 		return $this->query($sql, ...$params)->fetchField();
 	}
@@ -329,7 +329,7 @@ class Connection
 	 * @param  literal-string  $sql
 	 * @return ?list<mixed>
 	 */
-	public function fetchList(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
+	public function fetchList(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): ?array
 	{
 		return $this->query($sql, ...$params)->fetchList();
 	}
@@ -340,7 +340,7 @@ class Connection
 	 * @param  literal-string  $sql
 	 * @return ?list<mixed>
 	 */
-	public function fetchFields(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
+	public function fetchFields(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): ?array
 	{
 		return $this->query($sql, ...$params)->fetchList();
 	}
@@ -351,7 +351,7 @@ class Connection
 	 * @param  literal-string  $sql
 	 * @return array<mixed, mixed>
 	 */
-	public function fetchPairs(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
+	public function fetchPairs(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): array
 	{
 		return $this->query($sql, ...$params)->fetchPairs();
 	}
@@ -362,7 +362,7 @@ class Connection
 	 * @param  literal-string  $sql
 	 * @return list<Row>
 	 */
-	public function fetchAll(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
+	public function fetchAll(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): array
 	{
 		return $this->query($sql, ...$params)->fetchAll();
 	}
@@ -371,7 +371,7 @@ class Connection
 	/**
 	 * Creates SQL literal value.
 	 */
-	public static function literal(string $value, ...$params): SqlLiteral
+	public static function literal(string $value, mixed ...$params): SqlLiteral
 	{
 		return new SqlLiteral($value, $params);
 	}

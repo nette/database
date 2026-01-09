@@ -49,6 +49,7 @@ class Explorer
 	}
 
 
+	/** @param  callable(static): mixed  $callback */
 	public function transaction(callable $callback): mixed
 	{
 		return $this->connection->transaction(fn() => $callback($this));
@@ -71,7 +72,11 @@ class Explorer
 	}
 
 
-	/** @deprecated  use query() */
+	/**
+	 * @deprecated  use query()
+	 * @param  literal-string  $sql
+	 * @param  array<mixed>  $params
+	 */
 	public function queryArgs(string $sql, array $params): ResultSet
 	{
 		return $this->connection->query($sql, ...$params);
@@ -106,13 +111,21 @@ class Explorer
 	}
 
 
+	/**
+	 * @param  array<string, mixed>  $data
+	 * @param  Table\Selection<Table\ActiveRow>  $selection
+	 */
 	public function createActiveRow(array $data, Table\Selection $selection): Table\ActiveRow
 	{
 		return new Table\ActiveRow($data, $selection);
 	}
 
 
-	/** @internal */
+	/**
+	 * @internal
+	 * @param Table\Selection<Table\ActiveRow> $refSelection
+	 * @return Table\GroupedSelection<Table\ActiveRow>
+	 */
 	public function createGroupedSelection(
 		Table\Selection $refSelection,
 		string $table,
@@ -139,6 +152,7 @@ class Explorer
 	/**
 	 * Shortcut for query()->fetchAssoc()
 	 * @param  literal-string  $sql
+	 * @return ?array<mixed>
 	 */
 	public function fetchAssoc(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
 	{
@@ -159,6 +173,7 @@ class Explorer
 	/**
 	 * Shortcut for query()->fetchList()
 	 * @param  literal-string  $sql
+	 * @return ?list<mixed>
 	 */
 	public function fetchList(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
 	{
@@ -169,6 +184,7 @@ class Explorer
 	/**
 	 * Shortcut for query()->fetchList()
 	 * @param  literal-string  $sql
+	 * @return ?list<mixed>
 	 */
 	public function fetchFields(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
 	{
@@ -179,6 +195,7 @@ class Explorer
 	/**
 	 * Shortcut for query()->fetchPairs()
 	 * @param  literal-string  $sql
+	 * @return array<mixed, mixed>
 	 */
 	public function fetchPairs(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
 	{
@@ -189,6 +206,7 @@ class Explorer
 	/**
 	 * Shortcut for query()->fetchAll()
 	 * @param  literal-string  $sql
+	 * @return list<Row>
 	 */
 	public function fetchAll(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
 	{

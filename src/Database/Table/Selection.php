@@ -17,8 +17,8 @@ use function array_filter, array_intersect_key, array_keys, array_map, array_mer
  * Represents filtered table result.
  * Selection is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
  * @template T of ActiveRow
- * @implements \Iterator<T>
- * @implements \ArrayAccess<T>
+ * @implements \Iterator<string, T>
+ * @implements \ArrayAccess<string, T>
  */
 class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 {
@@ -39,10 +39,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/** primary column sequence name, false for autodetection */
 	protected string|bool|null $primarySequence = false;
 
-	/** @var array<T>|null data read from database in [primary key => ActiveRow] format */
+	/** @var ?array<T> data read from database in [primary key => ActiveRow] format */
 	protected ?array $rows = null;
 
-	/** @var array<T>|null modifiable data in [primary key => ActiveRow] format */
+	/** @var ?array<T> modifiable data in [primary key => ActiveRow] format */
 	protected ?array $data = null;
 
 	protected bool $dataRefreshed = false;
@@ -54,15 +54,19 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	protected ?string $generalCacheKey = null;
 	protected ?string $specificCacheKey = null;
 
-	/** of [conditions => [key => ActiveRow]]; used by GroupedSelection */
+	/** @var array<string, array<ActiveRow>> of [conditions => [key => ActiveRow]]; used by GroupedSelection */
 	protected array $aggregation = [];
+
+	/** @var array<string, bool>|false|null column => selected */
 	protected array|false|null $accessedColumns = null;
+
+	/** @var array<string, bool>|false|null */
 	protected array|false|null $previousAccessedColumns = null;
 
-	/** should instance observe accessed columns caching */
+	/** @var ?static should instance observe accessed columns caching */
 	protected ?self $observeCache = null;
 
-	/** of primary key values */
+	/** @var list<string|int> of primary key values */
 	protected array $keys = [];
 
 
@@ -130,7 +134,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	}
 
 
-	/** @return static<T> */
 	public function setPrimarySequence(string $sequence): static
 	{
 		$this->primarySequence = $sequence;
@@ -147,6 +150,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Loads cache of previous accessed columns and returns it.
 	 * @internal
+	 * @return list<string>
 	 */
 	public function getPreviousAccessedColumns(): array|bool
 	{
@@ -173,7 +177,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns row specified by primary key.
-	 * @return T|null
+	 * @return ?T
 	 */
 	public function get(mixed $key): ?ActiveRow
 	{
@@ -184,7 +188,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns the next row or null if there are no more rows.
-	 * @return T|null
+	 * @return ?T
 	 */
 	public function fetch(): ?ActiveRow
 	{
@@ -218,6 +222,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Returns all rows as associative array, where first argument specifies key column and second value column.
 	 * For duplicate keys, the last value is used. When using null as key, array is indexed from zero.
 	 * Alternatively accepts callback returning value or key-value pairs.
+	 * @param  string|int|\Closure(T): array{0: mixed, 1?: mixed}|null  $keyOrCallback
 	 * @return array<T|mixed>
 	 */
 	public function fetchPairs(string|int|\Closure|null $keyOrCallback = null, string|int|null $value = null): array
@@ -239,6 +244,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Returns all rows as associative tree.
 	 * @deprecated
+	 * @return array<mixed>
 	 */
 	public function fetchAssoc(string $path): array
 	{
@@ -253,7 +259,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Adds select clause, more calls append to the end.
 	 * @param  string  $columns  for example "column, MD5(column) AS column_md5"
-	 * @return static<T>
 	 */
 	public function select(string $columns, ...$params): static
 	{
@@ -265,7 +270,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Adds condition for primary key.
-	 * @return static<T>
 	 */
 	public function wherePrimary(mixed $key): static
 	{
@@ -289,8 +293,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Adds where condition, more calls append with AND.
-	 * @param  string|array  $condition  possibly containing ?
-	 * @return static<T>
+	 * @param  string|array<int|string, mixed>  $condition  possibly containing ?
 	 */
 	public function where(string|array $condition, ...$params): static
 	{
@@ -303,7 +306,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * Adds ON condition when joining specified table, more calls appends with AND.
 	 * @param  string  $tableChain  table chain or table alias for which you need additional left join condition
 	 * @param  string  $condition  possibly containing ?
-	 * @return static<T>
 	 */
 	public function joinWhere(string $tableChain, string $condition, ...$params): static
 	{
@@ -315,6 +317,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Adds condition, more calls appends with AND.
 	 * @param  string|string[]  $condition  possibly containing ?
+	 * @param  mixed[]  $params
 	 */
 	protected function condition(string|array $condition, array $params, ?string $tableChain = null): void
 	{
@@ -338,9 +341,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Adds where condition using the OR operator between parameters.
 	 * More calls appends with AND.
-	 * @param  array  $parameters ['column1' => 1, 'column2 > ?' => 2, 'full condition']
+	 * @param  array<string|int, mixed>  $parameters ['column1' => 1, 'column2 > ?' => 2, 'full condition']
 	 * @throws Nette\InvalidArgumentException
-	 * @return static<T>
 	 */
 	public function whereOr(array $parameters): static
 	{
@@ -375,7 +377,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Adds ORDER BY clause, more calls appends to the end.
 	 * @param  string  $columns  for example 'column1, column2 DESC'
-	 * @return static<T>
 	 */
 	public function order(string $columns, ...$params): static
 	{
@@ -387,7 +388,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Sets LIMIT clause, more calls rewrite old values.
-	 * @return static<T>
 	 */
 	public function limit(?int $limit, ?int $offset = null): static
 	{
@@ -399,7 +399,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Sets OFFSET using page number, more calls rewrite old values.
-	 * @return static<T>
 	 */
 	public function page(int $page, int $itemsPerPage, &$numOfPages = null): static
 	{
@@ -417,7 +416,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Sets GROUP BY clause, more calls rewrite old value.
-	 * @return static<T>
 	 */
 	public function group(string $columns, ...$params): static
 	{
@@ -429,7 +427,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Sets HAVING clause, more calls rewrite old value.
-	 * @return static<T>
 	 */
 	public function having(string $having, ...$params): static
 	{
@@ -441,7 +438,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Aliases table. Example ':book:book_tag.tag', 'tg'
-	 * @return static<T>
 	 */
 	public function alias(string $tableChain, string $alias): static
 	{
@@ -563,21 +559,30 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	}
 
 
-	/** @deprecated */
+	/**
+	 * @deprecated
+	 * @param  array<mixed>  $row
+	 */
 	protected function createRow(array $row): ActiveRow
 	{
 		return $this->explorer->createActiveRow($row, $this);
 	}
 
 
-	/** @deprecated */
+	/**
+	 * @deprecated
+	 * @return static
+	 */
 	public function createSelectionInstance(?string $table = null): self
 	{
 		return $this->explorer->table($table ?: $this->name);
 	}
 
 
-	/** @deprecated */
+	/**
+	 * @deprecated
+	 * @return GroupedSelection<T>
+	 */
 	protected function createGroupedSelectionInstance(string $table, string $column): GroupedSelection
 	{
 		return $this->explorer->createGroupedSelection($this, $table, $column);
@@ -639,6 +644,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns Selection parent for caching.
+	 * @param-out  string  $refPath
+	 * @return static
 	 */
 	protected function getRefTable(&$refPath): self
 	{
@@ -694,7 +701,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * @internal
-	 * @param  string|null column name or null to reload all columns
+	 * @param  ?string  $key column name or null to reload all columns
 	 * @return bool if selection requeried for more columns.
 	 */
 	public function accessColumn(?string $key, bool $selectColumn = true): bool
@@ -785,8 +792,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Inserts row in a table. Returns ActiveRow or number of affected rows for Selection or table without primary key.
-	 * @param  iterable|Selection  $data
-	 * @return T|array|int|bool
+	 * @param  iterable<string, mixed>|self  $data
+	 * @return ($data is array<string, mixed> ? T|array<string, mixed> : int)
 	 */
 	public function insert(iterable $data): ActiveRow|array|int|bool
 	{
@@ -867,6 +874,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Updates all rows in result set.
 	 * Joins in UPDATE are supported only in MySQL
+	 * @param  iterable<string, mixed>  $data
 	 * @return int number of affected rows
 	 */
 	public function update(iterable $data): int
@@ -949,6 +957,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns referencing rows.
+	 * @return GroupedSelection<T>|null
 	 */
 	public function getReferencingTable(
 		string $table,

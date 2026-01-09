@@ -16,6 +16,8 @@ use function array_slice;
 class DriverException extends \PDOException
 {
 	public ?string $queryString = null;
+
+	/** @var array<mixed>|null */
 	public ?array $params = null;
 
 
@@ -56,6 +58,7 @@ class DriverException extends \PDOException
 	}
 
 
+	/** @return array<mixed>|null */
 	public function getParameters(): ?array
 	{
 		return $this->params;

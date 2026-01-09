@@ -14,6 +14,7 @@ use function array_intersect_key, array_key_exists, array_keys, implode, is_arra
 /**
  * Represents database row with support for relations.
  * ActiveRow is based on the great library NotORM http://www.notorm.com written by Jakub Vrana.
+ * @implements \IteratorAggregate<string, mixed>
  */
 class ActiveRow implements \IteratorAggregate, IRow
 {
@@ -21,20 +22,28 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 
 	public function __construct(
+		/** @var array<string, mixed> */
 		private array $data,
+		/** @var Selection<ActiveRow> */
 		private Selection $table,
 	) {
 	}
 
 
-	/** @internal */
+	/**
+	 * @internal
+	 * @param Selection<ActiveRow> $table
+	 */
 	public function setTable(Selection $table): void
 	{
 		$this->table = $table;
 	}
 
 
-	/** @internal */
+	/**
+	 * @internal
+	 * @return Selection<ActiveRow>
+	 */
 	public function getTable(): Selection
 	{
 		return $this->table;
@@ -47,6 +56,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
+	/** @return array<string, mixed> */
 	public function toArray(): array
 	{
 		$this->accessColumn(null);
@@ -102,7 +112,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Returns referenced row.
-	 * @return self|null if the row does not exist
+	 * @return ?self if the row does not exist
 	 */
 	public function ref(string $key, ?string $throughColumn = null): ?self
 	{
@@ -117,6 +127,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Returns referencing rows collection.
+	 * @return GroupedSelection<ActiveRow>
 	 */
 	public function related(string $key, ?string $throughColumn = null): GroupedSelection
 	{
@@ -131,6 +142,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 	/**
 	 * Updates row data.
+	 * @param  iterable<string, mixed>  $data
 	 */
 	public function update(iterable $data): bool
 	{
@@ -186,6 +198,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	/********************* interface IteratorAggregate ****************d*g**/
 
 
+	/** @return \ArrayIterator<string, mixed> */
 	public function getIterator(): \Iterator
 	{
 		$this->accessColumn(null);

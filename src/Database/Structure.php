@@ -18,7 +18,7 @@ class Structure implements IStructure
 {
 	protected readonly Nette\Caching\Cache $cache;
 
-	/** @var array{tables: array, columns: array, primary: array, aliases: array, hasMany: array, belongsTo: array} */
+	/** @var array{tables: list<array{name: string, fullName?: string, view: bool}>, columns: array<string, list<array<string, mixed>>>, primary: array<string, string|list<string>|null>, aliases: array<string, string>, hasMany: array<string, array<string, list<string>>>, belongsTo: array<string, array<string, string>>} */
 	protected array $structure;
 	protected bool $isRebuilt = false;
 
@@ -31,6 +31,7 @@ class Structure implements IStructure
 	}
 
 
+	/** @return list<array{name: string, fullName?: string, view: bool}> */
 	public function getTables(): array
 	{
 		$this->needStructure();
@@ -48,7 +49,7 @@ class Structure implements IStructure
 
 
 	/**
-	 * @return string|string[]|null
+	 * @return string|list<string>|null
 	 */
 	public function getPrimaryKey(string $table): string|array|null
 	{
@@ -113,6 +114,7 @@ class Structure implements IStructure
 	}
 
 
+	/** @return array<string, list<string>>  table name => list of referencing columns */
 	public function getHasManyReference(string $table): array
 	{
 		$this->needStructure();
@@ -121,6 +123,7 @@ class Structure implements IStructure
 	}
 
 
+	/** @return array<string, string>  column name => referenced table name */
 	public function getBelongsToReference(string $table): array
 	{
 		$this->needStructure();
@@ -157,6 +160,7 @@ class Structure implements IStructure
 
 	/**
 	 * Loads complete structure from database.
+	 * @return array{tables: list<array{name: string, fullName?: string, view: bool}>, columns: array<string, list<array<string, mixed>>>, primary: array<string, string|list<string>|null>, aliases: array<string, string>, hasMany: array<string, array<string, list<string>>>, belongsTo: array<string, array<string, string>>}
 	 */
 	protected function loadStructure(): array
 	{
@@ -193,6 +197,10 @@ class Structure implements IStructure
 	}
 
 
+	/**
+	 * @param  list<array{name: string, primary: bool}>  $columns
+	 * @return string|list<string>|null
+	 */
 	protected function analyzePrimaryKey(array $columns): string|array|null
 	{
 		$primary = [];
@@ -212,6 +220,7 @@ class Structure implements IStructure
 	}
 
 
+	/** @param array<string, mixed> $structure */
 	protected function analyzeForeignKeys(array &$structure, string $table): void
 	{
 		$lowerTable = strtolower($table);

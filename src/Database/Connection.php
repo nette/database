@@ -34,6 +34,7 @@ class Connection
 	private int $transactionDepth = 0;
 
 
+	/** @param array<mixed> $options */
 	public function __construct(
 		private readonly string $dsn,
 		#[\SensitiveParameter]
@@ -131,6 +132,7 @@ class Connection
 
 	/**
 	 * Sets callback for row preprocessing.
+	 * @param ?(callable(array<mixed>, ResultSet): array<mixed>) $normalizer
 	 */
 	public function setRowNormalizer(?callable $normalizer): static
 	{
@@ -210,6 +212,7 @@ class Connection
 
 	/**
 	 * Executes callback inside a transaction.
+	 * @param  callable(static): mixed  $callback
 	 */
 	public function transaction(callable $callback): mixed
 	{
@@ -257,7 +260,11 @@ class Connection
 	}
 
 
-	/** @deprecated  use query() */
+	/**
+	 * @deprecated  use query()
+	 * @param  literal-string  $sql
+	 * @param  array<mixed>  $params
+	 */
 	public function queryArgs(string $sql, array $params): ResultSet
 	{
 		return $this->query($sql, ...$params);
@@ -266,7 +273,7 @@ class Connection
 
 	/**
 	 * @param  literal-string  $sql
-	 * @return array{string, array}
+	 * @return array{string, array<mixed>}
 	 */
 	public function preprocess(string $sql, ...$params): array
 	{
@@ -299,6 +306,7 @@ class Connection
 	/**
 	 * Shortcut for query()->fetchAssoc()
 	 * @param  literal-string  $sql
+	 * @return ?array<mixed>
 	 */
 	public function fetchAssoc(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
 	{
@@ -319,6 +327,7 @@ class Connection
 	/**
 	 * Shortcut for query()->fetchList()
 	 * @param  literal-string  $sql
+	 * @return ?list<mixed>
 	 */
 	public function fetchList(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
 	{
@@ -329,6 +338,7 @@ class Connection
 	/**
 	 * Shortcut for query()->fetchList()
 	 * @param  literal-string  $sql
+	 * @return ?list<mixed>
 	 */
 	public function fetchFields(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): ?array
 	{
@@ -339,6 +349,7 @@ class Connection
 	/**
 	 * Shortcut for query()->fetchPairs()
 	 * @param  literal-string  $sql
+	 * @return array<mixed, mixed>
 	 */
 	public function fetchPairs(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
 	{
@@ -349,6 +360,7 @@ class Connection
 	/**
 	 * Shortcut for query()->fetchAll()
 	 * @param  literal-string  $sql
+	 * @return list<Row>
 	 */
 	public function fetchAll(#[Language('SQL')] string $sql, #[Language('GenericSQL')] ...$params): array
 	{

@@ -17,6 +17,7 @@ interface Conventions
 {
 	/**
 	 * Returns primary key for table.
+	 * @return string|list<string>|null
 	 */
 	function getPrimary(string $table): string|array|null;
 
@@ -25,7 +26,7 @@ interface Conventions
 	 * Example:
 	 *     (author, book) returns [book, author_id]
 	 *
-	 * @return array|null   [referenced table, referenced column]
+	 * @return ?array{string, string}
 	 * @throws AmbiguousReferenceKeyException
 	 */
 	function getHasManyReference(string $table, string $key): ?array;
@@ -36,7 +37,7 @@ interface Conventions
 	 *     (book, author)      returns [author, author_id]
 	 *     (book, translator)  returns [author, translator_id]
 	 *
-	 * @return array|null   [referenced table, referencing column]
+	 * @return ?array{string, string}
 	 */
 	function getBelongsToReference(string $table, string $key): ?array;
 }

@@ -48,7 +48,11 @@ class SqlPreprocessor
 
 	private readonly Connection $connection;
 	private readonly Driver $driver;
+
+	/** @var list<mixed> */
 	private array $params;
+
+	/** @var list<mixed> */
 	private array $remaining;
 	private int $counter;
 	private bool $useParams;
@@ -66,7 +70,8 @@ class SqlPreprocessor
 
 	/**
 	 * Processes SQL query with parameter substitution.
-	 * @return array{string, array}
+	 * @param  mixed[]  $params
+	 * @return array{string, list<mixed>}
 	 */
 	public function process(array $params, bool $useParams = false): array
 	{
@@ -114,6 +119,7 @@ class SqlPreprocessor
 
 	/**
 	 * Handles SQL placeholders and skips string literals and comments.
+	 * @param  string[]  $match
 	 */
 	private function parsePart(array $match): string
 	{
@@ -200,6 +206,7 @@ class SqlPreprocessor
 
 	/**
 	 * Output: value, value, ... | (tuple), (tuple), ...
+	 * @param  mixed[]  $values
 	 */
 	private function formatList(array $values): string
 	{
@@ -218,6 +225,7 @@ class SqlPreprocessor
 
 	/**
 	 * Output format: (key, key, ...) VALUES (value, value, ...)
+	 * @param  array<string, mixed>  $items
 	 */
 	private function formatInsert(array $items): string
 	{
@@ -233,6 +241,7 @@ class SqlPreprocessor
 
 	/**
 	 * Output format: (key, key, ...) VALUES (value, value, ...), (value, value, ...), ...
+	 * @param  list<array<string, mixed>|Row>  $groups
 	 */
 	private function formatMultiInsert(array $groups): string
 	{
@@ -261,6 +270,7 @@ class SqlPreprocessor
 
 	/**
 	 * Output format: key=value, key=value, ...
+	 * @param  mixed[]  $items
 	 */
 	private function formatSet(array $items): string
 	{
@@ -282,6 +292,7 @@ class SqlPreprocessor
 
 	/**
 	 * Output format: (key [operator] value) AND/OR ...
+	 * @param  mixed[]  $items
 	 */
 	private function formatWhere(array $items, string $mode): string
 	{
@@ -322,6 +333,7 @@ class SqlPreprocessor
 
 	/**
 	 * Output format: key, key DESC, ...
+	 * @param  array<string, int>  $items  column => direction (positive = ASC, negative = DESC)
 	 */
 	private function formatOrderBy(array $items): string
 	{

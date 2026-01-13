@@ -30,8 +30,8 @@ class Connection
 	private SqlPreprocessor $preprocessor;
 	private ?PDO $pdo = null;
 
-	/** @var callable(array, ResultSet): array */
-	private $rowNormalizer = [Helpers::class, 'normalizeRow'];
+	/** @var ?\Closure(array<string, mixed>, ResultSet): array<string, mixed> */
+	private ?\Closure $rowNormalizer;
 	private ?string $sql = null;
 	private int $transactionDepth = 0;
 
@@ -44,9 +44,9 @@ class Connection
 		private readonly ?string $password = null,
 		private readonly array $options = [],
 	) {
-		if (!empty($options['newDateTime'])) {
-			$this->rowNormalizer = fn($row, $resultSet) => Helpers::normalizeRow($row, $resultSet, DateTime::class);
-		}
+		$this->rowNormalizer = !empty($options['newDateTime'])
+			? fn(array $row, ResultSet $resultSet): array => Helpers::normalizeRow($row, $resultSet, DateTime::class)
+			: Helpers::normalizeRow(...);
 		if (empty($options['lazy'])) {
 			$this->connect();
 		}
@@ -136,7 +136,7 @@ class Connection
 	 */
 	public function setRowNormalizer(?callable $normalizer): static
 	{
-		$this->rowNormalizer = $normalizer;
+		$this->rowNormalizer = $normalizer ? $normalizer(...) : null;
 		return $this;
 	}
 

@@ -26,10 +26,6 @@ overrides:
 		paths: [src/Database/ResultSet.php, src/Database/Row.php, src/Database/Table]
 		upgrading: {declarations: {deprecatedMember: keep}}
 
-	- # the row normalizer reaches the connection through Result::getConnection(), which is deprecated without a replacement
-		paths: [src/Database/Helpers.php]
-		upgrading: {declarations: {deprecatedMember: keep}}
-
 	- # public constants of the API, renaming them breaks the users
 		paths: [src/Database/IStructure.php, src/Database/Drivers/MySqlDriver.php]
 		naming: {constant: keep}

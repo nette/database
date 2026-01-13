@@ -8,6 +8,7 @@
 namespace Nette\Database;
 
 use JetBrains\PhpStorm\Language;
+use Nette;
 use Nette\Utils\Arrays;
 use PDOException;
 
@@ -38,9 +39,6 @@ class Connection
 	private Drivers\Engine $engine;
 	private SqlPreprocessor $preprocessor;
 	private TypeConverter $typeConverter;
-
-	/** @var ?\Closure(array<string, mixed>, Result): array<string, mixed> */
-	private ?\Closure $rowNormalizer;
 	private ?string $sql = null;
 	private int $transactionDepth = 0;
 
@@ -164,14 +162,10 @@ class Connection
 	}
 
 
-	/**
-	 * Sets a callback for normalizing each result row (e.g., type conversion). Pass null to disable.
-	 * @param ?(callable(array<mixed>, ResultSet): array<mixed>) $normalizer
-	 */
+	/** @deprecated */
 	public function setRowNormalizer(?callable $normalizer): static
 	{
-		$this->rowNormalizer = $normalizer ? $normalizer(...) : null;
-		return $this;
+		throw new Nette\DeprecatedException(__METHOD__ . "() is deprecated, configure 'convert*' options instead.");
 	}
 
 
@@ -278,7 +272,7 @@ class Connection
 	{
 		[$this->sql, $params] = $this->preprocess($sql, ...$params);
 		try {
-			$result = new Result($this, $this->sql, $params, $this->rowNormalizer);
+			$result = new Result($this, $this->sql, $params);
 		} catch (PDOException $e) {
 			Arrays::invoke($this->onQuery, $this, $e);
 			throw $e;

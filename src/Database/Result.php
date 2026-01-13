@@ -35,8 +35,6 @@ class Result implements \Iterator
 		private readonly string $queryString,
 		/** @var  mixed[] */
 		private readonly array $params,
-		/** @var ?\Closure(array<string, mixed>, self): array<string, mixed> */
-		private readonly ?\Closure $normalizer = null,
 	) {
 		$time = microtime(true);
 
@@ -100,19 +98,6 @@ class Result implements \Iterator
 	public function getTime(): float
 	{
 		return $this->time;
-	}
-
-
-	/**
-	 * @internal
-	 * @param array<mixed> $row
-	 * @return array<mixed>
-	 */
-	public function normalizeRow(array $row): array
-	{
-		return $this->normalizer
-			? ($this->normalizer)($row, $this)
-			: $row;
 	}
 
 
@@ -265,12 +250,22 @@ class Result implements \Iterator
 	}
 
 
-	public function getColumnsMeta(): array
+	private function normalizeRow(array $row): array
 	{
-		if (isset($this->meta)) {
-			return $this->meta;
+		$engine = $this->connection->getDatabaseEngine();
+		$converter = $this->connection->getTypeConverter();
+		$this->meta ??= $this->getColumnsMeta();
+		foreach ($row as $key => $value) {
+			$row[$key] = isset($value, $this->meta[$key])
+				? $engine->convertToPhp($value, $this->meta[$key], $converter)
+				: $value;
 		}
+		return $row;
+	}
 
+
+	private function getColumnsMeta(): array
+	{
 		$res = [];
 		$metaTypeKey = $this->connection->getConnection()->metaTypeKey;
 		$count = $this->pdoStatement->columnCount();
@@ -284,7 +279,7 @@ class Result implements \Iterator
 				];
 			}
 		}
-		return $this->meta = $res;
+		return $res;
 	}
 }
 

@@ -19,9 +19,6 @@ use function array_values, count, gettype, is_int, iterator_to_array, microtime,
 class ResultSet implements \Iterator, IRowContainer
 {
 	private ?\PDOStatement $pdoStatement = null;
-
-	/** @var callable(array, ResultSet): array */
-	private readonly mixed $normalizer;
 	private Row|false|null $lastRow = null;
 	private int $lastRowKey = -1;
 
@@ -35,10 +32,10 @@ class ResultSet implements \Iterator, IRowContainer
 		private readonly Connection $connection,
 		private readonly string $queryString,
 		private readonly array $params,
-		?callable $normalizer = null,
+		/** @var ?\Closure(array<string, mixed>, self): array<string, mixed> */
+		private readonly ?\Closure $normalizer = null,
 	) {
 		$time = microtime(true);
-		$this->normalizer = $normalizer;
 		$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 
 		try {

@@ -25,7 +25,9 @@
 		"nette/di": "^3.1",
 		"mockery/mockery": "^1.6@stable",
 		"tracy/tracy": "^2.9",
-		"phpstan/phpstan-nette": "^2.0@stable",
+		"phpstan/phpstan": "^2.1@stable",
+		"phpstan/extension-installer": "^1.4@stable",
+		"nette/phpstan-rules": "^1.0",
 		"jetbrains/phpstorm-attributes": "^1.2"
 	},
 	"autoload": {
@@ -42,6 +44,11 @@
 	"extra": {
 		"branch-alias": {
 			"dev-master": "3.2-dev"
+		}
+	},
+	"config": {
+		"allow-plugins": {
+			"phpstan/extension-installer": true
 		}
 	}
 }

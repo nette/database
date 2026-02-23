@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Database\Conventions\DiscoveredConventions::getPrimary().
  */
-
-declare(strict_types=1);
 
 use Nette\Database\Conventions\DiscoveredConventions;
 use Tester\Assert;

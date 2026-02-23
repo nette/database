@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Database\Table\SqlBuilder: addWhere() and placeholders.
  * @dataProvider? ../databases.ini
  */
-
-declare(strict_types=1);
 
 use Nette\Database\Driver;
 use Nette\Database\SqlLiteral;

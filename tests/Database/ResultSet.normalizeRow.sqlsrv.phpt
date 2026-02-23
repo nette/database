@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Database\ResultSet::normalizeRow()
  * @dataProvider? databases.ini  sqlsrv
  */
-
-declare(strict_types=1);
 
 use Nette\Database\DateTime;
 use Tester\Assert;

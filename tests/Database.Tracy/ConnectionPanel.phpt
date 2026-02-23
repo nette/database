@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: ConnectionPanel
  */
-
-declare(strict_types=1);
 
 use Nette\Bridges\DatabaseTracy\ConnectionPanel;
 use Nette\Database\Connection;

@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Database\Table: Multi insert operations
  * @dataProvider? ../databases.ini
  */
-
-declare(strict_types=1);
 
 use Tester\Assert;
 

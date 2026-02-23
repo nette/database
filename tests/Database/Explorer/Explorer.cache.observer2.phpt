@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Database\Table: Cache observer.
  * @dataProvider? ../databases.ini
  */
-
-declare(strict_types=1);
 
 use Nette\Caching\Storages\MemoryStorage;
 use Tester\Assert;

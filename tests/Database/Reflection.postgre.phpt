@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: PostgreSQL specific reflection
  * @dataProvider? databases.ini  postgresql
  */
-
-declare(strict_types=1);
 
 use Tester\Assert;
 

@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Database\Helpers::loadFromFile().
  * @dataProvider? databases.ini  mysql
  */
-
-declare(strict_types=1);
 
 use Tester\Assert;
 

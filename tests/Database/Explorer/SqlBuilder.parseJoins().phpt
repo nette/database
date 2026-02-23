@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Database\Table\SqlBuilder: parseJoins().
  * @dataProvider? ../databases.ini
  */
-
-declare(strict_types=1);
 
 use Nette\Database\Conventions\DiscoveredConventions;
 use Nette\Database\Driver;

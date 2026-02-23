@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Database\Structure
  */
-
-declare(strict_types=1);
 
 use Nette\Database\Structure;
 use Tester\Assert;

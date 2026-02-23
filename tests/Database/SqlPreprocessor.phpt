@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Database\SqlPreprocessor
  * @dataProvider? databases.ini
  */
-
-declare(strict_types=1);
 
 use Nette\Database\SqlLiteral;
 use Tester\Assert;

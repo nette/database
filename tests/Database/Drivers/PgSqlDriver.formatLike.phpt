@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * @dataProvider? ../databases.ini  postgresql
  */
-
-declare(strict_types=1);
 
 use Tester\Assert;
 

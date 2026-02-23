@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Database\Connection transaction methods.
  * @dataProvider? databases.ini
  */
-
-declare(strict_types=1);
 
 use Nette\Database\Explorer;
 use Tester\Assert;

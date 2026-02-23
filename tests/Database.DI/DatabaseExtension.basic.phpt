@@ -1,10 +1,8 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: DatabaseExtension.
  */
-
-declare(strict_types=1);
 
 use Nette\Bridges\DatabaseDI\DatabaseExtension;
 use Nette\DI;

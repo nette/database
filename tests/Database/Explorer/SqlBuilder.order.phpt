@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Database\Table\SqlBuilder: addOrder() anmd setOrder()
  * @dataProvider? ../databases.ini
  */
-
-declare(strict_types=1);
 
 use Nette\Database\Table\SqlBuilder;
 use Tester\Assert;

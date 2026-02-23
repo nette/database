@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: Nette\Database\Connection lazy connection.
  * @dataProvider? databases.ini
  */
-
-declare(strict_types=1);
 
 use Nette\Caching\Storages\DevNullStorage;
 use Nette\Database\Structure;

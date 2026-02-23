@@ -1,11 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 /**
  * Test: bug #49
  * @dataProvider? ../../databases.ini mysql
  */
-
-declare(strict_types=1);
 
 use Tester\Assert;
 

@@ -34,6 +34,10 @@ overrides:
 		paths: [src/Database/Table/ActiveRow.php, src/Database/Table/Selection.php]
 		classes: {overridingMethod: {parameterName: keep}}
 
+	- # the class names in strings are the mapping and the names it generates, the tested data
+		paths: [tests/Database.DI/DatabaseExtension.entityMapping.phpt]
+		literals: {classNameInString: keep}
+
 	- # the mock makes the protected methods public
 		paths: ['tests/Database/Explorer/SqlBuilder.parseJoinConditions().phpt']
 		classes: {overridingMethod: {parentCallOnly: keep}}

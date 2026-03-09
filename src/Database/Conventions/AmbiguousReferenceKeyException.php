@@ -9,7 +9,7 @@ namespace Nette\Database\Conventions;
 
 
 /**
- * Ambiguous reference key exception.
+ * Multiple matching columns found for a relationship reference.
  */
 class AmbiguousReferenceKeyException extends \RuntimeException
 {

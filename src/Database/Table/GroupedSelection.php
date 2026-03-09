@@ -58,6 +58,9 @@ class GroupedSelection extends Selection
 	}
 
 
+	/**
+	 * Adds a SELECT clause. Automatically prepends the grouping column if no select exists yet.
+	 */
 	public function select(string $columns, mixed ...$params): static
 	{
 		if (!$this->sqlBuilder->getSelect()) {
@@ -68,6 +71,9 @@ class GroupedSelection extends Selection
 	}
 
 
+	/**
+	 * Adds an ORDER BY clause. Automatically prepends the grouping column (matching direction) to improve index utilization.
+	 */
 	public function order(string $columns, mixed ...$params): static
 	{
 		if (!$this->sqlBuilder->getOrder()) {
@@ -79,6 +85,9 @@ class GroupedSelection extends Selection
 	}
 
 
+	/**
+	 * Invalidates cached data and forces reload on next access.
+	 */
 	public function refreshData(): void
 	{
 		unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);

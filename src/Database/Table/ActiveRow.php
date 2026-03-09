@@ -65,8 +65,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 
 	/**
-	 * Returns primary key value.
-	 * @return mixed possible int, string, array, object (Nette\Utils\DateTime)
+	 * Returns primary key value, or an array of values for composite primary keys.
 	 */
 	public function getPrimary(bool $throw = true): mixed
 	{
@@ -111,8 +110,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 
 	/**
-	 * Returns referenced row.
-	 * @return ?self if the row does not exist
+	 * Returns referenced row, or null if the row does not exist.
 	 */
 	public function ref(string $key, ?string $throughColumn = null): ?self
 	{
@@ -141,7 +139,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 
 	/**
-	 * Updates row data.
+	 * Updates row data and refreshes the instance from database. Returns true if the row was changed.
 	 * @param  iterable<string, mixed>  $data
 	 */
 	public function update(iterable $data): bool
@@ -178,8 +176,8 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 
 	/**
-	 * Deletes row from database.
-	 * @return int number of affected rows
+	 * Deletes the row from database.
+	 * @return int  number of affected rows
 	 */
 	public function delete(): int
 	{
@@ -240,8 +238,9 @@ class ActiveRow implements \IteratorAggregate, IRow
 
 
 	/**
+	 * Returns column value, or a referenced row if the key matches a relationship.
 	 * @return ActiveRow|mixed
-	 * @throws Nette\MemberAccessException
+	 * @throws Nette\MemberAccessException  if the column does not exist and no relationship is found
 	 */
 	public function &__get(string $key): mixed
 	{

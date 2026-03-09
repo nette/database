@@ -49,7 +49,10 @@ class Explorer
 	}
 
 
-	/** @param  callable(static): mixed  $callback */
+	/**
+	 * Executes callback inside a transaction.
+	 * @param  callable(static): mixed  $callback
+	 */
 	public function transaction(callable $callback): mixed
 	{
 		return $this->connection->transaction(fn() => $callback($this));
@@ -112,6 +115,7 @@ class Explorer
 
 
 	/**
+	 * Creates an ActiveRow instance, using the configured row mapping class if available.
 	 * @param  array<string, mixed>  $data
 	 * @param  Table\Selection<Table\ActiveRow>  $selection
 	 */
@@ -140,7 +144,7 @@ class Explorer
 
 
 	/**
-	 * Shortcut for query()->fetch()
+	 * Executes SQL query and returns the first row, or null if no rows were returned.
 	 * @param  literal-string  $sql
 	 */
 	public function fetch(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): ?Row
@@ -150,7 +154,7 @@ class Explorer
 
 
 	/**
-	 * Shortcut for query()->fetchAssoc()
+	 * Executes SQL query and returns the first row as an associative array, or null.
 	 * @param  literal-string  $sql
 	 * @return ?array<mixed>
 	 */
@@ -161,7 +165,7 @@ class Explorer
 
 
 	/**
-	 * Shortcut for query()->fetchField()
+	 * Executes SQL query and returns the first field of the first row, or null.
 	 * @param  literal-string  $sql
 	 */
 	public function fetchField(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): mixed
@@ -171,7 +175,7 @@ class Explorer
 
 
 	/**
-	 * Shortcut for query()->fetchList()
+	 * Executes SQL query and returns the first row as an indexed array, or null.
 	 * @param  literal-string  $sql
 	 * @return ?list<mixed>
 	 */
@@ -182,7 +186,7 @@ class Explorer
 
 
 	/**
-	 * Shortcut for query()->fetchList()
+	 * Executes SQL query and returns the first row as an indexed array, or null.
 	 * @param  literal-string  $sql
 	 * @return ?list<mixed>
 	 */
@@ -193,7 +197,7 @@ class Explorer
 
 
 	/**
-	 * Shortcut for query()->fetchPairs()
+	 * Executes SQL query and returns rows as key-value pairs.
 	 * @param  literal-string  $sql
 	 * @return array<mixed, mixed>
 	 */
@@ -204,7 +208,7 @@ class Explorer
 
 
 	/**
-	 * Shortcut for query()->fetchAll()
+	 * Executes SQL query and returns all rows as an array of Row objects.
 	 * @param  literal-string  $sql
 	 * @return list<Row>
 	 */

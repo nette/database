@@ -15,7 +15,7 @@ use function is_string;
 
 
 /**
- * Debug panel for Nette\Database.
+ * Tracy Bar panel showing executed SQL queries with timing and EXPLAIN support.
  */
 class ConnectionPanel implements Tracy\IBarPanel
 {
@@ -32,6 +32,9 @@ class ConnectionPanel implements Tracy\IBarPanel
 	private Tracy\BlueScreen $blueScreen;
 
 
+	/**
+	 * Registers the panel with Tracy. Optionally adds it to the Tracy Bar.
+	 */
 	public static function initialize(
 		Connection $connection,
 		bool $addBarPanel = false,

@@ -59,6 +59,9 @@ class Structure implements IStructure
 	}
 
 
+	/**
+	 * Returns the name of the autoincrement primary key column, or null if none exists.
+	 */
 	public function getPrimaryAutoincrementKey(string $table): ?string
 	{
 		$primaryKey = $this->getPrimaryKey($table);
@@ -89,6 +92,9 @@ class Structure implements IStructure
 	}
 
 
+	/**
+	 * Returns the sequence name for the primary key column, or null if not applicable.
+	 */
 	public function getPrimaryKeySequence(string $table): ?string
 	{
 		$this->needStructure();
@@ -114,7 +120,7 @@ class Structure implements IStructure
 	}
 
 
-	/** @return array<string, list<string>>  table name => list of referencing columns */
+	/** @return array<string, list<string>>  referencing table name => list of referencing columns */
 	public function getHasManyReference(string $table): array
 	{
 		$this->needStructure();
@@ -123,7 +129,7 @@ class Structure implements IStructure
 	}
 
 
-	/** @return array<string, string>  column name => referenced table name */
+	/** @return array<string, string>  local column name => referenced table name */
 	public function getBelongsToReference(string $table): array
 	{
 		$this->needStructure();
@@ -142,12 +148,18 @@ class Structure implements IStructure
 	}
 
 
+	/**
+	 * Checks whether the structure has been rebuilt from the database during this request.
+	 */
 	public function isRebuilt(): bool
 	{
 		return $this->isRebuilt;
 	}
 
 
+	/**
+	 * Ensures the structure is loaded, from cache or from the database.
+	 */
 	protected function needStructure(): void
 	{
 		if (isset($this->structure)) {

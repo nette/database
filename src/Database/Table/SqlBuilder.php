@@ -17,8 +17,7 @@ use function array_flip, array_keys, array_map, array_merge, array_pop, array_sh
 
 
 /**
- * Builds SQL query.
- * SqlBuilder is based on great library NotORM http://www.notorm.com written by Jakub Vrana.
+ * Builds SQL queries for the Explorer layer.
  */
 class SqlBuilder
 {
@@ -227,6 +226,9 @@ class SqlBuilder
 	}
 
 
+	/**
+	 * Copies WHERE conditions and aliases from another builder.
+	 */
 	public function importConditions(self $builder): void
 	{
 		$this->where = $builder->where;
@@ -239,6 +241,9 @@ class SqlBuilder
 	}
 
 
+	/**
+	 * Copies GROUP BY and HAVING clauses from another builder. Returns true if HAVING was present.
+	 */
 	public function importGroupConditions(self $builder): bool
 	{
 		if ($builder->having) {
@@ -306,6 +311,8 @@ class SqlBuilder
 
 
 	/**
+	 * Normalizes and appends a condition with its parameters. Deduplicates identical conditions.
+	 * Returns true if the condition was added, false if it was a duplicate.
 	 * @param  array<mixed>|string  $condition
 	 * @param  array<mixed>  $params
 	 * @param  array<mixed>  $conditions
@@ -469,6 +476,9 @@ class SqlBuilder
 	}
 
 
+	/**
+	 * Ensures a table alias is not used for two different chains, throwing on conflict.
+	 */
 	protected function checkUniqueTableName(string $tableName, string $chain): void
 	{
 		if (isset($this->aliases[$tableName]) && ($chain === '.' . $tableName)) {
@@ -873,6 +883,9 @@ class SqlBuilder
 	}
 
 
+	/**
+	 * Delimits lowercase identifiers in a SQL fragment while leaving uppercase keywords untouched.
+	 */
 	protected function tryDelimite(string $s): string
 	{
 		return preg_replace_callback(
@@ -886,6 +899,7 @@ class SqlBuilder
 
 
 	/**
+	 * Adds a multi-column IN condition using OR expansion or tuple syntax depending on driver support.
 	 * @param  string[]  $columns
 	 * @param  array<mixed>  $parameters
 	 * @param  array<mixed>  $conditions

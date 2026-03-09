@@ -28,6 +28,10 @@ class DiscoveredConventions implements Conventions
 	}
 
 
+	/**
+	 * Finds the referencing table and column for a has-many relationship by searching structure metadata.
+	 * Triggers structure rebuild if needed. Throws on ambiguous match.
+	 */
 	public function getHasManyReference(string $nsTable, string $key): ?array
 	{
 		$candidates = $columnCandidates = [];
@@ -77,6 +81,10 @@ class DiscoveredConventions implements Conventions
 	}
 
 
+	/**
+	 * Finds the referenced table and local foreign key column for a belongs-to relationship.
+	 * Triggers structure rebuild if needed.
+	 */
 	public function getBelongsToReference(string $table, string $key): ?array
 	{
 		$tableColumns = $this->structure->getBelongsToReference($table);

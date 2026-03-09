@@ -71,6 +71,7 @@ class SqlPreprocessor
 	/**
 	 * Processes SQL query with parameter substitution.
 	 * @param  list<mixed>  $params
+	 * @param  bool  $useParams  when true, scalar values are kept as bound parameters instead of being inlined
 	 * @return array{string, list<mixed>}
 	 */
 	public function process(array $params, bool $useParams = false): array
@@ -118,7 +119,8 @@ class SqlPreprocessor
 
 
 	/**
-	 * Handles SQL placeholders and skips string literals and comments.
+	 * Processes a regex match from the SQL scan: skips string literals and comments,
+	 * detects SQL command keywords to set array mode, and replaces ? placeholders.
 	 * @param  string[]  $match
 	 */
 	private function parsePart(array $match): string
@@ -147,8 +149,8 @@ class SqlPreprocessor
 
 
 	/**
-	 * Formats a value for use in SQL query where ? placeholder is used.
-	 * For arrays, the formatting is determined by $mode or last SQL keyword before the placeholder
+	 * Formats a value for use in SQL at a ? placeholder.
+	 * For arrays, the mode is taken from $mode or detected from the last SQL keyword before the placeholder.
 	 */
 	private function formatParameter(mixed $value, ?string $mode = null): string
 	{

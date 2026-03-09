@@ -14,7 +14,7 @@ use function is_array, is_string;
 
 
 /**
- * Nette Framework Database services.
+ * Registers database Connection, Structure, and Explorer services in the DI container.
  */
 class DatabaseExtension extends Nette\DI\CompilerExtension
 {

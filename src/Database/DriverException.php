@@ -21,6 +21,9 @@ class DriverException extends \PDOException
 	public ?array $params = null;
 
 
+	/**
+	 * Creates a DriverException from a PDOException, preserving error info and stack trace location.
+	 */
 	public static function from(\PDOException $src): static
 	{
 		$e = new static($src->message, 0, $src);
@@ -40,12 +43,18 @@ class DriverException extends \PDOException
 	}
 
 
+	/**
+	 * Returns the driver-specific error code, or null if not available.
+	 */
 	public function getDriverCode(): int|string|null
 	{
 		return $this->errorInfo[1] ?? null;
 	}
 
 
+	/**
+	 * Returns the SQLSTATE error code, or null if not available.
+	 */
 	public function getSqlState(): ?string
 	{
 		return $this->errorInfo[0] ?? null;

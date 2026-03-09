@@ -7,11 +7,7 @@
 
 namespace Nette\Database;
 
-use JetBrains\PhpStorm\Language;
-use Nette;
-use Nette\Caching\Cache;
-use Nette\Utils\Arrays;
-use function func_get_args, str_replace, ucfirst;
+use Closure;
 
 
 /**
@@ -19,10 +15,23 @@ use function func_get_args, str_replace, ucfirst;
  */
 class Explorer extends Database
 {
+	/** @var ?(Closure(string $table): class-string<Table\ActiveRow>) */
+	private ?Closure $rowMapping = null;
+
+
+	public function setRowMapping(?Closure $factory): void
+	{
+		$this->rowMapping = $factory;
+	}
+
+
 	/** @internal */
 	public function createActiveRow(Table\Selection $selection, array $row): Table\ActiveRow
 	{
-		return new Table\ActiveRow($row, $selection);
+		$class = $this->rowMapping
+			? ($this->rowMapping)($selection->getName())
+			: Table\ActiveRow::class;
+		return new $class($row, $selection);
 	}
 
 

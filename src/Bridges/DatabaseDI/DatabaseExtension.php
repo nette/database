@@ -12,6 +12,7 @@ use Nette\DI\Definitions\Statement;
 use Nette\Schema\Expect;
 use Tracy;
 use function is_array, is_string;
+use Nette\Database\Table\ActiveRow;
 
 
 /**
@@ -38,6 +39,10 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				'explain' => Expect::bool(true),
 				'reflection' => Expect::string(), // BC
 				'conventions' => Expect::string('discovered'), // Nette\Database\Conventions\DiscoveredConventions
+				'mapping' => Expect::structure([
+					'convention' => Expect::string(''),
+					'tables' => Expect::arrayOf('string', 'string'),
+				])->before(fn($v) => is_string($v) ? ['convention' => $v] : $v),
 				'autowired' => Expect::bool(),
 			]),
 		)->before(fn($val) => is_array(reset($val)) || reset($val) === null
@@ -115,6 +120,15 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			$explorer->addSetup('setConventions', [Nette\DI\Helpers::filterArguments([$config->conventions])[0]]);
 		}
 
+		if ($config->mapping->convention || $config->mapping->tables) {
+			$explorer->addSetup('setRowMapping', [
+				new Statement([self::class, 'createRowMapping'], [
+					$config->mapping->convention,
+					(array) $config->mapping->tables,
+				]),
+			]);
+		}
+
 		$builder->addAlias($this->prefix("$name.connection"), $this->prefix($name));
 		$builder->addAlias($this->prefix("$name.context"), $this->prefix($name));
 		$builder->addAlias($this->prefix("$name.explorer"), $this->prefix($name));
@@ -123,5 +137,24 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			$builder->addAlias("nette.database.$name", $this->prefix($name));
 			$builder->addAlias("nette.database.$name.context", $this->prefix("$name.explorer"));
 		}
+	}
+
+
+	public static function createRowMapping(string $convention, array $tables): \Closure
+	{
+		return static function (string $table) use ($convention, $tables): string {
+			if (isset($tables[$table])) {
+				return $tables[$table];
+			}
+
+			if ($convention !== '') {
+				$class = str_replace('*', str_replace(' ', '', ucwords(strtr($table, '_', ' '))), $convention);
+				if (class_exists($class)) {
+					return $class;
+				}
+			}
+
+			return ActiveRow::class;
+		};
 	}
 }

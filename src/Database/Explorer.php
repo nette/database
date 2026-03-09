@@ -25,6 +25,7 @@ class Explorer
 		private readonly IStructure $structure,
 		?Conventions $conventions = null,
 		private readonly ?Nette\Caching\Storage $cacheStorage = null,
+		private readonly ?EntityMapping $entityMapping = null,
 	) {
 		$this->conventions = $conventions ?: new StaticConventions;
 	}
@@ -126,6 +127,12 @@ class Explorer
 	}
 
 
+	public function getEntityMapping(): ?EntityMapping
+	{
+		return $this->entityMapping;
+	}
+
+
 	/**
 	 * Creates an ActiveRow instance. Override in a subclass to map tables to custom row classes.
 	 * @param  array<string, mixed>  $data
@@ -133,7 +140,9 @@ class Explorer
 	 */
 	public function createActiveRow(array $data, Table\Selection $selection, bool $deferredFetch = false): Table\ActiveRow
 	{
-		return new Table\ActiveRow($data, $selection, $deferredFetch);
+		$class = $this->entityMapping?->getClassName($selection->getName());
+		$class = $class && class_exists($class) ? $class : Table\ActiveRow::class;
+		return new $class($data, $selection, $deferredFetch);
 	}
 
 

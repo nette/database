@@ -51,8 +51,8 @@ separate property, so every read falls into `__get` and flows through `$data` �
 only way to track which columns are actually read (SELECT narrowing). A subclass must
 therefore **not** declare real typed properties (`public int $id`): an existing
 property bypasses the magic; use `@property-read` annotations instead. (There is no
-`EntityMapping` class and no read-side enum conversion — `BackedEnum` handling exists
-only on the write side, in the preprocessor.)
+read-side enum conversion — `BackedEnum` handling exists only on the write side, in
+the preprocessor.)
 
 - `__get($key)`: `accessColumn($key)` → returns `$data[$key]`; if the column is
   absent it tries a **relation** (`getReferencedTable`), else throws

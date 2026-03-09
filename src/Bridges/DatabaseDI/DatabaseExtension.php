@@ -38,6 +38,12 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				'reflection' => Expect::string(), // BC
 				'conventions' => Expect::string('discovered'), // Nette\Database\Conventions\DiscoveredConventions
 				'autowired' => Expect::bool(),
+				'mapping' => Expect::structure([
+					'tables' => Expect::anyOf(
+						Expect::string()->transform(fn(string $v) => ['*' => $v]),
+						Expect::arrayOf('string', 'string'),
+					)->default([]),
+				]),
 			]),
 		)->before(fn($val) => is_array($val) && $val && !array_key_exists('dsn', $val)
 				? $val // a set of named connections; a single connection always has the mandatory 'dsn' key
@@ -119,8 +125,12 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				->setAutowired($config->autowired);
 		}
 
+		$entityMapping = $config->mapping?->tables
+			? new Nette\DI\Definitions\Statement(Nette\Database\DefaultEntityMapping::class, [$config->mapping->tables])
+			: null;
+
 		$builder->addDefinition($this->prefix("$name.explorer"))
-			->setFactory(Nette\Database\Explorer::class, [$connection, $structure, $conventions])
+			->setFactory(Nette\Database\Explorer::class, [$connection, $structure, $conventions, null, $entityMapping])
 			->setAutowired($config->autowired);
 
 		$builder->addAlias($this->prefix("$name.context"), $this->prefix("$name.explorer"));

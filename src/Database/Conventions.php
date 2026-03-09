@@ -22,9 +22,8 @@ interface Conventions
 	function getPrimary(string $table): string|array|null;
 
 	/**
-	 * Returns referenced table & referenced column.
-	 * Example:
-	 *     (author, book) returns [book, author_id]
+	 * Returns the referencing table name and referencing column for a has-many relationship.
+	 * Example: (author, book) returns [book, author_id]
 	 *
 	 * @return ?array{string, string}
 	 * @throws AmbiguousReferenceKeyException
@@ -32,8 +31,8 @@ interface Conventions
 	function getHasManyReference(string $table, string $key): ?array;
 
 	/**
-	 * Returns referenced table & referencing column.
-	 * Example
+	 * Returns the referenced table name and local foreign key column for a belongs-to relationship.
+	 * Example:
 	 *     (book, author)      returns [author, author_id]
 	 *     (book, translator)  returns [author, translator_id]
 	 *

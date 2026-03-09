@@ -187,7 +187,8 @@ class ResultSet implements \Iterator, IRowContainer
 
 
 	/**
-	 * Returns the next row as an associative array or null if there are no more rows.
+	 * Returns the next row as an associative array, or null if there are no more rows.
+	 * When $path is given, fetches all rows and restructures them using Arrays::associate().
 	 * @return ?array<mixed>
 	 */
 	public function fetchAssoc(?string $path = null): ?array

@@ -27,13 +27,13 @@ interface IStructure
 		FIELD_TIME_INTERVAL = 'timeint';
 
 	/**
-	 * Returns tables list.
+	 * Returns all tables in the database.
 	 * @return list<array{name: string, fullName?: string, view: bool}>
 	 */
 	function getTables(): array;
 
 	/**
-	 * Returns table columns list.
+	 * Returns all columns in a table.
 	 * @return list<array{name: string, table: string, nativetype: string, size: ?int, nullable: bool, default: mixed, autoincrement: bool, primary: bool, vendor: array<string, mixed>}>
 	 */
 	function getColumns(string $table): array;
@@ -55,16 +55,14 @@ interface IStructure
 	function getPrimaryKeySequence(string $table): ?string;
 
 	/**
-	 * Returns hasMany reference.
-	 * If a targetTable is not provided, returns references for all tables.
-	 * @return array<string, list<string>>|null  table name => list of referencing columns
+	 * Returns tables referencing the given table via foreign key, or null if unknown.
+	 * @return array<string, list<string>>|null  referencing table name => list of referencing columns
 	 */
 	function getHasManyReference(string $table): ?array;
 
 	/**
-	 * Returns belongsTo reference.
-	 * If a column is not provided, returns references for all columns.
-	 * @return ?array<string, string>  column name => referenced table name
+	 * Returns foreign key columns in the given table mapped to their referenced tables, or null if unknown.
+	 * @return ?array<string, string>  local column name => referenced table name
 	 */
 	function getBelongsToReference(string $table): ?array;
 
@@ -74,7 +72,7 @@ interface IStructure
 	function rebuild(): void;
 
 	/**
-	 * Returns true if database cached structure has been rebuilt.
+	 * Checks whether the structure has been rebuilt from the database during this request.
 	 */
 	function isRebuilt(): bool;
 }

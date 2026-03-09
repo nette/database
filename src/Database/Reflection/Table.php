@@ -12,7 +12,7 @@ use function array_filter, array_map, array_values, is_string;
 
 
 /**
- * Database table structure.
+ * Database table metadata including columns, indexes, and foreign keys.
  */
 final class Table
 {

@@ -9,7 +9,7 @@ namespace Nette\Database;
 
 
 /**
- * Date Time.
+ * Immutable date-time value with JSON and string serialization support.
  */
 final class DateTime extends \DateTimeImmutable implements \JsonSerializable
 {

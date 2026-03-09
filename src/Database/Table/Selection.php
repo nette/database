@@ -232,7 +232,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Returns all rows.
+	 * Returns all rows as an array indexed by primary key.
 	 * @return T[]
 	 */
 	public function fetchAll(): array
@@ -315,7 +315,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Adds condition, more calls appends with AND.
+	 * Adds a WHERE or JOIN condition. When $tableChain is given, the condition is added to the JOIN ON clause.
 	 * @param  string|string[]  $condition  possibly containing ?
 	 * @param  mixed[]  $params
 	 */
@@ -398,7 +398,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Sets OFFSET using page number, more calls rewrite old values.
+	 * Sets LIMIT and OFFSET for the given page number. Optionally calculates total number of pages.
 	 */
 	public function page(int $page, int $itemsPerPage, ?int &$numOfPages = null): static
 	{
@@ -472,7 +472,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Counts number of rows. If column is not provided returns count of result rows, otherwise runs new sql counting query.
+	 * Returns count of fetched rows, or runs COUNT($column) query when column is specified.
 	 */
 	public function count(?string $column = null): int
 	{
@@ -643,8 +643,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Returns Selection parent for caching.
-	 * @param-out  string  $refPath
+	 * Returns the root Selection used as the shared cache anchor for referenced rows.
+	 * @param-out string $refPath
 	 * @return static
 	 */
 	protected function getRefTable(mixed &$refPath): self
@@ -655,7 +655,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Loads refCache references
+	 * Initializes the reference cache for the current selection. Overridden by GroupedSelection.
 	 */
 	protected function loadRefCache(): void
 	{
@@ -663,8 +663,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Returns general cache key independent on query parameters or sql limit
-	 * Used e.g. for previously accessed columns caching
+	 * Returns general cache key independent of query parameters or SQL limit.
+	 * Used e.g. for previously accessed columns caching.
 	 */
 	protected function getGeneralCacheKey(): string
 	{
@@ -686,8 +686,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Returns object specific cache key dependent on query parameters
-	 * Used e.g. for reference memory caching
+	 * Returns object-specific cache key dependent on query parameters.
+	 * Used e.g. for reference memory caching.
 	 */
 	protected function getSpecificCacheKey(): string
 	{
@@ -779,7 +779,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Returns if selection requeried for more columns.
+	 * Checks whether the selection re-queried for additional columns.
 	 */
 	public function getDataRefreshed(): bool
 	{
@@ -791,7 +791,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Inserts row in a table. Returns ActiveRow or number of affected rows for Selection or table without primary key.
+	 * Inserts one or more rows into the table.
+	 * Returns the inserted ActiveRow for single-row inserts, or the number of affected rows otherwise.
 	 * @param  iterable<string, mixed>|self  $data
 	 * @return ($data is array<string, mixed> ? T|array<string, mixed> : int)
 	 */
@@ -872,10 +873,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Updates all rows in result set.
-	 * Joins in UPDATE are supported only in MySQL
+	 * Updates all rows matching current conditions. JOINs in UPDATE are supported only by MySQL.
 	 * @param  iterable<string, mixed>  $data
-	 * @return int number of affected rows
+	 * @return int  number of affected rows
 	 */
 	public function update(iterable $data): int
 	{
@@ -895,8 +895,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Deletes all rows in result set.
-	 * @return int number of affected rows
+	 * Deletes all rows matching current conditions.
+	 * @return int  number of affected rows
 	 */
 	public function delete(): int
 	{
@@ -908,8 +908,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Returns referenced row.
-	 * @return ActiveRow|false|null  null if the row does not exist, false if the relationship does not exist
+	 * Returns a referenced (parent) row for a belongs-to relationship.
+	 * Returns null if the referenced row does not exist, false if the relationship is not defined.
+	 * @return ActiveRow|false|null
 	 */
 	public function getReferencedTable(ActiveRow $row, ?string $table, ?string $column = null): ActiveRow|false|null
 	{
@@ -956,7 +957,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Returns referencing rows.
+	 * Returns a grouped selection of referencing (child) rows for a has-many relationship.
 	 * @return GroupedSelection<T>|null
 	 */
 	public function getReferencingTable(
@@ -1033,7 +1034,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Mimic row.
+	 * Sets a row by primary key.
 	 * @param  string  $key
 	 * @param  ActiveRow  $value
 	 */

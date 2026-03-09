@@ -36,6 +36,10 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				'explain' => Expect::bool(true),
 				'reflection' => Expect::string(), // BC
 				'conventions' => Expect::string('discovered'), // Nette\Database\Conventions\DiscoveredConventions
+				'mapping' => Expect::structure([
+					'convention' => Expect::string(''),
+					'tables' => Expect::arrayOf('string', 'string'),
+				])->before(fn($v) => is_string($v) ? ['convention' => $v] : $v),
 				'autowired' => Expect::bool(),
 			]),
 		)->before(fn($val) => is_array(reset($val)) || reset($val) === null
@@ -120,8 +124,15 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			$conventions = Nette\DI\Helpers::filterArguments([$config->conventions])[0];
 		}
 
+		$rowMapping = ($config->mapping->convention || $config->mapping->tables)
+			? new Nette\DI\Definitions\Statement([self::class, 'createRowMapping'], [
+				$config->mapping->convention,
+				(array) $config->mapping->tables,
+			])
+			: null;
+
 		$builder->addDefinition($this->prefix("$name.explorer"))
-			->setFactory(Nette\Database\Explorer::class, [$connection, $structure, $conventions])
+			->setFactory(Nette\Database\Explorer::class, [$connection, $structure, $conventions, null, $rowMapping])
 			->setAutowired($config->autowired);
 
 		$builder->addAlias($this->prefix("$name.context"), $this->prefix("$name.explorer"));
@@ -131,5 +142,29 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			$builder->addAlias("nette.database.$name", $this->prefix($name));
 			$builder->addAlias("nette.database.$name.context", $this->prefix("$name.explorer"));
 		}
+	}
+
+
+	/**
+	 * Creates a row mapping closure that resolves an ActiveRow subclass for each table name.
+	 * @param array<string, string> $tables
+	 * @return \Closure(string): string
+	 */
+	public static function createRowMapping(string $convention, array $tables): \Closure
+	{
+		return static function (string $table) use ($convention, $tables): string {
+			if (isset($tables[$table])) {
+				return $tables[$table];
+			}
+
+			if ($convention !== '') {
+				$class = str_replace('*', str_replace(' ', '', ucwords(strtr($table, '_', ' '))), $convention);
+				if (class_exists($class)) {
+					return $class;
+				}
+			}
+
+			return Nette\Database\Table\ActiveRow::class;
+		};
 	}
 }

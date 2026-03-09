@@ -26,6 +26,8 @@ class Explorer
 		private readonly IStructure $structure,
 		?Conventions $conventions = null,
 		private readonly ?Nette\Caching\Storage $cacheStorage = null,
+		/** @var ?\Closure(string): class-string<Table\ActiveRow> */
+		private readonly ?\Closure $rowMapping = null,
 	) {
 		$this->conventions = $conventions ?: new StaticConventions;
 	}
@@ -121,7 +123,10 @@ class Explorer
 	 */
 	public function createActiveRow(array $data, Table\Selection $selection): Table\ActiveRow
 	{
-		return new Table\ActiveRow($data, $selection);
+		$class = $this->rowMapping
+			? ($this->rowMapping)($selection->getName())
+			: Table\ActiveRow::class;
+		return new $class($data, $selection);
 	}
 
 

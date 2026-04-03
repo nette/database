@@ -76,3 +76,32 @@ test('Tables in schema', function () use ($connection) {
 	$connection->query('SET search_path TO one, two');
 	Assert::same(['one_slave_fk', 'one_two_fk'], names($driver->getForeignKeys('slave')));
 });
+
+
+test('Table with GENERATED ALWAYS AS stored columns', function () use ($connection) {
+	$ver = $connection->query('SHOW server_version')->fetchField();
+	if (version_compare($ver, '12') < 0) {
+		Tester\Environment::skip("GENERATED ALWAYS AS requires PostgreSQL 12+, running $ver.");
+	}
+
+	Nette\Database\Helpers::loadFromFile($connection, Tester\FileMock::create('
+		DROP TABLE IF EXISTS "generated_test";
+
+		CREATE TABLE "generated_test" (
+			"id" serial PRIMARY KEY,
+			"first_name" varchar(50) NOT NULL,
+			"last_name" varchar(50) NOT NULL,
+			"full_name" text GENERATED ALWAYS AS ("first_name" || \' \' || "last_name") STORED
+		);
+	'));
+
+	$driver = $connection->getDriver();
+	$columns = $driver->getColumns('generated_test');
+	$columnNames = array_column($columns, 'name');
+
+	Assert::same(['id', 'first_name', 'last_name', 'full_name'], $columnNames);
+
+	$fullNameCol = $columns[3];
+	Assert::same('full_name', $fullNameCol['name']);
+	Assert::same('TEXT', $fullNameCol['nativetype']);
+});

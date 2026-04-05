@@ -1,0 +1,57 @@
+services:
+    mysql:
+        image: mysql:8.0
+        ports:
+            - "3307:3306"
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+            MYSQL_DATABASE: nette_test
+        healthcheck:
+            test: mysqladmin ping -proot
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    postgres96:
+        image: postgres:9.6
+        ports:
+            - "5433:5432"
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: nette_test
+        healthcheck:
+            test: pg_isready
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    postgres13:
+        image: postgres:13
+        ports:
+            - "5434:5432"
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: nette_test
+        healthcheck:
+            test: pg_isready
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    mssql:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        ports:
+            - "1434:1433"
+        environment:
+            ACCEPT_EULA: "Y"
+            SA_PASSWORD: "YourStrong!Passw0rd"
+            MSSQL_PID: Developer
+        healthcheck:
+            test: /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -d nette_test -Q 'SELECT 1' -N -C
+            interval: 10s
+            start_period: 30s
+            timeout: 5s
+            retries: 5
+        entrypoint: /bin/bash -c "/opt/mssql/bin/sqlservr & until /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'SELECT 1' -N -C 2>/dev/null; do sleep 2; done && /opt/mssql-tools18/bin/sqlcmd -S localhost -U SA -P 'YourStrong!Passw0rd' -Q 'CREATE DATABASE nette_test' -N -C; wait"

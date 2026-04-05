@@ -43,6 +43,24 @@ composer require nette/database
 It requires PHP version 8.1 and supports PHP up to 8.5.
 
 
+Running Tests
+-------------
+
+Run tests against SQLite (no setup needed):
+
+```
+composer run tester
+```
+
+To test against MySQL, PostgreSQL, etc., start the Docker containers and copy the configuration:
+
+```
+docker compose up -d
+cp tests/databases.docker.ini tests/Database/databases.ini
+composer run tester
+```
+
+
 Usage
 -----
 

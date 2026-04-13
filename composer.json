@@ -24,11 +24,14 @@
 		"nette/tester": "^2.6",
 		"nette/di": "^3.1",
 		"mockery/mockery": "^1.6@stable",
-		"tracy/tracy": "^2.9",
+		"tracy/tracy": "^2.12",
 		"phpstan/phpstan": "^2.1@stable",
 		"phpstan/extension-installer": "^1.4@stable",
 		"nette/phpstan-rules": "^1.0",
 		"jetbrains/phpstorm-attributes": "^1.2"
+	},
+	"conflict": {
+		"tracy/tracy": "<2.12"
 	},
 	"autoload": {
 		"classmap": ["src/"],

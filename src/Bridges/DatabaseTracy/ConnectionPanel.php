@@ -51,7 +51,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 		}
 
 		if ($addBarPanel) {
-			$panel = new self($connection, $blueScreen);
+			$panel = new self($connection);
 			$panel->explain = $explain;
 			$panel->name = $name;
 			$bar ??= Tracy\Debugger::getBar();
@@ -62,10 +62,8 @@ class ConnectionPanel implements Tracy\IBarPanel
 	}
 
 
-	public function __construct(
-		Connection $connection,
-		private readonly Tracy\BlueScreen $blueScreen,
-	) {
+	public function __construct(Connection $connection)
+	{
 		$connection->onQuery[] = $this->logQuery(...);
 	}
 
@@ -86,20 +84,10 @@ class ConnectionPanel implements Tracy\IBarPanel
 		}
 
 		$trace = $result instanceof \PDOException
-			? array_map(fn($row) => array_diff_key($row, ['args' => null]), $result->getTrace())
+			? array_map(fn($row) => ['args' => []] + $row, $result->getTrace())
 			: debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 
-		foreach ($trace as $row) {
-			$file = $row['file'] ?? null;
-			if (is_string($file)
-				&& preg_match('~\.(php.?|phtml)$~', $file)
-				&& !$this->blueScreen->isCollapsed($file)
-			) {
-				break;
-			}
-
-			array_shift($trace);
-		}
+		$trace = array_slice($trace, Tracy\Helpers::countTransparentFrames($trace));
 
 		$this->queries[] = $result instanceof Nette\Database\ResultSet
 			? [$connection, $result->getQueryString(), $result->getParameters(), $trace, $result->getTime(), $result->getRowCount(), null]

@@ -4,25 +4,23 @@ Nesting is **counter-based only** — there are **no savepoints**.
 
 ## `transaction()`
 
-`transaction(callable $callback): mixed` runs the callback between `BEGIN` and
-`COMMIT`/`ROLLBACK`. Nesting is tracked purely by `$transactionDepth`:
+`transaction(callable $callback, int $attempts = 1)` runs a phase machine
+(`begin`/`body`/`commit`) inside a retry loop. Nesting is tracked purely by
+`$transactionDepth`:
 
 - a real `BEGIN` is issued only when `transactionDepth === 0`; a nested call merely
   increments the counter and **emits no SQL**;
 - `COMMIT` likewise only at depth 0; on an exception, `ROLLBACK` only when it unwinds
-  back to depth 0, then the exception is rethrown. Any failure of the rollback itself
-  (e.g. when the server already rolled back after a deadlock, or an `onQuery` handler
-  throws) is swallowed so it cannot mask the original exception.
+  back to depth 0 (wrapped in try/catch, since the server may have rolled back
+  already);
+- a **retry** happens only at the outermost level, when `$attempt < $attempts` and the
+  exception implements `RetryableException` (deadlock / lock timeout / connection
+  lost) — firing `onRetry` between attempts.
 
 **The consequence to internalize:** a nested `transaction()` gives **no partial
 rollback**. Only the outermost transaction issues real `BEGIN`/`COMMIT`/`ROLLBACK`, so
 an inner failure tears down the *entire* outer transaction. The idea of savepoints is
 **not implemented** — there is no `SAVEPOINT`/`RELEASE` anywhere in the code.
-
-**No retries either (so don't document them as present):** there is no `$attempts`
-parameter, no retry loop, no `RetryableException` marker, no `onRetry` event.
-`DeadlockException`, `LockTimeoutException` and `ConnectionLostException` exist, but
-nothing in `transaction()` catches and retries them — retrying is the caller's job.
 
 ## Manual control is fenced off inside a callback
 

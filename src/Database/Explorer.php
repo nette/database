@@ -58,12 +58,16 @@ class Explorer
 
 
 	/**
-	 * Executes callback inside a transaction.
+	 * Executes callback inside a transaction. Supports nesting.
+	 * When $attempts > 1, a RetryableException raised during begin, commit
+	 * or inside the callback on the outermost transaction triggers a retry
+	 * of the whole callback. Callbacks must be idempotent. Subscribe to
+	 * Connection::$onRetry to plug in backoff between attempts.
 	 * @param  callable(static): mixed  $callback
 	 */
-	public function transaction(callable $callback): mixed
+	public function transaction(callable $callback, int $attempts = 1): mixed
 	{
-		return $this->connection->transaction(fn() => $callback($this));
+		return $this->connection->transaction(fn() => $callback($this), $attempts);
 	}
 
 

@@ -9,6 +9,17 @@ namespace Nette\Database;
 
 
 /**
+ * Marks transient exceptions that are safe to retry because the server
+ * guarantees the transaction was rolled back, such as deadlocks or lock
+ * timeouts. Connection::transaction() retries the callback automatically
+ * when $attempts > 1.
+ */
+interface RetryableException
+{
+}
+
+
+/**
  * Failed to connect to the database server.
  */
 class ConnectionException extends DriverException
@@ -70,7 +81,7 @@ class CheckConstraintViolationException extends ConstraintViolationException
  * Deadlock or serialization failure detected by the server; the transaction
  * was rolled back and can be retried.
  */
-class DeadlockException extends DriverException
+class DeadlockException extends DriverException implements RetryableException
 {
 }
 
@@ -79,6 +90,6 @@ class DeadlockException extends DriverException
  * A lock wait exceeded the configured timeout. The statement was aborted,
  * typically leaving the surrounding transaction alive.
  */
-class LockTimeoutException extends DriverException
+class LockTimeoutException extends DriverException implements RetryableException
 {
 }

@@ -174,6 +174,12 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	}
 
 
+	public function getExplorer(): Explorer
+	{
+		return $this->explorer;
+	}
+
+
 	/********************* quick access ****************d*g**/
 
 

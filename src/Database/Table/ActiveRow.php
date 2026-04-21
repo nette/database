@@ -50,6 +50,12 @@ class ActiveRow implements \IteratorAggregate, IRow
 	}
 
 
+	public function getExplorer(): Nette\Database\Explorer
+	{
+		return $this->table->getExplorer();
+	}
+
+
 	public function __toString(): string
 	{
 		return (string) $this->getPrimary();

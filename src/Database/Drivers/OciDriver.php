@@ -45,6 +45,9 @@ class OciDriver implements Nette\Database\Driver
 		} elseif (in_array($code, [2266, 2291, 2292], strict: true)) {
 			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
 
+		} elseif ($code === 60) {
+			return Nette\Database\DeadlockException::from($e);
+
 		} else {
 			return Nette\Database\DriverException::from($e);
 		}

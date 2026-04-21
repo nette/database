@@ -46,3 +46,12 @@ class NotNullConstraintViolationException extends ConstraintViolationException
 class UniqueConstraintViolationException extends ConstraintViolationException
 {
 }
+
+
+/**
+ * Deadlock or serialization failure detected by the server; the transaction
+ * was rolled back and can be retried.
+ */
+class DeadlockException extends DriverException
+{
+}

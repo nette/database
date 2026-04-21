@@ -66,6 +66,9 @@ class MySqlDriver implements Nette\Database\Driver
 		} elseif (in_array($code, [1062, 1557, 1569, 1586], strict: true)) {
 			return Nette\Database\UniqueConstraintViolationException::from($e);
 
+		} elseif ($code === 1213) {
+			return Nette\Database\DeadlockException::from($e);
+
 		} elseif ($code >= 2001 && $code <= 2028) {
 			return Nette\Database\ConnectionException::from($e);
 

@@ -33,6 +33,11 @@ class MsSqlDriver implements Nette\Database\Driver
 
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
+		$code = $e->errorInfo[1] ?? null;
+		if ($code === 1205) {
+			return Nette\Database\DeadlockException::from($e);
+		}
+
 		return Nette\Database\DriverException::from($e);
 	}
 

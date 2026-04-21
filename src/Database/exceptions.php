@@ -55,3 +55,12 @@ class UniqueConstraintViolationException extends ConstraintViolationException
 class DeadlockException extends DriverException
 {
 }
+
+
+/**
+ * A lock wait exceeded the configured timeout. The statement was aborted,
+ * typically leaving the surrounding transaction alive.
+ */
+class LockTimeoutException extends DriverException
+{
+}

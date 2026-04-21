@@ -69,6 +69,9 @@ class MySqlDriver implements Nette\Database\Driver
 		} elseif ($code === 1213) {
 			return Nette\Database\DeadlockException::from($e);
 
+		} elseif ($code === 1205) {
+			return Nette\Database\LockTimeoutException::from($e);
+
 		} elseif ($code >= 2001 && $code <= 2028) {
 			return Nette\Database\ConnectionException::from($e);
 

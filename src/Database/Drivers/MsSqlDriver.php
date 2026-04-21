@@ -36,6 +36,9 @@ class MsSqlDriver implements Nette\Database\Driver
 		$code = $e->errorInfo[1] ?? null;
 		if ($code === 1205) {
 			return Nette\Database\DeadlockException::from($e);
+
+		} elseif ($code === 1222) {
+			return Nette\Database\LockTimeoutException::from($e);
 		}
 
 		return Nette\Database\DriverException::from($e);

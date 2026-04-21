@@ -12,4 +12,4 @@ worlds — the low-level core and the Explorer (ActiveRow) layer — so split by
   `Driver` dialect abstraction, and exception mapping.
 - **[results-and-types.md](results-and-types.md)** — `ResultSet` and the DB→PHP
   value normalization.
-- **[transactions.md](transactions.md)** — `transaction()` and depth-counter nesting.
+- **[transactions.md](transactions.md)** — `transaction()`, nesting, and retries.

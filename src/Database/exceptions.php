@@ -17,6 +17,16 @@ class ConnectionException extends DriverException
 
 
 /**
+ * The connection to the server was lost during an operation (e.g. server
+ * restart, network failure, idle-timeout). A reconnect is needed before
+ * the connection can be used again.
+ */
+class ConnectionLostException extends ConnectionException
+{
+}
+
+
+/**
  * A database constraint was violated.
  */
 class ConstraintViolationException extends DriverException

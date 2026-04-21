@@ -55,8 +55,12 @@ class PgSqlDriver implements Nette\Database\Driver
 		} elseif ($code === '55P03') {
 			return Nette\Database\LockTimeoutException::from($e);
 
-		} elseif ($code === '08006') {
-			return Nette\Database\ConnectionException::from($e);
+		} elseif (
+			$code === '08003'
+			|| $code === '08006'
+			|| ($code === 'HY000' && str_contains($e->getMessage(), 'server closed the connection unexpectedly'))
+		) {
+			return Nette\Database\ConnectionLostException::from($e);
 
 		} else {
 			return Nette\Database\DriverException::from($e);

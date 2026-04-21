@@ -46,6 +46,9 @@ class PgSqlDriver implements Nette\Database\Driver
 		} elseif ($code === '23505') {
 			return Nette\Database\UniqueConstraintViolationException::from($e);
 
+		} elseif ($code === '23514') {
+			return Nette\Database\CheckConstraintViolationException::from($e);
+
 		} elseif ($code === '40001' || $code === '40P01') {
 			return Nette\Database\DeadlockException::from($e);
 

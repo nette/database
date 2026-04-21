@@ -87,3 +87,24 @@ test('Exception thrown for foreign key constraint violation', function () use ($
 	Assert::same(1452, $e->getDriverCode());
 	Assert::same($e->getCode(), $e->getSqlState());
 });
+
+
+test('Exception thrown for check constraint violation', function () use ($connection) {
+	// CHECK constraints are enforced in MySQL 8.0.16+
+	$version = (string) $connection->fetchField('SELECT VERSION()');
+	if (version_compare($version, '8.0.16', '<')) {
+		Tester\Environment::skip("CHECK constraints require MySQL 8.0.16+, got $version");
+	}
+
+	$connection->query('CREATE TEMPORARY TABLE check_test (id int, price int CHECK (price >= 0))');
+
+	$e = Assert::exception(
+		fn() => $connection->query('INSERT INTO check_test (id, price) VALUES (1, -5)'),
+		Nette\Database\CheckConstraintViolationException::class,
+		'%a% Check constraint %a%',
+		'HY000',
+	);
+
+	Assert::same(3819, $e->getDriverCode());
+	Assert::same($e->getCode(), $e->getSqlState());
+});

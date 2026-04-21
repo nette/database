@@ -49,6 +49,14 @@ class UniqueConstraintViolationException extends ConstraintViolationException
 
 
 /**
+ * A CHECK constraint check failed.
+ */
+class CheckConstraintViolationException extends ConstraintViolationException
+{
+}
+
+
+/**
  * Deadlock or serialization failure detected by the server; the transaction
  * was rolled back and can be retried.
  */

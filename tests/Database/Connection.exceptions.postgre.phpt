@@ -89,3 +89,18 @@ test('Exception thrown for foreign key constraint violation', function () use ($
 	Assert::same(7, $e->getDriverCode());
 	Assert::same($e->getCode(), $e->getSqlState());
 });
+
+
+test('Exception thrown for check constraint violation', function () use ($connection) {
+	$connection->query('CREATE TEMPORARY TABLE check_test (id int, price int CHECK (price >= 0))');
+
+	$e = Assert::exception(
+		fn() => $connection->query('INSERT INTO check_test (id, price) VALUES (1, -5)'),
+		Nette\Database\CheckConstraintViolationException::class,
+		'%a% Check violation: %A%',
+		'23514',
+	);
+
+	Assert::same(7, $e->getDriverCode());
+	Assert::same($e->getCode(), $e->getSqlState());
+});

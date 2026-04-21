@@ -38,14 +38,15 @@ interval).
                  ├── ConnectionException → ConnectionLostException
                  ├── ConstraintViolationException
                  │     ├── ForeignKey / NotNull / Unique / CheckConstraintViolation
-                 ├── DeadlockException
-                 └── LockTimeoutException
+                 ├── DeadlockException      (Retryable)
+                 └── LockTimeoutException   (Retryable)
 ```
 
 Note `Deadlock`/`LockTimeout` extend `DriverException` **directly**, not the
-constraint hierarchy. There is **no** `RetryableException` marker and `transaction()`
-performs no retries — retrying on deadlock/lock-timeout/connection-lost is the
-caller's job. The mapping is **per driver** in
+constraint hierarchy, and both implement the `RetryableException` marker (used by
+`transaction()` retries). `ConnectionLostException` deliberately does not — a
+connection lost during `COMMIT` has an unknown outcome, so an automatic retry could
+apply the transaction twice. The mapping is **per driver** in
 `convertException`: MySQL keys on the numeric error code, PgSql on the SQLSTATE; an
 unrecognized error falls back to a bare `DriverException::from()`. `DriverException::from`
 parses `errorInfo`, or the `SQLSTATE[..] [..] ..` pattern from the message when

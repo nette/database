@@ -69,8 +69,7 @@ aren't up yet, not a broken test.
   (`?and`/`?set`/`?values`/`?order`/`?list`), so the same array expands differently
   after `WHERE` vs `SET` vs `INSERT`. See `docs/internals/sql-preprocessor.md`.
 - **Nested transactions use a depth counter, not savepoints** - only the outermost
-  `transaction()` issues a real BEGIN/COMMIT/ROLLBACK; there is no partial rollback,
-  and no retry mechanism (no `$attempts`, no `RetryableException`, no `onRetry`).
+  `transaction()` issues a real BEGIN/COMMIT/ROLLBACK; there is no partial rollback.
   There is no `TypeConverter` class either (DB->PHP conversion is
   `Helpers::normalizeRow`). Don't document designed-but-absent features as present.
 - **Array expansion is a mass-assignment surface.** Passing raw user input as the

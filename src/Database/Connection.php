@@ -25,6 +25,9 @@ class Connection
 
 	/** @var array<callable(static, ResultSet|DriverException): void>  Occurs after query is executed */
 	public array $onQuery = [];
+
+	/** @var array<callable(static, int, RetryableException): void>  Occurs before a transaction() retry */
+	public array $onRetry = [];
 	private Driver $driver;
 	private SqlPreprocessor $preprocessor;
 	private ?PDO $pdo = null;
@@ -235,36 +238,60 @@ class Connection
 
 	/**
 	 * Executes callback inside a transaction. Supports nesting.
+	 * When $attempts > 1, a RetryableException raised during begin, commit
+	 * or inside the callback on the outermost transaction triggers a retry
+	 * of the whole callback. Callbacks must be idempotent. The $onRetry
+	 * event fires before each retry and is the place to apply backoff.
 	 * @param  callable(static): mixed  $callback
 	 */
-	public function transaction(callable $callback): mixed
+	public function transaction(callable $callback, int $attempts = 1): mixed
 	{
-		if ($this->transactionDepth === 0) {
-			$this->beginTransaction();
+		if ($attempts < 1) {
+			throw new Nette\InvalidArgumentException('Number of attempts must be at least 1.');
 		}
 
-		$this->transactionDepth++;
-		try {
-			$res = $callback($this);
-		} catch (\Throwable $e) {
-			$this->transactionDepth--;
-			if ($this->transactionDepth === 0) {
-				try {
-					$this->rollBack();
-				} catch (\Throwable) {
-					// e.g. after a deadlock the server has already rolled back; the original exception matters more
+		for ($attempt = 1; ; $attempt++) {
+			$phase = 'begin';
+			try {
+				if ($this->transactionDepth === 0) {
+					$this->beginTransaction();
 				}
+
+				$this->transactionDepth++;
+				$phase = 'body';
+				$res = $callback($this);
+				$this->transactionDepth--;
+				$phase = 'commit';
+				if ($this->transactionDepth === 0) {
+					$this->commit();
+				}
+
+				return $res;
+			} catch (\Throwable $e) {
+				if ($phase === 'body') {
+					$this->transactionDepth--;
+				}
+
+				if ($this->transactionDepth === 0 && $phase !== 'begin') {
+					try {
+						$this->rollBack();
+					} catch (\Throwable) {
+						// server may have already rolled back (deadlock) or the
+						// connection may be gone; the original $e is what matters
+					}
+				}
+
+				if ($this->transactionDepth === 0
+					&& $attempt < $attempts
+					&& $e instanceof RetryableException
+				) {
+					Arrays::invoke($this->onRetry, $this, $attempt, $e);
+					continue;
+				}
+
+				throw $e;
 			}
-
-			throw $e;
 		}
-
-		$this->transactionDepth--;
-		if ($this->transactionDepth === 0) {
-			$this->commit();
-		}
-
-		return $res;
 	}
 
 

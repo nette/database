@@ -813,7 +813,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 * A single associative array inserts one row and returns the inserted ActiveRow;
 	 * a list of rows or a Selection performs a bulk insert and returns the number of affected rows.
 	 * @param  iterable<string, mixed>|iterable<int, array<string, mixed>>|Selection<ActiveRow>  $data
-	 * @return ($data is array<string, mixed> ? T|array<string, mixed> : int)
+	 * @return ($data is list<mixed>|Selection<ActiveRow> ? int : T|array<mixed>|int)
 	 */
 	public function insert(iterable $data): ActiveRow|array|int
 	{

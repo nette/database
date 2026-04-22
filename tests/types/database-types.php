@@ -116,3 +116,36 @@ function testResultSetFetchPairs(ResultSet $resultSet): void
 {
 	assertType('array<mixed>', $resultSet->fetchPairs());
 }
+
+
+/** @param Selection<ActiveRow> $selection */
+function testSelectionInsertSingleRow(Selection $selection): void
+{
+	// Single associative array -> inserted ActiveRow (or affected count / data for keyless tables)
+	$result = $selection->insert(['name' => 'Alice']);
+	assertType('array<mixed>|int|Nette\Database\Table\ActiveRow', $result);
+}
+
+
+/** @param Selection<ActiveRow> $selection */
+function testSelectionInsertBulk(Selection $selection): void
+{
+	// List of rows -> bulk insert -> number of affected rows
+	$result = $selection->insert([
+		['name' => 'Alice'],
+		['name' => 'Bob'],
+	]);
+	assertType('int', $result);
+}
+
+
+/**
+ * @param Selection<ActiveRow> $selection
+ * @param Selection<ActiveRow> $source
+ */
+function testSelectionInsertFromSelection(Selection $selection, Selection $source): void
+{
+	// Insert from another Selection -> bulk insert -> number of affected rows
+	$result = $selection->insert($source);
+	assertType('int', $result);
+}

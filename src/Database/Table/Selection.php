@@ -810,9 +810,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Inserts one or more rows into the table.
-	 * Returns the inserted ActiveRow for single-row inserts, or the number of affected rows otherwise.
-	 * @param  iterable<string, mixed>|Selection<ActiveRow>  $data
-	 * @return ($data is array<string, mixed> ? T|array<string, mixed> : int)
+	 * @param  iterable<string, mixed>|list<array<string, mixed>>|Selection<ActiveRow>  $data
+	 * @return T|array<int|string, mixed>|int
 	 */
 	public function insert(iterable $data): ActiveRow|array|int
 	{

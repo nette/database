@@ -116,3 +116,33 @@ function testResultSetFetchPairs(ResultSet $resultSet): void
 {
 	assertType('array<mixed>', $resultSet->fetchPairs());
 }
+
+
+/** @param Selection<ActiveRow> $selection */
+function testSelectionInsertSingleRow(Selection $selection): void
+{
+	$result = $selection->insert(['name' => 'Alice']);
+	assertType('array<int|string, mixed>|int|Nette\Database\Table\ActiveRow', $result);
+}
+
+
+/** @param Selection<ActiveRow> $selection */
+function testSelectionInsertBulk(Selection $selection): void
+{
+	$result = $selection->insert([
+		['name' => 'Alice'],
+		['name' => 'Bob'],
+	]);
+	assertType('array<int|string, mixed>|int|Nette\Database\Table\ActiveRow', $result);
+}
+
+
+/**
+ * @param Selection<ActiveRow> $selection
+ * @param Selection<ActiveRow> $source
+ */
+function testSelectionInsertFromSelection(Selection $selection, Selection $source): void
+{
+	$result = $selection->insert($source);
+	assertType('array<int|string, mixed>|int|Nette\Database\Table\ActiveRow', $result);
+}

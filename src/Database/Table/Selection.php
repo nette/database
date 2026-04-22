@@ -159,7 +159,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			$this->previousAccessedColumns ??= [];
 		}
 
-		return array_keys(array_filter((array) $this->previousAccessedColumns));
+		return is_array($this->previousAccessedColumns)
+			? array_keys(array_filter($this->previousAccessedColumns))
+			: [];
 	}
 
 
@@ -193,6 +195,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	public function fetch(): ?ActiveRow
 	{
 		$this->execute();
+		if ($this->data === null) {
+			return null;
+		}
+
 		$return = current($this->data);
 		next($this->data);
 		return $return === false ? null : $return;
@@ -249,7 +255,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	public function fetchAssoc(string $path): array
 	{
 		$rows = array_map(iterator_to_array(...), $this->fetchAll());
-		return Nette\Utils\Arrays::associate($rows, $path);
+		return (array) Nette\Utils\Arrays::associate($rows, $path);
 	}
 
 
@@ -284,7 +290,12 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		} elseif (is_array($key) && !Nette\Utils\Arrays::isList($key)) { // key contains column names
 			$this->where($key);
 		} else {
-			$this->where($this->name . '.' . $this->getPrimary(), $key);
+			$primary = $this->getPrimary();
+			if (is_array($primary)) {
+				throw new Nette\NotSupportedException("Table '{$this->name}' has composite primary key, pass values as a list or associative array.");
+			}
+
+			$this->where($this->name . '.' . $primary, $key);
 		}
 
 		return $this;
@@ -460,7 +471,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		if ($groupFunction && $selection->getSqlBuilder()->importGroupConditions($this->getSqlBuilder())) {
 			$selection->select("$function AS aggregate");
 			$query = "SELECT $groupFunction(aggregate) AS groupaggregate FROM (" . $selection->getSql() . ') AS aggregates';
-			return $this->explorer->query($query, ...$selection->getSqlBuilder()->getParameters())->fetch()->groupaggregate;
+			$row = $this->explorer->query($query, ...$selection->getSqlBuilder()->getParameters())->fetch()
+				?? throw new Nette\ShouldNotHappenException('Aggregation query returned no rows.');
+			return $row->groupaggregate;
 		} else {
 			$selection->select($function);
 			foreach ($selection->fetch() ?? [] as $val) {
@@ -478,10 +491,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	{
 		if (!$column) {
 			$this->execute();
-			return count($this->data);
+			return count($this->data ?? []);
 		}
 
-		return (int) $this->aggregation("COUNT($column)", 'SUM');
+		return max(0, (int) $this->aggregation("COUNT($column)", 'SUM'));
 	}
 
 
@@ -523,10 +536,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 		$this->observeCache = $this;
 
-		if ($this->primary === null && $this->sqlBuilder->getSelect() === null) {
-			throw new Nette\InvalidStateException('Table with no primary key requires an explicit select clause.');
-		}
-
 		try {
 			$result = $this->query($this->getSql());
 
@@ -542,7 +551,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 		$this->rows = [];
 		$usedPrimary = true;
-		foreach ($result->getPdoStatement() as $key => $row) {
+		$pdoStatement = $result->getPdoStatement() ?? throw new Nette\ShouldNotHappenException;
+		foreach ($pdoStatement as $key => $row) {
 			$row = $this->createRow($result->normalizeRow($row));
 			$primary = $row->getSignature(throw: false);
 			$usedPrimary = $usedPrimary && $primary !== '';
@@ -566,6 +576,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	protected function createRow(array $row): ActiveRow
 	{
+		/** @var T */
 		return $this->explorer->createActiveRow($row, $this);
 	}
 
@@ -757,7 +768,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			$this->dataRefreshed = true;
 
 			// move iterator to specific key
-			if (isset($currentKey)) {
+			if (isset($currentKey) && $this->data !== null) {
 				while (key($this->data) !== null && key($this->data) !== $currentKey) {
 					next($this->data);
 				}
@@ -818,7 +829,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 		if ($data instanceof self || $this->primary === null) {
 			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
-			return $return->getRowCount();
+			return $return->getRowCount()
+				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
 		}
 
 		$primaryKey = [];
@@ -851,13 +863,16 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		// If primaryKey cannot be prepared, return inserted rows count
 		} else {
 			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
-			return $return->getRowCount();
+			return $return->getRowCount()
+				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
 		}
 
+		/** @phpstan-var T $row */
 		$row = $this->createSelectionInstance()
 			->select('*')
 			->wherePrimary($primaryKey)
-			->fetch();
+			->fetch()
+			?? throw new Nette\ShouldNotHappenException;
 
 		if ($this->rows !== null) {
 			if ($signature = $row->getSignature(false)) {
@@ -888,10 +903,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			return 0;
 		}
 
-		return $this->explorer->query(
-			$this->sqlBuilder->buildUpdateQuery(),
-			...array_merge([$data], $this->sqlBuilder->getParameters()),
-		)->getRowCount();
+		return $this->explorer
+			->query($this->sqlBuilder->buildUpdateQuery(), ...array_merge([$data], $this->sqlBuilder->getParameters()))
+			->getRowCount()
+			?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
 	}
 
 
@@ -901,7 +916,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function delete(): int
 	{
-		return $this->query($this->sqlBuilder->buildDeleteQuery())->getRowCount();
+		return $this->query($this->sqlBuilder->buildDeleteQuery())->getRowCount()
+			?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
 	}
 
 
@@ -916,6 +932,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	public function getReferencedTable(ActiveRow $row, ?string $table, ?string $column = null): ActiveRow|false|null
 	{
 		if (!$column) {
+			if ($table === null) {
+				return false;
+			}
+
 			$belongsTo = $this->conventions->getBelongsToReference($this->name, $table);
 			if (!$belongsTo) {
 				return false;
@@ -936,7 +956,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		if ($selection === null || ($checkPrimaryKey !== null && !isset($cacheKeys[$checkPrimaryKey]))) {
 			$this->execute();
 			$cacheKeys = [];
-			foreach ($this->rows as $row) {
+			foreach ($this->rows ?? [] as $row) {
 				if ($row[$column] === null) {
 					continue;
 				}
@@ -978,6 +998,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			[$table, $column] = $hasMany;
 		}
 
+		/** @var ?GroupedSelection<ActiveRow> $prototype */
 		$prototype = &$this->refCache['referencingPrototype'][$this->getSpecificCacheKey()]["$table.$column"];
 		if (!$prototype) {
 			$prototype = $this->createGroupedSelectionInstance($table, $column);
@@ -986,7 +1007,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		}
 
 		$clone = clone $prototype;
-		$clone->setActive($active);
+		if ($active !== null) {
+			$clone->setActive($active);
+		}
+
 		return $clone;
 	}
 
@@ -997,7 +1021,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	public function rewind(): void
 	{
 		$this->execute();
-		$this->keys = array_keys($this->data);
+		$this->keys = array_keys($this->data ?? []);
 		reset($this->keys);
 	}
 
@@ -1005,7 +1029,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/** @return T|false */
 	public function current(): ActiveRow|false
 	{
-		return ($key = current($this->keys)) !== false
+		$key = current($this->keys);
+		return $key !== false && isset($this->data[$key])
 			? $this->data[$key]
 			: false;
 	}
@@ -1013,7 +1038,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	public function key(): string|int
 	{
-		return current($this->keys);
+		$key = current($this->keys);
+		return $key === false ? -1 : $key;
 	}
 
 
@@ -1054,7 +1080,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	public function offsetGet($key): ?ActiveRow
 	{
 		$this->execute();
-		return $this->rows[$key];
+		return $this->rows[$key] ?? null;
 	}
 
 

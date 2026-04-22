@@ -178,7 +178,7 @@ class Structure implements IStructure
 	{
 		$driver = $this->connection->getDriver();
 
-		$structure = [];
+		$structure = ['tables' => [], 'columns' => [], 'primary' => [], 'aliases' => [], 'hasMany' => [], 'belongsTo' => []];
 		$structure['tables'] = $driver->getTables();
 
 		foreach ($structure['tables'] as $tablePair) {
@@ -199,7 +199,7 @@ class Structure implements IStructure
 
 		if (isset($structure['hasMany'])) {
 			foreach ($structure['hasMany'] as &$table) {
-				uksort($table, fn($a, $b): int => strlen($a) <=> strlen($b));
+				uksort($table, fn(string $a, string $b): int => strlen($a) <=> strlen($b));
 			}
 		}
 
@@ -239,6 +239,7 @@ class Structure implements IStructure
 
 		$foreignKeys = $this->connection->getDriver()->getForeignKeys($table);
 
+		/** @var array<string, int> $fksColumnsCounts */
 		$fksColumnsCounts = [];
 		foreach ($foreignKeys as $foreignKey) {
 			$tmp = &$fksColumnsCounts[$foreignKey['name']];
@@ -253,7 +254,7 @@ class Structure implements IStructure
 		}
 
 		if (isset($structure['belongsTo'][$lowerTable])) {
-			uksort($structure['belongsTo'][$lowerTable], fn($a, $b): int => strlen($a) <=> strlen($b));
+			uksort($structure['belongsTo'][$lowerTable], fn(string $a, string $b): int => strlen($a) <=> strlen($b));
 		}
 	}
 

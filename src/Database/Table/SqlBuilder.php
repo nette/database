@@ -13,7 +13,7 @@ use Nette\Database\Driver;
 use Nette\Database\Explorer;
 use Nette\Database\IStructure;
 use Nette\Database\SqlLiteral;
-use function array_flip, array_keys, array_map, array_merge, array_pop, array_shift, array_unshift, array_values, count, end, explode, hash, implode, is_array, is_string, json_encode, key, preg_match, preg_match_all, preg_replace, preg_replace_callback, rtrim, str_contains, str_repeat, strlen, strtoupper, substr, substr_count, substr_replace, trim;
+use function array_flip, array_keys, array_map, array_merge, array_pop, array_shift, array_unshift, array_values, count, end, explode, hash, implode, is_array, iterator_to_array, json_encode, key, preg_match, preg_match_all, preg_replace, preg_replace_callback, rtrim, str_contains, str_repeat, strlen, strtoupper, substr, substr_count, substr_replace, trim;
 
 
 /**
@@ -215,14 +215,14 @@ class SqlBuilder
 			$this->buildSelectQuery();
 		}
 
-		return array_merge(
+		return array_values(array_merge(
 			$this->parameters['select'],
 			$this->parameters['joinConditionSorted'] ? array_merge(...array_values($this->parameters['joinConditionSorted'])) : [],
 			$this->parameters['where'],
 			$this->parameters['group'],
 			$this->parameters['having'],
 			$this->parameters['order'],
-		);
+		));
 	}
 
 
@@ -301,7 +301,7 @@ class SqlBuilder
 	 */
 	public function addJoinCondition(string $tableChain, string|array $condition, mixed ...$params): bool
 	{
-		$this->parameters['joinConditionSorted'] = null;
+		unset($this->parameters['joinConditionSorted']);
 		if (!isset($this->joinCondition[$tableChain])) {
 			$this->joinCondition[$tableChain] = $this->parameters['joinCondition'][$tableChain] = [];
 		}
@@ -325,11 +325,14 @@ class SqlBuilder
 		array &$conditionsParameters,
 	): bool
 	{
-		if (is_array($condition) && !empty($params[0]) && is_array($params[0])) {
+		if (is_array($condition)) {
+			if (empty($params[0]) || !is_array($params[0])) {
+				throw new Nette\InvalidArgumentException('Array condition requires array of parameters.');
+			}
 			return $this->addConditionComposition($condition, $params[0], $conditions, $conditionsParameters);
 		}
 
-		$hash = $this->getConditionHash(is_string($condition) ? $condition : '', $params);
+		$hash = $this->getConditionHash($condition, $params);
 		if (isset($this->conditions[$hash])) {
 			return false;
 		}
@@ -370,7 +373,7 @@ class SqlBuilder
 				$condition,
 				$match,
 				PREG_OFFSET_CAPTURE,
-			);
+			) ?: throw new Nette\ShouldNotHappenException;
 			$hasOperator = ($match[1][0] === '?' && $match[1][1] === 0) || !empty($match[2][0]);
 
 			if ($arg === null) {
@@ -397,10 +400,16 @@ class SqlBuilder
 					$clone = clone $arg;
 					if (!$clone->getSqlBuilder()->select) {
 						try {
-							$clone->select($clone->getPrimary());
-						} catch (\LogicException | \TypeError $e) {
+							$primary = $clone->getPrimary();
+						} catch (\LogicException $e) {
 							throw new Nette\InvalidArgumentException('Selection argument must have defined a select column.', 0, $e);
 						}
+
+						if (is_array($primary)) {
+							throw new Nette\InvalidArgumentException('Selection argument must have defined a select column.');
+						}
+
+						$clone->select($primary);
 					}
 
 					$arg = null;
@@ -441,7 +450,7 @@ class SqlBuilder
 			}
 
 			if ($replace) {
-				$condition = substr_replace($condition, $replace, $match[1][1], strlen($match[1][0]));
+				$condition = substr_replace($condition, $replace, $match[1][1] ?? 0, strlen($match[1][0]));
 				$replace = null;
 			}
 
@@ -690,7 +699,7 @@ class SqlBuilder
 	{
 		$query = preg_replace_callback($this->getColumnChainsRegxp(), function (array $match) use (&$joins): string {
 			return $this->parseJoinsCb($joins, $match);
-		}, $query);
+		}, $query) ?? throw new Nette\InvalidStateException('Failed to parse table joins.');
 	}
 
 
@@ -715,7 +724,7 @@ class SqlBuilder
 
 		preg_match_all('~
 			(?P<del> [.:])?(?P<key> [\w_]*[a-z][\w_]* )(\((?P<throughColumn> [\w_]*[a-z][\w_]* )\))?
-		~xi', $chain, $keyMatches, PREG_SET_ORDER);
+		~xi', $chain, $keyMatches, PREG_SET_ORDER) ?: throw new Nette\InvalidArgumentException("Invalid column chain '{$match['chain']}'.");
 
 		$parent = $this->tableName;
 		$parentAlias = preg_replace('#^(.*\.)?(.*)$#', '$2', $this->tableName);
@@ -728,8 +737,11 @@ class SqlBuilder
 				&& isset($tables[$keyMatches[0]['key'] . '.' . $keyMatches[1]['key']])
 			) {
 				$keyMatch = array_shift($keyMatches);
-				$keyMatches[0]['key'] = $keyMatch['key'] . '.' . $keyMatches[0]['key'];
-				$keyMatches[0]['del'] = $keyMatch['del'];
+				$keyMatches[0] = [
+					0 => $keyMatch[0] . $keyMatches[0][0],
+					'del' => $keyMatch['del'],
+					'key' => $keyMatch['key'] . '.' . $keyMatches[0]['key'],
+				] + $keyMatches[0];
 			}
 		}
 
@@ -804,10 +816,8 @@ class SqlBuilder
 				$tableAlias = $this->currentAlias;
 			} elseif ($parent === $table) {
 				$tableAlias = $parentAlias . '_ref';
-			} elseif ($keyMatch['key']) {
-				$tableAlias = $keyMatch['key'];
 			} else {
-				$tableAlias = preg_replace('#^(.*\.)?(.*)$#', '$2', $table);
+				$tableAlias = $keyMatch['key'];
 			}
 
 			$tableChain .= $keyMatch[0];
@@ -932,8 +942,10 @@ class SqlBuilder
 				$parameter = $this->getConditionHash($parameter->getSql(), $parameter->getParameters());
 			} elseif ($parameter instanceof \Stringable) {
 				$parameter = $parameter->__toString();
-			} elseif (is_array($parameter) || $parameter instanceof \ArrayAccess) {
+			} elseif (is_array($parameter)) {
 				$parameter = $this->getConditionHash((string) $key, $parameter);
+			} elseif ($parameter instanceof \Traversable) {
+				$parameter = $this->getConditionHash((string) $key, iterator_to_array($parameter));
 			}
 		}
 

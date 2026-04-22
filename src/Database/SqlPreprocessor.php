@@ -8,7 +8,7 @@
 namespace Nette\Database;
 
 use Nette;
-use function array_key_exists, array_keys, array_map, array_merge, array_values, count, explode, get_debug_type, implode, in_array, is_array, is_bool, is_float, is_int, is_resource, is_scalar, is_string, iterator_to_array, ltrim, number_format, rtrim, str_contains, str_ends_with, stream_get_contents, strtoupper, substr;
+use function array_key_exists, array_keys, array_map, array_values, count, explode, get_debug_type, implode, in_array, is_array, is_bool, is_float, is_int, is_resource, is_scalar, is_string, iterator_to_array, ltrim, number_format, rtrim, str_contains, str_ends_with, stream_get_contents, strtoupper, substr;
 
 
 /**
@@ -199,7 +199,7 @@ class SqlPreprocessor
 			$value instanceof Table\ActiveRow => $this->formatValue($value->getPrimary()),
 			$value instanceof \DateTimeInterface => $this->driver->formatDateTime($value),
 			$value instanceof \DateInterval => $this->driver->formatDateInterval($value),
-			$value instanceof \BackedEnum && is_scalar($value->value) => $this->formatValue($value->value),
+			$value instanceof \BackedEnum => $this->formatValue($value->value),
 			$value instanceof \Stringable => $this->formatValue((string) $value),
 			default => throw new Nette\InvalidArgumentException('Unexpected type of parameter: ' . get_debug_type($value))
 		};
@@ -353,8 +353,8 @@ class SqlPreprocessor
 	 */
 	private function formatLiteral(SqlLiteral $value): string
 	{
-		[$res, $params] = (clone $this)->process([$value->getSql(), ...$value->getParameters()], $this->useParams);
-		$this->remaining = array_merge($this->remaining, $params);
+		[$res, $params] = (clone $this)->process([$value->getSql(), ...array_values($value->getParameters())], $this->useParams);
+		$this->remaining = [...$this->remaining, ...$params];
 		return $res;
 	}
 

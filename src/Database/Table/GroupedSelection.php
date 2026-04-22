@@ -103,9 +103,11 @@ class GroupedSelection extends Selection
 	 */
 	public function aggregation(string $function, ?string $groupFunction = null): mixed
 	{
-		$aggregation = &$this->getRefTable($refPath)->aggregation[$refPath . $function . $this->sqlBuilder->getSelectQueryHash($this->getPreviousAccessedColumns())];
+		$aggregations = &$this->getRefTable($refPath)->aggregation;
+		$key = $refPath . $function . $this->sqlBuilder->getSelectQueryHash($this->getPreviousAccessedColumns());
+		$aggregation = &$aggregations[$key];
 
-		if ($aggregation === null) {
+		if (!isset($aggregations[$key])) {
 			$aggregation = [];
 
 			$selection = $this->createSelectionInstance();
@@ -162,7 +164,7 @@ class GroupedSelection extends Selection
 			$this->accessedColumns = $accessedColumns;
 
 			$limit = $this->sqlBuilder->getLimit();
-			$rows = count($this->refTable->rows);
+			$rows = count($this->refTable->rows ?? []);
 			if ($limit && $rows > 1) {
 				$this->sqlBuilder->setLimit(null, null);
 			}
@@ -202,7 +204,9 @@ class GroupedSelection extends Selection
 				$row->setTable($this); // injects correct parent GroupedSelection
 			}
 
-			reset($this->data);
+			if ($this->data !== null) {
+				reset($this->data);
+			}
 		}
 	}
 
@@ -253,11 +257,12 @@ class GroupedSelection extends Selection
 	 */
 	public function insert(iterable $data): ActiveRow|array|int
 	{
-		if ($data instanceof \Traversable && !$data instanceof Selection) {
-			$data = iterator_to_array($data);
+		if ($data instanceof Selection) {
+			return parent::insert($data);
 		}
 
-		if (Nette\Utils\Arrays::isList($data)) {
+		$data = $data instanceof \Traversable ? iterator_to_array($data) : $data;
+		if (array_is_list($data)) {
 			foreach (array_keys($data) as $key) {
 				$data[$key][$this->column] = $this->active;
 			}

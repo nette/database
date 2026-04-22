@@ -35,7 +35,7 @@ class DiscoveredConventions implements Conventions
 	public function getHasManyReference(string $nsTable, string $key): ?array
 	{
 		$candidates = $columnCandidates = [];
-		$targets = $this->structure->getHasManyReference($nsTable);
+		$targets = $this->structure->getHasManyReference($nsTable) ?? [];
 		$table = preg_replace('#^(.*\.)?(.*)$#', '$2', $nsTable);
 
 		foreach ($targets as $targetNsTable => $targetColumns) {
@@ -87,7 +87,7 @@ class DiscoveredConventions implements Conventions
 	 */
 	public function getBelongsToReference(string $table, string $key): ?array
 	{
-		$tableColumns = $this->structure->getBelongsToReference($table);
+		$tableColumns = $this->structure->getBelongsToReference($table) ?? [];
 
 		foreach ($tableColumns as $column => $targetTable) {
 			if (stripos($column, $key) !== false) {

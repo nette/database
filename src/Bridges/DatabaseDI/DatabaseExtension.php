@@ -62,6 +62,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		foreach ($this->config as $name => $config) {
 			if ($config->debugger ?? $builder->getByType(Tracy\BlueScreen::class)) {
 				$connection = $builder->getDefinition($this->prefix("$name.connection"));
+				assert($connection instanceof Nette\DI\Definitions\ServiceDefinition);
 				$connection->addSetup(
 					[Nette\Bridges\DatabaseTracy\ConnectionPanel::class, 'initialize'],
 					[$connection, $this->debugMode, $name, !empty($config->explain)],

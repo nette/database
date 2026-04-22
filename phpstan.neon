@@ -1,5 +1,149 @@
 parameters:
-	level: 5
+	level: 8
 
 	paths:
 		- src
+
+	excludePaths:
+		- src/compatibility.php
+		- src/compatibility-intf.php
+
+	fileExtensions:
+		- php
+		- phtml
+
+	ignoreErrors:
+		# $refPath is populated via @param-out by getRefTable() — PHPStan doesn't track this
+		-
+			identifier: variable.undefined
+			path: src/Database/Table/Selection.php
+
+		# Readonly lazy-loading via __get magic
+		-
+			identifier: property.uninitializedReadonly
+			paths:
+				- src/Database/Reflection.php
+				- src/Database/Reflection/Table.php
+		-
+			identifier: unset.readOnlyProperty
+			paths:
+				- src/Database/Reflection.php
+				- src/Database/Reflection/Table.php
+		-
+			identifier: property.readOnlyAssignNotInConstructor
+			paths:
+				- src/Database/Reflection.php
+				- src/Database/Reflection/Table.php
+
+		# Deprecated interfaces without generic types
+		-
+			identifier: missingType.generics
+			paths:
+				- src/Database/IRow.php
+				- src/Database/IRowContainer.php
+
+		# Generic conflicts from deprecated IRowContainer/IRow extending Traversable without type params
+		-
+			identifier: generics.interfaceConflict
+			paths:
+				- src/Database/ResultSet.php
+				- src/Database/Row.php
+				- src/Database/Table/GroupedSelection.php
+				- src/Database/Table/ActiveRow.php
+				- src/Database/Table/Selection.php
+
+		# Iterator/ArrayAccess covariance/contravariance (PHP interface limitation)
+		-
+			identifier: method.childReturnType
+			paths:
+				- src/Database/ResultSet.php
+				- src/Database/Table/Selection.php
+		-
+			identifier: method.childParameterType
+			paths:
+				- src/Database/Row.php
+				- src/Database/Table/Selection.php
+
+		# Intentional new static() in exception hierarchy
+		-
+			identifier: new.static
+			path: src/Database/DriverException.php
+
+		# Closure variables consumed by require'd phtml template
+		-
+			identifier: closure.unusedUse
+			path: src/Bridges/DatabaseTracy/ConnectionPanel.php
+
+		# Defensive instanceof check in elseif branch for readability
+		-
+			identifier: instanceof.alwaysTrue
+			path: src/Bridges/DatabaseTracy/ConnectionPanel.php
+
+		# Lazy-loading side effect via __get magic
+		-
+			identifier: expr.resultUnused
+			path: src/Database/Reflection.php
+
+		# DI extension: $this->config is array|object from Nette Schema
+		-
+			identifier: foreach.nonIterable
+			path: src/Bridges/DatabaseDI/DatabaseExtension.php
+
+		# PDOException::$queryString is set by PDO engine, not formally declared
+		-
+			identifier: property.notFound
+			path: src/Bridges/DatabaseTracy/ConnectionPanel.php
+
+		# Dynamic callable construction: "is_$type"($value) where $type is always valid
+		-
+			identifier: callable.nonCallable
+			path: src/Database/SqlPreprocessor.php
+
+		# Defensive runtime checks unreachable per @param type
+		-
+			identifier: instanceof.alwaysTrue
+			path: src/Database/SqlPreprocessor.php
+		-
+			identifier: booleanAnd.alwaysFalse
+			path: src/Database/SqlPreprocessor.php
+
+		# getPrimary() returns string for single-column PK (composite PK not supported here)
+		-
+			identifier: argument.type
+			path: src/Database/Table/ActiveRow.php
+		-
+			identifier: array.invalidKey
+			path: src/Database/Table/ActiveRow.php
+
+		# Return type mismatches from generic covariance and internal caching
+		-
+			identifier: return.type
+			paths:
+				- src/Database/ResultSet.php
+				- src/Database/Structure.php
+
+		# Internal SQL is dynamically assembled from trusted components, not literal-string
+		-
+			message: '#expects literal-string, .+ given#'
+			paths:
+				- src/Database/Table/Selection.php
+				- src/Database/Table/GroupedSelection.php
+
+		# Array offset access on Row/ActiveRow objects and nullable arrays
+		-
+			identifier: offsetAccess.notFound
+			path: src/Database/Helpers.php
+
+		# Defensive checks that are always true/false per PHPStan type narrowing
+		-
+			identifier: empty.offset
+			path: src/Database/Helpers.php
+		-
+			identifier: isset.offset
+			path: src/Database/Helpers.php
+		# Latte-generated n:attr idiom: ($tmp = expr) === null ? '' : ...
+		-
+			identifier: identical.alwaysFalse
+			paths:
+				- src/Bridges/DatabaseTracy/dist/panel.phtml
+				- src/Bridges/DatabaseTracy/dist/tab.phtml

@@ -108,6 +108,10 @@ class ResultSet implements \Iterator, IRowContainer
 	/** @return array<string, string> */
 	public function getColumnTypes(): array
 	{
+		if ($this->pdoStatement === null) {
+			return [];
+		}
+
 		$this->types ??= $this->connection->getDriver()->getColumnTypes($this->pdoStatement);
 		return $this->types;
 	}
@@ -199,7 +203,7 @@ class ResultSet implements \Iterator, IRowContainer
 
 		$data = $this->pdoStatement ? $this->pdoStatement->fetch() : null;
 		if (!$data) {
-			$this->pdoStatement->closeCursor();
+			$this->pdoStatement?->closeCursor();
 			return null;
 
 		} elseif ($this->lastRow === null && count($data) !== $this->pdoStatement->columnCount()) {
@@ -276,7 +280,7 @@ class ResultSet implements \Iterator, IRowContainer
 	 */
 	public function fetchAll(): array
 	{
-		$this->rows ??= iterator_to_array($this);
+		$this->rows ??= iterator_to_array($this, preserve_keys: false);
 		return $this->rows;
 	}
 }

@@ -370,7 +370,7 @@ class Helpers
 			}
 		} else {
 			foreach ($rows as $row) {
-				$return[(string) $row[$key]] = ($value === null ? $row : $row[$value]);
+				$return[(string) $row[$key]] = $value === null ? $row : $row[$value];
 			}
 		}
 
@@ -386,6 +386,10 @@ class Helpers
 		$cols = [];
 		for ($i = 0; $i < $statement->columnCount(); $i++) {
 			$meta = $statement->getColumnMeta($i);
+			if ($meta === false) {
+				continue;
+			}
+
 			$cols[$meta['name']][] = $meta['table'] ?? '';
 		}
 

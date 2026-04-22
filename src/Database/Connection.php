@@ -8,10 +8,11 @@
 namespace Nette\Database;
 
 use JetBrains\PhpStorm\Language;
+use Nette;
 use Nette\Utils\Arrays;
 use PDO;
 use PDOException;
-use function func_get_args, str_replace, ucfirst;
+use function str_replace, ucfirst;
 
 
 /**
@@ -71,7 +72,11 @@ class Connection
 		$class = empty($this->options['driverClass'])
 			? 'Nette\Database\Drivers\\' . ucfirst(str_replace('sql', 'Sql', $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) . 'Driver'
 			: $this->options['driverClass'];
-		$this->driver = new $class;
+		$driver = new $class;
+		if (!$driver instanceof Driver) {
+			throw new Nette\InvalidStateException("Driver class '$class' does not implement " . Driver::class . '.');
+		}
+		$this->driver = $driver;
 		$this->preprocessor = new SqlPreprocessor($this);
 		$this->driver->initialize($this, $this->options);
 		Arrays::invoke($this->onConnect, $this);
@@ -106,7 +111,7 @@ class Connection
 	public function getPdo(): PDO
 	{
 		$this->connect();
-		return $this->pdo;
+		return $this->pdo ?? throw new Nette\ShouldNotHappenException;
 	}
 
 

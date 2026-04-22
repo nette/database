@@ -25,6 +25,13 @@ test('Tracy Bar', function () {
 
 	Assert::matchFile(__DIR__ . '/tab.html', $panel->getTab());
 	Assert::matchFile(__DIR__ . '/panel.html', $panel->getPanel());
+	Assert::matchFile(__DIR__ . '/panel.agent.md', $panel->getAgentInfo());
+});
+
+test('getAgentInfo() returns null when no queries', function () {
+	$connection = new Connection('sqlite::memory:');
+	$panel = ConnectionPanel::initialize($connection, addBarPanel: true, name: 'foo');
+	Assert::null($panel->getAgentInfo());
 });
 
 test('Bluescreen Panel', function () {

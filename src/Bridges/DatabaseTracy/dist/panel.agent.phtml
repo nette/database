@@ -1,0 +1,64 @@
+<?php declare(strict_types=1);
+
+/** @var list<array> $queries */
+/** @var string $name */
+/** @var int $count */
+/** @var float $totalTime */
+if (!$count) /* pos 5:1 */ return;
+echo '## Database queries';
+if ($name !== '') /* pos 6:20 */ {
+	echo ' (';
+	echo Tracy\Helpers::escapeMd($name) /* pos 6:39 */;
+	echo ')';
+}
+echo '
+
+';
+echo Tracy\Helpers::escapeMd($count) /* pos 8:1 */;
+echo ' ';
+echo Tracy\Helpers::escapeMd($count === 1 ? 'query' : 'queries') /* pos 8:10 */;
+if ($totalTime) /* pos 8:42 */ {
+	echo ', time ';
+	echo Tracy\Helpers::escapeMd(sprintf('%0.3f', $totalTime * 1000)) /* pos 8:64 */;
+	echo ' ms';
+}
+echo '
+
+```sql
+';
+foreach ($queries as $i => [$connection, $sql, $params, $trace, $time, $rows, $error]) /* pos 11:1 */ {
+	if ($i > 0) /* pos 12:2 */ {
+		echo "\n";
+	}
+	echo '-- ';
+	if ($error) /* pos 15:5 */ {
+		echo 'ERROR: ';
+		echo Tracy\Helpers::escapeMd($error) /* pos 15:23 */;
+	} else /* pos 15:31 */ {
+		echo Tracy\Helpers::escapeMd(sprintf('%0.3f', $time * 1000)) /* pos 15:37 */;
+		echo ' ms';
+		if ($rows !== null) /* pos 15:72 */ {
+			echo ', ';
+			echo Tracy\Helpers::escapeMd($rows) /* pos 15:93 */;
+			echo ' row';
+			if ($rows !== 1) /* pos 15:104 */ {
+				echo 's';
+			}
+		}
+	}
+	echo "\n";
+	echo Tracy\Helpers::escapeMd(trim($sql)) /* pos 16:2 */;
+	echo ';
+';
+
+}
+
+echo '```
+';
+if (count($queries) < $count) /* pos 19:1 */ {
+	echo '
+...and ';
+	echo Tracy\Helpers::escapeMd($count - count($queries)) /* pos 21:9 */;
+	echo ' more
+';
+}

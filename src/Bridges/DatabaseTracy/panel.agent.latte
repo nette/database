@@ -1,0 +1,22 @@
+{varType list<array> $queries}
+{varType string $name}
+{varType int $count}
+{varType float $totalTime}
+{exitIf !$count}
+## Database queries{if $name !== ''} ({$name}){/if}
+
+{$count} {$count === 1 ? query : queries}{if $totalTime}, time {sprintf('%0.3f', $totalTime * 1000)} ms{/if}
+
+```sql
+{foreach $queries as $i => [$connection, $sql, $params, $trace, $time, $rows, $error]}
+	{if $i > 0}
+
+	{/if}
+	-- {if $error}ERROR: {$error}{else}{sprintf('%0.3f', $time * 1000)} ms{if $rows !== null}, {$rows} row{if $rows !== 1}s{/if}{/if}{/if}
+	{=trim($sql)};
+{/foreach}
+```
+{if count($queries) < $count}
+
+	...and {$count - count($queries)} more
+{/if}

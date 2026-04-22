@@ -1,5 +1,6 @@
-<?php declare(strict_types=1); ?>
-<style class="tracy-debug">
+<?php declare(strict_types=1);
+
+echo '<style class="tracy-debug">
 	#tracy-debug td.nette-DbConnectionPanel-sql { background: white !important; overflow-x: auto; max-width: 0; }
 	#tracy-debug .nette-DbConnectionPanel-source { color: #BBB !important }
 	#tracy-debug .nette-DbConnectionPanel-explain td { white-space: pre }
@@ -8,11 +9,14 @@
 	#tracy-debug td.nette-DbConnectionPanel-sql-update { background: #E7FBFF !important }
 </style>
 
-<h1 title="<?= Tracy\Helpers::escapeHtml($connection->getDsn()) ?>
-">Queries: <?= Tracy\Helpers::escapeHtml($count) ?>
-<?= Tracy\Helpers::escapeHtml($totalTime ? sprintf(', time: %0.3f ms', $totalTime * 1000) : '') ?>
-, <?= Tracy\Helpers::escapeHtml($name) ?>
-</h1>
+<h1';
+echo ($ʟ_tmp = ($connection->getDsn())) === null ? '' : ' title="' . Tracy\Helpers::escapeHtml($ʟ_tmp) . '"' /* pos 10:13 */;
+echo '>Queries: ';
+echo Tracy\Helpers::escapeHtml($count) /* pos 10:46 */;
+echo Tracy\Helpers::escapeHtml($totalTime ? sprintf(', time: %0.3f ms', $totalTime * 1000) : '') /* pos 10:54 */;
+echo ', ';
+echo Tracy\Helpers::escapeHtml($name) /* pos 10:122 */;
+echo '</h1>
 
 <div class="tracy-inner" style="min-width: 600px">
 	<table class="tracy-sortable">
@@ -22,60 +26,118 @@
 			<th style="width: 1%">Rows</th>
 		</tr>
 
-<?php foreach ($queries as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]): ?>			<tr>
-				<td style="background:rgba(255, 95, 23, <?= Tracy\Helpers::escapeHtml(sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale)) ?>
-)" data-order="<?= Tracy\Helpers::escapeHtml((float) $time) ?>
-">
-<?php if ($error): ?>						<span title="<?= Tracy\Helpers::escapeHtml($error) ?>
-">ERROR</span>
-<?php elseif ($time !== null): ?>
-					<?= Tracy\Helpers::escapeHtml(sprintf('%0.3f', $time * 1000)) ?>
+';
+foreach ($queries as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]) /* pos 20:3 */ {
+	echo '		<tr>
+			<td style="background:rgba(255, 95, 23, ';
+	echo Tracy\Helpers::escapeHtml(sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale)) /* pos 22:45 */;
+	echo ')"';
+	echo ($ʟ_tmp = ((float) $time)) === null ? '' : ' data-order="' . Tracy\Helpers::escapeHtml($ʟ_tmp) . '"' /* pos 22:127 */;
+	echo '>
+';
+	if ($error) /* pos 23:6 */ {
+		echo '				<span';
+		echo ($ʟ_tmp = ($error)) === null ? '' : ' title="' . Tracy\Helpers::escapeHtml($ʟ_tmp) . '"' /* pos 24:21 */;
+		echo '>ERROR</span>
+				';
+	} elseif ($time !== null) /* pos 25:6 */ {
+		echo Tracy\Helpers::escapeHtml(sprintf('%0.3f', $time * 1000)) /* pos 25:29 */;
+		echo "\n";
+	}
 
-<?php endif ?>
-<?php if ($explain): ?>
-					<br><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-explain">explain</a>
-<?php endif ?>
-<?php if ($trace): ?>
-					<br><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-trace">trace</a>
-<?php endif ?>
-				</td>
+	echo "\n";
+	if ($explain) /* pos 28:6 */ {
+		echo '				<br><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-explain">explain</a>';
+	}
+	echo "\n";
+	if ($trace) /* pos 29:6 */ {
+		echo '				<br><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-trace">trace</a>';
+	}
+	echo '
+			</td>
 
-				<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-<?= Tracy\Helpers::escapeHtml($command) ?>
-">
-					<?= Nette\Database\Helpers::dumpSql($sql, $params, $connection) ?>
+			<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-';
+	echo Tracy\Helpers::escapeHtml($command) /* pos 32:72 */;
+	echo '">
+				';
+	echo Nette\Database\Helpers::dumpSql($sql, $params, $connection) /* pos 33:6 */;
+	echo '
 
+';
+	if ($explain) /* pos 35:6 */ {
+		echo '				<table class="tracy-collapsed nette-DbConnectionPanel-explain">
+					<tr>
+';
+		foreach ($explain[0] as $col => $foo) /* pos 38:9 */ {
+			echo '						<th>';
+			echo Tracy\Helpers::escapeHtml($col) /* pos 39:14 */;
+			echo '</th>
+';
 
-<?php if ($explain): ?>						<table class="tracy-collapsed nette-DbConnectionPanel-explain">
-							<tr>
-<?php foreach ($explain[0] as $col => $foo): ?>									<th><?= Tracy\Helpers::escapeHtml($col) ?>
-</th>
-<?php endforeach ?>							</tr>
-<?php foreach ($explain as $row): ?>								<tr>
-<?php foreach ($row as $col): ?>										<td><?= Tracy\Helpers::escapeHtml($col) ?>
-</td>
-<?php endforeach ?>								</tr>
-<?php endforeach ?>						</table>
-<?php endif ?>
-<?php if ($trace): ?>						<?= substr_replace(Tracy\Helpers::editorLink($trace[0]['file'], $trace[0]['line']), ' class="nette-DbConnectionPanel-source"', 2, 0) ?>
+		}
 
-						<table class="tracy-collapsed nette-DbConnectionPanel-trace">
-<?php foreach ($trace as $row): ?>								<tr>
-									<td><?= isset($row['file']) ? Tracy\Helpers::editorLink($row['file'], $row['line']) : '' ?>
-</td>
-									<td><?= Tracy\Helpers::escapeHtml($row['class'] ?? '') ?>
-<?= Tracy\Helpers::escapeHtml($row['type'] ?? '') ?>
-<?= Tracy\Helpers::escapeHtml($row['function']) ?>
-()</td>
-								</tr>
-<?php endforeach ?>						</table>
-<?php endif ?>				</td>
+		echo '					</tr>
+';
+		foreach ($explain as $row) /* pos 42:8 */ {
+			echo '					<tr>
+';
+			foreach ($row as $col) /* pos 44:10 */ {
+				echo '						<td>';
+				echo Tracy\Helpers::escapeHtml($col) /* pos 45:15 */;
+				echo '</td>
+';
 
-				<td><?= Tracy\Helpers::escapeHtml($rows) ?>
-</td>
-			</tr>
-<?php endforeach ?>	</table>
+			}
 
-<?php if (count($queries) < $count): ?>
-	<p>...and more</p>
-<?php endif ?>
+			echo '					</tr>
+';
+
+		}
+
+		echo '				</table>
+';
+	}
+	echo "\n";
+	if ($trace) /* pos 52:6 */ {
+		echo '				';
+		echo substr_replace(Tracy\Helpers::editorLink($trace[0]['file'], $trace[0]['line']), ' class="nette-DbConnectionPanel-source"', 2, 0) /* pos 53:7 */;
+		echo '
+				<table class="tracy-collapsed nette-DbConnectionPanel-trace">
+';
+		foreach ($trace as $row) /* pos 55:8 */ {
+			echo '					<tr>
+						<td>';
+			echo isset($row['file']) ? Tracy\Helpers::editorLink($row['file'], $row['line']) : '' /* pos 57:14 */;
+			echo '</td>
+						<td>';
+			echo Tracy\Helpers::escapeHtml($row['class'] ?? '') /* pos 58:14 */;
+			echo Tracy\Helpers::escapeHtml($row['type'] ?? '') /* pos 58:33 */;
+			echo Tracy\Helpers::escapeHtml($row['function']) /* pos 58:51 */;
+			echo '()</td>
+					</tr>
+';
+
+		}
+
+		echo '				</table>
+';
+	}
+	echo '			</td>
+
+			<td>';
+	echo Tracy\Helpers::escapeHtml($rows) /* pos 65:9 */;
+	echo '</td>
+		</tr>
+';
+
+}
+
+echo '	</table>
+
+';
+if (count($queries) < $count) /* pos 70:2 */ {
+	echo '	<p>...and more</p>';
+}
+echo '
 </div>
+';

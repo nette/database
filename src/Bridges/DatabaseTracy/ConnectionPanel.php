@@ -164,4 +164,20 @@ class ConnectionPanel implements Tracy\IBarPanel
 			require __DIR__ . '/dist/panel.phtml';
 		});
 	}
+
+
+	public function getAgentInfo(): ?string
+	{
+		if (!$this->count) {
+			return null;
+		}
+
+		return Nette\Utils\Helpers::capture(function () {
+			$queries = $this->queries;
+			$name = $this->name;
+			$count = $this->count;
+			$totalTime = $this->totalTime;
+			require __DIR__ . '/dist/panel.agent.phtml';
+		});
+	}
 }

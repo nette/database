@@ -126,7 +126,12 @@ class PgSqlDriver implements Nette\Database\Driver
 			X);
 
 		while ($row = $rows->fetch()) {
-			$tables[] = (array) $row;
+			$tables[] = [
+				'name' => (string) $row['name'],
+				'view' => (bool) $row['view'],
+				'fullName' => (string) $row['fullName'],
+				'comment' => (string) $row['comment'],
+			];
 		}
 
 		return $tables;
@@ -171,11 +176,19 @@ class PgSqlDriver implements Nette\Database\Driver
 			X, $this->delimiteFQN($table));
 
 		while ($row = $rows->fetch()) {
-			$column = (array) $row;
-			$column['vendor'] = $column;
-			unset($column['sequence']);
-
-			$columns[] = $column;
+			$vendor = (array) $row;
+			$columns[] = [
+				'name' => (string) $row['name'],
+				'table' => (string) $row['table'],
+				'nativetype' => (string) $row['nativetype'],
+				'size' => $row['size'] !== null ? (int) $row['size'] : null,
+				'nullable' => (bool) $row['nullable'],
+				'default' => $row['default'],
+				'autoincrement' => (bool) $row['autoincrement'],
+				'primary' => (bool) $row['primary'],
+				'comment' => (string) $row['comment'],
+				'vendor' => $vendor,
+			];
 		}
 
 		return $columns;
@@ -202,11 +215,14 @@ class PgSqlDriver implements Nette\Database\Driver
 			X, $this->delimiteFQN($table));
 
 		while ($row = $rows->fetch()) {
-			$id = $row['name'];
-			$indexes[$id]['name'] = $id;
-			$indexes[$id]['unique'] = $row['unique'];
-			$indexes[$id]['primary'] = $row['primary'];
-			$indexes[$id]['columns'][] = $row['column'];
+			$id = (string) $row['name'];
+			$indexes[$id] ??= [
+				'name' => $id,
+				'unique' => (bool) $row['unique'],
+				'primary' => (bool) $row['primary'],
+				'columns' => [],
+			];
+			$indexes[$id]['columns'][] = (string) $row['column'];
 		}
 
 		return array_values($indexes);
@@ -237,8 +253,14 @@ class PgSqlDriver implements Nette\Database\Driver
 			X, $this->delimiteFQN($table));
 
 		while ($row = $rows->fetch()) {
-			$keys[] = (array) $row;
+			$keys[] = [
+				'name' => (string) $row['name'],
+				'local' => (string) $row['local'],
+				'table' => (string) $row['table'],
+				'foreign' => (string) $row['foreign'],
+			];
 		}
+
 		return $keys;
 	}
 

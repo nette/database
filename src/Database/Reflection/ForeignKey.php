@@ -20,13 +20,13 @@ final class ForeignKey
 		public readonly array $localColumns,
 		/** @var list<Column> */
 		public readonly array $foreignColumns,
-		public readonly ?string $name = null,
+		public readonly string $name,
 	) {
 	}
 
 
 	public function __toString(): string
 	{
-		return (string) $this->name;
+		return $this->name;
 	}
 }

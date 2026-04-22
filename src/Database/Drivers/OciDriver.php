@@ -106,7 +106,7 @@ class OciDriver implements Nette\Database\Driver
 		while ($row = $rows->fetch()) {
 			if ($row[1] === 'TABLE' || $row[1] === 'VIEW') {
 				$tables[] = [
-					'name' => $row[0],
+					'name' => (string) $row[0],
 					'view' => $row[1] === 'VIEW',
 					'comment' => null,
 				];

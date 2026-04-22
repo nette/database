@@ -124,7 +124,7 @@ class SqliteDriver implements Nette\Database\Driver
 
 		while ($row = $rows->fetch()) {
 			$tables[] = [
-				'name' => $row['name'],
+				'name' => (string) $row['name'],
 				'view' => (bool) $row['view'],
 				'comment' => null,
 			];
@@ -147,7 +147,7 @@ class SqliteDriver implements Nette\Database\Driver
 			X, $table, $table)->fetch();
 
 		$columns = [];
-		$rows = $this->connection->query("PRAGMA table_info({$this->delimite($table)})");
+		$rows = $this->connection->query('PRAGMA table_info(?name)', $table);
 		while ($row = $rows->fetch()) {
 			$column = $row['name'];
 			$pattern = "/(\"$column\"|`$column`|\\[$column\\]|$column)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";
@@ -173,18 +173,21 @@ class SqliteDriver implements Nette\Database\Driver
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
-		$rows = $this->connection->query("PRAGMA index_list({$this->delimite($table)})");
+		$rows = $this->connection->query('PRAGMA index_list(?name)', $table);
 		while ($row = $rows->fetch()) {
-			$id = $row['name'];
-			$indexes[$id]['name'] = $id;
-			$indexes[$id]['unique'] = (bool) $row['unique'];
-			$indexes[$id]['primary'] = false;
+			$id = (string) $row['name'];
+			$indexes[$id] = [
+				'name' => $id,
+				'unique' => (bool) $row['unique'],
+				'primary' => false,
+				'columns' => [],
+			];
 		}
 
 		foreach ($indexes as $index => $values) {
-			$res = $this->connection->query("PRAGMA index_info({$this->delimite($index)})");
+			$res = $this->connection->query('PRAGMA index_info(?name)', $index);
 			while ($row = $res->fetch()) {
-				$indexes[$index]['columns'][] = $row['name'];
+				$indexes[$index]['columns'][] = (string) $row['name'];
 			}
 		}
 
@@ -220,16 +223,17 @@ class SqliteDriver implements Nette\Database\Driver
 	public function getForeignKeys(string $table): array
 	{
 		$keys = [];
-		$rows = $this->connection->query("PRAGMA foreign_key_list({$this->delimite($table)})");
+		$rows = $this->connection->query('PRAGMA foreign_key_list(?name)', $table);
 		while ($row = $rows->fetch()) {
-			$id = $row['id'];
-			$keys[$id]['name'] = $id;
-			$keys[$id]['local'] = $row['from'];
-			$keys[$id]['table'] = $row['table'];
-			$keys[$id]['foreign'] = $row['to'];
+			$keys[] = [
+				'name' => (string) $row['id'], // SQLite does not expose FK names via PRAGMA, synthetic id is used
+				'local' => (string) $row['from'],
+				'table' => (string) $row['table'],
+				'foreign' => (string) $row['to'],
+			];
 		}
 
-		return array_values($keys);
+		return $keys;
 	}
 
 

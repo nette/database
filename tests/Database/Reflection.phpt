@@ -202,11 +202,11 @@ $table = $reflection->getTable('book_tag');
 Assert::count(2, $table->foreignKeys);
 
 $keys = $table->foreignKeys;
-usort($keys, fn($a, $b) => $a->name <=> $b->name);
+usort($keys, fn($a, $b) => $a->localColumns[0]->name <=> $b->localColumns[0]->name);
 $key = $keys[0];
 switch ($driverName) {
 	case 'sqlite':
-		Assert::null($key->name);
+		Assert::match('%d%', $key->name);
 		break;
 	default:
 		Assert::same('book_tag_book', $key->name);

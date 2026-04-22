@@ -8,7 +8,7 @@
 namespace Nette\Database\Reflection;
 
 use Nette\Database\Reflection;
-use function array_filter, array_map, array_values, is_string;
+use function array_filter, array_map, array_values;
 
 
 /**
@@ -66,7 +66,7 @@ final class Table
 				array_map(fn($name) => $this->getColumn($name), $row['columns']),
 				$row['unique'],
 				$row['primary'],
-				is_string($row['name']) ? $row['name'] : null,
+				$row['name'],
 			),
 			$this->reflection->getDriver()->getIndexes($this->name),
 		);
@@ -92,7 +92,7 @@ final class Table
 			$tmp[$id][0] = $foreignTable;
 			$tmp[$id][1][] = $this->getColumn($row['local']);
 			$tmp[$id][2][] = $foreignTable->getColumn($row['foreign']);
-			$tmp[$id][3] = is_string($id) ? $id : null;
+			$tmp[$id][3] = $id;
 		}
 		$this->foreignKeys = array_map(fn($row) => new ForeignKey(...$row), array_values($tmp));
 	}

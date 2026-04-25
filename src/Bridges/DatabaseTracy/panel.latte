@@ -13,7 +13,7 @@
 	#tracy-debug td.nette-DbConnectionPanel-sql-update { background: #E7FBFF !important }
 </style>
 
-<h1 title="{$connection->getDsn()}">Queries: {$count}{$totalTime ? sprintf(', time: %0.3f ms', $totalTime * 1000) : ''}, {$name}</h1>
+<h1 title="{$connection->getDsn()}">Queries: {$count}{$totalTime ? sprintf(', time: %0.3f ms', $totalTime * 1000)}, {$name}</h1>
 
 <div class="tracy-inner" style="min-width: 600px">
 	<table class="tracy-sortable">
@@ -23,55 +23,43 @@
 			<th style="width: 1%">Rows</th>
 		</tr>
 
-		{foreach $queries as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]}
-			<tr>
-				<td style="background:rgba(255, 95, 23, {sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale)})" data-order="{=(float) $time}">
-					{if $error}
-						<span title="{$error}">ERROR</span>
-					{elseif $time !== null}{sprintf('%0.3f', $time * 1000)}
-					{/if}
+		<tr n:foreach="$queries as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]">
+			<td style="background:rgba(255, 95, 23, {sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale)})" data-order="{=(float) $time}">
+				{if $error}
+					<span title="{$error}">ERROR</span>
+				{elseif $time !== null}{sprintf('%0.3f', $time * 1000)}
+				{/if}
 
-					{if $explain}<br><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-explain">explain</a>{/if}
-					{if $trace}<br><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-trace">trace</a>{/if}
-				</td>
+				{if $explain}<br><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-explain">explain</a>{/if}
+				{if $trace}<br><a class="tracy-toggle tracy-collapsed" data-tracy-ref="^tr .nette-DbConnectionPanel-trace">trace</a>{/if}
+			</td>
 
-				<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-{$command}">
-					{Nette\Database\Helpers::dumpSql($sql, $params, $connection)|noescape}
+			<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-{$command}">
+				{Nette\Database\Helpers::dumpSql($sql, $params, $connection)|noescape}
 
-					{if $explain}
-						<table class="tracy-collapsed nette-DbConnectionPanel-explain">
-							<tr>
-								{foreach $explain[0] as $col => $foo}
-									<th>{$col}</th>
-								{/foreach}
-							</tr>
-							{foreach $explain as $row}
-								<tr>
-									{foreach $row as $col}
-										<td>{$col}</td>
-									{/foreach}
-								</tr>
-							{/foreach}
-						</table>
-					{/if}
+				<table n:if="$explain" class="tracy-collapsed nette-DbConnectionPanel-explain">
+					<tr>
+						<th n:foreach="$explain[0] as $col => $foo">{$col}</th>
+					</tr>
+					<tr n:foreach="$explain as $row">
+						<td n:foreach="$row as $col">{$col}</td>
+					</tr>
+				</table>
 
-					{if $trace}
-						{substr_replace(Tracy\Helpers::editorLink($trace[0][file], $trace[0][line]), ' class="nette-DbConnectionPanel-source"', 2, 0)}
-						<table class="tracy-collapsed nette-DbConnectionPanel-trace">
-							{foreach $trace as $row}
-								<tr>
-									<td>{isset($row[file]) ? Tracy\Helpers::editorLink($row[file], $row[line]) : ''}</td>
-									<td>{$row[class] ?? ''}{$row[type] ?? ''}{$row[function]}()</td>
-								</tr>
-							{/foreach}
-						</table>
-					{/if}
-				</td>
+				{if $trace}
+					{substr_replace(Tracy\Helpers::editorLink($trace[0][file], $trace[0][line]), ' class="nette-DbConnectionPanel-source"', 2, 0)}
+					<table class="tracy-collapsed nette-DbConnectionPanel-trace">
+						<tr n:foreach="$trace as $row">
+							<td>{isset($row[file]) ? Tracy\Helpers::editorLink($row[file], $row[line])}</td>
+							<td>{$row[class] ?? ''}{$row[type] ?? ''}{$row[function]}()</td>
+						</tr>
+					</table>
+				{/if}
+			</td>
 
-				<td>{$rows}</td>
-			</tr>
-		{/foreach}
+			<td>{$rows}</td>
+		</tr>
 	</table>
 
-	{if count($queries) < $count}<p>...and more</p>{/if}
+	<p n:if="count($queries) < $count">...and more</p>
 </div>

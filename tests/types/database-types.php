@@ -72,7 +72,7 @@ function testSelectionFluentMethods(Selection $selection): void
 function testParseColumnType(): void
 {
 	$result = Helpers::parseColumnType('varchar(255)');
-	assertType('array{type: string|null, length: int|null, scale: int|null, parameters: string|null}', $result);
+	assertType('array{type: string|null, size: int|null, scale: int|null, parameters: string|null}', $result);
 }
 
 

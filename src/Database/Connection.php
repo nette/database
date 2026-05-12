@@ -20,10 +20,10 @@ use function func_get_args;
  */
 class Connection
 {
-	/** @var array<callable(self): void>  Occurs after connection is established */
+	/** @var array<callable(static): void>  Occurs after connection is established */
 	public array $onConnect = [];
 
-	/** @var array<callable(self, ResultSet|DriverException): void>  Occurs after query is executed */
+	/** @var array<callable(static, ResultSet|DriverException): void>  Occurs after query is executed */
 	public array $onQuery = [];
 	private Driver $driver;
 	private SqlPreprocessor $preprocessor;

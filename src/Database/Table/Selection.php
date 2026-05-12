@@ -52,7 +52,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	protected ?string $generalCacheKey = null;
 	protected ?string $specificCacheKey = null;
 
-	/** @var array<string, array<int|string, Nette\Database\Row|ActiveRow>> [conditions => [group value => row]] for GroupedSelection */
+	/** @var array<string, array<Nette\Database\Row|ActiveRow>> [conditions => [group value => row]] for GroupedSelection */
 	protected array $aggregation = [];
 
 	/** @var array<string, bool>|false|null column => selected */

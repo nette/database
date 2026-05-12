@@ -254,6 +254,7 @@ class GroupedSelection extends Selection
 
 	/**
 	 * @param  iterable<mixed>|Selection<ActiveRow>  $data
+	 * @return ($data is list<mixed>|Selection<ActiveRow> ? int : T|array<mixed>|int)
 	 */
 	public function insert(iterable $data): ActiveRow|array|int
 	{

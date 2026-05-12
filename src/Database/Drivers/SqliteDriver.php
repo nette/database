@@ -184,23 +184,22 @@ class SqliteDriver implements Nette\Database\Driver
 			];
 		}
 
-		foreach ($indexes as $index => $values) {
-			$res = $this->connection->query('PRAGMA index_info(?name)', $index);
-			while ($row = $res->fetch()) {
-				$indexes[$index]['columns'][] = (string) $row['name'];
-			}
-		}
-
 		$columns = $this->getColumns($table);
-		foreach ($indexes as $index => $values) {
-			$column = $values['columns'][0];
+		foreach ($indexes as $id => &$index) {
+			$res = $this->connection->query('PRAGMA index_info(?name)', $id);
+			while ($row = $res->fetch()) {
+				$index['columns'][] = (string) $row['name'];
+			}
+
 			foreach ($columns as $info) {
-				if ($column === $info['name']) {
-					$indexes[$index]['primary'] = (bool) $info['primary'];
+				if (($index['columns'][0] ?? null) === $info['name']) {
+					$index['primary'] = (bool) $info['primary'];
 					break;
 				}
 			}
 		}
+
+		unset($index);
 
 		if (!$indexes) { // @see http://www.sqlite.org/lang_createtable.html#rowid
 			foreach ($columns as $column) {

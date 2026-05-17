@@ -50,14 +50,13 @@ not to dirty the original.
 separate property. A subclass may declare typed properties (`public int $id`) for
 IDE/PHPStan, but the constructor **`unset()`s them**, so reads fall into `__get` and
 flow through `$data`. That is the only way to track which columns are actually read
-(SELECT narrowing). (There is no read-side enum conversion — `BackedEnum` handling
-exists only on the write side, in the preprocessor.)
+(SELECT narrowing) — and the reflectable real-property type is also what enables
+**enum conversion** (a `@property` annotation would not).
 
 - `__get($key)`: maps property→column via `EntityMapping` → `accessColumn` → returns
-  `$data[$column]`; if the column is absent it tries a **relation**
-  (`getReferencedTable`), else throws `MemberAccessException` (with a did-you-mean
-  hint). `__set` is read-only (throws). `toArray()` forces all columns via
-  `accessColumn(null)`.
+  `$data[$column]` (with `BackedEnum` conversion by the declared type); if the column
+  is absent it tries a **relation**, else throws `MemberAccessException`. `__set` is
+  read-only (throws). `toArray()` forces all columns via `accessColumn(null)`.
 - `getPrimary()`/`getSignature()` read **only `$data[$primary]`, with no query** — so
   row-cache writes can call them without triggering a fetch.
 

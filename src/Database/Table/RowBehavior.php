@@ -8,7 +8,7 @@
 namespace Nette\Database\Table;
 
 use Nette;
-use function array_intersect_key, array_key_exists, array_keys, array_map, implode, is_array, is_string, iterator_to_array;
+use function array_intersect_key, array_key_exists, array_keys, array_map, implode, is_array, is_string, is_subclass_of, iterator_to_array;
 
 
 /**
@@ -20,6 +20,9 @@ trait RowBehavior
 {
 	/** @var array<class-string, list<string>> */
 	private static array $declaredProperties = [];
+
+	/** @var array<class-string, array<string, class-string<\BackedEnum>>> */
+	private static array $enumProperties = [];
 
 	private bool $dataRefreshed = false;
 	private readonly ?Nette\Database\EntityMapping $entityMapping;
@@ -55,6 +58,31 @@ trait RowBehavior
 			}
 		}
 		return self::$declaredProperties[$class] = $result;
+	}
+
+
+	/**
+	 * Returns map of property name to BackedEnum class for typed properties declared on the row class.
+	 * @param  class-string  $class
+	 * @return array<string, class-string<\BackedEnum>>
+	 */
+	private static function enumProperties(string $class): array
+	{
+		if (isset(self::$enumProperties[$class])) {
+			return self::$enumProperties[$class];
+		}
+		$result = [];
+		foreach ((new \ReflectionClass($class))->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop) {
+			$type = $prop->getType();
+			if (!$prop->isStatic()
+				&& $type instanceof \ReflectionNamedType
+				&& !$type->isBuiltin()
+				&& is_subclass_of($type->getName(), \BackedEnum::class)
+			) {
+				$result[$prop->getName()] = $type->getName();
+			}
+		}
+		return self::$enumProperties[$class] = $result;
 	}
 
 
@@ -95,14 +123,19 @@ trait RowBehavior
 	{
 		$this->accessColumn(null);
 		$entityMapping = $this->entityMapping;
-		if ($entityMapping) {
-			$translated = [];
-			foreach ($this->data as $key => $value) {
-				$translated[$entityMapping->getPropertyName($key)] = $value;
-			}
-			return $translated;
+		$enums = self::enumProperties(static::class);
+		if (!$entityMapping && !$enums) {
+			return $this->data;
 		}
-		return $this->data;
+		$result = [];
+		foreach ($this->data as $key => $value) {
+			$propName = $entityMapping ? $entityMapping->getPropertyName($key) : $key;
+			if ($value !== null && isset($enums[$propName])) {
+				$value = $enums[$propName]::from($value);
+			}
+			$result[$propName] = $value;
+		}
+		return $result;
 	}
 
 
@@ -297,6 +330,11 @@ trait RowBehavior
 		$column = $this->entityMapping?->getColumnName($key) ?? $key;
 
 		if ($this->accessColumn($column)) {
+			$enums = self::enumProperties(static::class);
+			if ($this->data[$column] !== null && isset($enums[$key])) {
+				$value = $enums[$key]::from($this->data[$column]);
+				return $value;
+			}
 			return $this->data[$column];
 		}
 

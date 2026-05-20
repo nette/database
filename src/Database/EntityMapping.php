@@ -9,7 +9,7 @@ namespace Nette\Database;
 
 
 /**
- * Resolves PHP class name for each database table.
+ * Translates identifier names between PHP conventions and database conventions.
  */
 interface EntityMapping
 {
@@ -18,4 +18,17 @@ interface EntityMapping
 	 * @return ?class-string<Table\ActiveRow>
 	 */
 	function getClassName(string $table): ?string;
+
+	/**
+	 * Translates database column name to PHP property name.
+	 */
+	function getPropertyName(string $name): string;
+
+	/**
+	 * Translates PHP property name to database column name. In dotted paths
+	 * (e.g. 'book.title' in WHERE/ORDER fragments) it is invoked only on the
+	 * last segment; preceding segments are treated as table/alias names and
+	 * left untouched.
+	 */
+	function getColumnName(string $name): string;
 }

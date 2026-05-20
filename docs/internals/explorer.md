@@ -54,12 +54,51 @@ property bypasses the magic; use `@property-read` annotations instead. (There is
 read-side enum conversion — `BackedEnum` handling exists only on the write side, in
 the preprocessor.)
 
-- `__get($key)`: `accessColumn($key)` → returns `$data[$key]`; if the column is
-  absent it tries a **relation** (`getReferencedTable`), else throws
-  `MemberAccessException` (with a did-you-mean hint). `__set`/`__unset` throw
-  (read-only). `toArray()` forces all columns via `accessColumn(null)`.
+- `__get($key)`: maps property→column via `EntityMapping` → `accessColumn` → returns
+  `$data[$column]`; if the column is absent it tries a **relation**
+  (`getReferencedTable`), else throws `MemberAccessException` (with a did-you-mean
+  hint). `__set`/`__unset` throw (read-only). `toArray()` forces all columns via
+  `accessColumn(null)`.
 - `getPrimary()`/`getSignature()` read **only `$data[$primary]`, with no query** — so
   row-cache writes can call them without triggering a fetch.
+
+## EntityMapping: table→class and property↔column translation
+
+`EntityMapping` (configured on Explorer, `DefaultEntityMapping` from DI config
+`mapping:`) has two independent roles: **table→class** resolution consumed by
+`Explorer::createActiveRow()` (wildcard table map), and optional **camelCase
+property↔column translation**.
+
+The translation contract: **snake_case column names are the canonical language and
+work everywhere, always** — the camelCase spelling is a courtesy overlay accepted on
+top of it, not a replacement. Both spellings of the same column are therefore valid
+input and, provided the schema keeps the invariant below, can never diverge in
+meaning. Enforcing one dialect per codebase is a job for static analysis, not for
+the runtime.
+
+Where the overlay applies (each call site translates independently — coverage of the
+table API is total): row reads (`__get`/`__isset`), `toArray()` keys (column→property
+direction), data keys of `insert()`/`insertMany()`/`update()` including compound
+operator suffixes (`fooBar+=`), and identifiers inside SQL fragments passed to
+`where()`/`select()`/`order()`/`group()` etc. In fragments the translation runs inside
+`SqlBuilder`'s delimiting pass: ALL-UPPERCASE words are skipped (treated as SQL
+keywords) and in dotted paths **only the last segment** is translated — preceding
+segments are table names or aliases, which live in DB language and are never mapped.
+
+Boundaries and traps:
+
+- **Raw SQL is DB language.** `Connection::query()`/`Explorer::query()` know nothing
+  about the mapping; the same fragment string means different things on either side
+  of that seam.
+- **The translation is context-free string munging** that assumes an all-snake_case
+  schema; this invariant is currently NOT enforced. A column that itself contains an
+  uppercase letter (`realCamel`) becomes unreachable through the table API — reads
+  and fragments translate it to a nonexistent `real_camel` — while `toArray()` still
+  lists the original key, i.e. toArray shows a key that cannot be read back as a
+  property. Making the translation schema-aware is easy for row paths (table context
+  is known) but hits an architectural ceiling in `SqlBuilder`, where bare identifiers
+  and alias segments have no reliable table context — which is exactly why the
+  implementation is context-free.
 
 ## `accessColumn`: the single shared seam
 

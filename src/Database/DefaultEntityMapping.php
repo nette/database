@@ -12,8 +12,15 @@ namespace Nette\Database;
  * Resolves ActiveRow subclass for each table name using an explicit table map with wildcards.
  * @internal
  */
-final readonly class DefaultEntityMapping implements EntityMapping
+final class DefaultEntityMapping implements EntityMapping
 {
+	/** @var array<string, string> */
+	private array $propertyCache = [];
+
+	/** @var array<string, string> */
+	private array $columnCache = [];
+
+
 	public function __construct(
 		/**
 		 * @var array<string, class-string<Table\ActiveRow>|string> table-to-class map; keys
@@ -22,7 +29,9 @@ final readonly class DefaultEntityMapping implements EntityMapping
 		 * portion (or the full table name for exact keys). Exact keys take precedence; wildcard
 		 * entries are tried in declaration order.
 		 */
-		private array $tables = [],
+		private readonly array $tables = [],
+		/** whether to convert snake_case column names to camelCase properties */
+		private readonly bool $camelCase = false,
 	) {
 	}
 
@@ -58,6 +67,32 @@ final readonly class DefaultEntityMapping implements EntityMapping
 			? str_replace('*', self::toPascalCase($capture), $class)
 			: $class;
 		return $result;
+	}
+
+
+	/**
+	 * With camelCase enabled, expects a snake_case column name (e.g. 'first_name')
+	 * and returns its camelCase property form (e.g. 'firstName').
+	 */
+	public function getPropertyName(string $name): string
+	{
+		return $this->camelCase
+			? $this->propertyCache[$name] ??= lcfirst(self::toPascalCase($name))
+			: $name;
+	}
+
+
+	/**
+	 * With camelCase enabled, expects a camelCase property name (e.g. 'firstName')
+	 * and returns its snake_case column form (e.g. 'first_name'). PascalCase
+	 * input would produce a leading underscore (e.g. 'FirstName' → '_first_name'),
+	 * so the first letter is expected to be lowercase.
+	 */
+	public function getColumnName(string $name): string
+	{
+		return $this->camelCase
+			? $this->columnCache[$name] ??= strtolower((string) preg_replace('#[A-Z]#', '_$0', $name))
+			: $name;
 	}
 
 

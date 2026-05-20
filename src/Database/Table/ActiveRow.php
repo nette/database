@@ -8,7 +8,7 @@
 namespace Nette\Database\Table;
 
 use Nette;
-use function array_intersect_key, array_key_exists, array_keys, implode, is_array, is_string, iterator_to_array;
+use function array_intersect_key, array_key_exists, array_keys, array_map, implode, is_array, is_string, iterator_to_array;
 
 
 /**
@@ -19,6 +19,7 @@ use function array_intersect_key, array_key_exists, array_keys, implode, is_arra
 class ActiveRow implements \IteratorAggregate, IRow
 {
 	private bool $dataRefreshed = false;
+	private readonly ?Nette\Database\EntityMapping $entityMapping;
 
 
 	public function __construct(
@@ -27,6 +28,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 		/** @var Selection<ActiveRow> */
 		private Selection $table,
 	) {
+		$this->entityMapping = $table->getExplorer()->getEntityMapping();
 	}
 
 
@@ -66,12 +68,23 @@ class ActiveRow implements \IteratorAggregate, IRow
 	public function toArray(): array
 	{
 		$this->accessColumn(null);
+		$entityMapping = $this->entityMapping;
+		if ($entityMapping) {
+			$translated = [];
+			foreach ($this->data as $key => $value) {
+				$translated[$entityMapping->getPropertyName($key)] = $value;
+			}
+			return $translated;
+		}
 		return $this->data;
 	}
 
 
 	/**
 	 * Returns primary key value, or an array of values for composite primary keys.
+	 * Composite key arrays are keyed by database column names (unlike toArray(),
+	 * which uses property names) so the result can be passed directly to
+	 * Selection::wherePrimary().
 	 */
 	public function getPrimary(bool $throw = true): mixed
 	{
@@ -166,7 +179,10 @@ class ActiveRow implements \IteratorAggregate, IRow
 			->wherePrimary($primary);
 
 		if ($selection->update($data)) {
-			if ($tmp = array_intersect_key($data, $primary)) {
+			$columnData = $this->entityMapping
+				? Nette\Database\Helpers::translateColumns($data, $this->entityMapping)
+				: $data;
+			if ($tmp = array_intersect_key($columnData, $primary)) {
 				$selection = $this->table->createSelectionInstance()
 					->wherePrimary($tmp + $primary);
 			}
@@ -208,8 +224,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 	/** @return \ArrayIterator<string, mixed> */
 	public function getIterator(): \Iterator
 	{
-		$this->accessColumn(null);
-		return new \ArrayIterator($this->data);
+		return new \ArrayIterator($this->toArray());
 	}
 
 
@@ -253,8 +268,10 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 */
 	public function &__get(string $key): mixed
 	{
-		if ($this->accessColumn($key)) {
-			return $this->data[$key];
+		$column = $this->entityMapping?->getColumnName($key) ?? $key;
+
+		if ($this->accessColumn($column)) {
+			return $this->data[$column];
 		}
 
 		$referenced = $this->table->getReferencedTable($this, $key);
@@ -267,21 +284,26 @@ class ActiveRow implements \IteratorAggregate, IRow
 		// probed by isset() before a migration added it; reload all columns and retry once
 		if ($this->table->getPreviousAccessedColumns() && !$this->table->getSqlBuilder()->getSelect()) {
 			$this->accessColumn(null);
-			if (array_key_exists($key, $this->data)) {
-				return $this->data[$key];
+			if (array_key_exists($column, $this->data)) {
+				return $this->data[$column];
 			}
 		}
 
-		$this->removeAccessColumn($key);
-		$hint = Nette\Utils\Helpers::getSuggestion(array_keys($this->data), $key);
+		$this->removeAccessColumn($column);
+		$available = $this->entityMapping
+			? array_map(fn(string $col) => $this->entityMapping->getPropertyName($col), array_keys($this->data))
+			: array_keys($this->data);
+		$hint = Nette\Utils\Helpers::getSuggestion($available, $key);
 		throw new Nette\MemberAccessException("Cannot read an undeclared column '$key'" . ($hint ? ", did you mean '$hint'?" : '.'));
 	}
 
 
 	public function __isset(string $key): bool
 	{
-		if ($this->accessColumn($key)) {
-			return isset($this->data[$key]);
+		$column = $this->entityMapping?->getColumnName($key) ?? $key;
+
+		if ($this->accessColumn($column)) {
+			return isset($this->data[$column]);
 		}
 
 		$referenced = $this->table->getReferencedTable($this, $key);
@@ -290,7 +312,7 @@ class ActiveRow implements \IteratorAggregate, IRow
 			return (bool) $referenced;
 		}
 
-		$this->removeAccessColumn($key);
+		$this->removeAccessColumn($column);
 		return false;
 	}
 

@@ -849,6 +849,12 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			$data = array_values($data); // keys may have gaps, ?values needs a list
 		}
 
+		if ($mapping = $this->explorer->getEntityMapping()) {
+			$data = $bulk
+				? array_map(fn(array $row) => Nette\Database\Helpers::translateColumns($row, $mapping), $data)
+				: Nette\Database\Helpers::translateColumns($data, $mapping);
+		}
+
 		$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ?values', $data);
 		$this->loadRefCache();
 
@@ -945,6 +951,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		$data = iterator_to_array($data);
 		if (!$data) {
 			return 0;
+		}
+
+		if ($mapping = $this->explorer->getEntityMapping()) {
+			$data = Nette\Database\Helpers::translateColumns($data, $mapping);
 		}
 
 		return $this->explorer

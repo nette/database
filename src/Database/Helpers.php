@@ -10,7 +10,7 @@ namespace Nette\Database;
 use Nette;
 use Nette\Bridges\DatabaseTracy\ConnectionPanel;
 use Tracy;
-use function array_combine, array_filter, array_keys, array_unique, count, fclose, fgets, fopen, fstat, get_resource_type, htmlspecialchars, implode, is_array, is_bool, is_float, is_resource, is_string, preg_last_error, preg_match, preg_replace, preg_replace_callback, reset, rtrim, set_time_limit, str_ends_with, str_starts_with, stream_get_meta_data, strlen, strncasecmp, substr, trim, wordwrap;
+use function array_combine, array_filter, array_keys, array_unique, count, fclose, fgets, fopen, fstat, get_resource_type, htmlspecialchars, implode, is_array, is_bool, is_float, is_int, is_resource, is_string, preg_last_error, preg_match, preg_replace, preg_replace_callback, reset, rtrim, set_time_limit, str_ends_with, str_starts_with, stream_get_meta_data, strlen, strncasecmp, substr, trim, wordwrap;
 
 
 /**
@@ -442,6 +442,29 @@ class Helpers
 	{
 		$keys = array_keys($data);
 		return $keys !== [] && $keys === array_filter($keys, 'is_int');
+	}
+
+
+	/**
+	 * Translates array keys from PHP property names to database column names via EntityMapping.
+	 * Preserves integer keys and compound assignment operator suffixes (e.g. `firstName+=`).
+	 * @param  array<int|string, mixed>  $data
+	 * @return array<int|string, mixed>
+	 * @internal
+	 */
+	public static function translateColumns(array $data, EntityMapping $mapping): array
+	{
+		$result = [];
+		foreach ($data as $key => $value) {
+			if (is_int($key)) {
+				$result[$key] = $value;
+			} elseif (preg_match('#^(.*?)([+\-]?=)$#D', $key, $m)) {
+				$result[$mapping->getColumnName($m[1]) . $m[2]] = $value;
+			} else {
+				$result[$mapping->getColumnName($key)] = $value;
+			}
+		}
+		return $result;
 	}
 
 

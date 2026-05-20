@@ -119,6 +119,42 @@ test('DefaultEntityMapping: empty map returns null', function () {
 });
 
 
+test('DefaultEntityMapping: camelCase off = identity', function () {
+	$mapping = new DefaultEntityMapping;
+
+	Assert::same('first_name', $mapping->getPropertyName('first_name'));
+	Assert::same('firstName', $mapping->getColumnName('firstName'));
+});
+
+
+test('DefaultEntityMapping: camelCase on', function () {
+	$mapping = new DefaultEntityMapping(camelCase: true);
+
+	Assert::same('firstName', $mapping->getPropertyName('first_name'));
+	Assert::same('authorId', $mapping->getPropertyName('author_id'));
+	Assert::same('id', $mapping->getPropertyName('id'));
+	Assert::same('name', $mapping->getPropertyName('name'));
+	Assert::same('createdAt', $mapping->getPropertyName('created_at'));
+	Assert::same('address2', $mapping->getPropertyName('address2'));
+
+	Assert::same('first_name', $mapping->getColumnName('firstName'));
+	Assert::same('author_id', $mapping->getColumnName('authorId'));
+	Assert::same('id', $mapping->getColumnName('id'));
+	Assert::same('name', $mapping->getColumnName('name'));
+	Assert::same('created_at', $mapping->getColumnName('createdAt'));
+	Assert::same('address2', $mapping->getColumnName('address2'));
+});
+
+
+test('DefaultEntityMapping: camelCase roundtrip', function () {
+	$mapping = new DefaultEntityMapping(camelCase: true);
+
+	foreach (['id', 'name', 'first_name', 'author_id', 'created_at', 'address2'] as $column) {
+		Assert::same($column, $mapping->getColumnName($mapping->getPropertyName($column)));
+	}
+});
+
+
 test('DefaultEntityMapping: schema prefix is stripped in class name', function () {
 	$mapping = new DefaultEntityMapping(['*' => 'App\Model\*Row']);
 

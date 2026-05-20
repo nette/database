@@ -10,6 +10,7 @@ namespace Nette\Database\Table;
 use Nette;
 use Nette\Database\Conventions;
 use Nette\Database\Driver;
+use Nette\Database\EntityMapping;
 use Nette\Database\Explorer;
 use Nette\Database\IStructure;
 use Nette\Database\SqlLiteral;
@@ -65,6 +66,7 @@ class SqlBuilder
 	private string $conditionScope = '';
 	private readonly Driver $driver;
 	private readonly IStructure $structure;
+	private readonly ?EntityMapping $entityMapping;
 
 	/** @var array<string, int> table fullName => exists */
 	private array $cacheTableList = [];
@@ -79,6 +81,7 @@ class SqlBuilder
 		$this->driver = $explorer->getConnection()->getDriver();
 		$this->conventions = $explorer->getConventions();
 		$this->structure = $explorer->getStructure();
+		$this->entityMapping = $explorer->getEntityMapping();
 		$tableNameParts = explode('.', $tableName);
 		$this->delimitedTable = implode('.', array_map($this->driver->delimite(...), $tableNameParts));
 		$this->checkUniqueTableName(end($tableNameParts), $tableName);
@@ -922,11 +925,31 @@ class SqlBuilder
 	 */
 	protected function tryDelimite(string $s): string
 	{
+		if (!$this->entityMapping) {
+			return preg_replace_callback(
+				'#(?<=[^\w`"\[?:]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|$)#Di',
+				fn(array $m): string => strtoupper($m[0]) === $m[0]
+					? $m[0]
+					: $this->driver->delimite($m[0]),
+				$s,
+			);
+		}
+
 		return preg_replace_callback(
-			'#(?<=[^\w`"\[?:]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|$)#Di',
-			fn(array $m): string => strtoupper($m[0]) === $m[0]
-				? $m[0]
-				: $this->driver->delimite($m[0]),
+			'#(?<=[^\w`"\[?:]|^)[a-z_][a-z0-9_]*(?:\.[a-z_][a-z0-9_]*)*(?=[^\w`"(\]]|$)#Di',
+			function (array $m): string {
+				$parts = explode('.', $m[0]);
+				$last = count($parts) - 1;
+				foreach ($parts as $i => &$part) {
+					if (strtoupper($part) !== $part) {
+						if ($i === $last) {
+							$part = $this->entityMapping->getColumnName($part);
+						}
+						$part = $this->driver->delimite($part);
+					}
+				}
+				return implode('.', $parts);
+			},
 			$s,
 		);
 	}

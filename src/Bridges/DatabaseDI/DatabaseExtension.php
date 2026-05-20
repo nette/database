@@ -43,6 +43,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 						Expect::string()->transform(fn(string $v) => ['*' => $v]),
 						Expect::arrayOf('string', 'string'),
 					)->default([]),
+					'camelCase' => Expect::bool(false),
 				]),
 			]),
 		)->before(fn($val) => is_array($val) && $val && !array_key_exists('dsn', $val)
@@ -125,8 +126,8 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				->setAutowired($config->autowired);
 		}
 
-		$entityMapping = $config->mapping?->tables
-			? new Nette\DI\Definitions\Statement(Nette\Database\DefaultEntityMapping::class, [$config->mapping->tables])
+		$entityMapping = $config->mapping?->tables || $config->mapping?->camelCase
+			? new Nette\DI\Definitions\Statement(Nette\Database\DefaultEntityMapping::class, [$config->mapping->tables, $config->mapping->camelCase])
 			: null;
 
 		$builder->addDefinition($this->prefix("$name.explorer"))

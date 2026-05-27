@@ -16,6 +16,7 @@ parameters:
 		# $refPath is populated via @param-out by getRefTable() — PHPStan doesn't track this
 		-
 			identifier: variable.undefined
+			count: 1
 			path: src/Database/Table/Selection.php
 
 		# Readonly lazy-loading via __get magic
@@ -67,21 +68,25 @@ parameters:
 		# Intentional new static() in exception hierarchy
 		-
 			identifier: new.static
+			count: 1
 			path: src/Database/DriverException.php
 
 		# Closure variables consumed by require'd phtml template
 		-
 			identifier: closure.unusedUse
+			count: 2
 			path: src/Bridges/DatabaseTracy/ConnectionPanel.php
 
 		# Defensive instanceof check in elseif branch for readability
 		-
 			identifier: instanceof.alwaysTrue
+			count: 1
 			path: src/Bridges/DatabaseTracy/ConnectionPanel.php
 
 		# Lazy-loading side effect via __get magic
 		-
 			identifier: expr.resultUnused
+			count: 1
 			path: src/Database/Reflection.php
 
 		# DI extension: $this->config is array|object from Nette Schema
@@ -92,27 +97,33 @@ parameters:
 		# PDOException::$queryString is set by PDO engine, not formally declared
 		-
 			identifier: property.notFound
+			count: 1
 			path: src/Bridges/DatabaseTracy/ConnectionPanel.php
 
 		# Dynamic callable construction: "is_$type"($value) where $type is always valid
 		-
 			identifier: callable.nonCallable
+			count: 1
 			path: src/Database/SqlPreprocessor.php
 
 		# Defensive runtime checks unreachable per @param type
 		-
 			identifier: instanceof.alwaysTrue
+			count: 1
 			path: src/Database/SqlPreprocessor.php
 		-
 			identifier: booleanAnd.alwaysFalse
+			count: 1
 			path: src/Database/SqlPreprocessor.php
 
 		# getPrimary() returns string for single-column PK (composite PK not supported here)
 		-
 			identifier: argument.type
+			count: 1
 			path: src/Database/Table/ActiveRow.php
 		-
 			identifier: array.invalidKey
+			count: 1
 			path: src/Database/Table/ActiveRow.php
 
 		# Return type mismatches from generic covariance and internal caching
@@ -132,14 +143,17 @@ parameters:
 		# Array offset access on Row/ActiveRow objects and nullable arrays
 		-
 			identifier: offsetAccess.notFound
+			count: 7
 			path: src/Database/Helpers.php
 
 		# Defensive checks that are always true/false per PHPStan type narrowing
 		-
 			identifier: empty.offset
+			count: 1
 			path: src/Database/Helpers.php
 		-
 			identifier: isset.offset
+			count: 2
 			path: src/Database/Helpers.php
 		# Latte-generated n:attr idiom: ($tmp = expr) === null ? '' : ...
 		-

@@ -99,7 +99,7 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		if (!empty($config->reflection)) {
 			$conventionsServiceName = 'reflection';
 			$config->conventions = $config->reflection;
-			if (is_string($config->conventions) && strtolower($config->conventions) === 'conventional') {
+			if (strtolower($config->conventions) === 'conventional') {
 				$config->conventions = 'Static';
 			}
 		} else {
@@ -109,16 +109,13 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		if (!$config->conventions) {
 			$conventions = null;
 
-		} elseif (is_string($config->conventions)) {
+		} else {
 			$conventions = $builder->addDefinition($this->prefix("$name.$conventionsServiceName"))
 				->setFactory(preg_match('#^[a-z]+$#Di', $config->conventions)
 					? 'Nette\Database\Conventions\\' . ucfirst($config->conventions) . 'Conventions'
 					: $config->conventions)
 				->setArguments(strtolower($config->conventions) === 'discovered' ? [$structure] : [])
 				->setAutowired($config->autowired);
-
-		} else {
-			$conventions = Nette\DI\Helpers::filterArguments([$config->conventions])[0];
 		}
 
 		$builder->addDefinition($this->prefix("$name.explorer"))

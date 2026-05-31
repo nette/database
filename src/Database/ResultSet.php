@@ -39,7 +39,7 @@ class ResultSet implements \Iterator, IRowContainer
 		/** @var ?\Closure(array<string, mixed>, self): array<string, mixed> */
 		private readonly ?\Closure $normalizer = null,
 	) {
-		$time = microtime(true);
+		$time = microtime(as_float: true);
 		$types = ['boolean' => PDO::PARAM_BOOL, 'integer' => PDO::PARAM_INT, 'resource' => PDO::PARAM_LOB, 'NULL' => PDO::PARAM_NULL];
 
 		try {

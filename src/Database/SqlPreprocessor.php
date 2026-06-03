@@ -307,6 +307,7 @@ class SqlPreprocessor
 	{
 		$default = '1=1';
 		$res = [];
+		$begin = count($this->remaining);
 		foreach ($items as $k => $v) {
 			if (is_int($k)) {
 				$res[] = $this->formatValue($v);
@@ -328,6 +329,7 @@ class SqlPreprocessor
 				} else {
 					$default = $kind ? '1=0' : '1=1';
 					if ($kind === ($mode === self::ModeAnd)) {
+						$this->remaining = array_slice($this->remaining, 0, $begin); // drops params of discarded conditions
 						return "($default)";
 					}
 				}

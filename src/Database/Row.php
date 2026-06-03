@@ -57,7 +57,8 @@ class Row extends Nette\Utils\ArrayHash implements IRow
 	public function offsetExists($key): bool
 	{
 		if (is_int($key)) {
-			return (bool) current(array_slice((array) $this, $key, 1));
+			$arr = array_slice((array) $this, $key, 1);
+			return $arr && current($arr) !== null; // null value → false, consistently with string keys
 		}
 
 		return parent::offsetExists($key);

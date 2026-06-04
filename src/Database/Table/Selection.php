@@ -810,30 +810,36 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Inserts one or more rows into the table.
-	 * Returns the inserted ActiveRow for single-row inserts, or the number of affected rows otherwise.
-	 * @param  iterable<string, mixed>|Selection<ActiveRow>  $data
+	 * A single associative array inserts one row and returns the inserted ActiveRow;
+	 * a list of rows or a Selection performs a bulk insert and returns the number of affected rows.
+	 * @param  iterable<string, mixed>|iterable<int, array<string, mixed>>|Selection<ActiveRow>  $data
 	 * @return ($data is array<string, mixed> ? T|array<string, mixed> : int)
 	 */
 	public function insert(iterable $data): ActiveRow|array|int
 	{
+		if ($data instanceof self) { // INSERT ... SELECT identifies no row, it only reports the count
+			$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), ...$data->getSqlBuilder()->getParameters());
+			$this->loadRefCache();
+			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
+			return $return->getRowCount()
+				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
+		}
+
 		//should be called before query for not to spoil PDO::lastInsertId
 		$primarySequenceName = $this->getPrimarySequence();
 		$primaryAutoincrementKey = $this->explorer->getStructure()->getPrimaryAutoincrementKey($this->name);
 
-		if ($data instanceof self) {
-			$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), ...$data->getSqlBuilder()->getParameters());
-
-		} else {
-			if ($data instanceof \Traversable) {
-				$data = iterator_to_array($data);
-			}
-
-			$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ?values', $data);
+		// an empty array is a single row of database defaults, not a bulk insert
+		$data = Nette\Database\Helpers::materializeRows($data);
+		$bulk = Nette\Database\Helpers::isRowList($data);
+		if ($bulk) {
+			$data = array_values($data); // keys may have gaps, ?values needs a list
 		}
 
+		$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ?values', $data);
 		$this->loadRefCache();
 
-		if ($data instanceof self || $this->primary === null) {
+		if ($bulk || $this->primary === null) {
 			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
 			return $return->getRowCount()
 				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');

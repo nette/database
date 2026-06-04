@@ -10,7 +10,7 @@ namespace Nette\Database;
 use Nette;
 use Nette\Bridges\DatabaseTracy\ConnectionPanel;
 use Tracy;
-use function count, is_bool, is_float, is_resource, is_string, strlen;
+use function count, is_array, is_bool, is_float, is_resource, is_string, strlen;
 
 
 /**
@@ -402,6 +402,44 @@ class Helpers
 		}
 
 		return implode(', ', $duplicates);
+	}
+
+
+	/**
+	 * Materializes rows for insertion. A Traversable is drained by position, so that rows yielded
+	 * under colliding keys (`yield from`) survive, while a single associative row stays inspectable.
+	 * @param  iterable<mixed>  $data
+	 * @return array<mixed>
+	 * @internal
+	 */
+	public static function materializeRows(iterable $data): array
+	{
+		if (is_array($data)) {
+			return $data;
+		}
+
+		$keys = $values = [];
+		foreach ($data as $key => $value) {
+			$keys[] = $key;
+			$values[] = $value;
+		}
+
+		return $keys === array_filter($keys, 'is_int')
+			? $values
+			: array_combine($keys, $values);
+	}
+
+
+	/**
+	 * Checks whether the data is a list of rows rather than a single row. Integer keys are never
+	 * column names, so any all-integer keys mean a list, even with gaps left by e.g. array_filter().
+	 * @param  array<mixed>  $data
+	 * @internal
+	 */
+	public static function isRowList(array $data): bool
+	{
+		$keys = array_keys($data);
+		return $keys !== [] && $keys === array_filter($keys, 'is_int');
 	}
 
 

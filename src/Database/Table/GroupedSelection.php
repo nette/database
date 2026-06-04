@@ -262,13 +262,13 @@ class GroupedSelection extends Selection
 			return parent::insert($data);
 		}
 
-		$data = $data instanceof \Traversable ? iterator_to_array($data) : $data;
-		if (array_is_list($data)) {
+		$data = Nette\Database\Helpers::materializeRows($data);
+		if (Nette\Database\Helpers::isRowList($data)) {
 			foreach (array_keys($data) as $key) {
 				$data[$key][$this->column] = $this->active;
 			}
 		} else {
-			$data[$this->column] = $this->active;
+			$data[$this->column] = $this->active; // a single row (an empty one too)
 		}
 
 		return parent::insert($data);

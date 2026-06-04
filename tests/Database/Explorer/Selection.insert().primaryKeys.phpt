@@ -32,6 +32,23 @@ test('insert into table with simple primary index (autoincrement)', function () 
 	Assert::same('Some note here 2', $simplePkAutoincrementResult2->note);
 });
 
+test('insert with an empty array leaves all columns to their defaults', function () use ($explorer) {
+	$row = $explorer->table('simple_pk_autoincrement')->insert([]);
+
+	Assert::type(Nette\Database\Table\ActiveRow::class, $row);
+	Assert::same(3, $row->identifier1);
+	Assert::null($row->note);
+});
+
+test('insert with an empty Traversable is a row of defaults, not an empty bulk', function () use ($explorer) {
+	// $form->getValues() returns an ArrayHash; an unfilled form must still insert a row
+	$row = $explorer->table('simple_pk_autoincrement')->insert(Nette\Utils\ArrayHash::from([]));
+
+	Assert::type(Nette\Database\Table\ActiveRow::class, $row);
+	Assert::same(4, $row->identifier1);
+	Assert::null($row->note);
+});
+
 test('insert into table with simple primary index (no autoincrement)', function () use ($explorer) {
 	$simplePkNoAutoincrementResult = $explorer->table('simple_pk_no_autoincrement')->insert([
 		'identifier1' => 100,

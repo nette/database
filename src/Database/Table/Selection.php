@@ -791,7 +791,7 @@ class Selection implements \IteratorAggregate, \ArrayAccess, \Countable
 
 		$this->loadRefCache();
 
-		if ($data instanceof self || $this->primary === null || (is_array($data) && array_key_exists(0, $data))) {
+		if ($data instanceof self || $this->primary === null || array_is_list($data)) {
 			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
 			return $return->getRowCount()
 				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');

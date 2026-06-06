@@ -176,34 +176,33 @@ class SqliteDriver implements Nette\Database\Driver
 		$rows = $this->connection->query('PRAGMA index_list(?name)', $table);
 		while ($row = $rows->fetch()) {
 			$id = (string) $row['name'];
+			$columns = [];
+			$res = $this->connection->query('PRAGMA index_info(?name)', $id);
+			while ($info = $res->fetch()) {
+				$columns[] = (string) $info['name'];
+			}
+
 			$indexes[$id] = [
 				'name' => $id,
 				'unique' => (bool) $row['unique'],
 				'primary' => false,
-				'columns' => [],
+				'columns' => $columns,
 			];
 		}
 
-		foreach ($indexes as $index => $values) {
-			$res = $this->connection->query('PRAGMA index_info(?name)', $index);
-			while ($row = $res->fetch()) {
-				$indexes[$index]['columns'][] = (string) $row['name'];
-			}
-		}
-
-		$columns = $this->getColumns($table);
-		foreach ($indexes as $index => $values) {
-			$column = $values['columns'][0];
-			foreach ($columns as $info) {
+		$tableColumns = $this->getColumns($table);
+		foreach ($indexes as $id => $index) {
+			$column = $index['columns'][0] ?? null;
+			foreach ($tableColumns as $info) {
 				if ($column === $info['name']) {
-					$indexes[$index]['primary'] = (bool) $info['primary'];
+					$indexes[$id]['primary'] = (bool) $info['primary'];
 					break;
 				}
 			}
 		}
 
 		if (!$indexes) { // @see http://www.sqlite.org/lang_createtable.html#rowid
-			foreach ($columns as $column) {
+			foreach ($tableColumns as $column) {
 				if ($column['vendor']['pk']) {
 					$indexes[] = [
 						'name' => 'ROWID',

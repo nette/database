@@ -69,11 +69,6 @@ parameters:
 			identifier: new.static
 			path: src/Database/DriverException.php
 
-		# Closure variables consumed by require'd phtml template
-		-
-			identifier: closure.unusedUse
-			path: src/Bridges/DatabaseTracy/ConnectionPanel.php
-
 		# Defensive instanceof check in elseif branch for readability
 		-
 			identifier: instanceof.alwaysTrue

@@ -54,7 +54,7 @@ class PostgreSQLEngine implements Engine
 	/********************* SQL ****************d*g**/
 
 
-	public function delimite(string $name): string
+	public function delimit(string $name): string
 	{
 		// @see http://www.postgresql.org/docs/8.2/static/sql-syntax-lexical.html#SQL-SYNTAX-IDENTIFIERS
 		return '"' . str_replace('"', '""', $name) . '"';
@@ -162,7 +162,7 @@ class PostgreSQLEngine implements Engine
 				AND NOT a.attisdropped
 			ORDER BY
 				a.attnum
-			X, [$this->delimiteFQN($table)]);
+			X, [$this->delimitFQN($table)]);
 
 		while ($row = $rows->fetch()) {
 			$column = $row;
@@ -195,7 +195,7 @@ class PostgreSQLEngine implements Engine
 				c1.relkind IN ('r', 'p')
 				AND c1.oid = ?::regclass
 			ORDER BY c2.relname, k.ord
-			X, [$this->delimiteFQN($table)]);
+			X, [$this->delimitFQN($table)]);
 
 		while ($row = $rows->fetch()) {
 			$id = (string) $row['name'];
@@ -233,7 +233,7 @@ class PostgreSQLEngine implements Engine
 				co.contype = 'f'
 				AND cl.oid = ?::regclass
 				AND nf.nspname = ANY (pg_catalog.current_schemas(FALSE))
-			X, [$this->delimiteFQN($table)]);
+			X, [$this->delimitFQN($table)]);
 
 		while ($row = $rows->fetch()) {
 			$id = $row['name'];
@@ -258,8 +258,8 @@ class PostgreSQLEngine implements Engine
 	/**
 	 * Converts: schema.name => "schema"."name"
 	 */
-	private function delimiteFQN(string $name): string
+	private function delimitFQN(string $name): string
 	{
-		return implode('.', array_map($this->delimite(...), explode('.', $name)));
+		return implode('.', array_map($this->delimit(...), explode('.', $name)));
 	}
 }

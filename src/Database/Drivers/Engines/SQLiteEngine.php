@@ -72,7 +72,7 @@ class SQLiteEngine implements Engine
 	/********************* SQL ****************d*g**/
 
 
-	public function delimite(string $name): string
+	public function delimit(string $name): string
 	{
 		return str_contains($name, ']') // there is no escape for ] inside [...]
 			? '"' . str_replace('"', '""', $name) . '"'
@@ -148,7 +148,7 @@ class SQLiteEngine implements Engine
 			X, [$table, $table])->fetch();
 
 		$columns = [];
-		$rows = $this->connection->query('PRAGMA table_info(?name)', $table);
+		$rows = $this->connection->query("PRAGMA table_info({$this->delimit($table)})");
 		while ($row = $rows->fetch()) {
 			$column = $row['name'];
 			$q = preg_quote($column, '/');
@@ -176,7 +176,7 @@ class SQLiteEngine implements Engine
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
-		$rows = $this->connection->query('PRAGMA index_list(?name)', $table);
+		$rows = $this->connection->query("PRAGMA index_list({$this->delimit($table)})");
 		while ($row = $rows->fetch()) {
 			$id = (string) $row['name'];
 			$columns = [];
@@ -214,7 +214,7 @@ class SQLiteEngine implements Engine
 	public function getForeignKeys(string $table): array
 	{
 		$keys = [];
-		$rows = $this->connection->query('PRAGMA foreign_key_list(?name)', $table);
+		$rows = $this->connection->query("PRAGMA foreign_key_list({$this->delimit($table)})");
 		while ($row = $rows->fetch()) {
 			$id = $row['id'];
 			$keys[$id]['name'] = $id;

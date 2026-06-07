@@ -11,21 +11,21 @@ namespace Nette\Database\Reflection;
 /**
  * Database table column metadata.
  */
-final class Column
+final readonly class Column
 {
 	/** @internal */
 	public function __construct(
-		public readonly string $name,
-		public readonly ?Table $table = null,
-		public readonly string $nativeType = '',
-		public readonly ?int $size = null,
-		public readonly bool $nullable = false,
-		public readonly mixed $default = null,
-		public readonly bool $autoIncrement = false,
-		public readonly bool $primary = false,
-		public readonly ?string $comment = null,
+		public string $name,
+		public ?Table $table = null,
+		public string $nativeType = '',
+		public ?int $size = null,
+		public bool $nullable = false,
+		public mixed $default = null,
+		public bool $autoIncrement = false,
+		public bool $primary = false,
+		public ?string $comment = null,
 		/** @var array<string, mixed> */
-		public readonly array $vendor = [],
+		public array $vendor = [],
 	) {
 	}
 

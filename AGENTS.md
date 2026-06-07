@@ -24,7 +24,7 @@ context-detected preprocessor modes). Read `docs/internals/` before touching the
 
 Supports MySQL, PostgreSQL, SQLite, MS SQL Server, and Oracle.
 
-- **PHP Version**: 8.1 - 8.5
+- **PHP Version**: 8.3 - 8.5
 - **Package**: `nette/database`
 
 ## Essential Commands

@@ -72,7 +72,7 @@ class SQLiteEngine implements Engine
 	/********************* SQL ****************d*g**/
 
 
-	public function delimite(string $name): string
+	public function delimit(string $name): string
 	{
 		return str_contains($name, ']') // there is no escape for ] inside [...]
 			? '"' . str_replace('"', '""', $name) . '"'
@@ -151,7 +151,7 @@ class SQLiteEngine implements Engine
 		$pragma = version_compare($this->connection->getServerVersion(), '3.26', '>=')
 			? 'table_xinfo' // lists generated columns too
 			: 'table_info';
-		$rows = $this->connection->query("PRAGMA $pragma(?name)", $table);
+		$rows = $this->connection->query("PRAGMA $pragma({$this->delimit($table)})");
 		while ($row = $rows->fetch()) {
 			if (($row['hidden'] ?? 0) === 1) { // hidden column of a virtual table
 				continue;
@@ -183,7 +183,7 @@ class SQLiteEngine implements Engine
 	public function getIndexes(string $table): array
 	{
 		$indexes = [];
-		$rows = $this->connection->query('PRAGMA index_list(?name)', $table);
+		$rows = $this->connection->query("PRAGMA index_list({$this->delimit($table)})");
 		while ($row = $rows->fetch()) {
 			$id = (string) $row['name'];
 			$columns = [];
@@ -221,7 +221,7 @@ class SQLiteEngine implements Engine
 	public function getForeignKeys(string $table): array
 	{
 		$keys = [];
-		$rows = $this->connection->query('PRAGMA foreign_key_list(?name)', $table);
+		$rows = $this->connection->query("PRAGMA foreign_key_list({$this->delimit($table)})");
 		while ($row = $rows->fetch()) {
 			$id = $row['id'];
 			$keys[$id]['name'] = $id;

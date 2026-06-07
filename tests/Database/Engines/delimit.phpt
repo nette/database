@@ -11,15 +11,15 @@ foreach ([
 	new Nette\Database\Drivers\Engines\ODBCEngine,
 	new Nette\Database\Drivers\Engines\SQLServerEngine,
 ] as $engine) {
-	Assert::same('[hello]', $engine->delimite('hello'));
-	Assert::same('[a[b]', $engine->delimite('a[b'));
-	Assert::same('[a]]b]', $engine->delimite('a]b'));
+	Assert::same('[hello]', $engine->delimit('hello'));
+	Assert::same('[a[b]', $engine->delimit('a[b'));
+	Assert::same('[a]]b]', $engine->delimit('a]b'));
 }
 
 // SQLite has no escape for ] inside [...], such a name goes into double quotes
 $sqlite = new Nette\Database\Drivers\Engines\SQLiteEngine;
-Assert::same('[hello]', $sqlite->delimite('hello'));
-Assert::same('[a[b]', $sqlite->delimite('a[b'));
-Assert::same('[a"b]', $sqlite->delimite('a"b'));
-Assert::same('"a]b"', $sqlite->delimite('a]b'));
-Assert::same('"a]""b"', $sqlite->delimite('a]"b'));
+Assert::same('[hello]', $sqlite->delimit('hello'));
+Assert::same('[a[b]', $sqlite->delimit('a[b'));
+Assert::same('[a"b]', $sqlite->delimit('a"b'));
+Assert::same('"a]b"', $sqlite->delimit('a]b'));
+Assert::same('"a]""b"', $sqlite->delimit('a]"b'));

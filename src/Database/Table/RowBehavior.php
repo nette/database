@@ -18,6 +18,9 @@ use function array_intersect_key, array_key_exists, array_keys, array_map, implo
  */
 trait RowBehavior
 {
+	/** @var array<class-string, list<string>> */
+	private static array $declaredProperties = [];
+
 	private bool $dataRefreshed = false;
 	private readonly ?Nette\Database\EntityMapping $entityMapping;
 
@@ -29,6 +32,29 @@ trait RowBehavior
 		private Selection $table,
 	) {
 		$this->entityMapping = $table->getExplorer()->getEntityMapping();
+		foreach (self::declaredProperties(static::class) as $name) {
+			unset($this->$name);
+		}
+	}
+
+
+	/**
+	 * Returns names of declared public non-static properties of the row class, so they can be unset to fall through to __get.
+	 * @param  class-string  $class
+	 * @return list<string>
+	 */
+	private static function declaredProperties(string $class): array
+	{
+		if (isset(self::$declaredProperties[$class])) {
+			return self::$declaredProperties[$class];
+		}
+		$result = [];
+		foreach ((new \ReflectionClass($class))->getProperties(\ReflectionProperty::IS_PUBLIC) as $prop) {
+			if (!$prop->isStatic()) {
+				$result[] = $prop->getName();
+			}
+		}
+		return self::$declaredProperties[$class] = $result;
 	}
 
 

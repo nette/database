@@ -30,23 +30,11 @@ class Book extends Table\ActiveRow
 }
 
 
-// attached row in its target form: composes RowBehavior, plus a userland unset
-// bridging declared value properties to magic column access
+// attached row in its target form: composing RowBehavior is enough, its constructor
+// unsets the declared value properties so they fall through to magic column access
 final class BookRow extends Book implements Table\Row
 {
-	use Table\RowBehavior {
-		__construct as private constructRow;
-	}
-
-	public function __construct(array $data, Table\Selection $table, bool $deferredFetch = false)
-	{
-		$this->constructRow($data, $table, $deferredFetch);
-		foreach ((new ReflectionClass($this))->getProperties(ReflectionProperty::IS_PUBLIC) as $property) {
-			if (!$property->isStatic()) {
-				unset($this->{$property->getName()});
-			}
-		}
-	}
+	use Table\RowBehavior;
 }
 
 

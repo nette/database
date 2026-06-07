@@ -824,41 +824,37 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Inserts one or more rows into the table.
 	 * A single associative array inserts one row and returns the inserted ActiveRow;
-	 * a list of rows or a Selection performs a bulk insert and returns the number of affected rows.
-	 * @param  iterable<string, mixed>|iterable<int, array<string, mixed>>|Selection<ActiveRow>  $data
-	 * @return ($data is list<mixed>|Selection<ActiveRow> ? int : T|array<mixed>|int)
+	 * Passing a list of rows or a Selection is deprecated, use insertMany() instead.
+	 * @param  iterable<string, mixed>|list<array<string, mixed>>|Selection<ActiveRow>  $data
+	 * @return ($data is non-empty-list<mixed>|Selection<ActiveRow> ? int : T|array<mixed>|int)
 	 */
 	public function insert(iterable $data): ActiveRow|array|int
 	{
-		if ($data instanceof self) { // INSERT ... SELECT identifies no row, it only reports the count
-			$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), ...$data->getSqlBuilder()->getParameters());
-			$this->loadRefCache();
-			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
-			return $return->getRowCount()
-				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
+		if ($data instanceof self) {
+			trigger_error(__METHOD__ . '() with a Selection is deprecated, use insertMany() instead.', E_USER_DEPRECATED);
+			return $this->insertMany($data);
+		}
+
+		// an empty array is a single row of database defaults, not a bulk insert
+		$data = Nette\Database\Helpers::materializeRows($data);
+		if (Nette\Database\Helpers::isRowList($data)) {
+			trigger_error(__METHOD__ . '() with a list of rows is deprecated, use insertMany() instead.', E_USER_DEPRECATED);
+			return $this->insertMany($data);
 		}
 
 		//should be called before query for not to spoil PDO::lastInsertId
 		$primarySequenceName = $this->getPrimarySequence();
 		$primaryAutoincrementKey = $this->explorer->getStructure()->getPrimaryAutoincrementKey($this->name);
 
-		// an empty array is a single row of database defaults, not a bulk insert
-		$data = Nette\Database\Helpers::materializeRows($data);
-		$bulk = Nette\Database\Helpers::isRowList($data);
-		if ($bulk) {
-			$data = array_values($data); // keys may have gaps, ?values needs a list
-		}
-
 		if ($mapping = $this->explorer->getEntityMapping()) {
-			$data = $bulk
-				? array_map(fn(array $row) => Nette\Database\Helpers::translateColumns($row, $mapping), $data)
-				: Nette\Database\Helpers::translateColumns($data, $mapping);
+			$data = Nette\Database\Helpers::translateColumns($data, $mapping);
 		}
 
 		$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ?values', $data);
+
 		$this->loadRefCache();
 
-		if ($bulk || $this->primary === null) {
+		if ($this->primary === null) {
 			$this->clearReferencingCache();
 			return $return->getRowCount()
 				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
@@ -927,17 +923,28 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	public function insertMany(iterable $data): int
 	{
 		if ($data instanceof self) {
-			return $this->insert($data);
+			$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), ...$data->getSqlBuilder()->getParameters());
+
+		} else {
+			$data = Nette\Database\Helpers::materializeRows($data);
+			if (!$data) {
+				return 0;
+			} elseif (!Nette\Database\Helpers::isRowList($data)) {
+				throw new Nette\InvalidArgumentException('insertMany() expects a list of rows or a Selection; use insert() for a single row.');
+			}
+
+			$data = array_values($data); // the keys may have gaps, e.g. left by array_filter()
+			if ($mapping = $this->explorer->getEntityMapping()) {
+				$data = array_map(fn($row) => Nette\Database\Helpers::translateColumns(iterator_to_array($row), $mapping), $data);
+			}
+
+			$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ?values', $data);
 		}
 
-		$data = Nette\Database\Helpers::materializeRows($data);
-		if (!$data) {
-			return 0;
-		} elseif (!Nette\Database\Helpers::isRowList($data)) {
-			throw new Nette\InvalidArgumentException('insertMany() expects a list of rows or a Selection; use insert() for a single row.');
-		}
-
-		return $this->insert(array_values($data)); // the keys may have gaps, e.g. left by array_filter()
+		$this->loadRefCache();
+		$this->clearReferencingCache();
+		return $return->getRowCount()
+			?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
 	}
 
 

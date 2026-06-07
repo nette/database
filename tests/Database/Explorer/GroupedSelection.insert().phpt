@@ -36,3 +36,11 @@ test('insert works after iteration conversion', function () use ($explorer) {
 	$book->related('book_tag')->insert(['tag_id' => 23]);
 	Assert::same(3, $book->related('book_tag')->count());
 });
+
+
+test('insert with an empty array still assigns the referencing group', function () use ($explorer) {
+	$explorer->table('note')->where('book_id', 1)->delete();
+
+	$explorer->table('book')->get(1)->related('note.book_id')->insert([]); // all columns left to defaults
+	Assert::same(1, $explorer->table('note')->where('book_id', 1)->count()); // the group column is filled anyway
+});

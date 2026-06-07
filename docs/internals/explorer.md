@@ -145,22 +145,16 @@ by-ref array), so a mutation from one clone is seen by all clones of the same re
 
 ## insert() & insertMany()
 
-`Selection::insert(iterable)` handles every form in one method (return type
-`ActiveRow|array|int`, never `null`): a **list, a Selection, or a PK-less table**
-returns the affected-row count (int). A **single associative row** collects the PK
-from the data (an autoincrement part filled from `getInsertId`) and **re-fetches the
-row eagerly** (`SELECT *` by PK) to return an `ActiveRow` — so a single insert always
+`Selection::insert(iterable)`: a **single associative row** collects the PK from the
+data (an autoincrement part filled from `getInsertId`) and **re-fetches the row
+eagerly** (`SELECT *` by PK) to return an `ActiveRow` — so a single insert always
 costs a second query. Two fallbacks return early instead — a single-column PK without
 autoincrement absent from the data → int, a composite PK without autoincrement with a
-part missing → the original `$data` array.
+part missing → the original `$data` array. A **list or a Selection** is routed to
+`insertMany()`, and doing that through `insert()` is **deprecated**.
 
-All the early-return branches above (int / array) call `clearReferencingCache()`; a
-returned row is also registered into `rows`/`data` if the Selection was already
-executed.
-
-`insertMany(iterable)` is a thin, typed wrapper over the bulk branch — it exists to
-give callers a plain `int` instead of the `ActiveRow|array|int` union, and delegates
-back to `insert()`. Three details are not obvious from the signature:
+`insertMany(iterable)` owns the bulk logic and always returns an int. Three details
+are not obvious from the signature:
 
 - an **empty list returns 0 without touching the database**, whereas `insert([])`
   inserts one row of database defaults (`?values` with an empty array) — the two are
@@ -173,8 +167,13 @@ back to `insert()`. Three details are not obvious from the signature:
 - a single associative row is **rejected up front** rather than inserted, so the
   mistake surfaces before the write.
 
-`GroupedSelection` needs no override: `insertMany()` routes through `insert()`, whose
-override there adds the grouping column to every row.
+All the early-return branches above (int / array) call `clearReferencingCache()`; a
+returned row is also registered into `rows`/`data` if the Selection was already
+executed.
+
+`GroupedSelection` overrides both: `insert()` assigns the grouping column to a single
+row, `insertMany()` to every row of the list — on a **clone** of each `Row`, never on
+the caller's object.
 
 ## update() / delete()
 

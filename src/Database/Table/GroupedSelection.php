@@ -10,6 +10,7 @@ namespace Nette\Database\Table;
 use Nette;
 use Nette\Database\Conventions;
 use Nette\Database\Explorer;
+use function count, preg_match, reset;
 
 
 /**
@@ -258,26 +259,39 @@ class GroupedSelection extends Selection
 
 	/**
 	 * @param  iterable<mixed>|Selection<ActiveRow>  $data
-	 * @return ($data is list<mixed>|Selection<ActiveRow> ? int : T|array<mixed>|int)
+	 * @return ($data is non-empty-list<mixed>|Selection<ActiveRow> ? int : T|array<mixed>|int)
 	 */
 	public function insert(iterable $data): ActiveRow|array|int
 	{
-		if ($data instanceof Selection) {
-			return parent::insert($data);
-		}
-
-		$data = Nette\Database\Helpers::materializeRows($data);
-		if (Nette\Database\Helpers::isRowList($data)) {
-			foreach ($data as $key => $row) {
-				$row = $row instanceof Nette\Database\Row ? clone $row : $row; // must not modify the caller's row
-				$row[$this->column] = $this->active;
-				$data[$key] = $row;
+		if (!$data instanceof Selection) {
+			$data = Nette\Database\Helpers::materializeRows($data);
+			if (!Nette\Database\Helpers::isRowList($data)) {
+				$data[$this->column] = $this->active; // single row (an empty one too): assign to the referencing group
 			}
-		} else {
-			$data[$this->column] = $this->active; // a single row (an empty one too)
 		}
 
+		// bulk (list / Selection) is routed to insertMany() by parent, which assigns the group per row
 		return parent::insert($data);
+	}
+
+
+	/**
+	 * @param  iterable<array<string, mixed>|Nette\Database\Row>|Selection<ActiveRow>  $data
+	 */
+	public function insertMany(iterable $data): int
+	{
+		if (!$data instanceof Selection) {
+			$data = Nette\Database\Helpers::materializeRows($data);
+			if (Nette\Database\Helpers::isRowList($data)) { // anything else is left to parent to reject
+				foreach ($data as $key => $row) {
+					$row = $row instanceof Nette\Database\Row ? clone $row : $row; // must not modify the caller's row
+					$row[$this->column] = $this->active;
+					$data[$key] = $row;
+				}
+			}
+		}
+
+		return parent::insertMany($data);
 	}
 
 

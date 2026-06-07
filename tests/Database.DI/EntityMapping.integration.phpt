@@ -172,9 +172,9 @@ test('Selection::insert translates property keys', function () {
 });
 
 
-test('Selection::insert multi-row translates property keys', function () {
+test('Selection::insertMany translates property keys', function () {
 	$explorer = createExplorer(new UpperCaseMapping);
-	$explorer->table('user_account')->insert([
+	$explorer->table('user_account')->insertMany([
 		['FIRST_NAME' => 'Bob', 'LAST_NAME' => 'Builder', 'EMAIL_ADDRESS' => 'bob@example.com'],
 		['FIRST_NAME' => 'Cara', 'LAST_NAME' => 'Coder', 'EMAIL_ADDRESS' => 'cara@example.com'],
 	]);

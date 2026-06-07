@@ -149,3 +149,15 @@ function testSelectionInsertFromSelection(Selection $selection, Selection $sourc
 	$result = $selection->insert($source);
 	assertType('int', $result);
 }
+
+
+/**
+ * @param Selection<ActiveRow> $selection
+ * @param Selection<ActiveRow> $source
+ */
+function testSelectionInsertMany(Selection $selection, Selection $source): void
+{
+	// insertMany() always returns the number of affected rows
+	assertType('int', $selection->insertMany([['name' => 'Alice'], ['name' => 'Bob']]));
+	assertType('int', $selection->insertMany($source));
+}

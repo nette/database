@@ -168,7 +168,7 @@ parameters:
 		-
 			identifier: argument.type
 			message: '#expects literal-string, [\w-]+ given#'
-			count: 5
+			count: 6
 			path: src/Database/Table/Selection.php
 		-
 			identifier: argument.type

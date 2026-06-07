@@ -2,7 +2,6 @@
 
 /**
  * Test: DatabaseExtension driver-specific constants like Pdo\Sqlite::ATTR_* in options.
- * @phpVersion >= 8.4
  */
 
 use Nette\Bridges\DatabaseDI\DatabaseExtension;

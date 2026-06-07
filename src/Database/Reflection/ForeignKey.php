@@ -11,16 +11,16 @@ namespace Nette\Database\Reflection;
 /**
  * Database foreign key relationship.
  */
-final class ForeignKey
+final readonly class ForeignKey
 {
 	/** @internal */
 	public function __construct(
-		public readonly Table $foreignTable,
+		public Table $foreignTable,
 		/** @var list<Column> */
-		public readonly array $localColumns,
+		public array $localColumns,
 		/** @var list<Column> */
-		public readonly array $foreignColumns,
-		public readonly string $name,
+		public array $foreignColumns,
+		public string $name,
 	) {
 	}
 

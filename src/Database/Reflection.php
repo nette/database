@@ -13,14 +13,14 @@ use Nette\Database\Reflection\Table;
 /**
  * Provides database schema reflection.
  */
-final class Reflection
+final readonly class Reflection
 {
 	/** @var array<string, Table> */
-	public readonly array $tables;
+	public array $tables;
 
 
 	public function __construct(
-		private readonly Driver $driver,
+		private Driver $driver,
 	) {
 		unset($this->tables);
 	}

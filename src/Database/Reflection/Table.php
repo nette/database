@@ -13,26 +13,26 @@ use Nette\Database\Reflection;
 /**
  * Database table metadata including columns, indexes, and foreign keys.
  */
-final class Table
+final readonly class Table
 {
 	/** @var array<string, Column> */
-	public readonly array $columns;
+	public array $columns;
 
 	/** @var list<Index> */
-	public readonly array $indexes;
-	public readonly ?Index $primaryKey;
+	public array $indexes;
+	public ?Index $primaryKey;
 
 	/** @var list<ForeignKey> */
-	public readonly array $foreignKeys;
+	public array $foreignKeys;
 
 
 	/** @internal */
 	public function __construct(
-		private readonly Reflection $reflection,
-		public readonly string $name,
-		public readonly bool $view = false,
-		public readonly ?string $fullName = null,
-		public readonly ?string $comment = null,
+		private Reflection $reflection,
+		public string $name,
+		public bool $view = false,
+		public ?string $fullName = null,
+		public ?string $comment = null,
 	) {
 		unset($this->columns, $this->indexes, $this->primaryKey, $this->foreignKeys);
 	}

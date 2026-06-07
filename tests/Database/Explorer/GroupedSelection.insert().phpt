@@ -42,7 +42,15 @@ test('does not modify the caller\'s Row objects', function () use ($explorer) {
 	$explorer->table('book_tag')->where('book_id', 1)->delete();
 
 	$row = Nette\Database\Row::from(['tag_id' => 21]);
-	$explorer->table('book')->get(1)->related('book_tag')->insert([$row]);
+	$explorer->table('book')->get(1)->related('book_tag')->insertMany([$row]);
 
 	Assert::same(['tag_id' => 21], (array) $row); // no book_id leaked into it
+});
+
+
+test('insert with an empty array still assigns the referencing group', function () use ($explorer) {
+	$explorer->table('note')->where('book_id', 1)->delete();
+
+	$explorer->table('book')->get(1)->related('note.book_id')->insert([]); // all columns left to defaults
+	Assert::same(1, $explorer->table('note')->where('book_id', 1)->count()); // the group column is filled anyway
 });

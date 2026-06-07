@@ -26,7 +26,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 	private float $totalTime = 0;
 	private int $count = 0;
 
-	/** @var list<array{Connection, string, ?array<mixed>, list<array<string, mixed>>, ?float, ?int, ?string}> */
+	/** @var list<array{Connection, Nette\Database\SqlLiteral, list<array<string, mixed>>, ?float, ?int, ?string}> */
 	private array $events = [];
 
 
@@ -102,8 +102,8 @@ class ConnectionPanel implements Tracy\IBarPanel
 		}
 
 		$this->events[] = $result instanceof Result
-			? [$connection, $result->getQueryString(), $result->getParameters(), $trace, $result->getTime(), $result->getRowCount(), null]
-			: [$connection, $result->getQueryString(), null, $trace, null, null, $result->getMessage()];
+			? [$connection, $result->getQuery(), $trace, $result->getTime(), $result->getRowCount(), null]
+			: [$connection, $result->getQuery(), $trace, null, null, $result->getMessage()];
 	}
 
 
@@ -114,11 +114,10 @@ class ConnectionPanel implements Tracy\IBarPanel
 			return null;
 		}
 
-		$sql = $e->getQueryString();
-		return $sql
+		return $e->getQuery()
 			? [
 				'tab' => 'SQL',
-				'panel' => Helpers::dumpSql($sql, $e->params ?? []),
+				'panel' => Helpers::dumpSql($e->getQuery()),
 			]
 			: null;
 	}
@@ -144,8 +143,9 @@ class ConnectionPanel implements Tracy\IBarPanel
 		$events = [];
 		$connection = null;
 		foreach ($this->events as $event) {
-			[$connection, $sql, $params, , , , $error] = $event;
+			[$connection, $query, , , , $error] = $event;
 			$explain = null;
+			$sql = $query->getSql();
 			$command = preg_match('#\s*\(?\s*(SELECT|INSERT|UPDATE|DELETE)\s#iA', $sql, $m)
 				? strtolower($m[1])
 				: null;
@@ -154,7 +154,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 					$cmd = is_string($this->explain)
 						? $this->explain
 						: 'EXPLAIN';
-					$rows = $connection->getConnection()->query("$cmd $sql", $params);
+					$rows = $connection->getConnection()->query("$cmd $sql", $query->getParameters());
 					for ($explain = []; $row = $rows->fetch(); $explain[] = $row);
 				} catch (DriverException) {
 				}

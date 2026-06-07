@@ -71,8 +71,8 @@ test('maxQueries caps stored query details but not the count', function () {
 
 	$events = new ReflectionProperty($panel, 'events')->getValue($panel);
 	Assert::count(3, $events); // exactly maxQueries stored
-	Assert::same('SELECT 1', $events[0][1]);
-	Assert::same('SELECT 3', $events[2][1]);
+	Assert::same('SELECT 1', $events[0][1]->getSql());
+	Assert::same('SELECT 3', $events[2][1]->getSql());
 	Assert::same(5, new ReflectionProperty($panel, 'count')->getValue($panel));
 });
 

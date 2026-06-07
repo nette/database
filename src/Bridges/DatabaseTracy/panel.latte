@@ -23,7 +23,7 @@
 			<th style="width: 1%">Rows</th>
 		</tr>
 
-		<tr n:foreach="$events as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]">
+		<tr n:foreach="$events as [$connection, $query, $trace, $time, $rows, $error, $command, $explain]">
 			<td style="background:rgba(255, 95, 23, {sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale)})" data-order="{=(float) $time}">
 				{if $error}
 					<span title="{$error}">ERROR</span>
@@ -35,7 +35,7 @@
 			</td>
 
 			<td class="nette-DbConnectionPanel-sql nette-DbConnectionPanel-sql-{$command}">
-				{Nette\Database\Helpers::dumpSql($sql, $params, $connection)|noescape}
+				{Nette\Database\Helpers::dumpSql($query, $connection)|noescape}
 
 				<table n:if="$explain" class="tracy-collapsed nette-DbConnectionPanel-explain">
 					<tr>

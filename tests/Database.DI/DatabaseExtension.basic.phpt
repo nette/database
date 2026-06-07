@@ -33,19 +33,13 @@ test('', function () {
 	$container = new Container1;
 	$container->initialize();
 
-	$connection = $container->getService('database.default');
-	Assert::type(Nette\Database\Connection::class, $connection);
-
-	$explorer = $container->getService('database.default.explorer');
+	$explorer = $container->getService('database.default');
 	Assert::type(Nette\Database\Explorer::class, $explorer);
-	Assert::same($connection, $explorer->getConnection());
-	Assert::same($container->getService('database.default.context'), $explorer);
-
-	Assert::type(Nette\Database\Structure::class, $explorer->getStructure());
-	Assert::type(Nette\Database\Conventions\DiscoveredConventions::class, $explorer->getConventions());
+	Assert::type(Nette\Caching\Cache::class, $explorer->getCache());
 
 	// aliases
-	Assert::same($connection, $container->getService('nette.database.default'));
+	Assert::same($explorer, $container->getService('database.default.explorer'));
+	Assert::same($explorer, $container->getService('nette.database.default'));
 	Assert::same($explorer, $container->getService('nette.database.default.context'));
 });
 
@@ -69,7 +63,7 @@ test('single connection is detected by the dsn key, not by the type of the first
 	$container = new Container3;
 	$container->initialize();
 
-	$connection = $container->getService('database.default');
-	Assert::type(Nette\Database\Connection::class, $connection);
-	Assert::same('sqlite::memory:', $connection->getDsn());
+	$explorer = $container->getService('database.default');
+	Assert::type(Nette\Database\Explorer::class, $explorer);
+	Assert::same('sqlite', $explorer->getConnection()->getNativeConnection()->getAttribute(PDO::ATTR_DRIVER_NAME));
 });

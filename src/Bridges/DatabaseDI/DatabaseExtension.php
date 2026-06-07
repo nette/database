@@ -95,32 +95,26 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		$cacheId = 'Nette.Database.' . hash('xxh128', $name . $config->dsn);
 		$cache = new Statement(Nette\Caching\Cache::class, [1 => $cacheId]);
 
-		$connection = $builder->addDefinition($this->prefix("$name.connection"))
-			->setCreator(Nette\Database\Connection::class, [$config->dsn, $config->user, $config->password, $config->options])
+		$explorer = $builder->addDefinition($this->prefix($name))
+			->setCreator(Nette\Database\Explorer::class, [$config->dsn, $config->user, $config->password, $config->options])
+			->addSetup('setCache', [$cache])
 			->setAutowired($config->autowired);
 
-		$structure = $builder->addDefinition($this->prefix("$name.structure"))
-			->setCreator(Nette\Database\Structure::class)
-			->setArguments([new Statement([$connection, 'getDatabaseEngine']), $cache])
-			->setAutowired($config->autowired);
-
-		$conventions = $config->conventions
-			? $builder->addDefinition($this->prefix("$name.conventions"))
+		if (!$config->conventions || $config->conventions === 'discovered') {
+		} else {
+			$conventions = $builder->addDefinition($this->prefix("$name.conventions"))
 				->setCreator(preg_match('#^[a-z]+$#Di', $config->conventions)
 					? 'Nette\Database\Conventions\\' . ucfirst($config->conventions) . 'Conventions'
 					: $config->conventions)
-				->setArguments(strtolower($config->conventions) === 'discovered' ? [$structure] : [])
-				->setAutowired($config->autowired)
-			: null;
+				->setAutowired($config->autowired);
+			$explorer->addSetup('setConventions', [$conventions]);
+		}
 
-		$builder->addDefinition($this->prefix("$name.explorer"))
-			->setCreator(Nette\Database\Explorer::class, [$connection, $structure, $conventions, $cache])
-			->setAutowired($config->autowired);
-
-		$builder->addAlias($this->prefix("$name.context"), $this->prefix("$name.explorer"));
+		$builder->addAlias($this->prefix("$name.connection"), $this->prefix($name));
+		$builder->addAlias($this->prefix("$name.context"), $this->prefix($name));
+		$builder->addAlias($this->prefix("$name.explorer"), $this->prefix($name));
 
 		if ($this->name === 'database') {
-			$builder->addAlias($this->prefix($name), $this->prefix("$name.connection"));
 			$builder->addAlias("nette.database.$name", $this->prefix($name));
 			$builder->addAlias("nette.database.$name.context", $this->prefix("$name.explorer"));
 		}

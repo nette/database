@@ -30,7 +30,7 @@ class Result implements \Iterator
 
 
 	public function __construct(
-		private readonly Connection $connection,
+		private readonly Explorer $explorer,
 		private readonly SqlLiteral $query,
 		private readonly ?Drivers\Result $result,
 		private readonly float $time,
@@ -39,9 +39,9 @@ class Result implements \Iterator
 
 
 	#[\Deprecated]
-	public function getConnection(): Connection
+	public function getConnection(): Explorer
 	{
-		return $this->connection;
+		return $this->explorer;
 	}
 
 
@@ -236,8 +236,8 @@ class Result implements \Iterator
 
 	private function normalizeRow(array $row): array
 	{
-		$engine = $this->connection->getDatabaseEngine();
-		$converter = $this->connection->getTypeConverter();
+		$engine = $this->explorer->getDatabaseEngine();
+		$converter = $this->explorer->getTypeConverter();
 		$this->meta ??= $this->getColumnsMeta();
 		foreach ($row as $key => $value) {
 			$row[$key] = isset($value, $this->meta[$key])

@@ -37,8 +37,8 @@ test('PDO:: constants in options are translated to their values', function () {
 		cache: Nette\Caching\Storages\DevNullStorage
 	', 'ContainerOpt1');
 
-	$connection = $container->getService('database.default');
-	Assert::same(PDO::CASE_LOWER, $connection->getPdo()->getAttribute(PDO::ATTR_CASE));
+	$explorer = $container->getService('database.default');
+	Assert::same(PDO::CASE_LOWER, $explorer->getConnection()->getNativeConnection()->getAttribute(PDO::ATTR_CASE));
 });
 
 
@@ -80,7 +80,7 @@ test('removed option reflection is rejected', function () {
 });
 
 
-test('empty conventions registers no conventions service and Explorer falls back to StaticConventions', function () {
+test('empty conventions registers no conventions service and Explorer falls back to DiscoveredConventions', function () {
 	$container = buildContainer('
 	database:
 		dsn: "sqlite::memory:"
@@ -92,7 +92,7 @@ test('empty conventions registers no conventions service and Explorer falls back
 
 	Assert::false($container->hasService('database.default.conventions'));
 	$explorer = $container->getService('database.default.explorer');
-	Assert::type(Nette\Database\Conventions\StaticConventions::class, $explorer->getConventions());
+	Assert::type(Nette\Database\Conventions\DiscoveredConventions::class, $explorer->getConventions());
 });
 
 

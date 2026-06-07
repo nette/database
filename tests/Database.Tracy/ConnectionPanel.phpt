@@ -13,7 +13,7 @@ require __DIR__ . '/../bootstrap.php';
 
 test('Tracy Bar', function () {
 	$connection = new Connection('sqlite::memory:');
-	$panel = ConnectionPanel::initialize($connection, addBarPanel: true, name: 'foo');
+	$panel = ConnectionPanel::initialize($connection, name: 'foo');
 
 	$connection->beginTransaction();
 	$connection->query('SELECT 1');
@@ -62,17 +62,17 @@ test('deprecated initialization', function () {
 
 test('maxQueries caps stored query details but not the count', function () {
 	$connection = new Connection('sqlite::memory:');
-	$panel = ConnectionPanel::initialize($connection, addBarPanel: true, name: 'cap');
+	$panel = ConnectionPanel::initialize($connection, name: 'cap');
 	$panel->maxQueries = 3;
 
 	for ($i = 1; $i <= 5; $i++) {
 		$connection->query('SELECT ' . $i);
 	}
 
-	$queries = new ReflectionProperty($panel, 'queries')->getValue($panel);
-	Assert::count(3, $queries); // exactly maxQueries stored
-	Assert::same('SELECT 1', $queries[0][1]);
-	Assert::same('SELECT 3', $queries[2][1]);
+	$events = new ReflectionProperty($panel, 'events')->getValue($panel);
+	Assert::count(3, $events); // exactly maxQueries stored
+	Assert::same('SELECT 1', $events[0][1]);
+	Assert::same('SELECT 3', $events[2][1]);
 	Assert::same(5, new ReflectionProperty($panel, 'count')->getValue($panel));
 });
 
@@ -91,12 +91,12 @@ test('BlueScreen panel is registered only once for multiple connections', functi
 
 test('disabled panel logs nothing', function () {
 	$connection = new Connection('sqlite::memory:');
-	$panel = ConnectionPanel::initialize($connection, addBarPanel: true, name: 'off');
+	$panel = ConnectionPanel::initialize($connection, name: 'off');
 	$panel->disabled = true;
 
 	$connection->query('SELECT 1');
 
 	Assert::same(0, new ReflectionProperty($panel, 'count')->getValue($panel));
-	Assert::count(0, new ReflectionProperty($panel, 'queries')->getValue($panel));
+	Assert::count(0, new ReflectionProperty($panel, 'events')->getValue($panel));
 	Assert::null($panel->getPanel());
 });

@@ -13,8 +13,8 @@
 	"require": {
 		"php": "8.4 - 8.6",
 		"ext-pdo": "*",
-		"nette/caching": "^3.2 || ^4.0",
-		"nette/utils": "^4.0"
+		"nette/caching": "^3.4 || ^4.0",
+		"nette/utils": "^4.1"
 	},
 	"require-dev": {
 		"nette/tester": "^2.6",

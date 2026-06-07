@@ -18,14 +18,12 @@ use function count;
  */
 class Result implements \Iterator
 {
-	private ?Drivers\Result $result = null;
 	private Row|false|null $lastRow = null;
 	private int $lastRowKey = -1;
 	private bool $duplicatesChecked = false;
 
 	/** @var list<Row> */
 	private array $rows;
-	private float $time;
 
 	/** @var array<string, array{name: string, nativeType: string, table?: string}> */
 	private array $meta;
@@ -36,20 +34,9 @@ class Result implements \Iterator
 		private readonly string $queryString,
 		/** @var  mixed[] */
 		private readonly array $params,
+		private readonly ?Drivers\Result $result,
+		private readonly float $time,
 	) {
-		$time = microtime(as_float: true);
-
-		try {
-			if (str_starts_with($queryString, '::')) {
-				$connection->getConnection()->{substr($queryString, 2)}();
-			} else {
-				$this->result = $connection->getConnection()->query($queryString, $params);
-			}
-		} catch (DriverException $e) {
-			throw $connection->convertException($e);
-		}
-
-		$this->time = microtime(as_float: true) - $time;
 	}
 
 

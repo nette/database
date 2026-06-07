@@ -12,7 +12,7 @@ require __DIR__ . '/../bootstrap.php';
 
 test('a failed connection is reported by every method that forces it', function () {
 	foreach ([fn($connection) => $connection->quote('x'), fn($connection) => $connection->getInsertId()] as $action) {
-		$connection = new Nette\Database\Connection('dsn', 'user', 'password');
+		$connection = new Nette\Database\Explorer('dsn', 'user', 'password');
 		Assert::exception(
 			fn() => $action($connection),
 			Nette\Database\DriverException::class,
@@ -31,7 +31,7 @@ test('connect & disconnect', function () {
 
 	$connections = 1;
 
-	$connection = new Nette\Database\Connection($options['dsn'], $options['username'], $options['password']);
+	$connection = new Nette\Database\Explorer($options['dsn'], $options['username'], $options['password']);
 	try {
 		$connection->connect();
 	} catch (Nette\Database\DriverException $e) {

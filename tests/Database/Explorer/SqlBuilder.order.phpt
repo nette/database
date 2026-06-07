@@ -12,7 +12,7 @@ require __DIR__ . '/../../bootstrap.php';
 
 $explorer = connectToDB();
 
-Nette\Database\Helpers::loadFromFile($explorer->getConnection(), __DIR__ . "/../files/{$driverName}-nette_test1.sql");
+Nette\Database\Helpers::loadFromFile($explorer, __DIR__ . "/../files/{$driverName}-nette_test1.sql");
 
 test('add multiple order conditions with parameters', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);

@@ -9,7 +9,7 @@ use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
-$connection = connectToDB()->getConnection();
+$connection = connectToDB();
 $query = $driverName === 'pgsql'
 	? 'SELECT ?::double precision' // the placeholder needs a type the engine can infer
 	: 'SELECT ?';

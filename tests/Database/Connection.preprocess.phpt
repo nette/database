@@ -9,7 +9,7 @@ use Tester\Assert;
 
 require __DIR__ . '/../bootstrap.php';
 
-$connection = connectToDB()->getConnection();
+$connection = connectToDB();
 
 Assert::same(['SELECT name FROM author', []], $connection->preprocess('SELECT name FROM author'));
 

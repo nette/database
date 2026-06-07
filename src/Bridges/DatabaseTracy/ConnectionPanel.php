@@ -8,7 +8,7 @@
 namespace Nette\Bridges\DatabaseTracy;
 
 use Nette;
-use Nette\Database\{Connection, DriverException, Helpers, Result};
+use Nette\Database\{DriverException, Explorer, Helpers, Result};
 use Tracy;
 use function is_string;
 
@@ -34,7 +34,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 	 * Registers the panel with Tracy. Optionally adds it to the Tracy Bar.
 	 */
 	public static function initialize(
-		Connection $connection,
+		Explorer $explorer,
 		bool $addBarPanel = true,
 		string $name = '',
 		bool $explain = true,
@@ -51,7 +51,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 		}
 
 		if ($addBarPanel) {
-			$panel = new self($connection, $blueScreen);
+			$panel = new self($explorer, $blueScreen);
 			$panel->explain = $explain;
 			$panel->name = $name;
 			$bar ??= Tracy\Debugger::getBar();
@@ -63,14 +63,14 @@ class ConnectionPanel implements Tracy\IBarPanel
 
 
 	public function __construct(
-		Connection $connection,
+		Explorer $explorer,
 		private readonly Tracy\BlueScreen $blueScreen,
 	) {
-		$connection->onQuery[] = $this->logQuery(...);
+		$explorer->onQuery[] = $this->logQuery(...);
 	}
 
 
-	private function logQuery(Connection $connection, Result|\PDOException $result): void
+	private function logQuery(Explorer $connection, Result|DriverException $result): void
 	{
 		if ($this->disabled) {
 			return;

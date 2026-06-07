@@ -1,5 +1,5 @@
 {varType Nette\Database\Connection $connection}
-{varType list<array> $queries}
+{varType list<array> $events}
 {varType string $name}
 {varType int $count}
 {varType float $totalTime}
@@ -23,7 +23,7 @@
 			<th style="width: 1%">Rows</th>
 		</tr>
 
-		<tr n:foreach="$queries as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]">
+		<tr n:foreach="$events as [$connection, $sql, $params, $trace, $time, $rows, $error, $command, $explain]">
 			<td style="background:rgba(255, 95, 23, {sprintf('%0.3f', log($time * 1000 + 1, 10) * $performanceScale)})" data-order="{=(float) $time}">
 				{if $error}
 					<span title="{$error}">ERROR</span>
@@ -61,5 +61,5 @@
 		</tr>
 	</table>
 
-	<p n:if="count($queries) < $count">...and more</p>
+	<p n:if="count($events) < $count">...and more</p>
 </div>

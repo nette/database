@@ -823,12 +823,13 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Inserts one or more rows into the table.
-	 * A single associative array inserts one row and returns the inserted ActiveRow;
+	 * A single associative array inserts one row and returns the inserted ActiveRow,
+	 * or null/int when the inserted row cannot be identified by its primary key;
 	 * Passing a list of rows or a Selection is deprecated, use insertMany() instead.
 	 * @param  iterable<string, mixed>|list<array<string, mixed>>|Selection<ActiveRow>  $data
-	 * @return ($data is non-empty-list<mixed>|Selection<ActiveRow> ? int : T|array<mixed>|int)
+	 * @return ($data is non-empty-list<mixed>|Selection<ActiveRow> ? int : T|int|null)
 	 */
-	public function insert(iterable $data): ActiveRow|array|int
+	public function insert(iterable $data): ActiveRow|int|null
 	{
 		if ($data instanceof self) {
 			trigger_error(__METHOD__ . '() with a Selection is deprecated, use insertMany() instead.', E_USER_DEPRECATED);
@@ -876,7 +877,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			foreach ($this->primary as $key) {
 				if (!isset($data[$key])) {
 					$this->clearReferencingCache();
-					return $data;
+					return null; // the inserted row cannot be identified by its primary key
 				}
 			}
 		} elseif (!isset($data[$this->primary])) { // Single-column primary without autoincrement not present in the inserted data

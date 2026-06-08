@@ -121,9 +121,9 @@ function testResultSetFetchPairs(ResultSet $resultSet): void
 /** @param Selection<ActiveRow> $selection */
 function testSelectionInsertSingleRow(Selection $selection): void
 {
-	// Single associative array -> inserted ActiveRow (or affected count / data for keyless tables)
+	// Single associative array -> inserted ActiveRow (or affected count / null when the row can't be identified)
 	$result = $selection->insert(['name' => 'Alice']);
-	assertType('array<mixed>|int|Nette\Database\Table\ActiveRow', $result);
+	assertType('int|Nette\Database\Table\ActiveRow|null', $result);
 }
 
 

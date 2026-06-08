@@ -822,12 +822,11 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Inserts one or more rows into the table.
-	 * A single associative array inserts one row and returns the inserted ActiveRow,
-	 * or null/int when the inserted row cannot be identified by its primary key;
+	 * Inserts a single row into the table and returns the inserted ActiveRow,
+	 * or null when the inserted row cannot be identified by its primary key.
 	 * Passing a list of rows or a Selection is deprecated, use insertMany() instead.
 	 * @param  iterable<string, mixed>|list<array<string, mixed>>|Selection<ActiveRow>  $data
-	 * @return ($data is non-empty-list<mixed>|Selection<ActiveRow> ? int : T|int|null)
+	 * @return ($data is non-empty-list<mixed>|Selection<ActiveRow> ? int : T|null)
 	 */
 	public function insert(iterable $data): ActiveRow|int|null
 	{
@@ -851,14 +850,13 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			$data = Nette\Database\Helpers::translateColumns($data, $mapping);
 		}
 
-		$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ?values', $data);
+		$this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ?values', $data);
 
 		$this->loadRefCache();
 
 		if ($this->primary === null) {
 			$this->clearReferencingCache();
-			return $return->getRowCount()
-				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
+			return null; // a table without a primary key has no identifiable row
 		}
 
 		$primaryKey = [];
@@ -882,8 +880,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			}
 		} elseif (!isset($data[$this->primary])) { // Single-column primary without autoincrement not present in the inserted data
 			$this->clearReferencingCache();
-			return $return->getRowCount()
-				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
+			return null; // the inserted row cannot be identified by its primary key
 		}
 		// otherwise $primaryKey already holds the whole primary key as a column => value map
 

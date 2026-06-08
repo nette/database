@@ -259,7 +259,7 @@ class GroupedSelection extends Selection
 
 	/**
 	 * @param  iterable<mixed>|Selection<ActiveRow>  $data
-	 * @return ($data is non-empty-list<mixed>|Selection<ActiveRow> ? int : T|int|null)
+	 * @return ($data is non-empty-list<mixed>|Selection<ActiveRow> ? int : T|null)
 	 */
 	public function insert(iterable $data): ActiveRow|int|null
 	{

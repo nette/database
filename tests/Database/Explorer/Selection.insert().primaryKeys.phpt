@@ -121,7 +121,7 @@ test('insert into table without primary key', function () use ($explorer) {
 	$noPkResult1 = $explorer->table('no_pk')->insert([
 		'note' => 'Some note here',
 	]);
-	Assert::same(1, $noPkResult1);
+	Assert::null($noPkResult1);
 });
 
 test('composite primary key insert returns a lazy row', function () use ($explorer, $connection) {

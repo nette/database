@@ -873,6 +873,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		} elseif (is_array($this->primary)) {
 			foreach ($this->primary as $key) {
 				if (!isset($data[$key])) {
+					$this->clearReferencingCache();
 					return $data;
 				}
 			}

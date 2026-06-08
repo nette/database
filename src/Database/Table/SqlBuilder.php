@@ -223,7 +223,11 @@ class SqlBuilder
 	public function getParameters(): array
 	{
 		if (!isset($this->parameters['joinConditionSorted'])) {
-			$this->buildSelectQuery();
+			if ($this->joinCondition) {
+				$this->buildSelectQuery();
+			} else {
+				$this->parameters['joinConditionSorted'] = [];
+			}
 		}
 
 		return array_values([

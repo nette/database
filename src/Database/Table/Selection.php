@@ -10,7 +10,7 @@ namespace Nette\Database\Table;
 use Nette;
 use Nette\Database\Conventions;
 use Nette\Database\Explorer;
-use function array_filter, array_intersect_key, array_keys, array_map, array_merge, array_values, ceil, count, current, explode, func_num_args, hash, implode, is_array, is_int, iterator_to_array, key, next, reset, serialize, str_contains, substr_count;
+use function array_filter, array_intersect_key, array_keys, array_map, array_merge, array_values, ceil, count, current, explode, func_num_args, hash, implode, is_array, is_int, is_string, iterator_to_array, key, next, reset, serialize, str_contains, substr_count;
 
 
 /**
@@ -867,41 +867,47 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			}
 		}
 
-		// First check sequence
-		if (!empty($primarySequenceName) && $primaryAutoincrementKey) {
-			$primaryKey[$primaryAutoincrementKey] = $this->explorer->getInsertId($this->explorer->getConnection()->getDriver()->delimite($primarySequenceName));
+		if ($primaryAutoincrementKey) {
+			$primaryKey[$primaryAutoincrementKey] = $this->explorer->getInsertId($primarySequenceName
+				? $this->explorer->getConnection()->getDriver()->delimite($primarySequenceName)
+				: $primarySequenceName);
 
-		// Autoincrement primary without sequence
-		} elseif ($primaryAutoincrementKey) {
-			$primaryKey[$primaryAutoincrementKey] = $this->explorer->getInsertId($primarySequenceName);
-
-		// Multi column primary without autoincrement
-		} elseif (is_array($this->primary)) {
+		} elseif (is_array($this->primary)) { // Multi column primary without autoincrement
 			foreach ($this->primary as $key) {
 				if (!isset($data[$key])) {
 					$this->clearReferencingCache();
 					return $data;
 				}
 			}
-
-		// Primary without autoincrement, try get primary from inserting data
-		} elseif ($this->primary && isset($data[$this->primary])) {
-			$primaryKey = $data[$this->primary];
-
-		// If primaryKey cannot be prepared, return inserted rows count
-		} else {
+		} elseif (!isset($data[$this->primary])) { // Single-column primary without autoincrement not present in the inserted data
 			$this->clearReferencingCache();
 			return $return->getRowCount()
 				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
 		}
+		// otherwise $primaryKey already holds the whole primary key as a column => value map
+
+		$selection = $this->createSelectionInstance($this->name)
+			->select('*')
+			->wherePrimary($primaryKey);
+
+		if (count($primaryKey) === count((array) $this->primary)) { // is primary key complete?
+			// normalize numeric strings to int for integer columns, to match what a fetch would return
+			$columns = null;
+			foreach ($primaryKey as $key => $value) {
+				if (is_string($value) && (string) (int) $value === $value) {
+					$columns ??= array_column($this->explorer->getStructure()->getColumns($this->name), 'nativetype', 'name');
+					if (Nette\Database\Helpers::detectType($columns[$key] ?? '') === Nette\Database\IStructure::FIELD_INTEGER) {
+						$primaryKey[$key] = (int) $value;
+					}
+				}
+			}
+			$row = $this->explorer->createActiveRow($primaryKey, $selection, deferredFetch: true);
+
+		} else {
+			$row = $selection->fetch() ?? throw new Nette\ShouldNotHappenException;
+		}
 
 		/** @phpstan-var T $row */
-		$row = $this->createSelectionInstance()
-			->select('*')
-			->wherePrimary($primaryKey)
-			->fetch()
-			?? throw new Nette\ShouldNotHappenException;
-
 		if ($this->rows !== null) {
 			if ($signature = $row->getSignature(false)) {
 				$this->rows[$signature] = $row;
@@ -1062,6 +1068,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		/** @var ?GroupedSelection<ActiveRow> $prototype */
 		$prototype = &$this->refCache['referencingPrototype'][$this->getSpecificCacheKey()]["$table.$column"];
 		if (!$prototype) {
+			$this->execute(); // the selection may not be executed yet, e.g. when the row comes lazily from insert()
 			$prototype = $this->createGroupedSelectionInstance($table, $column);
 			$prototype->where("$table.$column", array_keys((array) $this->rows));
 			$prototype->getSpecificCacheKey();

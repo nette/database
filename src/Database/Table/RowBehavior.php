@@ -33,6 +33,8 @@ trait RowBehavior
 		private array $data,
 		/** @var Selection<ActiveRow> */
 		private Selection $table,
+		// when true, the row holds only its primary key and fetches the rest on first access
+		private bool $deferredFetch = false,
 	) {
 		$this->entityMapping = $table->getExplorer()->getEntityMapping();
 		foreach (self::declaredProperties(static::class) as $name) {
@@ -390,6 +392,10 @@ trait RowBehavior
 	/** @internal */
 	public function accessColumn(?string $key, bool $selectColumn = true): bool
 	{
+		if ($this->deferredFetch && ($key === null || !array_key_exists($key, $this->data))) {
+			$this->completeData();
+		}
+
 		if ($this->table->accessColumn($key, $selectColumn) && !$this->dataRefreshed) {
 			if (!isset($this->table[$this->getSignature()])) {
 				throw new Nette\InvalidStateException("Database refetch failed; row with signature '{$this->getSignature()}' does not exist!");
@@ -407,5 +413,24 @@ trait RowBehavior
 	protected function removeAccessColumn(string $key): void
 	{
 		$this->table->removeAccessColumn($key);
+	}
+
+
+	/**
+	 * Loads the full row by primary key. Used by rows returned from insert(), which initially
+	 * hold only the primary key, to fetch the remaining columns on first access.
+	 */
+	private function completeData(): void
+	{
+		$this->deferredFetch = false;
+		$full = $this->table->fetch()
+			?? throw new Nette\ShouldNotHappenException("Database refetch failed; inserted row with signature '{$this->getSignature()}' no longer exists!");
+		$this->data = $full->data;
+
+		// become the canonical row of the selection, so later table-level operations (e.g. referenced-table
+		// resolution after update()) see this instance and its data instead of the just-fetched duplicate
+		if (($signature = $this->getSignature(false)) !== '') {
+			$this->table[$signature] = $this;
+		}
 	}
 }

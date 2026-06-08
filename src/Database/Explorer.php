@@ -139,11 +139,11 @@ class Explorer
 	 * @param  array<string, mixed>  $data
 	 * @param  Table\Selection<Table\ActiveRow>  $selection
 	 */
-	public function createActiveRow(array $data, Table\Selection $selection): Table\ActiveRow
+	public function createActiveRow(array $data, Table\Selection $selection, bool $deferredFetch = false): Table\ActiveRow
 	{
 		$class = $this->entityMapping?->getClassName($selection->getName());
 		$class = $class && class_exists($class) ? $class : Table\ActiveRow::class;
-		return new $class($data, $selection);
+		return new $class($data, $selection, $deferredFetch);
 	}
 
 

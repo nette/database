@@ -90,3 +90,75 @@ test('relationship is accessible right after insert', function () use ($explorer
 
 	Assert::same('Jon Snow', $book->author->name);
 });
+
+
+test('related() right after insert sees the referencing rows', function () use ($explorer) {
+	$author = $explorer->table('author')->insert([
+		'name' => 'Arya Stark',
+		'web' => 'http://example.com',
+		'born' => new DateTime('2011-11-11'),
+	]);
+
+	$explorer->table('book')->insert([
+		'title' => 'Needle',
+		'author_id' => $author->id,
+	]);
+
+	$books = $author->related('book.author_id');
+	Assert::same(1, $books->count('*'));
+	Assert::same('Needle', $books->fetch()->title);
+});
+
+
+test('row inserted via related() gets the group column and is fully usable', function () use ($explorer) {
+	$author = $explorer->table('author')->insert([
+		'name' => 'Sansa Stark',
+		'web' => 'http://example.com',
+		'born' => new DateTime('2011-11-11'),
+	]);
+
+	$book = $author->related('book.author_id')->insert(['title' => 'Alayne']);
+
+	Assert::type(Nette\Database\Table\ActiveRow::class, $book);
+	Assert::same($author->id, $book->author_id);
+	Assert::same('Alayne', $book->title);
+	Assert::same('Sansa Stark', $book->author->name); // ref() on a lazy row from GroupedSelection
+
+	$tag = $explorer->table('tag')->insert(['name' => 'saga']);
+	$explorer->table('book_tag')->insert(['book_id' => $book->id, 'tag_id' => $tag->id]);
+	Assert::same(1, $book->related('book_tag')->count('*')); // related() on a lazy row from GroupedSelection
+
+	$book->update(['title' => 'Alayne Stone']);
+	Assert::same('Alayne Stone', $book->title);
+});
+
+
+test('lazy row completes its data even after related() executed the selection', function () use ($explorer) {
+	$author = $explorer->table('author')->insert([
+		'name' => 'Rickon Stark',
+		'web' => 'http://example.com',
+		'born' => new DateTime('2011-11-11'),
+	]);
+
+	Assert::same(0, $author->related('book.author_id')->count('*')); // executes the backing selection
+	Assert::same('Rickon Stark', $author->name); // deferred fetch must still find the row
+});
+
+
+test('lazy row stays consistent across related(), completion and update()', function () use ($explorer) {
+	$author = $explorer->table('author')->insert([
+		'name' => 'Benjen Stark',
+		'web' => 'http://example.com',
+		'born' => new DateTime('2011-11-11'),
+	]);
+	$explorer->table('book')->insert([
+		'title' => 'The Wall',
+		'author_id' => $author->id,
+	]);
+
+	Assert::same(1, $author->related('book.author_id')->count('*'));
+	Assert::same('Benjen Stark', $author->name); // completes data, row becomes canonical in the selection
+	$author->update(['name' => 'First Ranger']);
+	Assert::same('First Ranger', $author->name);
+	Assert::same(1, $author->related('book.author_id')->count('*')); // cached prototype keys still match
+});

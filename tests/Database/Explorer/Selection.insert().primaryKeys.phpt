@@ -123,3 +123,52 @@ test('insert into table without primary key', function () use ($explorer) {
 	]);
 	Assert::same(1, $noPkResult1);
 });
+
+test('composite primary key insert returns a lazy row', function () use ($explorer, $connection) {
+	$row = $explorer->table('multi_pk_no_autoincrement')->insert([
+		'identifier1' => 7,
+		'identifier2' => 14,
+		'note' => 'lazy composite',
+	]);
+
+	$count = 0;
+	$connection->onQuery[] = function () use (&$count) { $count++; };
+
+	Assert::same(7, $row->identifier1);
+	Assert::same(14, $row->identifier2);
+	Assert::same(0, $count); // both primary key columns are available without a query
+
+	Assert::same('lazy composite', $row->note);
+	Assert::same(1, $count); // the first non-primary access fetches the rest
+});
+
+test('numeric-string primary key values are normalized to int for integer columns', function () use ($explorer, $connection) {
+	$row = $explorer->table('multi_pk_no_autoincrement')->insert([
+		'identifier1' => '8',
+		'identifier2' => '16',
+		'note' => 'string ids',
+	]);
+
+	$count = 0;
+	$connection->onQuery[] = function () use (&$count) { $count++; };
+
+	Assert::same(8, $row->identifier1);
+	Assert::same(16, $row->identifier2);
+	Assert::same(0, $count); // normalized without fetching the row
+});
+
+test('numeric-string value in a string primary key column stays a string', function () use ($explorer, $connection) {
+	$row = $explorer->table('string_pk')->insert([
+		'identifier1' => '9',
+		'note' => 'string pk',
+	]);
+
+	$count = 0;
+	$connection->onQuery[] = function () use (&$count) { $count++; };
+
+	Assert::same('9', $row->identifier1);
+	Assert::same(0, $count);
+
+	Assert::same('string pk', $row->note);
+	Assert::same('9', $row->identifier1); // matches what a fetch returns
+});

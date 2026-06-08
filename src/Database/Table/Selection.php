@@ -681,6 +681,15 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
+	 * Invalidates the cache of referencing selections after a manipulation that added rows.
+	 */
+	private function clearReferencingCache(): void
+	{
+		unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
+	}
+
+
+	/**
 	 * Returns general cache key independent of query parameters or SQL limit.
 	 * Used e.g. for previously accessed columns caching.
 	 */
@@ -840,7 +849,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		$this->loadRefCache();
 
 		if ($bulk || $this->primary === null) {
-			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
+			$this->clearReferencingCache();
 			return $return->getRowCount()
 				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
 		}
@@ -874,7 +883,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 		// If primaryKey cannot be prepared, return inserted rows count
 		} else {
-			unset($this->refCache['referencing'][$this->getGeneralCacheKey()][$this->getSpecificCacheKey()]);
+			$this->clearReferencingCache();
 			return $return->getRowCount()
 				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
 		}

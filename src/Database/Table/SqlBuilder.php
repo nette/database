@@ -160,6 +160,7 @@ class SqlBuilder
 	 */
 	public function buildSelectQuery(?array $columns = null): string
 	{
+		$order = $this->order;
 		if (!$this->order && ($this->limit !== null || $this->offset)) {
 			$this->order = array_map(
 				fn($col) => "$this->tableName.$col",
@@ -167,6 +168,17 @@ class SqlBuilder
 			);
 		}
 
+		try {
+			return $this->doBuildSelectQuery($columns);
+		} finally {
+			$this->order = $order; // the implicit ORDER BY must not persist in the builder state
+		}
+	}
+
+
+	/** @param  list<string>|null  $columns */
+	private function doBuildSelectQuery(?array $columns): string
+	{
 		$queryJoinConditions = $this->buildJoinConditions();
 		$queryCondition = $this->buildConditions();
 		$queryEnd = $this->buildQueryEnd();

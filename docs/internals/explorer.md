@@ -145,13 +145,16 @@ by-ref array), so a mutation from one clone is seen by all clones of the same re
 
 ## insert() & insertMany()
 
-`Selection::insert(iterable)`: a **single associative row** collects the PK from the
-data (an autoincrement part filled from `getInsertId`) and **re-fetches the row
-eagerly** (`SELECT *` by PK) to return an `ActiveRow` — so a single insert always
-costs a second query. Two fallbacks return early instead — a single-column PK without
-autoincrement absent from the data → int, a composite PK without autoincrement with a
-part missing → the original `$data` array. A **list or a Selection** is routed to
-`insertMany()`, and doing that through `insert()` is **deprecated**.
+`Selection::insert(iterable)`: a **single associative row** returns a **lazy
+`ActiveRow`** knowing only its PK (or `null` when the full PK can't be determined); a
+**list or a Selection** is routed to `insertMany()`, and doing that through `insert()`
+is **deprecated**.
+
+Lazy is the **only** mode — used whenever the **full PK is known** (single or
+composite; an autoincrement part is filled from `getInsertId`). There is no
+eager-fetch fallback: a PK-less table or an incomplete PK returns `null`
+(+ `clearReferencingCache()`). A returned row is also registered into `rows`/`data`
+if the Selection was already executed.
 
 `insertMany(iterable)` owns the bulk logic and always returns an int. Three details
 are not obvious from the signature:
@@ -166,10 +169,6 @@ are not obvious from the signature:
   single associative row;
 - a single associative row is **rejected up front** rather than inserted, so the
   mistake surfaces before the write.
-
-All the early-return branches above (int / array) call `clearReferencingCache()`; a
-returned row is also registered into `rows`/`data` if the Selection was already
-executed.
 
 `GroupedSelection` overrides both: `insert()` assigns the grouping column to a single
 row, `insertMany()` to every row of the list — on a **clone** of each `Row`, never on

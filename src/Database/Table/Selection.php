@@ -822,8 +822,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Inserts a single row into the table and returns the inserted ActiveRow,
-	 * or null when the inserted row cannot be identified by its primary key.
+	 * Inserts a single row into the table and returns the inserted ActiveRow, or null when the
+	 * inserted row cannot be identified by its primary key. The returned row is loaded lazily:
+	 * it initially holds only the primary key and fetches the remaining columns on first access.
 	 * Passing a list of rows or a Selection is deprecated, use insertMany() instead.
 	 * @param  iterable<string, mixed>|list<array<string, mixed>>|Selection<ActiveRow>  $data
 	 * @return ($data is non-empty-list<mixed>|Selection<ActiveRow> ? int : T|null)
@@ -859,10 +860,12 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			return null; // a table without a primary key has no identifiable row
 		}
 
+		// collect the primary key of the inserted row to load it back as an ActiveRow
+		$primaryColumns = (array) $this->primary;
 		$primaryKey = [];
-		foreach ((array) $this->primary as $key) {
-			if (isset($data[$key])) {
-				$primaryKey[$key] = $data[$key];
+		foreach ($primaryColumns as $column) {
+			if (isset($data[$column])) {
+				$primaryKey[$column] = $data[$column];
 			}
 		}
 
@@ -870,42 +873,32 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			$primaryKey[$primaryAutoincrementKey] = $this->explorer->getInsertId($primarySequenceName
 				? $this->explorer->getConnection()->getDriver()->delimite($primarySequenceName)
 				: $primarySequenceName);
+		}
 
-		} elseif (is_array($this->primary)) { // Multi column primary without autoincrement
-			foreach ($this->primary as $key) {
-				if (!isset($data[$key])) {
-					$this->clearReferencingCache();
-					return null; // the inserted row cannot be identified by its primary key
-				}
-			}
-		} elseif (!isset($data[$this->primary])) { // Single-column primary without autoincrement not present in the inserted data
+		if (count($primaryKey) !== count($primaryColumns)) {
 			$this->clearReferencingCache();
 			return null; // the inserted row cannot be identified by its primary key
 		}
-		// otherwise $primaryKey already holds the whole primary key as a column => value map
 
+		// return a lazy row holding only the primary key and fetching the remaining columns on first access
 		$selection = $this->createSelectionInstance($this->name)
 			->select('*')
 			->wherePrimary($primaryKey);
 
-		if (count($primaryKey) === count((array) $this->primary)) { // is primary key complete?
-			// normalize numeric strings to int for integer columns, to match what a fetch would return
-			$columns = null;
-			foreach ($primaryKey as $key => $value) {
-				if (is_string($value) && (string) (int) $value === $value) {
-					$columns ??= array_column($this->explorer->getStructure()->getColumns($this->name), 'nativetype', 'name');
-					if (Nette\Database\Helpers::detectType($columns[$key] ?? '') === Nette\Database\IStructure::FIELD_INTEGER) {
-						$primaryKey[$key] = (int) $value;
-					}
+		// normalize numeric strings to int for integer columns, to match what a fetch would return
+		$columns = null;
+		foreach ($primaryKey as $key => $value) {
+			if (is_string($value) && (string) (int) $value === $value) {
+				$columns ??= array_column($this->explorer->getStructure()->getColumns($this->name), 'nativetype', 'name');
+				if (Nette\Database\Helpers::detectType($columns[$key] ?? '') === Nette\Database\IStructure::FIELD_INTEGER) {
+					$primaryKey[$key] = (int) $value;
 				}
 			}
-			$row = $this->explorer->createActiveRow($primaryKey, $selection, deferredFetch: true);
-
-		} else {
-			$row = $selection->fetch() ?? throw new Nette\ShouldNotHappenException;
 		}
 
 		/** @phpstan-var T $row */
+		$row = $this->explorer->createActiveRow($primaryKey, $selection, deferredFetch: true);
+
 		if ($this->rows !== null) {
 			if ($signature = $row->getSignature(false)) {
 				$this->rows[$signature] = $row;

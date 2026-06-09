@@ -30,3 +30,9 @@ CREATE TABLE multi_pk_autoincrement(
 CREATE TABLE no_pk (
 	note varchar(100)
 );
+
+CREATE TABLE string_pk (
+	identifier1 varchar(20) NOT NULL,
+	note varchar(100),
+	PRIMARY KEY (identifier1)
+);

@@ -9,7 +9,7 @@ namespace Nette\Database\Table;
 
 use Nette;
 use Nette\Database\{Conventions, Explorer};
-use function count, func_num_args, is_array, is_int;
+use function count, func_num_args, is_array, is_int, is_string;
 
 
 /**
@@ -819,13 +819,14 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * Inserts one or more rows into the table.
-	 * A single associative array inserts one row and returns the inserted ActiveRow;
+	 * Inserts a single row into the table and returns the inserted ActiveRow, or null when the
+	 * inserted row cannot be identified by its primary key. The returned row is loaded lazily:
+	 * it initially holds only the primary key and fetches the remaining columns on first access.
 	 * Passing a list of rows or a Selection is deprecated, use insertMany() instead.
 	 * @param  iterable<string, mixed>|list<array<string, mixed>>|Selection<ActiveRow>  $data
-	 * @return ($data is non-empty-list<mixed>|Selection<ActiveRow> ? int : T|array<mixed>|int)
+	 * @return ($data is non-empty-list<mixed>|Selection<ActiveRow> ? int : T|null)
 	 */
-	public function insert(iterable $data): ActiveRow|array|int
+	public function insert(iterable $data): ActiveRow|int|null
 	{
 		if ($data instanceof self) {
 			trigger_error(__METHOD__ . '() with a Selection is deprecated, use insertMany() instead.', E_USER_DEPRECATED);
@@ -843,59 +844,53 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		$primarySequenceName = $this->getPrimarySequence();
 		$primaryAutoincrementKey = $this->explorer->getStructure()->getPrimaryAutoincrementKey($this->name);
 
-		$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ?values', $data);
+		$this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ?values', $data);
 
 		$this->loadRefCache();
 
 		if ($this->primary === null) {
 			$this->clearReferencingCache();
-			return $return->getRowCount()
-				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
+			return null; // a table without a primary key has no identifiable row
 		}
 
+		// collect the primary key of the inserted row to load it back as an ActiveRow
+		$primaryColumns = (array) $this->primary;
 		$primaryKey = [];
-		foreach ((array) $this->primary as $key) {
-			if (isset($data[$key])) {
-				$primaryKey[$key] = $data[$key];
+		foreach ($primaryColumns as $column) {
+			if (isset($data[$column])) {
+				$primaryKey[$column] = $data[$column];
 			}
 		}
 
-		// First check sequence
-		if (!empty($primarySequenceName) && $primaryAutoincrementKey) {
-			$primaryKey[$primaryAutoincrementKey] = $this->explorer->getInsertId(
-				$this->explorer->getConnection()->getDriver()->delimite($primarySequenceName),
-			);
+		if ($primaryAutoincrementKey) {
+			$primaryKey[$primaryAutoincrementKey] = $this->explorer->getInsertId($primarySequenceName
+				? $this->explorer->getConnection()->getDriver()->delimite($primarySequenceName)
+				: $primarySequenceName);
+		}
 
-		// Autoincrement primary without sequence
-		} elseif ($primaryAutoincrementKey) {
-			$primaryKey[$primaryAutoincrementKey] = $this->explorer->getInsertId($primarySequenceName);
+		if (count($primaryKey) !== count($primaryColumns)) {
+			$this->clearReferencingCache();
+			return null; // the inserted row cannot be identified by its primary key
+		}
 
-		// Multi column primary without autoincrement
-		} elseif (is_array($this->primary)) {
-			foreach ($this->primary as $key) {
-				if (!isset($data[$key])) {
-					$this->clearReferencingCache();
-					return $data;
+		// return a lazy row holding only the primary key and fetching the remaining columns on first access
+		$selection = $this->createSelectionInstance($this->name)
+			->select('*')
+			->wherePrimary($primaryKey);
+
+		// normalize numeric strings to int for integer columns, to match what a fetch would return
+		$columns = null;
+		foreach ($primaryKey as $key => $value) {
+			if (is_string($value) && (string) (int) $value === $value) {
+				$columns ??= array_column($this->explorer->getStructure()->getColumns($this->name), 'nativetype', 'name');
+				if (Nette\Database\Helpers::detectType($columns[$key] ?? '') === Nette\Database\IStructure::FIELD_INTEGER) {
+					$primaryKey[$key] = (int) $value;
 				}
 			}
-
-		// Primary without autoincrement, try get primary from inserting data
-		} elseif ($this->primary && isset($data[$this->primary])) {
-			$primaryKey = $data[$this->primary];
-
-		// If primaryKey cannot be prepared, return inserted rows count
-		} else {
-			$this->clearReferencingCache();
-			return $return->getRowCount()
-				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
 		}
 
 		/** @phpstan-var T $row */
-		$row = $this->createSelectionInstance()
-			->select('*')
-			->wherePrimary($primaryKey)
-			->fetch()
-			?? throw new Nette\ShouldNotHappenException;
+		$row = $this->explorer->createActiveRow($primaryKey, $selection, deferredFetch: true);
 
 		if ($this->rows !== null) {
 			if ($signature = $row->getSignature(throw: false)) {
@@ -1052,6 +1047,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		/** @var ?GroupedSelection<ActiveRow> $prototype */
 		$prototype = &$this->refCache['referencingPrototype'][$this->getSpecificCacheKey()]["$table.$column"];
 		if (!$prototype) {
+			$this->execute(); // the selection may not be executed yet, e.g. when the row comes lazily from insert()
 			$prototype = $this->createGroupedSelectionInstance($table, $column);
 			$prototype->where("$table.$column", array_keys((array) $this->rows));
 			$prototype->getSpecificCacheKey();

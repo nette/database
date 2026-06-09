@@ -3,6 +3,7 @@ IF OBJECT_ID('simple_pk_no_autoincrement', 'U') IS NOT NULL DROP TABLE simple_pk
 IF OBJECT_ID('multi_pk_no_autoincrement', 'U') IS NOT NULL DROP TABLE multi_pk_no_autoincrement;
 IF OBJECT_ID('multi_pk_autoincrement', 'U') IS NOT NULL DROP TABLE multi_pk_autoincrement;
 IF OBJECT_ID('no_pk', 'U') IS NOT NULL DROP TABLE no_pk;
+IF OBJECT_ID('string_pk', 'U') IS NOT NULL DROP TABLE string_pk;
 
 
 CREATE TABLE simple_pk_autoincrement (
@@ -33,4 +34,10 @@ ALTER TABLE multi_pk_autoincrement ADD CONSTRAINT PK_multi_pk_autoincrement PRIM
 
 CREATE TABLE no_pk (
 	note varchar(100)
+);
+
+CREATE TABLE string_pk (
+	identifier1 varchar(20) NOT NULL,
+	note varchar(100),
+	PRIMARY KEY (identifier1)
 );

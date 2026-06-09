@@ -68,9 +68,9 @@ if ($driverName !== 'sqlsrv') {
 }
 
 
-// Insert into table without primary key
+// Insert into table without primary key returns null (no identifiable row)
 $inserted = $explorer->table('note')->insert([
 	'book_id' => 1,
 	'note' => 'Good one!',
 ]);
-Assert::same(1, $inserted);
+Assert::null($inserted);

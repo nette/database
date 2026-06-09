@@ -253,9 +253,9 @@ class GroupedSelection extends Selection
 
 	/**
 	 * @param  iterable<mixed>|Selection<ActiveRow>  $data
-	 * @return ($data is non-empty-list<mixed>|Selection<ActiveRow> ? int : T|array<mixed>|int)
+	 * @return ($data is non-empty-list<mixed>|Selection<ActiveRow> ? int : T|null)
 	 */
-	public function insert(iterable $data): ActiveRow|array|int
+	public function insert(iterable $data): ActiveRow|int|null
 	{
 		if (!$data instanceof Selection) {
 			$data = Nette\Database\Helpers::materializeRows($data);

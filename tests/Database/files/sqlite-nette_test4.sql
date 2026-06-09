@@ -3,6 +3,7 @@ DROP TABLE IF EXISTS simple_pk_no_autoincrement;
 DROP TABLE IF EXISTS multi_pk_no_autoincrement;
 DROP TABLE IF EXISTS multi_pk_autoincrement;
 DROP TABLE IF EXISTS no_pk;
+DROP TABLE IF EXISTS string_pk;
 
 CREATE TABLE simple_pk_autoincrement (
 	identifier1 integer PRIMARY KEY AUTOINCREMENT,
@@ -24,4 +25,10 @@ CREATE TABLE multi_pk_no_autoincrement (
 
 CREATE TABLE no_pk (
 	note varchar(100)
+);
+
+CREATE TABLE string_pk (
+	identifier1 varchar(20) NOT NULL,
+	note varchar(100),
+	PRIMARY KEY (identifier1)
 );

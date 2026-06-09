@@ -131,9 +131,9 @@ class Explorer
 	 * @param  array<string, mixed>  $data
 	 * @param  Table\Selection<Table\ActiveRow>  $selection
 	 */
-	public function createActiveRow(array $data, Table\Selection $selection): Table\ActiveRow
+	public function createActiveRow(array $data, Table\Selection $selection, bool $deferredFetch = false): Table\ActiveRow
 	{
-		return new Table\ActiveRow($data, $selection);
+		return new Table\ActiveRow($data, $selection, $deferredFetch);
 	}
 
 

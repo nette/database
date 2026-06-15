@@ -151,7 +151,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function getPreviousAccessedColumns(): array
 	{
-		if ($this->cache && $this->previousAccessedColumns === null) {
+		if ($this->cache && $this->primary !== null && $this->previousAccessedColumns === null) {
 			$this->accessedColumns = $this->previousAccessedColumns = $this->cache->load($this->getGeneralCacheKey());
 			$this->previousAccessedColumns ??= [];
 		}
@@ -730,7 +730,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function accessColumn(?string $key, bool $selectColumn = true): bool
 	{
-		if (!$this->cache) {
+		if (!$this->cache || $this->primary === null) { // narrowing needs the primary key to re-query missing columns
 			return false;
 		}
 

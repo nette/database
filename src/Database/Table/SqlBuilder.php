@@ -113,12 +113,41 @@ class SqlBuilder
 
 	public function buildDeleteQuery(): string
 	{
-		$query = "DELETE FROM {$this->delimitedTable}" . $this->tryDelimit($this->buildConditions());
+		$queryCondition = $this->buildConditions();
+		$joins = [];
+		$finalJoinConditions = $this->parseJoinConditions($joins, $this->buildJoinConditions());
+		$this->parseJoins($joins, $queryCondition);
+
+		if ($joins) {
+			$primary = $this->conventions->getPrimary($this->tableName);
+			if (!$primary) {
+				throw new Nette\NotSupportedException("Table '{$this->tableName}' has no primary key.");
+			}
+
+			$primary = (array) $primary;
+			$queryPrimary = $primary;
+			foreach ($queryPrimary as &$column) {
+				$column = "{$this->delimitedTable}.{$column}";
+			}
+
+			$select = 'SELECT ' . implode(', ', $queryPrimary)
+				. " FROM {$this->delimitedTable}"
+				. $this->buildQueryJoins($joins, $finalJoinConditions)
+				. $queryCondition;
+
+			$primary = count($primary) === 1
+				? $primary[0]
+				: '(' . implode(', ', $primary) . ')';
+			$query = "DELETE FROM {$this->delimitedTable} WHERE $primary IN (SELECT $primary FROM ($select) nette_delete)";
+		} else {
+			$query = "DELETE FROM {$this->delimitedTable}" . $queryCondition;
+		}
+
 		if ($this->limit !== null || $this->offset) {
 			$query = $this->engine->applyLimit($query, $this->limit, $this->offset);
 		}
 
-		return $query;
+		return $this->tryDelimit($query);
 	}
 
 

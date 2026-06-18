@@ -22,6 +22,13 @@ test('delete records by condition in book_tag', function () use ($explorer) {
 });
 
 
+test('delete records by condition on referenced table', function () use ($explorer) {
+	$explorer->table('book')->where('author.name', 'Jakub Vrana')->delete();
+
+	Assert::same(0, $explorer->table('book')->where('author.name', 'Jakub Vrana')->count());
+});
+
+
 test('delete related book_tag_alt and cascade book deletion', function () use ($explorer) {
 	$book = $explorer->table('book')->get(3);  // SELECT * FROM `book` WHERE (`id` = ?)
 	$book->related('book_tag_alt')->where('tag_id', 21)->delete();  // DELETE FROM `book_tag_alt` WHERE (`book_id` = ?) AND (`tag_id` = ?)

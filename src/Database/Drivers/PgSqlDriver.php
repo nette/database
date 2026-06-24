@@ -57,6 +57,9 @@ class PgSqlDriver implements Nette\Database\Driver
 		} elseif (
 			$code === '08003'
 			|| $code === '08006'
+			|| $code === '57P01' // admin_shutdown, e.g. pg_terminate_backend() or server restart
+			|| $code === '57P02' // crash_shutdown
+			|| $code === '57P03' // cannot_connect_now
 			|| ($code === 'HY000' && str_contains($e->getMessage(), 'server closed the connection unexpectedly'))
 		) {
 			return Nette\Database\ConnectionLostException::from($e);

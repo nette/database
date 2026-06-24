@@ -38,9 +38,7 @@ Assert::same(
 );
 
 Assert::same(
-	$version2008
-		? 'SELECT TOP 0 * FROM [author] ORDER BY [author].[id]'
-		: 'SELECT * FROM [author] ORDER BY [author].[id] OFFSET 0 ROWS FETCH NEXT 0 ROWS ONLY',
+	'SELECT TOP 0 * FROM [author] ORDER BY [author].[id]', // FETCH NEXT 0 would be rejected by the server
 	$explorer->table('author')->page(0, 10)->getSql(),
 );
 
@@ -69,4 +67,10 @@ if ($version2008) {
 		$explorer->table('author')->page(2, 2, $count)->getSql(),
 	);
 	Assert::same(2, $count);
+}
+
+// execute against the live server
+Assert::count(0, $explorer->table('author')->page(0, 10)->fetchAll()); // limit 0
+if (!$version2008) {
+	Assert::count(1, $explorer->table('author')->order('id')->limit(null, 2)->fetchAll()); // offset without limit
 }

@@ -13,7 +13,11 @@ Assert::same('SELECT 1 FROM t OFFSET 20 ROWS FETCH NEXT 10 ROWS ONLY', $query);
 
 $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, 0, 20);
-Assert::same('SELECT 1 FROM t OFFSET 20 ROWS FETCH NEXT 0 ROWS ONLY', $query);
+Assert::same('SELECT TOP 0 1 FROM t', $query);
+
+$query = 'SELECT 1 FROM t';
+$driver->applyLimit($query, 0, null);
+Assert::same('SELECT TOP 0 1 FROM t', $query);
 
 $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, 10, 0);
@@ -21,7 +25,7 @@ Assert::same('SELECT 1 FROM t OFFSET 0 ROWS FETCH NEXT 10 ROWS ONLY', $query);
 
 $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, null, 20);
-Assert::same('SELECT 1 FROM t OFFSET 20 ROWS FETCH NEXT 0 ROWS ONLY', $query);
+Assert::same('SELECT 1 FROM t OFFSET 20 ROWS', $query);
 
 $query = 'SELECT 1 FROM t';
 $driver->applyLimit($query, 10, null);

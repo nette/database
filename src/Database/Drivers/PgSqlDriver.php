@@ -8,6 +8,7 @@
 namespace Nette\Database\Drivers;
 
 use Nette;
+use function count;
 
 
 /**
@@ -16,6 +17,9 @@ use Nette;
 class PgSqlDriver implements Nette\Database\Driver
 {
 	private Nette\Database\Connection $connection;
+
+	/** @var array<string, array<string, string>> query => column types */
+	private array $columnTypesCache = [];
 
 
 	public function initialize(Nette\Database\Connection $connection, array $options): void
@@ -218,15 +222,17 @@ class PgSqlDriver implements Nette\Database\Driver
 				c2.relname::varchar AS name,
 				i.indisunique AS unique,
 				i.indisprimary AS primary,
-				a.attname::varchar AS column
+				coalesce(a.attname, pg_catalog.pg_get_indexdef(i.indexrelid, k.ord::int, TRUE))::varchar AS column -- expression part when attnum = 0
 			FROM
 				pg_catalog.pg_class AS c1
 				JOIN pg_catalog.pg_index AS i ON c1.oid = i.indrelid
 				JOIN pg_catalog.pg_class AS c2 ON i.indexrelid = c2.oid
-				LEFT JOIN pg_catalog.pg_attribute AS a ON c1.oid = a.attrelid AND a.attnum = ANY(i.indkey)
+				CROSS JOIN LATERAL unnest(i.indkey) WITH ORDINALITY AS k(attnum, ord)
+				LEFT JOIN pg_catalog.pg_attribute AS a ON c1.oid = a.attrelid AND a.attnum = k.attnum
 			WHERE
 				c1.relkind IN ('r', 'p')
 				AND c1.oid = ?::regclass
+			ORDER BY c2.relname, k.ord
 			X, $this->delimiteFQN($table));
 
 		while ($row = $rows->fetch()) {
@@ -282,10 +288,12 @@ class PgSqlDriver implements Nette\Database\Driver
 
 	public function getColumnTypes(\PDOStatement $statement): array
 	{
-		static $cache;
-		$item = &$cache[$statement->queryString];
-		$item ??= Nette\Database\Helpers::detectTypes($statement);
-		return $item;
+		// per-instance cache, a process-wide one would leak between connections to different databases
+		if (count($this->columnTypesCache) > 1000) {
+			$this->columnTypesCache = [];
+		}
+
+		return $this->columnTypesCache[$statement->queryString] ??= Nette\Database\Helpers::detectTypes($statement);
 	}
 
 

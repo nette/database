@@ -215,3 +215,11 @@ switch ($driverName) {
 Assert::same([$table->getColumn('book_id')], $key->localColumns);
 Assert::same('book', $key->foreignTable->name);
 Assert::same([$key->foreignTable->getColumn('id')], $key->foreignColumns);
+
+
+// unknown table
+Assert::exception(
+	fn() => $reflection->getTable('unknown_table'),
+	InvalidArgumentException::class,
+	"Table 'unknown_table' not found.",
+);

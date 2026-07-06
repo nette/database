@@ -58,3 +58,20 @@ test('deprecated initialization', function () {
 	Assert::matchFile(__DIR__ . '/tab.html', $panel->getTab());
 	Assert::matchFile(__DIR__ . '/panel.html', $panel->getPanel());
 });
+
+
+test('maxQueries caps stored query details but not the count', function () {
+	$connection = new Connection('sqlite::memory:');
+	$panel = ConnectionPanel::initialize($connection, addBarPanel: true, name: 'cap');
+	$panel->maxQueries = 3;
+
+	for ($i = 1; $i <= 5; $i++) {
+		$connection->query('SELECT ' . $i);
+	}
+
+	$queries = (new ReflectionProperty($panel, 'queries'))->getValue($panel);
+	Assert::count(3, $queries); // exactly maxQueries stored
+	Assert::same('SELECT 1', $queries[0][1]);
+	Assert::same('SELECT 3', $queries[2][1]);
+	Assert::same(5, (new ReflectionProperty($panel, 'count'))->getValue($panel));
+});

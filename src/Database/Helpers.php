@@ -287,7 +287,7 @@ class Helpers
 				$sql = '';
 				$count++;
 				if ($onProgress) {
-					$onProgress($count, isset($stat['size']) ? $size * 100 / $stat['size'] : null);
+					$onProgress($count, empty($stat['size']) ? null : $size * 100 / $stat['size']);
 				}
 			} else {
 				$sql .= $s;
@@ -298,7 +298,7 @@ class Helpers
 			$pdo->exec($sql);
 			$count++;
 			if ($onProgress) {
-				$onProgress($count, isset($stat['size']) ? 100 : null);
+				$onProgress($count, empty($stat['size']) ? null : 100);
 			}
 		}
 

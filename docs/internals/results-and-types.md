@@ -11,7 +11,7 @@ special channel: it calls the named PDO method directly (this is how transaction
 
 The iterator is **one-way** — `rewind()` throws once the iterator has advanced past
 the first row. `fetchAssoc` is the core (each `fetch` → `normalizeRow`, with a
-duplicate-column check on the first row only); `fetch` wraps it in a `Row`; `fetchAll`
+one-time duplicate-column check on the first fetched row); `fetch` wraps it in a `Row`; `fetchAll`
 caches `iterator_to_array` into `$rows`. `getRowCount()` returns `rowCount()` (affected
 rows for non-SELECT; `null` for `::`-channel calls with no statement).
 

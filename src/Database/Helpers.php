@@ -361,7 +361,7 @@ class Helpers
 		$return = [];
 		if ($key === null) {
 			foreach ($rows as $row) {
-				$return[] = ($value === null ? $row : $row[$value]);
+				$return[] = $row[$value];
 			}
 		} elseif ($key instanceof \Closure) {
 			foreach ($rows as $row) {

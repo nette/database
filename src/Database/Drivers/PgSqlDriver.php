@@ -141,7 +141,8 @@ class PgSqlDriver implements Nette\Database\Driver
 				c.relkind IN ('r', 'v', 'm', 'p')
 				AND n.nspname = ANY (pg_catalog.current_schemas(FALSE))
 			ORDER BY
-				c.relname
+				c.relname,
+				array_position(pg_catalog.current_schemas(FALSE), n.nspname) -- shadowed names resolve in search_path order
 			X);
 
 		while ($row = $rows->fetch()) {

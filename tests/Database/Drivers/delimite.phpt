@@ -15,3 +15,11 @@ foreach ([
 	Assert::same('[a[b]', $driver->delimite('a[b'));
 	Assert::same('[a]]b]', $driver->delimite('a]b'));
 }
+
+// SQLite has no escape for ] inside [...], such a name goes into double quotes
+$sqlite = new Nette\Database\Drivers\SqliteDriver;
+Assert::same('[hello]', $sqlite->delimite('hello'));
+Assert::same('[a[b]', $sqlite->delimite('a[b'));
+Assert::same('[a"b]', $sqlite->delimite('a"b'));
+Assert::same('"a]b"', $sqlite->delimite('a]b'));
+Assert::same('"a]""b"', $sqlite->delimite('a]"b'));

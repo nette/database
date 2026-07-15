@@ -75,7 +75,9 @@ class SqliteDriver implements Nette\Database\Driver
 
 	public function delimite(string $name): string
 	{
-		return '[' . strtr($name, '[]', '  ') . ']';
+		return str_contains($name, ']') // there is no escape for ] inside [...]
+			? '"' . str_replace('"', '""', $name) . '"'
+			: "[$name]";
 	}
 
 

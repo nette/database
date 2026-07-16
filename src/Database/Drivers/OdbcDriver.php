@@ -38,7 +38,7 @@ class OdbcDriver implements Nette\Database\Driver
 
 	public function delimite(string $name): string
 	{
-		return '[' . str_replace(['[', ']'], ['[[', ']]'], $name) . ']';
+		return '[' . str_replace(']', ']]', $name) . ']'; // only ] is escaped by doubling in bracketed identifiers
 	}
 
 

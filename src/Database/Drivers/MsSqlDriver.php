@@ -66,7 +66,7 @@ class MsSqlDriver implements Nette\Database\Driver
 	public function delimite(string $name): string
 	{
 		// @see https://msdn.microsoft.com/en-us/library/ms176027.aspx
-		return '[' . str_replace(['[', ']'], ['[[', ']]'], $name) . ']';
+		return '[' . str_replace(']', ']]', $name) . ']';
 	}
 
 

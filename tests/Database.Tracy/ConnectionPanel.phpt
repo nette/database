@@ -75,3 +75,15 @@ test('maxQueries caps stored query details but not the count', function () {
 	Assert::same('SELECT 3', $queries[2][1]);
 	Assert::same(5, (new ReflectionProperty($panel, 'count'))->getValue($panel));
 });
+
+
+test('BlueScreen panel is registered only once for multiple connections', function () {
+	$blueScreen = new Tracy\BlueScreen;
+	$before = count((new ReflectionProperty($blueScreen, 'panels'))->getValue($blueScreen));
+
+	ConnectionPanel::initialize(new Connection('sqlite::memory:'), blueScreen: $blueScreen);
+	ConnectionPanel::initialize(new Connection('sqlite::memory:'), blueScreen: $blueScreen);
+
+	$panels = (new ReflectionProperty($blueScreen, 'panels'))->getValue($blueScreen);
+	Assert::count($before + 1, $panels);
+});

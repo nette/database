@@ -45,7 +45,12 @@ class ConnectionPanel implements Tracy\IBarPanel
 	): ?self
 	{
 		$blueScreen ??= Tracy\Debugger::getBlueScreen();
-		$blueScreen->addPanel(self::renderException(...));
+		static $registered = null;
+		$registered ??= new \WeakMap;
+		if (!isset($registered[$blueScreen])) { // multiple connections must not register multiple identical panels
+			$registered[$blueScreen] = true;
+			$blueScreen->addPanel(self::renderException(...));
+		}
 
 		if ($addBarPanel) {
 			$panel = new self($connection, $blueScreen);

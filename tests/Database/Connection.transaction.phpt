@@ -110,3 +110,20 @@ test('beginTransaction(), commit() & rollBack() calls are forbidden in transacti
 		Connection::class . '::rollBack() call is forbidden inside a transaction() callback',
 	);
 });
+
+
+test('failed ROLLBACK does not mask the original exception', function () use ($connection) {
+	Assert::exception(
+		fn() => $connection->transaction(function (Connection $connection) {
+			try {
+				$connection->query('ROLLBACK'); // ends the server-side transaction behind the wrapper's back
+			} catch (Nette\Database\DriverException $e) {
+				// some drivers (sqlsrv) complain right away, the transaction is gone either way
+			}
+
+			throw new RuntimeException('original exception');
+		}),
+		RuntimeException::class,
+		'original exception',
+	);
+});

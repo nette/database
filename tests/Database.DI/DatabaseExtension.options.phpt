@@ -43,6 +43,31 @@ test('PDO:: constants in options are translated to their values', function () {
 });
 
 
+test('an unknown PDO:: constant in options names the offending config key', function () {
+	Assert::exception(
+		fn() => buildContainer('
+	database:
+		dsn: "sqlite::memory:"
+		options:
+			PDO::ATTR_CASE: PDO::CASE_LOWR
+	', 'ContainerOptBadValue'),
+		Nette\DI\InvalidConfigurationException::class,
+		"Unknown constant 'PDO::CASE_LOWR' in the 'database.default.options.PDO::ATTR_CASE' option.",
+	);
+
+	Assert::exception(
+		fn() => buildContainer('
+	database:
+		dsn: "sqlite::memory:"
+		options:
+			PDO::ATTR_CAES: PDO::CASE_LOWER
+	', 'ContainerOptBadKey'),
+		Nette\DI\InvalidConfigurationException::class,
+		"Unknown constant 'PDO::ATTR_CAES' in the 'database.default.options' option.",
+	);
+});
+
+
 test('BC option reflection: creates the conventions service under the historical name', function () {
 	$container = buildContainer('
 	database:

@@ -153,7 +153,8 @@ class SqliteDriver implements Nette\Database\Driver
 		$rows = $this->connection->query('PRAGMA table_info(?name)', $table);
 		while ($row = $rows->fetch()) {
 			$column = $row['name'];
-			$pattern = "/(\"$column\"|`$column`|\\[$column]|$column)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";
+			$q = preg_quote($column, '/');
+			$pattern = "/(\"$q\"|`$q`|\\[$q]|\\b$q)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";
 			$typeInfo = Nette\Database\Helpers::parseColumnType($row['type']);
 			$columns[] = [
 				'name' => $column,

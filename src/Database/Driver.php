@@ -18,6 +18,7 @@ interface Driver
 		SupportSelectUngroupedColumns = 'ungrouped_cols',
 		SupportMultiInsertAsSelect = 'insert_as_select',
 		SupportMultiColumnAsOrCondition = 'multi_column_as_or',
+		SupportDefaultValues = 'default_values',
 		SupportSchema = 'schema';
 
 	/** @deprecated use Driver::Support* */

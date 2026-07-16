@@ -26,7 +26,7 @@ class PgSqlDriver implements Nette\Database\Driver
 
 	public function isSupported(string $feature): bool
 	{
-		return $feature === self::SupportSequence || $feature === self::SupportSchema;
+		return $feature === self::SupportSequence || $feature === self::SupportSchema || $feature === self::SupportDefaultValues;
 	}
 
 

@@ -136,7 +136,7 @@ class GroupedSelection extends Selection
 			}
 		}
 
-		return 0;
+		return null; // the group has no rows, which is what the aggregate function would return for them
 	}
 
 

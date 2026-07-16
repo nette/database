@@ -29,6 +29,11 @@ test('numeric field', function () use ($connection) {
 	Assert::false(isset($row[1])); // null value
 	Assert::false(isset($row[2])); // is not set
 
+	$falsy = $connection->fetch("SELECT 0 AS a, '' AS b");
+	Assert::true(isset($falsy[0])); // falsy value is set
+	Assert::true(isset($falsy[1]));
+	Assert::false(isset($falsy[2]));
+
 	Assert::error(
 		fn() => $row->{2},
 		Nette\MemberAccessException::class,

@@ -205,6 +205,7 @@ class Connection
 	/**
 	 * Rolls back current transaction.
 	 * @throws \LogicException  when called inside a transaction
+	 * @throws DriverException
 	 */
 	public function rollBack(): void
 	{
@@ -232,7 +233,11 @@ class Connection
 		} catch (\Throwable $e) {
 			$this->transactionDepth--;
 			if ($this->transactionDepth === 0) {
-				$this->rollBack();
+				try {
+					$this->rollBack();
+				} catch (\Throwable) {
+					// e.g. after a deadlock the server has already rolled back; the original exception matters more
+				}
 			}
 
 			throw $e;

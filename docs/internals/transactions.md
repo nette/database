@@ -10,9 +10,9 @@ Nesting is **counter-based only** — there are **no savepoints**.
 - a real `BEGIN` is issued only when `transactionDepth === 0`; a nested call merely
   increments the counter and **emits no SQL**;
 - `COMMIT` likewise only at depth 0; on an exception, `ROLLBACK` only when it unwinds
-  back to depth 0, then the exception is rethrown. The rollback itself is **not**
-  guarded — if the server already rolled back (e.g. after a deadlock) and the
-  `ROLLBACK` fails, that failure replaces the original exception.
+  back to depth 0, then the exception is rethrown. Any failure of the rollback itself
+  (e.g. when the server already rolled back after a deadlock, or an `onQuery` handler
+  throws) is swallowed so it cannot mask the original exception.
 
 **The consequence to internalize:** a nested `transaction()` gives **no partial
 rollback**. Only the outermost transaction issues real `BEGIN`/`COMMIT`/`ROLLBACK`, so

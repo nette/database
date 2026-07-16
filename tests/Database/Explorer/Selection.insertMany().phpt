@@ -108,3 +108,13 @@ test('accepts Row objects, which the preprocessor supports', function () use ($e
 
 	Assert::same(2, $explorer->table('author')->insertMany($rows));
 });
+
+
+test('does not modify the caller\'s Row objects', function () use ($explorer) {
+	$explorer->table('book_tag')->where('book_id', 1)->delete();
+
+	$row = Nette\Database\Row::from(['tag_id' => 21]);
+	$explorer->table('book')->get(1)->related('book_tag')->insertMany([$row]);
+
+	Assert::same(['tag_id' => 21], (array) $row); // no book_id leaked into it
+});

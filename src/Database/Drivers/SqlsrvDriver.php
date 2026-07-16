@@ -95,10 +95,15 @@ class SqlsrvDriver implements Nette\Database\Driver
 		if ($limit < 0 || $offset < 0) {
 			throw new Nette\InvalidArgumentException('Negative offset or limit.');
 
+		} elseif ($limit === 0) { // FETCH NEXT 0 is rejected by the server
+			$sql = preg_replace('#^\s*(SELECT(\s+DISTINCT|\s+ALL)?)#i', '$0 TOP 0', $sql, 1, $count);
+			if (!$count) {
+				throw new Nette\InvalidArgumentException('SQL query must begin with SELECT command.');
+			}
 		} elseif ($limit !== null || $offset) {
 			// requires ORDER BY, see https://technet.microsoft.com/en-us/library/gg699618(v=sql.110).aspx
-			$sql .= ' OFFSET ' . (int) $offset . ' ROWS '
-				. 'FETCH NEXT ' . (int) $limit . ' ROWS ONLY';
+			$sql .= ' OFFSET ' . (int) $offset . ' ROWS'
+				. ($limit !== null ? " FETCH NEXT $limit ROWS ONLY" : '');
 		}
 	}
 

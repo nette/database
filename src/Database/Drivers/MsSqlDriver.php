@@ -150,10 +150,22 @@ class MsSqlDriver implements Nette\Database\Driver
 				c.NUMERIC_PRECISION,
 				c.IS_NULLABLE,
 				c.COLUMN_DEFAULT,
-				c.DOMAIN_NAME,
+				COLUMNPROPERTY(OBJECT_ID(c.TABLE_SCHEMA + '.' + c.TABLE_NAME), c.COLUMN_NAME, 'IsIdentity') AS autoincrement,
+				CASE WHEN pk.COLUMN_NAME IS NULL THEN 0 ELSE 1 END AS [primary],
 				CAST(p.value AS NVARCHAR(4000)) AS comment
 			FROM
 				INFORMATION_SCHEMA.COLUMNS c
+				LEFT JOIN (
+					SELECT kcu.TABLE_SCHEMA, kcu.TABLE_NAME, kcu.COLUMN_NAME
+					FROM INFORMATION_SCHEMA.TABLE_CONSTRAINTS tc
+					JOIN INFORMATION_SCHEMA.KEY_COLUMN_USAGE kcu ON
+						tc.CONSTRAINT_NAME = kcu.CONSTRAINT_NAME AND
+						tc.CONSTRAINT_SCHEMA = kcu.CONSTRAINT_SCHEMA
+					WHERE tc.CONSTRAINT_TYPE = 'PRIMARY KEY'
+				) pk ON
+					pk.TABLE_SCHEMA = c.TABLE_SCHEMA AND
+					pk.TABLE_NAME = c.TABLE_NAME AND
+					pk.COLUMN_NAME = c.COLUMN_NAME
 				LEFT JOIN sys.extended_properties p ON
 					p.major_id = OBJECT_ID(c.TABLE_SCHEMA + '.' + c.TABLE_NAME) AND
 					p.minor_id = COLUMNPROPERTY(OBJECT_ID(c.TABLE_SCHEMA + '.' + c.TABLE_NAME), c.COLUMN_NAME, 'ColumnId') AND
@@ -169,11 +181,11 @@ class MsSqlDriver implements Nette\Database\Driver
 				'table' => $table,
 				'nativetype' => strtoupper($row['DATA_TYPE']),
 				'size' => $row['CHARACTER_MAXIMUM_LENGTH'] ?? $row['NUMERIC_PRECISION'],
-				'unsigned' => false,
 				'nullable' => $row['IS_NULLABLE'] === 'YES',
 				'default' => $row['COLUMN_DEFAULT'],
-				'autoincrement' => $row['DOMAIN_NAME'] === 'COUNTER',
-				'primary' => $row['COLUMN_NAME'] === 'ID',
+				// the query returns ints on purpose: pdo_dblib gives BIT as 'True'/'False' and (bool) 'False' is true
+				'autoincrement' => (bool) $row['autoincrement'],
+				'primary' => (bool) $row['primary'],
 				'comment' => $row['comment'] ?? '',
 				'vendor' => (array) $row,
 			];

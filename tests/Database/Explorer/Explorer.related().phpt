@@ -97,3 +97,22 @@ test('conditional related entry fetching', function () use ($explorer) {
 
 	Assert::same('JUSH', $author->related('book', null)->where('translator_id', null)->fetch()->title);
 });
+
+
+test('related() with limit and offset applies the offset for every parent row', function () use ($explorer) {
+	$titles = [];
+	foreach ($explorer->table('author')->where('id', [11, 12]) as $author) {
+		foreach ($author->related('book')->order('book.id')->limit(1, 1) as $book) {
+			$titles[] = $book->title;
+		}
+	}
+
+	Assert::same(['JUSH', 'Dibi'], $titles);
+});
+
+
+test('related() with limit and offset, single parent row', function () use ($explorer) {
+	$author = $explorer->table('author')->get(11);
+	$books = $author->related('book')->order('book.id')->limit(1, 1);
+	Assert::same(['JUSH'], array_values($books->fetchPairs(null, 'title')));
+});

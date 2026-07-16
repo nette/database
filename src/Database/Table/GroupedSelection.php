@@ -164,24 +164,29 @@ class GroupedSelection extends Selection
 			$this->accessedColumns = $accessedColumns;
 
 			$limit = $this->sqlBuilder->getLimit();
+			$offset = $this->sqlBuilder->getOffset();
 			$rows = count($this->refTable->rows ?? []);
 			if ($limit && $rows > 1) {
 				$this->sqlBuilder->setLimit(null, null);
 			}
 
-			parent::execute();
-			$this->sqlBuilder->setLimit($limit, null);
+			try {
+				parent::execute();
+			} finally {
+				$this->sqlBuilder->setLimit($limit, $offset);
+			}
+
 			$data = [];
-			$offset = [];
+			$skips = [];
 			$this->accessColumn($this->column);
 			foreach ((array) $this->rows as $key => $row) {
 				$ref = &$data[$row[$this->column]];
-				$skip = &$offset[$row[$this->column]];
+				$skip = &$skips[$row[$this->column]];
 				if (
 					$limit === null
 					|| $rows <= 1
 					|| (count($ref ?? []) < $limit
-						&& $skip >= $this->sqlBuilder->getOffset())
+						&& $skip >= $offset)
 				) {
 					$ref[$key] = $row;
 				} else {

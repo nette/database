@@ -513,6 +513,37 @@ test('Detects incorrect multi-insert usage', function () use ($preprocessor) {
 });
 
 
+test('multi-insert row with a missing or unexpected column warns', function () use ($preprocessor) {
+	Assert::error(
+		fn() => $preprocessor->process(['INSERT INTO author', [
+			['name' => 'Catelyn Stark', 'born' => null],
+			['name' => 'Sansa Stark'], // the column would be silently filled with NULL
+		]]),
+		E_USER_WARNING,
+		"Missing value for column 'born' in multi-insert row #1.",
+	);
+
+	Assert::error(
+		fn() => $preprocessor->process(['INSERT INTO author', [
+			['name' => 'Catelyn Stark'],
+			['name' => 'Sansa Stark', 'born' => null], // the column would be silently dropped
+		]]),
+		E_USER_WARNING,
+		"Unexpected column 'born' in multi-insert row #1.",
+	);
+
+	[$sql, $params] = $preprocessor->process(['INSERT INTO author', [
+		['name' => 'Catelyn Stark', 'born' => null],
+		['born' => null, 'name' => 'Sansa Stark'], // different key order is fine
+	]]);
+	Assert::same(reformat([
+		'sqlite' => 'INSERT INTO author ([name], [born]) SELECT ?, NULL UNION ALL SELECT ?, NULL',
+		'INSERT INTO author ([name], [born]) VALUES (?, NULL), (?, NULL)',
+	]), $sql);
+	Assert::same(['Catelyn Stark', 'Sansa Stark'], $params);
+});
+
+
 test('multi-row INSERT query', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['INSERT INTO author', [
 		['name' => 'Catelyn Stark', 'born' => new DateTime('2011-11-11')],

@@ -8,7 +8,7 @@
 namespace Nette\Database;
 
 use Nette;
-use function array_key_exists, array_keys, array_map, array_slice, array_values, count, explode, get_debug_type, implode, in_array, is_array, is_bool, is_float, is_int, is_resource, is_scalar, is_string, iterator_to_array, ltrim, number_format, rtrim, str_contains, str_ends_with, stream_get_contents, strtoupper, substr;
+use function array_diff_key, array_flip, array_key_exists, array_key_first, array_keys, array_map, array_slice, array_values, count, explode, get_debug_type, implode, in_array, is_array, is_bool, is_float, is_int, is_resource, is_scalar, is_string, iterator_to_array, ltrim, number_format, rtrim, str_contains, str_ends_with, stream_get_contents, strtoupper, substr;
 
 
 /**
@@ -259,10 +259,19 @@ class SqlPreprocessor
 
 		$cols = array_keys(iterator_to_array($groups[0]));
 		$vals = [];
-		foreach ($groups as $group) {
+		foreach ($groups as $i => $group) {
+			$group = is_array($group) ? $group : iterator_to_array($group);
 			$rowVals = [];
 			foreach ($cols as $k) {
-				$rowVals[] = $this->formatValue($group[$k]);
+				if (!array_key_exists($k, $group)) { // the column would be silently filled with NULL
+					trigger_error("Missing value for column '$k' in multi-insert row #$i.", E_USER_WARNING);
+				}
+
+				$rowVals[] = $this->formatValue($group[$k] ?? null);
+			}
+
+			if ($extra = array_diff_key($group, array_flip($cols))) { // the column is taken from the first row only
+				trigger_error("Unexpected column '" . array_key_first($extra) . "' in multi-insert row #$i.", E_USER_WARNING);
 			}
 
 			$vals[] = implode(', ', $rowVals);

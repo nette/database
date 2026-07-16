@@ -261,10 +261,19 @@ class SqlPreprocessor
 
 		$cols = array_keys(iterator_to_array($groups[0]));
 		$vals = [];
-		foreach ($groups as $group) {
+		foreach ($groups as $i => $group) {
+			$group = is_array($group) ? $group : iterator_to_array($group);
 			$rowVals = [];
 			foreach ($cols as $k) {
-				$rowVals[] = $this->formatValue($group[$k]);
+				if (!array_key_exists($k, $group)) { // the column would be silently filled with NULL
+					trigger_error("Missing value for column '$k' in multi-insert row #$i.", E_USER_WARNING);
+				}
+
+				$rowVals[] = $this->formatValue($group[$k] ?? null);
+			}
+
+			if ($extra = array_diff_key($group, array_flip($cols))) { // the column is taken from the first row only
+				trigger_error("Unexpected column '" . array_key_first($extra) . "' in multi-insert row #$i.", E_USER_WARNING);
 			}
 
 			$vals[] = implode(', ', $rowVals);

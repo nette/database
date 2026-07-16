@@ -69,7 +69,12 @@ class DiscoveredConventions implements Conventions
 		}
 
 		if (!empty($candidates)) {
-			throw new AmbiguousReferenceKeyException('Ambiguous joining column in related call.');
+			throw new AmbiguousReferenceKeyException(sprintf(
+				"Ambiguous joining column in related('%s') called on table '%s', candidates: %s.",
+				$key,
+				$nsTable,
+				implode(', ', array_map(fn($c) => "{$c[1][0]}.{$c[1][1]}", $candidates)),
+			));
 		}
 
 		if ($this->structure->isRebuilt()) {

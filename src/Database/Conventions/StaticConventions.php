@@ -18,7 +18,7 @@ class StaticConventions implements Conventions
 {
 	/**
 	 * @param  string  $primary  %s stands for table name
-	 * @param  string  $foreign  %1$s stands for key used after ->, %2$s for table name
+	 * @param  string  $foreign  %1$s stands for the referenced table (the key after -> in belongs-to, the parent table in has-many), %2$s for the opposite side
 	 * @param  string  $table  %1$s stands for key used after ->, %2$s for table name
 	 */
 	public function __construct(

@@ -29,7 +29,11 @@ function connectToDB(array $options = []): Nette\Database\Explorer
 	$args['options'] = $options + $args['options'];
 
 	if ($args['dsn'] !== 'sqlite::memory:') {
+		// TODO: drop once nette/tester with the fix in Environment::lock() is released
+		$limit = (int) ini_get('max_execution_time');
+		set_time_limit(0);
 		Tester\Environment::lock($args['dsn'], getTempDir());
+		set_time_limit($limit);
 	}
 
 	$connection = new Nette\Database\Connection($args['dsn'], $args['username'], $args['password'], $args['options']);

@@ -21,3 +21,11 @@ test('formatDateTime', function () {
 	$driver = $connection->getDriver();
 	Assert::same('1978-01-23', $driver->formatDateTime(new DateTime('1978-01-23 00:00:00')));
 });
+
+test('unknown driverClass', function () {
+	Assert::exception(
+		fn() => new Nette\Database\Connection('sqlite::memory:', options: ['driverClass' => 'UnknownDriverClass']),
+		Nette\InvalidStateException::class,
+		"Driver class 'UnknownDriverClass' not found.",
+	);
+});

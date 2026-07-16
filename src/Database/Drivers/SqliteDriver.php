@@ -8,7 +8,7 @@
 namespace Nette\Database\Drivers;
 
 use Nette;
-use function addcslashes, array_values, in_array, preg_match, preg_quote, str_contains, strtoupper, strtr, substr;
+use function addcslashes, array_values, in_array, preg_match, preg_quote, str_contains, strtoupper, substr;
 
 
 /**
@@ -73,7 +73,9 @@ class SqliteDriver implements Nette\Database\Driver
 
 	public function delimite(string $name): string
 	{
-		return '[' . strtr($name, '[]', '  ') . ']';
+		return str_contains($name, ']') // there is no escape for ] inside [...]
+			? throw new Nette\InvalidArgumentException('Identifier must not contain the ] character.')
+			: "[$name]";
 	}
 
 
@@ -189,24 +191,13 @@ class SqliteDriver implements Nette\Database\Driver
 			$indexes[$id] = [
 				'name' => $id,
 				'unique' => (bool) $row['unique'],
-				'primary' => false,
+				'primary' => ($row['origin'] ?? null) === 'pk',
 				'columns' => $columns,
 			];
 		}
 
-		$tableColumns = $this->getColumns($table);
-		foreach ($indexes as $id => $index) {
-			$column = $index['columns'][0] ?? null;
-			foreach ($tableColumns as $info) {
-				if ($column === $info['name']) {
-					$indexes[$id]['primary'] = (bool) $info['primary'];
-					break;
-				}
-			}
-		}
-
 		if (!$indexes) { // @see http://www.sqlite.org/lang_createtable.html#rowid
-			foreach ($tableColumns as $column) {
+			foreach ($this->getColumns($table) as $column) {
 				if ($column['vendor']['pk']) {
 					$indexes[] = [
 						'name' => 'ROWID',

@@ -15,3 +15,13 @@ foreach ([
 	Assert::same('[a[b]', $driver->delimite('a[b'));
 	Assert::same('[a]]b]', $driver->delimite('a]b'));
 }
+
+// SQLite has no escape for ] inside [...]
+$sqlite = new Nette\Database\Drivers\SqliteDriver;
+Assert::same('[hello]', $sqlite->delimite('hello'));
+Assert::same('[a[b]', $sqlite->delimite('a[b'));
+Assert::exception(
+	fn() => $sqlite->delimite('a]b'),
+	Nette\InvalidArgumentException::class,
+	'Identifier must not contain the ] character.',
+);

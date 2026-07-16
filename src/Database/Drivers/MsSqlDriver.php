@@ -139,7 +139,7 @@ class MsSqlDriver implements Nette\Database\Driver
 
 	public function getColumns(string $table): array
 	{
-		[$table_schema, $table_name] = explode('.', $table);
+		[$table_schema, $table_name] = $this->splitTableName($table);
 		$columns = [];
 
 		$rows = $this->connection->query(<<<'X'
@@ -185,7 +185,7 @@ class MsSqlDriver implements Nette\Database\Driver
 
 	public function getIndexes(string $table): array
 	{
-		[, $table_name] = explode('.', $table);
+		[, $table_name] = $this->splitTableName($table);
 		$indexes = [];
 
 		$rows = $this->connection->query(<<<'X'
@@ -222,7 +222,7 @@ class MsSqlDriver implements Nette\Database\Driver
 
 	public function getForeignKeys(string $table): array
 	{
-		[$table_schema, $table_name] = explode('.', $table);
+		[$table_schema, $table_name] = $this->splitTableName($table);
 		$keys = [];
 
 		$rows = $this->connection->query(<<<'X'
@@ -265,5 +265,14 @@ class MsSqlDriver implements Nette\Database\Driver
 	public function getColumnTypes(\PDOStatement $statement): array
 	{
 		return Nette\Database\Helpers::detectTypes($statement);
+	}
+
+
+	/** @return array{string, string} schema and table name */
+	private function splitTableName(string $table): array
+	{
+		return str_contains($table, '.')
+			? explode('.', $table, 2)
+			: ['dbo', $table];
 	}
 }

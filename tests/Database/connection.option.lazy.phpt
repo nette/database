@@ -44,6 +44,11 @@ test('', function () {
 
 test('connect & disconnect', function () {
 	$options = Tester\Environment::loadData() + ['username' => null, 'password' => null];
+	if ($options['dsn'] !== 'sqlite::memory:') {
+		// serializes with the other tests on this DSN, whose fixtures recreate the whole database
+		Tester\Environment::lock($options['dsn'], getTempDir());
+	}
+
 	$connections = 1;
 
 	try {

@@ -915,6 +915,27 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
+	 * Inserts multiple rows in a single query and returns the number of affected rows.
+	 * @param  iterable<array<string, mixed>|Nette\Database\Row>|Selection<ActiveRow>  $data
+	 */
+	public function insertMany(iterable $data): int
+	{
+		if ($data instanceof self) {
+			return $this->insert($data);
+		}
+
+		$data = Nette\Database\Helpers::materializeRows($data);
+		if (!$data) {
+			return 0;
+		} elseif (!Nette\Database\Helpers::isRowList($data)) {
+			throw new Nette\InvalidArgumentException('insertMany() expects a list of rows or a Selection; use insert() for a single row.');
+		}
+
+		return $this->insert(array_values($data)); // the keys may have gaps, e.g. left by array_filter()
+	}
+
+
+	/**
 	 * Updates all rows matching current conditions. JOINs in UPDATE are supported only by MySQL.
 	 * @param  iterable<string, mixed>  $data
 	 * @return int  number of affected rows

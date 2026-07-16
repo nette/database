@@ -87,3 +87,16 @@ test('BlueScreen panel is registered only once for multiple connections', functi
 	$panels = (new ReflectionProperty($blueScreen, 'panels'))->getValue($blueScreen);
 	Assert::count($before + 1, $panels);
 });
+
+
+test('disabled panel logs nothing', function () {
+	$connection = new Connection('sqlite::memory:');
+	$panel = ConnectionPanel::initialize($connection, addBarPanel: true, name: 'off');
+	$panel->disabled = true;
+
+	$connection->query('SELECT 1');
+
+	Assert::same(0, (new ReflectionProperty($panel, 'count'))->getValue($panel));
+	Assert::count(0, (new ReflectionProperty($panel, 'queries'))->getValue($panel));
+	Assert::null($panel->getPanel());
+});

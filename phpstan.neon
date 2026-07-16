@@ -83,12 +83,6 @@ parameters:
 			count: 1
 			path: src/Bridges/DatabaseTracy/ConnectionPanel.php
 
-		# Lazy-loading side effect via __get magic
-		-
-			identifier: expr.resultUnused
-			count: 1
-			path: src/Database/Reflection.php
-
 		# DI extension: $this->config is array|object from Nette Schema
 		-
 			identifier: foreach.nonIterable
@@ -116,11 +110,6 @@ parameters:
 			count: 1
 			path: src/Database/SqlPreprocessor.php
 
-		# getPrimary() returns string for single-column PK (composite PK not supported here)
-		-
-			identifier: argument.type
-			count: 1
-			path: src/Database/Table/ActiveRow.php
 		-
 			identifier: array.invalidKey
 			count: 1

@@ -64,3 +64,13 @@ test('insert into multi-key table', function () use ($explorer) {
 	$count = $explorer->table('book_tag')->where('book_id', 1)->count('*');
 	Assert::same(2, $count);
 });
+
+
+test('related() on a composite primary key row throws a comprehensible exception', function () use ($explorer) {
+	$bookTag = $explorer->table('book_tag')->where('book_id', 1)->fetch();
+	Assert::exception(
+		fn() => $bookTag->related('whatever'),
+		Nette\NotSupportedException::class,
+		'related() does not support tables with a composite primary key.',
+	);
+});

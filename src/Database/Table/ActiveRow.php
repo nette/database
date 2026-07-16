@@ -8,7 +8,7 @@
 namespace Nette\Database\Table;
 
 use Nette;
-use function array_intersect_key, array_key_exists, array_keys, implode, is_array, iterator_to_array;
+use function array_intersect_key, array_key_exists, array_keys, implode, is_array, is_string, iterator_to_array;
 
 
 /**
@@ -135,7 +135,12 @@ class ActiveRow implements \IteratorAggregate, IRow
 	 */
 	public function related(string $key, ?string $throughColumn = null): GroupedSelection
 	{
-		$groupedSelection = $this->table->getReferencingTable($key, $throughColumn, $this->__get($this->table->getPrimary()));
+		$primary = $this->table->getPrimary();
+		if (!is_string($primary)) {
+			throw new Nette\NotSupportedException('related() does not support tables with a composite primary key.');
+		}
+
+		$groupedSelection = $this->table->getReferencingTable($key, $throughColumn, $this->__get($primary));
 		if (!$groupedSelection) {
 			throw new Nette\MemberAccessException("No reference found for \${$this->table->getName()}->related($key).");
 		}

@@ -922,9 +922,15 @@ class SqlBuilder
 
 	/**
 	 * Delimits lowercase identifiers in a SQL fragment while leaving uppercase keywords untouched.
+	 * String literals are not supported - values belong in parameters - and warn when present.
 	 */
 	protected function tryDelimite(string $s): string
 	{
+		if (str_contains($s, "'")) {
+			// the literal is not recognized and its content gets delimited as if it were an identifier
+			trigger_error("SQL string literals are not supported here, pass the value as a parameter instead: $s", E_USER_WARNING);
+		}
+
 		if (!$this->entityMapping) {
 			return preg_replace_callback(
 				'#(?<=[^\w`"\[?:]|^)[a-z_][a-z0-9_]*(?=[^\w`"(\]]|$)#Di',

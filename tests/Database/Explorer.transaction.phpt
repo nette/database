@@ -46,3 +46,12 @@ test('commits explorer transaction successfully', function () use ($explorer) {
 
 	Assert::null($explorer->fetchField('SELECT id FROM book WHERE id = ', 3));
 });
+
+
+test('isInTransaction() mirrors the connection state', function () use ($explorer) {
+	Assert::false($explorer->isInTransaction());
+	$explorer->transaction(
+		fn() => Assert::true($explorer->isInTransaction()),
+	);
+	Assert::false($explorer->isInTransaction());
+});

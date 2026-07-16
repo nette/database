@@ -154,7 +154,7 @@ class MySqlDriver implements Nette\Database\Driver
 			$tables[] = [
 				'name' => (string) $row['TABLE_NAME'],
 				'view' => $row['TABLE_TYPE'] === 'VIEW',
-				'comment' => (string) $row['TABLE_COMMENT'],
+				'comment' => $row['TABLE_TYPE'] === 'VIEW' ? '' : (string) $row['TABLE_COMMENT'], // views have the literal comment 'VIEW'
 			];
 		}
 
@@ -199,7 +199,9 @@ class MySqlDriver implements Nette\Database\Driver
 				'primary' => $id === 'PRIMARY',
 				'columns' => [],
 			];
-			$indexes[$id]['columns'][(int) $row['Seq_in_index'] - 1] = (string) $row['Column_name'];
+			$indexes[$id]['columns'][(int) $row['Seq_in_index'] - 1] = $row['Column_name'] === null
+				? (string) ($row['Expression'] ?? '') // functional index part
+				: (string) $row['Column_name'];
 		}
 
 		foreach ($indexes as &$index) {
@@ -220,6 +222,7 @@ class MySqlDriver implements Nette\Database\Driver
 			WHERE TABLE_SCHEMA = DATABASE()
 			  AND REFERENCED_TABLE_NAME IS NOT NULL
 			  AND TABLE_NAME = ?
+			ORDER BY CONSTRAINT_NAME, ORDINAL_POSITION
 			X, $table);
 
 		while ($row = $rows->fetch()) {

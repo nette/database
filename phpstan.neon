@@ -77,12 +77,6 @@ parameters:
 			count: 2
 			path: src/Bridges/DatabaseTracy/ConnectionPanel.php
 
-		# Defensive instanceof check in elseif branch for readability
-		-
-			identifier: instanceof.alwaysTrue
-			count: 1
-			path: src/Bridges/DatabaseTracy/ConnectionPanel.php
-
 		# DI extension: $this->config is array|object from Nette Schema
 		-
 			identifier: foreach.nonIterable
@@ -142,7 +136,7 @@ parameters:
 			path: src/Database/Helpers.php
 		-
 			identifier: isset.offset
-			count: 2
+			count: 1
 			path: src/Database/Helpers.php
 		# Latte-generated n:attr idiom: ($tmp = expr) === null ? '' : ...
 		-

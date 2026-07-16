@@ -12,7 +12,7 @@ use Nette;
 use Nette\Utils\Arrays;
 use PDO;
 use PDOException;
-use function str_replace, ucfirst;
+use function class_exists, str_replace, ucfirst;
 
 
 /**
@@ -72,6 +72,11 @@ class Connection
 		$class = empty($this->options['driverClass'])
 			? 'Nette\Database\Drivers\\' . ucfirst(str_replace('sql', 'Sql', $this->pdo->getAttribute(PDO::ATTR_DRIVER_NAME))) . 'Driver'
 			: $this->options['driverClass'];
+		if (!class_exists($class)) {
+			throw new Nette\InvalidStateException(empty($this->options['driverClass'])
+				? "Driver class '$class' not found, specify it using the 'driverClass' option."
+				: "Driver class '$class' not found.");
+		}
 		$driver = new $class;
 		if (!$driver instanceof Driver) {
 			throw new Nette\InvalidStateException("Driver class '$class' does not implement " . Driver::class . '.');

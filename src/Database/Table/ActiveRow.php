@@ -265,6 +265,15 @@ class ActiveRow implements \IteratorAggregate, IRow
 			return $referenced;
 		}
 
+		// the column may exist but be excluded from the narrowed SELECT, e.g. when it was
+		// probed by isset() before a migration added it; reload all columns and retry once
+		if ($this->table->getPreviousAccessedColumns() && !$this->table->getSqlBuilder()->getSelect()) {
+			$this->accessColumn(null);
+			if (array_key_exists($key, $this->data)) {
+				return $this->data[$key];
+			}
+		}
+
 		$this->removeAccessColumn($key);
 		$hint = Nette\Utils\Helpers::getSuggestion(array_keys($this->data), $key);
 		throw new Nette\MemberAccessException("Cannot read an undeclared column '$key'" . ($hint ? ", did you mean '$hint'?" : '.'));

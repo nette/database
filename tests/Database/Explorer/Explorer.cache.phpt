@@ -247,3 +247,41 @@ test('table without primary key never narrows the select', function () use ($exp
 		reformat('SELECT * FROM [note]'), // never narrowed, a re-query would need the primary key
 	], $sql);
 });
+
+
+test('a column probed by isset() before it existed is readable after being added', function () use ($explorer) {
+	$connection = $explorer->getConnection();
+	$connection->query('DROP TABLE IF EXISTS probe_test');
+	$connection->query('CREATE TABLE probe_test (id INTEGER NOT NULL PRIMARY KEY, a INTEGER)');
+	$connection->query('INSERT INTO probe_test (id, a) VALUES (1, 10)');
+	$explorer->getStructure()->rebuild();
+
+	$extraValues = [];
+	for ($i = 0; $i < 3; ++$i) {
+		if ($i === 1) {
+			$connection->query('ALTER TABLE probe_test ADD extra INTEGER'); // "migration"
+			$connection->query('UPDATE probe_test SET extra = 42');
+		}
+
+		$selection = $explorer->table('probe_test');
+		foreach ($selection as $row) {
+			$row->a;
+			if ($i === 0) {
+				isset($row->extra); // probes a column that does not exist yet
+			} else {
+				if ($i === 1) {
+					// isset() deliberately does not reload the narrowed row: a reload here would permanently
+					// disable narrowing for every legitimate isset() probe of an absent column
+					Assert::false(isset($row->extra));
+				}
+
+				$extraValues[] = $row->extra; // __get() reloads and heals the row, must not throw
+				Assert::true(isset($row->extra));
+			}
+		}
+
+		$selection->__destruct();
+	}
+
+	Assert::same([42, 42], $extraValues);
+});

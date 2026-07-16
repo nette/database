@@ -508,7 +508,7 @@ test('Detects incorrect multi-insert usage', function () use ($preprocessor) {
 	Assert::exception(
 		fn() => $preprocessor->process(['INSERT INTO author (name) SELECT name FROM user WHERE id ?', [11, 12]]),
 		Nette\InvalidArgumentException::class,
-		'Automaticaly detected multi-insert, but values aren\'t array. If you need try to change ?mode.',
+		"Automatically detected multi-insert, but values aren't array. Use an explicit ?mode placeholder if needed.",
 	);
 });
 

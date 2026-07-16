@@ -37,7 +37,7 @@ vendor/bin/tester tests -s -C
 vendor/bin/tester tests/Database/Explorer -s -C
 vendor/bin/tester tests/Database/Explorer/Explorer.basic.phpt -s -C
 
-# Static analysis (PHPStan level 5 + phpstan-nette)
+# Static analysis (PHPStan level 8 + nette/phpstan-rules)
 composer phpstan
 ```
 

@@ -57,7 +57,7 @@ class SqlPreprocessor
 	private int $counter;
 	private bool $useParams;
 
-	/** values|set|and|order|items */
+	/** values|set|and|or|order|list|name */
 	private ?string $arrayMode;
 
 
@@ -254,7 +254,7 @@ class SqlPreprocessor
 	private function formatMultiInsert(array $groups): string
 	{
 		if (!is_array($groups[0]) && !$groups[0] instanceof Row) {
-			throw new Nette\InvalidArgumentException('Automaticaly detected multi-insert, but values aren\'t array. If you need try to change ?mode.');
+			throw new Nette\InvalidArgumentException("Automatically detected multi-insert, but values aren't array. Use an explicit ?mode placeholder if needed.");
 		}
 
 		$cols = array_keys(is_array($groups[0]) ? $groups[0] : iterator_to_array($groups[0]));

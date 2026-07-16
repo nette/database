@@ -115,7 +115,7 @@ class Explorer
 
 
 	/**
-	 * Creates an ActiveRow instance, using the configured row mapping class if available.
+	 * Creates an ActiveRow instance. Override in a subclass to map tables to custom row classes.
 	 * @param  array<string, mixed>  $data
 	 * @param  Table\Selection<Table\ActiveRow>  $selection
 	 */

@@ -80,6 +80,19 @@ test('filtering groups by related count', function () use ($explorer) {
 	], $bookTags);
 });
 
+test('aggregation of a group without rows', function () use ($explorer) {
+	$aggregates = [];
+	foreach ($explorer->table('author') as $author) {
+		$books = $author->related('book');
+		$aggregates[$author->name] = [$books->count('*'), $books->max('id'), $books->min('id'), $books->sum('id')];
+	}
+
+	// Geek has no books, so the aggregate functions have nothing to return but null; only count() is a number
+	Assert::same([0, null, null, null], $aggregates['Geek']);
+	Assert::same([2, 4, 3, 7], $aggregates['David Grudl']);
+});
+
+
 test('nested group by and having', function () use ($explorer) {
 	$bookTags = [];
 	foreach ($explorer->table('author') as $author) {

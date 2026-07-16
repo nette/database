@@ -223,6 +223,30 @@ test('Empty WHERE conditions joined with OR', function () use ($preprocessor) {
 });
 
 
+test('Short-circuited WHERE discards params of preceding conditions', function () use ($preprocessor) {
+	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE', [
+		'a' => 1,
+		'col_empty IN' => [],
+	]]);
+	Assert::same(reformat('SELECT id FROM tbl WHERE (1=0)'), $sql);
+	Assert::same([], $params);
+
+	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE ?and LIMIT ?', [
+		'a' => 1,
+		'col_empty' => [],
+	], 10]);
+	Assert::same(reformat('SELECT id FROM tbl WHERE (1=0) LIMIT ?'), $sql);
+	Assert::same([10], $params);
+
+	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE ?or', [
+		'a' => 1,
+		'col_empty NOT IN' => [],
+	]]);
+	Assert::same(reformat('SELECT id FROM tbl WHERE (1=1)'), $sql);
+	Assert::same([], $params);
+});
+
+
 test('WHERE conditions with indexed items', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE', [
 		new SqlLiteral('foo'),

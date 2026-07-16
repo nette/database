@@ -172,10 +172,11 @@ class Connection
 	 */
 	public function quote(string $string, int $type = PDO::PARAM_STR): string
 	{
+		$pdo = $this->getPdo(); // ConnectionException is a PDOException, the catch below must not see it
 		try {
-			return $this->getPdo()->quote($string, $type);
+			return $pdo->quote($string, $type);
 		} catch (PDOException $e) {
-			throw DriverException::from($e);
+			throw $this->driver->convertException($e);
 		}
 	}
 

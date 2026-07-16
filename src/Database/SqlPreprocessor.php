@@ -231,6 +231,12 @@ class SqlPreprocessor
 	 */
 	private function formatInsert(array $items): string
 	{
+		if (!$items) {
+			return $this->driver->isSupported(Driver::SupportDefaultValues)
+				? 'DEFAULT VALUES'
+				: '() VALUES ()';
+		}
+
 		$cols = $vals = [];
 		foreach ($items as $k => $v) {
 			$cols[] = $this->delimit($k);

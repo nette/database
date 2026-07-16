@@ -73,6 +73,13 @@ class ConnectionPanel implements Tracy\IBarPanel
 		}
 
 		$this->count++;
+		if ($result instanceof Nette\Database\ResultSet) {
+			$this->totalTime += $result->getTime();
+		}
+
+		if ($this->count > $this->maxQueries) { // count/time are still tracked, only the query detail is dropped
+			return;
+		}
 
 		$trace = $result instanceof \PDOException
 			? array_map(fn($row) => array_diff_key($row, ['args' => null]), $result->getTrace())
@@ -90,14 +97,9 @@ class ConnectionPanel implements Tracy\IBarPanel
 			array_shift($trace);
 		}
 
-		if ($result instanceof Nette\Database\ResultSet) {
-			$this->totalTime += $result->getTime();
-			if ($this->count < $this->maxQueries) {
-				$this->queries[] = [$connection, $result->getQueryString(), $result->getParameters(), $trace, $result->getTime(), $result->getRowCount(), null];
-			}
-		} elseif ($result instanceof \PDOException && $this->count < $this->maxQueries) {
-			$this->queries[] = [$connection, $result->queryString, null, $trace, null, null, $result->getMessage()];
-		}
+		$this->queries[] = $result instanceof Nette\Database\ResultSet
+			? [$connection, $result->getQueryString(), $result->getParameters(), $trace, $result->getTime(), $result->getRowCount(), null]
+			: [$connection, $result->queryString, null, $trace, null, null, $result->getMessage()];
 	}
 
 

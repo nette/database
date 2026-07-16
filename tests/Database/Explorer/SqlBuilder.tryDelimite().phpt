@@ -24,3 +24,10 @@ Assert::same(reformat('HELLO([world])'), $tryDelimite->invoke($sqlBuilder, 'HELL
 Assert::same(reformat('hello([world])'), $tryDelimite->invoke($sqlBuilder, 'hello(world)'));
 Assert::same('[hello]', $tryDelimite->invoke($sqlBuilder, '[hello]'));
 Assert::same(reformat('::int'), $tryDelimite->invoke($sqlBuilder, '::int'));
+
+// string literals are not supported, the content would be delimited as an identifier
+Assert::error(
+	fn() => $tryDelimite->invoke($sqlBuilder, "name = 'abc'"),
+	E_USER_WARNING,
+	"SQL string literals are not supported here, pass the value as a parameter instead: name = 'abc'",
+);

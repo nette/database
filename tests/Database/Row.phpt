@@ -43,6 +43,15 @@ test('numeric field', function () use ($connection) {
 });
 
 
+test('isset is not confused by a column named key', function () use ($connection) {
+	$row = $connection->fetch("SELECT 123 AS {$connection->getDriver()->delimite('key')}");
+	Assert::true(isset($row->key));
+	Assert::false(isset($row->missing));
+	Assert::same('default', $row->missing ?? 'default');
+	Assert::false(isset($row['missing']));
+});
+
+
 test('named field', function () use ($connection) {
 	$row = $connection->fetch('SELECT 123 AS title');
 	Assert::same(123, $row->title);

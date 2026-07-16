@@ -26,7 +26,8 @@ class Row extends Nette\Utils\ArrayHash implements IRow
 
 	public function __isset(string $key): bool
 	{
-		return isset($this->key);
+		// called only for non-existent properties, so that `$row->missing ?? …` does not invoke throwing __get
+		return false;
 	}
 
 

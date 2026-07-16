@@ -10,7 +10,7 @@ namespace Nette\Database;
 use Nette;
 use Nette\Utils\Arrays;
 use PDO;
-use function count, gettype, is_int;
+use function count, gettype, is_float, is_int;
 
 
 /**
@@ -49,8 +49,11 @@ class ResultSet implements \Iterator, IRowContainer
 			} else {
 				$this->pdoStatement = $connection->getPdo()->prepare($queryString);
 				foreach ($params as $key => $value) {
-					$type = gettype($value);
-					$this->pdoStatement->bindValue(is_int($key) ? $key + 1 : $key, $value, $types[$type] ?? PDO::PARAM_STR);
+					if (is_float($value)) { // PDO has no float type and would stringify the value with the precision ini
+						$value = Helpers::formatFloat($value);
+					}
+
+					$this->pdoStatement->bindValue(is_int($key) ? $key + 1 : $key, $value, $types[gettype($value)] ?? PDO::PARAM_STR);
 				}
 
 				$this->pdoStatement->setFetchMode(PDO::FETCH_ASSOC);

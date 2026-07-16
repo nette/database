@@ -22,6 +22,7 @@ class ResultSet implements \Iterator, IRowContainer
 	private ?\PDOStatement $pdoStatement = null;
 	private Row|false|null $lastRow = null;
 	private int $lastRowKey = -1;
+	private bool $duplicatesChecked = false;
 
 	/** @var list<Row> */
 	private array $rows;
@@ -206,9 +207,12 @@ class ResultSet implements \Iterator, IRowContainer
 			$this->pdoStatement?->closeCursor();
 			return null;
 
-		} elseif ($this->lastRow === null && count($data) !== $this->pdoStatement->columnCount()) {
-			$duplicates = Helpers::findDuplicates($this->pdoStatement);
-			trigger_error("Found duplicate columns in database result set: $duplicates.");
+		} elseif (!$this->duplicatesChecked) {
+			$this->duplicatesChecked = true;
+			if (count($data) !== $this->pdoStatement->columnCount()) {
+				$duplicates = Helpers::findDuplicates($this->pdoStatement);
+				trigger_error("Found duplicate columns in database result set: $duplicates.");
+			}
 		}
 
 		return $this->normalizeRow($data);

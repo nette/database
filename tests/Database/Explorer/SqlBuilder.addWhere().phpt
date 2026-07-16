@@ -26,6 +26,15 @@ test('combine duplicate where conditions, ignoring repetition', function () use 
 });
 
 
+test('conditions differing only in binary parameters are not deduplicated', function () use ($explorer) {
+	$sqlBuilder = new SqlBuilder('book', $explorer);
+	Assert::true($sqlBuilder->addWhere('title > ?', "\xC0\x01")); // non-UTF-8 values, json_encode() fails on them
+	Assert::true($sqlBuilder->addWhere('title > ?', "\xC0\x02"));
+	Assert::same(reformat('SELECT * FROM [book] WHERE ([title] > ?) AND ([title] > ?)'), $sqlBuilder->buildSelectQuery());
+	Assert::count(2, $sqlBuilder->getParameters());
+});
+
+
 test('handle named placeholders with mixed conditions', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('?name ?', 'id', 3);

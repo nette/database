@@ -144,7 +144,7 @@ class SqlBuilder
 			$parts[] = "{$this->delimitedTable}.*";
 		}
 
-		return $this->getConditionHash(json_encode($parts), [
+		return $this->getConditionHash(serialize($parts), [
 			$this->parameters['select'],
 			$this->parameters['joinCondition'],
 			$this->parameters['where'],
@@ -949,7 +949,7 @@ class SqlBuilder
 			}
 		}
 
-		return hash('xxh128', $condition . json_encode($parameters));
+		return hash('xxh128', $condition . serialize($parameters)); // serialize() unlike json_encode() does not fail on binary strings
 	}
 
 

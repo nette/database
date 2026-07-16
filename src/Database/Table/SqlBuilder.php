@@ -13,7 +13,7 @@ use Nette\Database\Driver;
 use Nette\Database\Explorer;
 use Nette\Database\IStructure;
 use Nette\Database\SqlLiteral;
-use function array_flip, array_keys, array_map, array_merge, array_pop, array_shift, array_unshift, array_values, count, end, explode, hash, implode, is_array, iterator_to_array, json_encode, key, preg_match, preg_match_all, preg_replace, preg_replace_callback, rtrim, str_contains, str_repeat, strlen, strtoupper, substr, substr_count, substr_replace, trim;
+use function array_flip, array_keys, array_map, array_merge, array_pop, array_shift, array_unshift, array_values, count, end, explode, hash, implode, is_array, iterator_to_array, key, preg_match, preg_match_all, preg_replace, preg_replace_callback, rtrim, serialize, str_contains, str_repeat, strlen, strtoupper, substr, substr_count, substr_replace, trim;
 
 
 /**
@@ -144,7 +144,7 @@ class SqlBuilder
 			$parts[] = "{$this->delimitedTable}.*";
 		}
 
-		return $this->getConditionHash(json_encode($parts), [
+		return $this->getConditionHash(serialize($parts), [
 			$this->parameters['select'],
 			$this->parameters['joinCondition'],
 			$this->parameters['where'],
@@ -949,7 +949,7 @@ class SqlBuilder
 			}
 		}
 
-		return hash('xxh128', $condition . json_encode($parameters));
+		return hash('xxh128', $condition . serialize($parameters)); // serialize() unlike json_encode() does not fail on binary strings
 	}
 
 

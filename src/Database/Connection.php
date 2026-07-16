@@ -157,8 +157,9 @@ class Connection
 	 */
 	public function getInsertId(?string $sequence = null): string
 	{
+		$pdo = $this->getPdo(); // ConnectionException is a PDOException, the catch below must not see it
 		try {
-			$res = $this->getPdo()->lastInsertId($sequence);
+			$res = $pdo->lastInsertId($sequence);
 			return $res === false ? '0' : $res;
 		} catch (PDOException $e) {
 			throw $this->driver->convertException($e);

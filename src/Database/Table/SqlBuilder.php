@@ -60,6 +60,9 @@ class SqlBuilder
 	/** @var array<string, string> alias => chain */
 	protected array $aliases = [];
 	protected string $currentAlias = '';
+
+	/** distinguishes WHERE vs JOIN conditions in the dedup hash; a subclass calling addCondition() directly gets the WHERE scope */
+	private string $conditionScope = '';
 	private readonly Driver $driver;
 	private readonly IStructure $structure;
 
@@ -306,7 +309,12 @@ class SqlBuilder
 			$this->joinCondition[$tableChain] = $this->parameters['joinCondition'][$tableChain] = [];
 		}
 
-		return $this->addCondition($condition, $params, $this->joinCondition[$tableChain], $this->parameters['joinCondition'][$tableChain]);
+		$this->conditionScope = "join:$tableChain\x00";
+		try {
+			return $this->addCondition($condition, $params, $this->joinCondition[$tableChain], $this->parameters['joinCondition'][$tableChain]);
+		} finally {
+			$this->conditionScope = '';
+		}
 	}
 
 
@@ -332,7 +340,7 @@ class SqlBuilder
 			return $this->addConditionComposition($condition, $params[0], $conditions, $conditionsParameters);
 		}
 
-		$hash = $this->getConditionHash($condition, $params);
+		$hash = $this->getConditionHash($this->conditionScope . $condition, $params);
 		if (isset($this->conditions[$hash])) {
 			return false;
 		}

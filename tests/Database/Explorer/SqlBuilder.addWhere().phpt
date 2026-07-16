@@ -35,6 +35,16 @@ test('conditions differing only in binary parameters are not deduplicated', func
 });
 
 
+test('identical WHERE and JOIN conditions are deduplicated independently', function () use ($explorer) {
+	$sqlBuilder = new SqlBuilder('author', $explorer);
+	Assert::true($sqlBuilder->addJoinCondition(':book(translator)', ':book(translator).title ?', 'X'));
+	Assert::true($sqlBuilder->addWhere(':book(translator).title ?', 'X')); // same condition in WHERE must still be added
+	Assert::false($sqlBuilder->addWhere(':book(translator).title ?', 'X')); // duplicate WHERE
+	Assert::false($sqlBuilder->addJoinCondition(':book(translator)', ':book(translator).title ?', 'X')); // duplicate JOIN
+	Assert::count(2, $sqlBuilder->getParameters());
+});
+
+
 test('handle named placeholders with mixed conditions', function () use ($explorer) {
 	$sqlBuilder = new SqlBuilder('book', $explorer);
 	$sqlBuilder->addWhere('?name ?', 'id', 3);

@@ -10,7 +10,6 @@ namespace Nette\Database\Table;
 use Nette;
 use Nette\Database\Conventions;
 use Nette\Database\Explorer;
-use function array_keys, count, iterator_to_array, preg_match, reset;
 
 
 /**
@@ -269,8 +268,10 @@ class GroupedSelection extends Selection
 
 		$data = Nette\Database\Helpers::materializeRows($data);
 		if (Nette\Database\Helpers::isRowList($data)) {
-			foreach (array_keys($data) as $key) {
-				$data[$key][$this->column] = $this->active;
+			foreach ($data as $key => $row) {
+				$row = $row instanceof Nette\Database\Row ? clone $row : $row; // must not modify the caller's row
+				$row[$this->column] = $this->active;
+				$data[$key] = $row;
 			}
 		} else {
 			$data[$this->column] = $this->active; // a single row (an empty one too)

@@ -50,3 +50,28 @@ test('', function () {
 	Assert::same($connection, $container->getService('nette.database.default'));
 	Assert::same($explorer, $container->getService('nette.database.default.context'));
 });
+
+
+test('single connection is detected by the dsn key, not by the type of the first value', function () {
+	$loader = new DI\Config\Loader;
+	$config = $loader->load(Tester\FileMock::create('
+	database:
+		options:
+			lazy: yes
+		dsn: "sqlite::memory:"
+
+	services:
+		cache: Nette\Caching\Storages\DevNullStorage
+	', 'neon'));
+
+	$compiler = new DI\Compiler;
+	$compiler->addExtension('database', new DatabaseExtension(false));
+	eval($compiler->addConfig($config)->setClassName('Container3')->compile());
+
+	$container = new Container3;
+	$container->initialize();
+
+	$connection = $container->getService('database.default');
+	Assert::type(Nette\Database\Connection::class, $connection);
+	Assert::same('sqlite::memory:', $connection->getDsn());
+});

@@ -10,7 +10,7 @@ namespace Nette\Bridges\DatabaseDI;
 use Nette;
 use Nette\Schema\Expect;
 use Tracy;
-use function is_array, is_string;
+use function array_key_exists, is_array, is_string;
 
 
 /**
@@ -38,8 +38,8 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				'conventions' => Expect::string('discovered'), // Nette\Database\Conventions\DiscoveredConventions
 				'autowired' => Expect::bool(),
 			]),
-		)->before(fn($val) => is_array(reset($val)) || reset($val) === null
-				? $val
+		)->before(fn($val) => is_array($val) && $val && !array_key_exists('dsn', $val)
+				? $val // a set of named connections; a single connection always has the mandatory 'dsn' key
 				: ['default' => $val]);
 	}
 

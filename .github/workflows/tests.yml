@@ -3,12 +3,12 @@ name: Tests
 on: [push, pull_request]
 
 env:
-    php-extensions: mbstring, intl, pdo_sqlsrv-5.12.0
+    php-extensions: mbstring, intl, pdo_sqlsrv-5.12.0  # pinned: pecl builds of newer pdo_sqlsrv are not verified across the whole PHP matrix
     php-tools: "composer:v2, pecl"
 
 jobs:
     tests:
-        runs-on: ubuntu-22.04
+        runs-on: ubuntu-24.04
         strategy:
             matrix:
                 php: ['8.1', '8.2', '8.3', '8.4', '8.5']

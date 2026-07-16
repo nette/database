@@ -104,8 +104,8 @@ $expectedColumns = [
 switch ($driverName) {
 	case 'mysql':
 		$version = $connection->getPdo()->getAttribute(PDO::ATTR_SERVER_VERSION);
-		if (version_compare($version, '8.0', '>=')) {
-			$expectedColumns[0]['size'] = null;
+		if (stripos($version, 'MariaDB') === false && version_compare($version, '8.0', '>=')) {
+			$expectedColumns[0]['size'] = null; // MySQL 8 dropped integer display width, MariaDB keeps it
 		}
 		break;
 	case 'pgsql':

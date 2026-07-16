@@ -223,3 +223,27 @@ test('SQL query logging with caching', function () use ($explorer) {
 		reformat('SELECT [id], [title], [translator_id] FROM [book] WHERE ([author_id] = ?)'),
 	], $sql);
 });
+
+
+test('table without primary key never narrows the select', function () use ($explorer) {
+	$explorer->table('note')->insert(['book_id' => 1, 'note' => 'test note']);
+
+	$sql = [];
+	for ($i = 0; $i < 2; ++$i) {
+		$selection = $explorer->table('note');
+		$sql[] = $selection->getSql();
+		foreach ($selection as $row) {
+			$row->book_id;
+			if ($i > 0) {
+				Assert::same('test note', $row->note); // reading a column unknown to the cache must not throw
+			}
+		}
+
+		$selection->__destruct();
+	}
+
+	Assert::same([
+		reformat('SELECT * FROM [note]'),
+		reformat('SELECT * FROM [note]'), // never narrowed, a re-query would need the primary key
+	], $sql);
+});

@@ -125,6 +125,16 @@ class SqlBuilder
 
 
 	/**
+	 * Some engines can only select the columns listed in GROUP BY. The cache key and the query itself
+	 * must never disagree on that, so both ask here.
+	 */
+	private function isRestrictedToGroupColumns(): bool
+	{
+		return (bool) $this->group && !$this->driver->isSupported(Driver::SupportSelectUngroupedColumns);
+	}
+
+
+	/**
 	 * Returns select query hash for caching.
 	 * @param  string[]|null  $columns
 	 */
@@ -141,7 +151,7 @@ class SqlBuilder
 			$parts[] = $this->select;
 		} elseif ($columns) {
 			$parts[] = [$this->delimitedTable, $columns];
-		} elseif ($this->group && !$this->driver->isSupported(Driver::SupportSelectUngroupedColumns)) {
+		} elseif ($this->isRestrictedToGroupColumns()) {
 			$parts[] = [$this->group];
 		} else {
 			$parts[] = "{$this->delimitedTable}.*";
@@ -198,14 +208,9 @@ class SqlBuilder
 
 		} elseif ($columns) {
 			$prefix = $joins ? "{$this->delimitedTable}." : '';
-			$cols = [];
-			foreach ($columns as $col) {
-				$cols[] = $prefix . $col;
-			}
+			$querySelect = $this->buildSelect(array_map(fn($col) => $prefix . $col, $columns));
 
-			$querySelect = $this->buildSelect($cols);
-
-		} elseif ($this->group && !$this->driver->isSupported(Driver::SupportSelectUngroupedColumns)) {
+		} elseif ($this->isRestrictedToGroupColumns()) {
 			$querySelect = $this->buildSelect([$this->group]);
 			$this->parseJoins($joins, $querySelect);
 

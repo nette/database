@@ -49,6 +49,15 @@ class Explorer
 
 
 	/**
+	 * Checks whether a transaction is active, either via transaction() or manual beginTransaction().
+	 */
+	public function isInTransaction(): bool
+	{
+		return $this->connection->isInTransaction();
+	}
+
+
+	/**
 	 * Executes callback inside a transaction.
 	 * @param  callable(static): mixed  $callback
 	 */

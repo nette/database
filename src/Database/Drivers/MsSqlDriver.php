@@ -26,7 +26,7 @@ class MsSqlDriver implements Nette\Database\Driver
 
 	public function isSupported(string $feature): bool
 	{
-		return false;
+		return $feature === self::SupportDefaultValues;
 	}
 
 

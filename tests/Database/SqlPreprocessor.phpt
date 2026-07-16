@@ -469,6 +469,17 @@ test('?values placeholder in INSERT', function () use ($preprocessor) {
 });
 
 
+test('?values placeholder with an empty array inserts a row of defaults', function () use ($preprocessor) {
+	[$sql, $params] = $preprocessor->process(['INSERT INTO update ?values', []]);
+
+	Assert::same(reformat([
+		'mysql' => 'INSERT INTO update () VALUES ()', // MySQL does not know DEFAULT VALUES
+		'INSERT INTO update DEFAULT VALUES',
+	]), $sql);
+	Assert::same([], $params);
+});
+
+
 test('Detects incorrect multi-insert usage', function () use ($preprocessor) {
 	Assert::exception(
 		fn() => $preprocessor->process(['INSERT INTO author (name) SELECT name FROM user WHERE id ?', [11, 12]]),

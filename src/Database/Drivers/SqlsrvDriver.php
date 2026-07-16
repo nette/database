@@ -8,7 +8,7 @@
 namespace Nette\Database\Drivers;
 
 use Nette;
-use function array_values, str_replace, strtr;
+use function array_values, str_contains, str_replace, strtr;
 
 
 /**
@@ -34,7 +34,22 @@ class SqlsrvDriver implements Nette\Database\Driver
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		$code = $e->errorInfo[1] ?? null;
-		if ($code === 1205) {
+		if ($code === 2627 || $code === 2601) {
+			return Nette\Database\UniqueConstraintViolationException::from($e);
+
+		} elseif ($code === 515) {
+			return Nette\Database\NotNullConstraintViolationException::from($e);
+
+		} elseif ($code === 547) {
+			return match (true) {
+				str_contains($e->getMessage(), 'CHECK constraint') => Nette\Database\CheckConstraintViolationException::from($e),
+				str_contains($e->getMessage(), 'FOREIGN KEY constraint'),
+				str_contains($e->getMessage(), 'REFERENCE constraint') => Nette\Database\ForeignKeyConstraintViolationException::from($e),
+				// the message is localized per login language and cannot be classified further
+				default => Nette\Database\ConstraintViolationException::from($e),
+			};
+
+		} elseif ($code === 1205) {
 			return Nette\Database\DeadlockException::from($e);
 
 		} elseif ($code === 1222) {

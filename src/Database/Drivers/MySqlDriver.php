@@ -8,7 +8,7 @@
 namespace Nette\Database\Drivers;
 
 use Nette;
-use function addcslashes, array_change_key_case, array_values, in_array, str_replace, strtoupper, substr;
+use function addcslashes, array_change_key_case, array_values, in_array, str_contains, str_replace, strtoupper, substr;
 
 
 /**
@@ -66,7 +66,7 @@ class MySqlDriver implements Nette\Database\Driver
 		} elseif (in_array($code, [1062, 1557, 1569, 1586], strict: true)) {
 			return Nette\Database\UniqueConstraintViolationException::from($e);
 
-		} elseif ($code === 3819) {
+		} elseif ($code === 3819 || $code === 4025) { // 3819 = MySQL, 4025 = MariaDB
 			return Nette\Database\CheckConstraintViolationException::from($e);
 
 		} elseif ($code === 1213) {
@@ -75,7 +75,12 @@ class MySqlDriver implements Nette\Database\Driver
 		} elseif ($code === 1205) {
 			return Nette\Database\LockTimeoutException::from($e);
 
-		} elseif ($code === 2006 || $code === 2013) {
+		} elseif (
+			$code === 2006
+			|| $code === 2013
+			// ER_CLIENT_INTERACTION_TIMEOUT (MySQL 8.0.24+); on MariaDB 4031 is an unrelated trigger error
+			|| ($code === 4031 && str_contains($e->getMessage(), 'disconnected'))
+		) {
 			return Nette\Database\ConnectionLostException::from($e);
 
 		} elseif ($code >= 2001 && $code <= 2028) {

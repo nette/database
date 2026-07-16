@@ -48,7 +48,7 @@ class SqliteDriver implements Nette\Database\Driver
 			return Nette\Database\UniqueConstraintViolationException::from($e);
 
 		} elseif (
-			str_contains($msg, 'may not be null')
+			str_contains($msg, 'may not be NULL')
 			|| str_contains($msg, 'NOT NULL constraint failed')
 		) {
 			return Nette\Database\NotNullConstraintViolationException::from($e);
@@ -58,6 +58,9 @@ class SqliteDriver implements Nette\Database\Driver
 			|| str_contains($msg, 'FOREIGN KEY constraint failed')
 		) {
 			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
+
+		} elseif (str_contains($msg, 'CHECK constraint failed')) {
+			return Nette\Database\CheckConstraintViolationException::from($e);
 
 		} else {
 			return Nette\Database\ConstraintViolationException::from($e);

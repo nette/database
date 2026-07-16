@@ -144,7 +144,7 @@ belongs-to batches), `['referencing']` (backward has-many batches + shared `acce
 by-ref array), so a mutation from one clone is seen by all clones of the same relation
 (they share the learned columns of the whole N+1 batch).
 
-## insert()
+## insert() & insertMany()
 
 `Selection::insert(iterable)` handles every form in one method (return type
 `ActiveRow|array|int`, never `null`): a **list, a Selection, or a PK-less table**
@@ -158,6 +158,24 @@ part missing → the original `$data` array.
 All the early-return branches above (int / array) call `clearReferencingCache()`; a
 returned row is also registered into `rows`/`data` if the Selection was already
 executed.
+
+`insertMany(iterable)` is a thin, typed wrapper over the bulk branch — it exists to
+give callers a plain `int` instead of the `ActiveRow|array|int` union, and delegates
+back to `insert()`. Three details are not obvious from the signature:
+
+- an **empty list returns 0 without touching the database**, whereas `insert([])`
+  inserts one row of database defaults (`?values` with an empty array) — the two are
+  deliberately not equivalent;
+- rows are materialized by `Helpers::materializeRows()`, which drains a Traversable
+  **by position**, so nothing is lost when a generator yields rows under colliding
+  keys (`yield from` restarts at 0), and `Helpers::isRowList()` then accepts gaps left
+  by e.g. `array_filter()` — a plain `array_is_list()` would misread such rows as a
+  single associative row;
+- a single associative row is **rejected up front** rather than inserted, so the
+  mistake surfaces before the write.
+
+`GroupedSelection` needs no override: `insertMany()` routes through `insert()`, whose
+override there adds the grouping column to every row.
 
 ## update() / delete()
 

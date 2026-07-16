@@ -127,3 +127,21 @@ test('failed ROLLBACK does not mask the original exception', function () use ($c
 		'original exception',
 	);
 });
+
+
+test('isInTransaction() reflects both transaction() and manual control', function () use ($connection) {
+	Assert::false($connection->isInTransaction());
+
+	$connection->transaction(function (Connection $connection) {
+		Assert::true($connection->isInTransaction());
+		$connection->transaction(
+			fn() => Assert::true($connection->isInTransaction()), // nested
+		);
+	});
+	Assert::false($connection->isInTransaction());
+
+	$connection->beginTransaction();
+	Assert::true($connection->isInTransaction());
+	$connection->rollBack();
+	Assert::false($connection->isInTransaction());
+});

@@ -42,6 +42,12 @@ test('', function () {
 });
 
 
+test('isInTransaction() does not force a connect', function () {
+	$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => true]);
+	Assert::false($connection->isInTransaction());
+});
+
+
 test('connect & disconnect', function () {
 	$options = Tester\Environment::loadData() + ['username' => null, 'password' => null];
 	if ($options['dsn'] !== 'sqlite::memory:') {

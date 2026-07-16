@@ -223,6 +223,15 @@ class Connection
 
 
 	/**
+	 * Checks whether a transaction is active, either via transaction() or manual beginTransaction().
+	 */
+	public function isInTransaction(): bool
+	{
+		return $this->transactionDepth > 0 || ($this->pdo?->inTransaction() ?? false);
+	}
+
+
+	/**
 	 * Executes callback inside a transaction. Supports nesting.
 	 * @param  callable(static): mixed  $callback
 	 */

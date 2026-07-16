@@ -27,6 +27,18 @@ test('Substitutes parameters directly for non-parameterized queries', function (
 });
 
 
+test('Inlines floats without losing precision', function () use ($preprocessor) {
+	[$sql] = $preprocessor->process(['UNKNOWN a = ?, b = ?', 1.0, -2.5]);
+	Assert::same('UNKNOWN a = 1, b = -2.5', $sql);
+
+	$prefix = 'UNKNOWN ';
+	foreach ([0.1, 1e20, 1e-11, 1 / 3, 0.30000000000000004, PHP_FLOAT_EPSILON, 1e-300] as $value) {
+		[$sql] = $preprocessor->process([$prefix . '?', $value]);
+		Assert::same($value, (float) substr($sql, strlen($prefix)), 'round-trips through the SQL literal');
+	}
+});
+
+
 test('Handles subqueries in parentheses correctly', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['(SELECT ?) UNION (SELECT ?)', 1, 2]);
 	Assert::same('(SELECT ?) UNION (SELECT ?)', $sql);

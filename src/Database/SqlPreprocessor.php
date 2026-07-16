@@ -191,7 +191,7 @@ class SqlPreprocessor
 		return match (true) {
 			is_int($value) => (string) $value,
 			is_bool($value) => (string) (int) $value,
-			is_float($value) => rtrim(rtrim(number_format($value, 10, '.', ''), '0'), '.'),
+			is_float($value) => Helpers::formatFloat($value),
 			is_resource($value) => $this->connection->quote(stream_get_contents($value)),
 			is_string($value) => $this->connection->quote($value),
 			$value === null => 'NULL',

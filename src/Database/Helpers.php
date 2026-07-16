@@ -10,7 +10,7 @@ namespace Nette\Database;
 use Nette;
 use Nette\Bridges\DatabaseTracy\ConnectionPanel;
 use Tracy;
-use function count, is_array, is_bool, is_float, is_resource, is_string, strlen;
+use function count, is_array, is_bool, is_float, is_resource, is_string, sprintf, strlen;
 
 
 /**
@@ -180,6 +180,20 @@ class Helpers
 		}
 
 		return $types;
+	}
+
+
+	/**
+	 * Formats a float as a string without losing precision. INF and NAN are passed through,
+	 * it is up to the engine whether it accepts them.
+	 * @internal
+	 */
+	public static function formatFloat(float $value): string
+	{
+		$res = (string) $value; // locale-independent, but honours the precision ini and may round the value
+		return is_finite($value) && (float) $res !== $value
+			? str_replace(',', '.', sprintf('%.17G', $value)) // 17 digits always survive the round-trip, but %G is locale-aware
+			: $res;
 	}
 
 

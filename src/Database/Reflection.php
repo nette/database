@@ -51,8 +51,9 @@ final class Reflection
 	{
 		try {
 			$table = new Table($this, $name);
-			$table->columns;
-			return $table;
+			return $table->columns
+				? $table
+				: null; // some drivers (SQLite) report no columns instead of failing for an unknown table
 		} catch (DriverException) {
 		}
 		return null;

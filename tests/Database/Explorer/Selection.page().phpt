@@ -60,3 +60,12 @@ test('less items than $itemsPerPage', function () use ($explorer) {
 	$tags = $explorer->table('tag')->page(1, 100);
 	Assert::same(4, count($tags)); //all four items from db
 });
+
+
+test('invalid items per page', function () use ($explorer) {
+	Assert::exception(
+		fn() => $explorer->table('tag')->page(1, 0),
+		Nette\InvalidArgumentException::class,
+		'Items per page must be at least 1.',
+	);
+});

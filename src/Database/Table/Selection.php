@@ -419,6 +419,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function page(int $page, int $itemsPerPage, ?int &$numOfPages = null): static
 	{
+		if ($itemsPerPage < 1) {
+			throw new Nette\InvalidArgumentException('Items per page must be at least 1.');
+		}
+
 		if (func_num_args() > 2) {
 			$numOfPages = (int) ceil($this->count('*') / $itemsPerPage);
 		}

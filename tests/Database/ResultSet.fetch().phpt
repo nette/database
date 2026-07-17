@@ -73,3 +73,39 @@ test('returns null for empty result set', function () use ($connection, $driverN
 
 	Assert::null($res->fetch());
 });
+
+
+test('a row taken by fetch() is not handed out again by the iterator', function () use ($connection) {
+	$query = 'SELECT id FROM author ORDER BY id';
+	$ids = fn(array $rows) => array_map(fn($row) => $row->id, $rows);
+
+	$res = $connection->query($query);
+	Assert::same(11, $res->fetch()->id);
+	Assert::same([12, 13], $ids($res->fetchAll()));
+
+	$res = $connection->query($query);
+	$res->fetch();
+	$collected = [];
+	foreach ($res as $row) {
+		$collected[] = $row->id;
+	}
+
+	Assert::same([12, 13], $collected);
+
+	$res = $connection->query($query);
+	while ($res->fetch());
+	Assert::same([], iterator_to_array($res));
+});
+
+
+test('the iterator carries on after the other fetch methods too', function () use ($connection) {
+	$query = 'SELECT id FROM author ORDER BY id';
+
+	$res = $connection->query($query);
+	$res->fetchAssoc();
+	Assert::same([12, 13], array_map(fn($row) => $row->id, $res->fetchAll()));
+
+	$res = $connection->query($query);
+	$res->fetchField();
+	Assert::same([12, 13], array_map(fn($row) => $row->id, $res->fetchAll()));
+});

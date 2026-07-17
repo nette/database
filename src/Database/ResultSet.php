@@ -187,7 +187,15 @@ class ResultSet implements \Iterator, IRowContainer
 			return true;
 		}
 
-		return $this->fetch() !== null;
+		// only a row fetched here belongs to the iterator, one taken by the caller's fetch() is gone;
+		// assigning the result directly would turn the false left by next() into null and lose the rewind guard
+		$row = $this->fetch();
+		if ($row === null) {
+			return false;
+		}
+
+		$this->lastRow = $row;
+		return true;
 	}
 
 
@@ -233,7 +241,7 @@ class ResultSet implements \Iterator, IRowContainer
 		}
 
 		$this->lastRowKey++;
-		return $this->lastRow = Arrays::toObject($data, new Row);
+		return Arrays::toObject($data, new Row);
 	}
 
 

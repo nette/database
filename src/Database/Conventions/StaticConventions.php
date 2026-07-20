@@ -18,7 +18,7 @@ class StaticConventions implements Conventions
 	public function __construct(
 		/** %s stands for table name */
 		protected readonly string $primary = 'id',
-		/** %1$s stands for key used after ->, %2$s for table name */
+		/** %1$s stands for the referenced table (the key after -> in belongs-to, the parent table in has-many), %2$s for the other side */
 		protected readonly string $foreign = '%s_id',
 		/** %1$s stands for key used after ->, %2$s for table name */
 		protected readonly string $table = '%s',

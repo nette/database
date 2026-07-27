@@ -3,8 +3,9 @@
 /**
  * Test: entity-mapping name translation is validated against the actual schema when
  * the structure cache is being (re)built: a column unreachable through the mapping
- * (camelCase column under camelCase mapping, colliding column pair) fails loudly
- * instead of silently, and the failure aborts caching so it repeats until fixed.
+ * (camelCase column under camelCase mapping, colliding column pair, underscore
+ * directly before a digit) fails loudly instead of silently, and the failure aborts
+ * caching so it repeats until fixed; the except map is the escape hatch.
  */
 
 use Nette\Caching\Storages\MemoryStorage;
@@ -15,7 +16,7 @@ use Tester\Assert;
 require __DIR__ . '/../bootstrap.php';
 
 
-function createExplorer(array $schema, bool $camelCase): Explorer
+function createExplorer(array $schema, bool $camelCase, array $except = []): Explorer
 {
 	$connection = new Connection('sqlite::memory:');
 	foreach ($schema as $sql) {
@@ -28,7 +29,7 @@ function createExplorer(array $schema, bool $camelCase): Explorer
 		$structure,
 		new DiscoveredConventions($structure),
 		$storage,
-		new DefaultEntityMapping([], camelCase: $camelCase),
+		new DefaultEntityMapping([], camelCase: $camelCase, except: $except),
 	);
 }
 
@@ -75,6 +76,72 @@ test('a colliding column pair fails loudly', function () {
 		Nette\InvalidStateException::class,
 		"Column 'colliding.fooBar' cannot be addressed through entity mapping: its property name 'fooBar' translates back to column 'foo_bar'. Rename the column or adjust the mapping.",
 	);
+});
+
+
+test('digit runs attached to the preceding word are invertible and pass', function () {
+	$explorer = createExplorer(
+		['CREATE TABLE digits (id INTEGER PRIMARY KEY AUTOINCREMENT, address2 INT, sha256_hash TEXT, oauth2_token TEXT, utf8mb4_name TEXT, col_v2 INT)'],
+		camelCase: true,
+	);
+	$explorer->table('digits')->insert(['address2' => 1, 'sha256Hash' => 'x', 'oauth2Token' => 'y', 'utf8mb4Name' => 'z', 'colV2' => 2]);
+	$row = $explorer->table('digits')->fetch();
+	Assert::same(1, $row->address2);
+	Assert::same('x', $row->sha256Hash);
+	Assert::same(2, $row->colV2);
+});
+
+
+test('an underscore directly before a digit fails with a digit hint', function () {
+	$explorer = createExplorer(
+		['CREATE TABLE legacy (id INTEGER PRIMARY KEY AUTOINCREMENT, address_2 INT)'],
+		camelCase: true,
+	);
+	Assert::exception(
+		fn() => $explorer->table('legacy'),
+		Nette\InvalidStateException::class,
+		"Column 'legacy.address_2' cannot be addressed through entity mapping: its property name 'address2' translates back to column 'address2'. An underscore directly before a digit has no camelCase form; map the column explicitly via the mapping's except option, or rename it.",
+	);
+});
+
+
+test('except map makes such a column addressable in both directions', function () {
+	$explorer = createExplorer(
+		['CREATE TABLE legacy (id INTEGER PRIMARY KEY AUTOINCREMENT, address_2 INT)'],
+		camelCase: true,
+		except: ['address2' => 'address_2'],
+	);
+	$explorer->table('legacy')->insert(['address2' => 5]);
+	$row = $explorer->table('legacy')->where('address2', 5)->fetch();
+	Assert::same(5, $row->address2);
+	Assert::same(['id' => 1, 'address2' => 5], $row->toArray());
+	$row->update(['address2' => 6]);
+	Assert::same(6, $explorer->table('legacy')->fetch()->address2);
+});
+
+
+test('except pair whose column collides with a real column fails loudly', function () {
+	$explorer = createExplorer(
+		['CREATE TABLE digits (id INTEGER PRIMARY KEY AUTOINCREMENT, address2 INT)'],
+		camelCase: true,
+		except: ['address2' => 'address_2'],
+	);
+	Assert::exception(
+		fn() => $explorer->table('digits'),
+		Nette\InvalidStateException::class,
+		"Column 'digits.address2' cannot be addressed through entity mapping: its property name 'address2' translates back to column 'address_2'. Rename the column or adjust the mapping.",
+	);
+});
+
+
+test('except map works without camelCase conversion', function () {
+	$explorer = createExplorer(
+		['CREATE TABLE legacy (id INTEGER PRIMARY KEY AUTOINCREMENT, address_2 INT)'],
+		camelCase: false,
+		except: ['address2' => 'address_2'],
+	);
+	$explorer->table('legacy')->insert(['address2' => 3]);
+	Assert::same(3, $explorer->table('legacy')->fetch()->address2);
 });
 
 

@@ -67,6 +67,24 @@ test('tables string shortcut', function () {
 });
 
 
+test('mapping with except only', function () {
+	$container = createContainer('
+	database:
+		dsn: "sqlite::memory:"
+		mapping:
+			except:
+				address2: address_2
+		debugger: no
+
+	services:
+		cache: Nette\Caching\Storages\DevNullStorage
+	', 'Container2c');
+
+	$explorer = $container->getService('database.default.explorer');
+	Assert::type(DefaultEntityMapping::class, getEntityMapping($explorer));
+});
+
+
 test('no mapping by default', function () {
 	$container = createContainer('
 	database:
@@ -151,6 +169,26 @@ test('DefaultEntityMapping: camelCase roundtrip', function () {
 	foreach (['id', 'name', 'first_name', 'author_id', 'created_at', 'address2'] as $column) {
 		Assert::same($column, $mapping->getColumnName($mapping->getPropertyName($column)));
 	}
+});
+
+
+test('DefaultEntityMapping: except pairs take precedence in both directions', function () {
+	$mapping = new DefaultEntityMapping(camelCase: true, except: ['address2' => 'address_2']);
+
+	Assert::same('address2', $mapping->getPropertyName('address_2'));
+	Assert::same('address_2', $mapping->getColumnName('address2'));
+	Assert::same('firstName', $mapping->getPropertyName('first_name'));
+	Assert::same('first_name', $mapping->getColumnName('firstName'));
+});
+
+
+test('DefaultEntityMapping: except works without camelCase', function () {
+	$mapping = new DefaultEntityMapping(except: ['address2' => 'address_2']);
+
+	Assert::same('address2', $mapping->getPropertyName('address_2'));
+	Assert::same('address_2', $mapping->getColumnName('address2'));
+	Assert::same('other_col', $mapping->getPropertyName('other_col'));
+	Assert::same('otherCol', $mapping->getColumnName('otherCol'));
 });
 
 

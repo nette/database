@@ -158,7 +158,10 @@ class Explorer
 				$property = $this->entityMapping->getPropertyName($column['name']);
 				$back = $this->entityMapping->getColumnName($property);
 				if ($back !== $column['name']) {
-					throw new Nette\InvalidStateException("Column '$table.{$column['name']}' cannot be addressed through entity mapping: its property name '$property' translates back to column '$back'. Rename the column or adjust the mapping.");
+					$hint = preg_match('#_\d#', $column['name'])
+						? "An underscore directly before a digit has no camelCase form; map the column explicitly via the mapping's except option, or rename it."
+						: 'Rename the column or adjust the mapping.';
+					throw new Nette\InvalidStateException("Column '$table.{$column['name']}' cannot be addressed through entity mapping: its property name '$property' translates back to column '$back'. $hint");
 				}
 			}
 		}

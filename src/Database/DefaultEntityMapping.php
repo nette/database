@@ -21,6 +21,11 @@ final class DefaultEntityMapping implements EntityMapping
 	private array $columnCache = [];
 
 
+	/**
+	 * @param array<string, string> $except explicit property-to-column pairs (e.g. ['address2' => 'address_2'])
+	 *     that take precedence over the camelCase conversion in both directions; the escape hatch
+	 *     for columns whose name has no camelCase form
+	 */
 	public function __construct(
 		/**
 		 * @var array<string, class-string<Table\ActiveRow>|string> table-to-class map; keys
@@ -32,7 +37,12 @@ final class DefaultEntityMapping implements EntityMapping
 		private readonly array $tables = [],
 		/** whether to convert snake_case column names to camelCase properties */
 		private readonly bool $camelCase = false,
+		array $except = [],
 	) {
+		foreach ($except as $property => $column) {
+			$this->propertyCache[$column] = $property;
+			$this->columnCache[$property] = $column;
+		}
 	}
 
 
@@ -72,13 +82,12 @@ final class DefaultEntityMapping implements EntityMapping
 
 	/**
 	 * With camelCase enabled, expects a snake_case column name (e.g. 'first_name')
-	 * and returns its camelCase property form (e.g. 'firstName').
+	 * and returns its camelCase property form (e.g. 'firstName'). Pairs from the
+	 * except map take precedence.
 	 */
 	public function getPropertyName(string $name): string
 	{
-		return $this->camelCase
-			? $this->propertyCache[$name] ??= lcfirst(self::toPascalCase($name))
-			: $name;
+		return $this->propertyCache[$name] ??= $this->camelCase ? lcfirst(self::toPascalCase($name)) : $name;
 	}
 
 
@@ -86,13 +95,15 @@ final class DefaultEntityMapping implements EntityMapping
 	 * With camelCase enabled, expects a camelCase property name (e.g. 'firstName')
 	 * and returns its snake_case column form (e.g. 'first_name'). PascalCase
 	 * input would produce a leading underscore (e.g. 'FirstName' → '_first_name'),
-	 * so the first letter is expected to be lowercase.
+	 * so the first letter is expected to be lowercase. Digits have no letter case,
+	 * so an underscore directly before a digit ('address_2') has no camelCase form;
+	 * digit runs attach to the preceding word ('sha256_hash' → 'sha256Hash') and
+	 * columns like 'address_2' must go through the except map. Pairs from the
+	 * except map take precedence.
 	 */
 	public function getColumnName(string $name): string
 	{
-		return $this->camelCase
-			? $this->columnCache[$name] ??= strtolower((string) preg_replace('#[A-Z]#', '_$0', $name))
-			: $name;
+		return $this->columnCache[$name] ??= $this->camelCase ? strtolower((string) preg_replace('#[A-Z]#', '_$0', $name)) : $name;
 	}
 
 

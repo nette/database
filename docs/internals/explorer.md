@@ -121,10 +121,17 @@ Boundaries and traps:
   why the implementation is context-free.
 - **Validation runs only at structure rebuild.** Enabling the mapping requires the
   whole schema to be invertible, including tables and views the application never
-  touches. A warm structure cache skips
+  touches (the except map is the escape hatch). A warm structure cache skips
   validation entirely, so a change of the mapping configuration requires a cache
   flush, same as a schema change; a structure cache built by a process without the
   mapping (CLI, another app sharing the DSN and cache dir) is trusted unvalidated.
+- **Digits have no letter case**, so the invertible subset is stricter than plain
+  snake_case: digit runs must attach to the preceding word (`address2`,
+  `sha256_hash`, `oauth2_token` are fine); an underscore directly before a digit
+  (`address_2`) is not representable in camelCase and is rejected by validation.
+  The `except` map of `DefaultEntityMapping` (DI key `mapping: except:`) declares
+  explicit property→column pairs that take precedence over the conversion in both
+  directions — the escape hatch for such legacy columns.
 
 ## `accessColumn`: the single shared seam
 

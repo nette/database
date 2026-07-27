@@ -8,7 +8,7 @@
 namespace Nette\Database\Table;
 
 use Nette;
-use function array_key_exists, is_array, is_string;
+use function array_key_exists, is_array, is_string, sprintf;
 
 
 /**
@@ -216,6 +216,54 @@ trait RowBehavior
 		}
 
 		return $res;
+	}
+
+
+	/********************* typed column access for property hooks ****************d*g**/
+
+
+	/**
+	 * Returns a column value; intended for get-hook bodies of row subclasses:
+	 * `public string $title { get => $this->column('title'); }`. The hook must not
+	 * touch its backing value, so the property stays virtual and thus read-only.
+	 * Reads flow through the same column-access tracking as magic access, so
+	 * SELECT narrowing and refetching keep working.
+	 */
+	protected function column(string $name): mixed
+	{
+		if ($this->accessColumn($name)) {
+			return $this->data[$name];
+		}
+
+		$this->removeAccessColumn($name);
+		$hint = Nette\Utils\Helpers::getSuggestion(array_keys($this->data), $name);
+		throw new Nette\MemberAccessException("Cannot read an undeclared column '$name'" . ($hint ? ", did you mean '$hint'?" : '.'));
+	}
+
+
+	/**
+	 * Returns a column value converted to a backed enum; intended for get-hook bodies:
+	 * `public ?Status $status { get => $this->enum(Status::class, 'status'); }`.
+	 * NULL stays NULL; a value outside the enum reports the table and column.
+	 * @template T of \BackedEnum
+	 * @param  class-string<T>  $class
+	 * @return ?T
+	 */
+	protected function enum(string $class, string $name): ?\BackedEnum
+	{
+		$value = $this->column($name);
+		if ($value === null || $value instanceof $class) {
+			return $value;
+		}
+
+		return $class::tryFrom($value)
+			?? throw new Nette\InvalidStateException(sprintf(
+				"Cannot convert value '%s' of column '%s.%s' to enum %s.",
+				$value,
+				$this->table->getName(),
+				$name,
+				$class,
+			));
 	}
 
 

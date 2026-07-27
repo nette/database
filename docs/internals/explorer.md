@@ -47,18 +47,32 @@ not to dirty the original.
 ## ActiveRow: storage & access
 
 **All data lives in one private `$data` array** (`[column => value]`); no column is a
-separate property, so every read falls into `__get` and flows through `$data` — the
-only way to track which columns are actually read (SELECT narrowing). A subclass must
-therefore **not** declare real typed properties (`public int $id`): an existing
-property bypasses the magic; use `@property-read` annotations instead. (There is no
-read-side enum conversion — `BackedEnum` handling exists only on the write side, in
-the preprocessor.)
+separate property. A subclass must never declare plain public properties for columns —
+an initialized property would shadow `__get`, bypass column-access tracking and go
+stale after `update()` refreshes `$data`. (Declared public properties remain legal as
+writable scratch fields unrelated to columns; that is the only way to attach mutable
+state to a read-only row.)
+
+The supported way to give columns native types is a **virtual get-only property hook**
+(PHP 8.4) reading through the protected helpers `column()` / `enum()`:
+
+```php
+public string $title { get => $this->column('title'); }
+public ?Status $status { get => $this->enum(Status::class, 'status'); }
+```
+
+The hook body must not touch its backing value, so the property stays **virtual**:
+read-only at engine level and for static analysis, nothing to hydrate or refresh, and
+every read still flows through `accessColumn()` (SELECT narrowing and refetching keep
+working). `enum()` passes NULL through and reports a value outside the enum with table
+and column context; `isset()` on a virtual property invokes the hook and null-checks;
+`__PROPERTY__` works in hook bodies. `toArray()` returns raw column values (the typed
+view is the properties, the array is the DB shape for insert/update round-trips).
 
 - `__get($key)`: maps property→column via `EntityMapping` → `accessColumn` → returns
-  `$data[$column]`; if the column is absent it tries a **relation**
-  (`getReferencedTable`), else throws `MemberAccessException` (with a did-you-mean
-  hint). `__set`/`__unset` throw (read-only). `toArray()` forces all columns via
-  `accessColumn(null)`.
+  `$data[$column]`; if the column is absent it tries a **relation**, else throws
+  `MemberAccessException`. `__set` is read-only (throws). `toArray()` forces all
+  columns via `accessColumn(null)`.
 - `getPrimary()`/`getSignature()` read **only `$data[$primary]`, with no query** — so
   row-cache writes can call them without triggering a fetch.
 

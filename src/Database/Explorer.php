@@ -28,6 +28,9 @@ class Explorer
 		private readonly ?EntityMapping $entityMapping = null,
 	) {
 		$this->conventions = $conventions ?: new StaticConventions;
+		if ($entityMapping && $structure instanceof Structure) {
+			$structure->onRebuild[] = fn() => $this->validateEntityMapping();
+		}
 	}
 
 
@@ -130,6 +133,35 @@ class Explorer
 	public function getEntityMapping(): ?EntityMapping
 	{
 		return $this->entityMapping;
+	}
+
+
+	/**
+	 * Checks that entity-mapping name translation is invertible over the actual columns
+	 * of every table, so that each column stays addressable: a column whose property name
+	 * translates back to a different column (e.g. a camelCase column under camelCase
+	 * mapping, or two columns sharing one property name) would be silently unreachable
+	 * and toArray() would list a key that cannot be read. Attached to Structure::$onRebuild,
+	 * so it runs only when the structure cache is being (re)built; a failure prevents
+	 * caching, so every subsequent request repeats the rebuild and fails loudly again.
+	 * @internal
+	 */
+	public function validateEntityMapping(): void
+	{
+		if (!$this->entityMapping) {
+			return;
+		}
+
+		foreach ($this->structure->getTables() as $tableInfo) {
+			$table = $tableInfo['name'];
+			foreach ($this->structure->getColumns($table) as $column) {
+				$property = $this->entityMapping->getPropertyName($column['name']);
+				$back = $this->entityMapping->getColumnName($property);
+				if ($back !== $column['name']) {
+					throw new Nette\InvalidStateException("Column '$table.{$column['name']}' cannot be addressed through entity mapping: its property name '$property' translates back to column '$back'. Rename the column or adjust the mapping.");
+				}
+			}
+		}
 	}
 
 

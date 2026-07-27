@@ -73,6 +73,12 @@ view is the properties, the array is the DB shape for insert/update round-trips)
   `$data[$column]`; if the column is absent it tries a **relation**, else throws
   `MemberAccessException`. `__set` is read-only (throws). `toArray()` forces all
   columns via `accessColumn(null)`.
+- Entity-mapping name translation assumes the schema is snake_case: it is context-free
+  string munging, so a column violating the assumption (e.g. `realCamel` under camelCase
+  mapping) would be unreachable through the whole table API. `Explorer::validateEntityMapping()`
+  therefore checks, whenever the structure cache is being (re)built (`Structure::$onRebuild`),
+  that every column of every table translates round-trip to itself, and fails loudly
+  otherwise; the failure prevents caching, so it repeats each request until fixed.
 - `getPrimary()`/`getSignature()` read **only `$data[$primary]`, with no query** — so
   row-cache writes can call them without triggering a fetch.
 
@@ -105,14 +111,20 @@ Boundaries and traps:
   about the mapping; the same fragment string means different things on either side
   of that seam.
 - **The translation is context-free string munging** that assumes an all-snake_case
-  schema; this invariant is currently NOT enforced. A column that itself contains an
-  uppercase letter (`realCamel`) becomes unreachable through the table API — reads
-  and fragments translate it to a nonexistent `real_camel` — while `toArray()` still
-  lists the original key, i.e. toArray shows a key that cannot be read back as a
-  property. Making the translation schema-aware is easy for row paths (table context
-  is known) but hits an architectural ceiling in `SqlBuilder`, where bare identifiers
-  and alias segments have no reliable table context — which is exactly why the
-  implementation is context-free.
+  schema. A column that itself contains an uppercase letter (`realCamel`) would be
+  unreachable through the table API — reads and fragments translate it to a
+  nonexistent `real_camel` — which is why `Explorer::validateEntityMapping()`
+  enforces the invariant at structure-rebuild time over the whole schema (see
+  above). Making the translation schema-aware instead is easy for row paths (table
+  context is known) but hits an architectural ceiling in `SqlBuilder`, where bare
+  identifiers and alias segments have no reliable table context — which is exactly
+  why the implementation is context-free.
+- **Validation runs only at structure rebuild.** Enabling the mapping requires the
+  whole schema to be invertible, including tables and views the application never
+  touches. A warm structure cache skips
+  validation entirely, so a change of the mapping configuration requires a cache
+  flush, same as a schema change; a structure cache built by a process without the
+  mapping (CLI, another app sharing the DSN and cache dir) is trusted unvalidated.
 
 ## `accessColumn`: the single shared seam
 

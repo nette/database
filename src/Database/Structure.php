@@ -16,6 +16,9 @@ use function count, is_array, strlen;
  */
 class Structure implements IStructure
 {
+	/** @var array<callable(self): void>  Occurs after the structure is rebuilt, before it is cached; a failure prevents caching */
+	public array $onRebuild = [];
+
 	protected readonly Nette\Caching\Cache $cache;
 
 	/** @var array{tables: list<array{name: string, fullName?: string, view: bool}>, columns: array<string, list<array<string, mixed>>>, primary: array<string, string|list<string>|null>, aliases: array<string, string>, hasMany: array<string, array<string, list<string>>>, belongsTo: array<string, array<string, string>>} */
@@ -144,6 +147,7 @@ class Structure implements IStructure
 	public function rebuild(): void
 	{
 		$this->structure = $this->loadStructure();
+		Nette\Utils\Arrays::invoke($this->onRebuild, $this); // a failure prevents caching, so the next use rebuilds again
 		$this->cache->save('structure', $this->structure);
 	}
 
@@ -166,7 +170,11 @@ class Structure implements IStructure
 			return;
 		}
 
-		$this->structure = $this->cache->load('structure', $this->loadStructure(...));
+		$this->structure = $this->cache->load('structure', function () {
+			$this->structure = $this->loadStructure();
+			Nette\Utils\Arrays::invoke($this->onRebuild, $this); // a failure prevents caching, so the next use rebuilds again
+			return $this->structure;
+		});
 	}
 
 

@@ -40,6 +40,33 @@ services:
             timeout: 5s
             retries: 5
 
+    postgres16:
+        image: postgres:16
+        ports:
+            - "5435:5432"
+        environment:
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: postgres
+            POSTGRES_DB: nette_test
+        healthcheck:
+            test: pg_isready
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+    mariadb:
+        image: mariadb:11.4
+        ports:
+            - "3308:3306"
+        environment:
+            MARIADB_ROOT_PASSWORD: root
+            MARIADB_DATABASE: nette_test
+        healthcheck:
+            test: healthcheck.sh --connect --innodb_initialized
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
     mssql:
         image: mcr.microsoft.com/mssql/server:2022-latest
         ports:

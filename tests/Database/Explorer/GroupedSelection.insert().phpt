@@ -36,3 +36,13 @@ test('insert works after iteration conversion', function () use ($explorer) {
 	$book->related('book_tag')->insert(['tag_id' => 23]);
 	Assert::same(3, $book->related('book_tag')->count());
 });
+
+
+test('does not modify the caller\'s Row objects', function () use ($explorer) {
+	$explorer->table('book_tag')->where('book_id', 1)->delete();
+
+	$row = Nette\Database\Row::from(['tag_id' => 21]);
+	$explorer->table('book')->get(1)->related('book_tag')->insert([$row]);
+
+	Assert::same(['tag_id' => 21], (array) $row); // no book_id leaked into it
+});

@@ -3,7 +3,9 @@ name: Tests
 on: [push, pull_request]
 
 env:
-    php-extensions: mbstring, intl, pdo_sqlsrv-5.12.0  # pinned: pecl builds of newer pdo_sqlsrv are not verified across the whole PHP matrix
+    # pdo_sqlsrv is deliberately unpinned: no single release covers the whole matrix
+    # (5.12 = PHP 8.1-8.3, 5.13 = PHP 8.3-8.5), so let setup-php pick a compatible one
+    php-extensions: mbstring, intl, pdo_sqlsrv
     php-tools: "composer:v2, pecl"
 
 jobs:

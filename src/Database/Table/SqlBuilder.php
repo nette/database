@@ -137,7 +137,7 @@ class SqlBuilder
 			$parts[] = $this->select;
 		} elseif ($columns) {
 			$parts[] = [$this->delimitedTable, $columns];
-		} elseif ($this->group && !$this->driver->isSupported(Driver::SupportSelectUngroupedColumns)) {
+		} elseif ($this->isRestrictedToGroupColumns()) {
 			$parts[] = [$this->group];
 		} else {
 			$parts[] = "{$this->delimitedTable}.*";
@@ -194,14 +194,9 @@ class SqlBuilder
 
 		} elseif ($columns) {
 			$prefix = $joins ? "{$this->delimitedTable}." : '';
-			$cols = [];
-			foreach ($columns as $col) {
-				$cols[] = $prefix . $col;
-			}
+			$querySelect = $this->buildSelect(array_map(fn($col) => $prefix . $col, $columns));
 
-			$querySelect = $this->buildSelect($cols);
-
-		} elseif ($this->group && !$this->driver->isSupported(Driver::SupportSelectUngroupedColumns)) {
+		} elseif ($this->isRestrictedToGroupColumns()) {
 			$querySelect = $this->buildSelect([$this->group]);
 			$this->parseJoins($joins, $querySelect);
 
@@ -216,6 +211,15 @@ class SqlBuilder
 		$this->driver->applyLimit($query, $this->limit, $this->offset);
 
 		return $this->tryDelimite($query);
+	}
+
+
+	/**
+	 * Some engines can only select the columns listed in GROUP BY.
+	 */
+	private function isRestrictedToGroupColumns(): bool
+	{
+		return (bool) $this->group && !$this->driver->isSupported(Driver::SupportSelectUngroupedColumns);
 	}
 
 

@@ -32,13 +32,15 @@ test('lazy', function () {
 });
 
 
-test('', function () {
-	$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => true]);
-	Assert::exception(
-		fn() => $connection->quote('x'),
-		Nette\Database\DriverException::class,
-		'%a%valid data source %a%',
-	);
+test('a failed lazy connection is reported by every method that forces it', function () {
+	foreach ([fn($connection) => $connection->quote('x'), fn($connection) => $connection->getInsertId()] as $action) {
+		$connection = new Nette\Database\Connection('dsn', 'user', 'password', ['lazy' => true]);
+		Assert::exception(
+			fn() => $action($connection),
+			Nette\Database\DriverException::class,
+			'%a%valid data source %a%',
+		);
+	}
 });
 
 

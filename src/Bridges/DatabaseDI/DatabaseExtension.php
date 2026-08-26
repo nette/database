@@ -78,12 +78,12 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 
 		foreach ($config->options as $key => $value) {
 			if (is_string($value) && preg_match('#^PDO::\w+$#D', $value)) {
-				$config->options[$key] = $value = constant($value);
+				$config->options[$key] = $value = $this->resolveConstant($value, "$name.options.$key");
 			}
 
 			if (preg_match('#^PDO::\w+$#D', $key)) {
 				unset($config->options[$key]);
-				$config->options[constant($key)] = $value;
+				$config->options[$this->resolveConstant($key, "$name.options")] = $value;
 			}
 		}
 
@@ -126,5 +126,16 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 			$builder->addAlias("nette.database.$name", $this->prefix($name));
 			$builder->addAlias("nette.database.$name.context", $this->prefix("$name.explorer"));
 		}
+	}
+
+
+	/** @throws Nette\DI\InvalidConfigurationException */
+	private function resolveConstant(string $name, string $path): mixed
+	{
+		if (!defined($name)) {
+			throw new Nette\DI\InvalidConfigurationException("Unknown constant '$name' in the '{$this->prefix($path)}' option.");
+		}
+
+		return constant($name);
 	}
 }

@@ -12,7 +12,7 @@ use Nette;
 use Nette\Utils\Arrays;
 use PDO;
 use PDOException;
-use function str_replace, ucfirst;
+use function func_get_args;
 
 
 /**

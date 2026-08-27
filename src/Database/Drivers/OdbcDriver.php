@@ -8,7 +8,6 @@
 namespace Nette\Database\Drivers;
 
 use Nette;
-use function preg_replace, str_replace, strtr;
 
 
 /**

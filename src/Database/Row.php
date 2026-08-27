@@ -8,7 +8,7 @@
 namespace Nette\Database;
 
 use Nette;
-use function array_keys, array_map, array_slice, current, is_int, strval;
+use function array_slice, is_int, strval;
 
 
 /**

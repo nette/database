@@ -8,7 +8,7 @@
 namespace Nette\Database\Drivers;
 
 use Nette;
-use function in_array, str_replace;
+use function in_array;
 
 
 /**

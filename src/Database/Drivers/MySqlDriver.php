@@ -8,7 +8,7 @@
 namespace Nette\Database\Drivers;
 
 use Nette;
-use function addcslashes, array_change_key_case, array_values, in_array, str_replace, strtoupper, substr;
+use function in_array;
 
 
 /**

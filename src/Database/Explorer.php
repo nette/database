@@ -10,7 +10,6 @@ namespace Nette\Database;
 use JetBrains\PhpStorm\Language;
 use Nette;
 use Nette\Database\Conventions\StaticConventions;
-use function class_exists;
 
 
 /**

@@ -1,3 +1,49 @@
-/vendor
-/composer.lock
-tests/lock
+```
+# Compiled and binary files
+*.pyc
+__pycache__/
+*.o
+*.obj
+*.exe
+*.dll
+*.so
+*.a
+*.out
+
+# Dependencies
+node_modules/
+venv/
+.venv/
+.env
+.env.local
+*.env.*
+
+# Build artifacts
+dist/
+build/
+target/
+
+# Logs and temporary files
+*.log
+*.tmp
+*.swp
+*.swo
+
+# Coverage reports
+coverage/
+htmlcov/
+.coverage
+
+# IDE files
+.vscode/
+.idea/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Cache directories
+.mypy_cache/
+.pytest_cache/
+.gradle/
+```

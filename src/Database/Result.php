@@ -210,9 +210,10 @@ class Result implements \IteratorAggregate
 		$converter = $this->explorer->getTypeConverter();
 		$this->meta ??= $this->getColumnsMeta();
 		foreach ($row as $key => $value) {
-			$row[$key] = isset($value, $this->meta[$key])
-				? $engine->convertToPhp($value, $this->meta[$key], $converter)
-				: $value;
+			// Use strict comparison to handle null values correctly
+			if ($value !== null && isset($this->meta[$key])) {
+				$row[$key] = $engine->convertToPhp($value, $this->meta[$key], $converter);
+			}
 		}
 		return $row;
 	}

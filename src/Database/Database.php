@@ -77,7 +77,7 @@ class Database
 		$args = array_diff_key($params, array_flip(self::TypeConverterOptions));
 		$explorer = new self(new $class(...$args));
 		array_map(fn($opt) => isset($params[$opt]) && ($explorer->typeConverter->$opt = (bool) $params[$opt]), self::TypeConverterOptions);
-		$this->autoCommit = (bool) ($params['autoCommit'] ?? true);
+		$explorer->autoCommit = (bool) ($params['autoCommit'] ?? true);
 		return $explorer;
 	}
 
@@ -337,13 +337,13 @@ class Database
 
 	public function createSavepoint(int $level): void
 	{
-		$this->query('SAVEPOINT LEVEL' . $level); // TODO: to driver, logOperation
+		$this->logOperation($this->connection->createSavepoint(...), new SqlLiteral('SAVEPOINT LEVEL' . $level));
 	}
 
 
 	public function releaseSavepoint(int $level): void
 	{
-		$this->query('RELEASE SAVEPOINT LEVEL' . $level);
+		$this->logOperation($this->connection->releaseSavepoint(...), new SqlLiteral('RELEASE SAVEPOINT LEVEL' . $level));
 	}
 
 

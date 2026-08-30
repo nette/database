@@ -495,6 +495,12 @@ class SqlBuilder
 			$chain = $this->aliases[$tableName];
 		}
 
+		// Sanitize alias to prevent SQL injection
+		$sanitizedAlias = preg_replace('#[^a-zA-Z0-9_]#', '_', $tableName);
+		if ($sanitizedAlias !== $tableName) {
+			throw new Nette\InvalidArgumentException("Table alias '$tableName' contains invalid characters.");
+		}
+
 		if (isset($this->reservedTableNames[$tableName])) {
 			if ($this->reservedTableNames[$tableName] === $chain) {
 				return;

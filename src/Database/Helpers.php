@@ -188,6 +188,20 @@ class Helpers
 
 
 	/**
+	 * Formats a float as a string without losing precision. INF and NAN are passed through,
+	 * it is up to the engine whether it accepts them.
+	 * @internal
+	 */
+	public static function formatFloat(float $value): string
+	{
+		$res = (string) $value; // locale-independent, but honours the precision ini and may round the value
+		return is_finite($value) && (float) $res !== $value
+			? str_replace(',', '.', sprintf('%.17G', $value)) // 17 digits always survive the round-trip, but %G is locale-aware
+			: $res;
+	}
+
+
+	/**
 	 * Maps a native column type string to an IStructure::FIELD_* constant.
 	 * @internal
 	 */

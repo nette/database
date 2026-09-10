@@ -26,6 +26,8 @@ class ResultSet implements \Iterator, IRowContainer
 
 	/** @var list<Row> */
 	private array $rows;
+	/** @var list<array> */
+	private array $rowsArray;
 	private float $time;
 
 	/** @var array<string, string> column name => type */
@@ -286,5 +288,24 @@ class ResultSet implements \Iterator, IRowContainer
 	{
 		$this->rows ??= iterator_to_array($this, preserve_keys: false);
 		return $this->rows;
+	}
+
+
+	/**
+	 * Returns all remaining rows as array of arrays.
+	 * Useful because the rows can be typed using @var
+	 * @return list<array>
+	 */
+	public function fetchAllArray(): array
+	{
+		if(!isset($this->rowsArray)){
+			$this->rowsArray = [];
+			while(true){
+				$data = $this->fetchAssoc();
+				if($data === null) break;
+				$this->rowsArray[] = $data;
+			}
+		}
+		return $this->rowsArray;
 	}
 }

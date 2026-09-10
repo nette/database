@@ -422,6 +422,18 @@ class Connection
 
 
 	/**
+	 * Executes SQL query and returns all rows as an array of arrays.
+	 * Useful because the rows can be typed using @var.
+	 * @param  literal-string  $sql
+	 * @return list<array>
+	 */
+	public function fetchAllArray(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): array
+	{
+		return $this->query($sql, ...$params)->fetchAllArray();
+	}
+
+
+	/**
 	 * Creates SQL literal value.
 	 */
 	public static function literal(string $value, mixed ...$params): SqlLiteral

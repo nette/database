@@ -17,11 +17,17 @@ test('Exception thrown for invalid database credentials', function () {
 	$e = Assert::exception(
 		fn() => new Nette\Database\Connection($options['dsn'], 'unknown', 'unknown'),
 		Nette\Database\ConnectionException::class,
-		'%a% Access denied for user %a%',
 	);
 
-	Assert::same(1045, $e->getDriverCode());
-	Assert::contains($e->getSqlState(), ['HY000', '28000']);
+	if ($e->getDriverCode() === 1524) {
+		// MySQL 8.4+ dropped mysql_native_password and rejects unknown users with a missing-plugin error instead of access denied
+		Assert::contains('mysql_native_password', $e->getMessage());
+	} else {
+		Assert::match('%a% Access denied for user %a%', $e->getMessage());
+		Assert::same(1045, $e->getDriverCode());
+		Assert::contains($e->getSqlState(), ['HY000', '28000']);
+	}
+
 	Assert::same($e->getCode(), $e->getSqlState());
 });
 

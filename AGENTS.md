@@ -13,6 +13,12 @@ Two independent worlds - the low-level core and the Explorer (ActiveRow) layer -
 each with sharp edges (lazy execution, accessed-column narrowing, N+1 batching,
 context-detected preprocessor modes). Read `docs/internals/` before touching them.
 
+`docs/upgrading.md` records, per released version, every change visible to
+users of the package (renames, removals, deprecations, signatures, behavior,
+configuration), each with its commit hash; internal changes are not in it. It
+is the place to look up the history of a public symbol. Do not write to it; it
+is extended at release time from the git history.
+
 ## Project Overview
 
 **Nette Database** is a database abstraction layer offering two components:

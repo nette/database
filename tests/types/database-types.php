@@ -112,6 +112,12 @@ function testResultSetFetchAll(ResultSet $resultSet): void
 }
 
 
+function testResultSetFetchAllAssoc(ResultSet $resultSet): void
+{
+	assertType('list<array>', $resultSet->fetchAllAssoc());
+}
+
+
 function testResultSetFetchPairs(ResultSet $resultSet): void
 {
 	assertType('array<mixed>', $resultSet->fetchPairs());

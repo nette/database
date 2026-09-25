@@ -8,11 +8,11 @@
 namespace Nette\Bridges\DatabaseDI;
 
 use Nette;
+use Nette\Database\Table\ActiveRow;
 use Nette\DI\Definitions\Statement;
 use Nette\Schema\Expect;
 use Tracy;
 use function is_array, is_string;
-use Nette\Database\Table\ActiveRow;
 
 
 /**

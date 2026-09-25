@@ -23,6 +23,9 @@ class Result implements \IteratorAggregate
 	/** @var list<Row> */
 	private array $rows;
 
+	/** @var list<array> */
+	private array $rowsArray;
+
 	/** @var array<string, array{name: string, nativeType: string, table?: string}> */
 	private array $meta;
 
@@ -201,6 +204,25 @@ class Result implements \IteratorAggregate
 	public function fetchAll(): array
 	{
 		return $this->rows ??= iterator_to_array($this);
+	}
+
+
+	/**
+	 * Returns all remaining rows as array of associative arrays.
+	 * Useful because the rows can be typed using @var.
+	 * @return list<array>
+	 */
+	public function fetchAllAssoc(): array
+	{
+		if(!isset($this->rowsArray)){
+			$this->rowsArray = [];
+			while(true){
+				$data = $this->fetchAssoc();
+				if($data === null) break;
+				$this->rowsArray[] = $data;
+			}
+		}
+		return $this->rowsArray;
 	}
 
 

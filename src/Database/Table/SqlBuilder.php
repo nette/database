@@ -17,7 +17,6 @@ use function count, is_array, strlen;
  */
 class SqlBuilder
 {
-	protected readonly string $tableName;
 	protected readonly Conventions $conventions;
 	protected readonly string $delimitedTable;
 
@@ -66,9 +65,10 @@ class SqlBuilder
 	private array $expandingJoins = [];
 
 
-	public function __construct(string $tableName, Explorer $explorer)
-	{
-		$this->tableName = $tableName;
+	public function __construct(
+		protected readonly string $tableName,
+		Explorer $explorer,
+	) {
 		$this->driver = $explorer->getConnection()->getDriver();
 		$this->conventions = $explorer->getConventions();
 		$this->structure = $explorer->getStructure();
@@ -211,14 +211,14 @@ class SqlBuilder
 			$this->buildSelectQuery();
 		}
 
-		return array_values(array_merge(
-			$this->parameters['select'],
-			$this->parameters['joinConditionSorted'] ? array_merge(...array_values($this->parameters['joinConditionSorted'])) : [],
-			$this->parameters['where'],
-			$this->parameters['group'],
-			$this->parameters['having'],
-			$this->parameters['order'],
-		));
+		return array_values([
+			...$this->parameters['select'],
+			...$this->parameters['joinConditionSorted'] ? array_merge(...array_values($this->parameters['joinConditionSorted'])) : [],
+			...$this->parameters['where'],
+			...$this->parameters['group'],
+			...$this->parameters['having'],
+			...$this->parameters['order'],
+		]);
 	}
 
 
@@ -263,7 +263,7 @@ class SqlBuilder
 	public function addSelect(string $columns, mixed ...$params): void
 	{
 		$this->select[] = $columns;
-		$this->parameters['select'] = array_merge($this->parameters['select'], $params);
+		$this->parameters['select'] = [...$this->parameters['select'], ...$params];
 	}
 
 
@@ -410,7 +410,11 @@ class SqlBuilder
 
 					$arg = null;
 					$subSelectPlaceholderCount = substr_count($clone->getSql(), '?');
-					$replace = $match[2][0] . '(' . $clone->getSql() . (!$subSelectPlaceholderCount && count($clone->getSqlBuilder()->getParameters()) === 1 ? ' ?' : '') . ')';
+					$replace = $match[2][0]
+						. '('
+						. $clone->getSql()
+						. (!$subSelectPlaceholderCount && count($clone->getSqlBuilder()->getParameters()) === 1 ? ' ?' : '')
+						. ')';
 					if (count($clone->getSqlBuilder()->getParameters())) {
 						array_unshift($params, ...$clone->getSqlBuilder()->getParameters());
 					}
@@ -508,7 +512,7 @@ class SqlBuilder
 	public function addOrder(string $columns, mixed ...$params): void
 	{
 		$this->order[] = $columns;
-		$this->parameters['order'] = array_merge($this->parameters['order'], $params);
+		$this->parameters['order'] = [...$this->parameters['order'], ...$params];
 	}
 
 
@@ -606,19 +610,23 @@ class SqlBuilder
 			$tableAlias = substr($fooQuery, 0, -4);
 			$tableJoins[$tableAlias] = $requiredJoins;
 			$leftJoinDependency[$tableAlias] = [];
-			$finalJoinConditions[$tableAlias] = preg_replace_callback($this->getColumnChainsRegxp(), function (array $match) use ($tableAlias, &$tableJoins, &$leftJoinDependency): string {
-				$requiredJoins = [];
-				$query = $this->parseJoinsCb($requiredJoins, $match);
-				$queryParts = explode('.', $query);
-				$tableJoins[$queryParts[0]] = $requiredJoins;
-				if ($queryParts[0] !== $tableAlias) {
-					foreach (array_keys($requiredJoins) as $requiredTable) {
-						$leftJoinDependency[$tableAlias][$requiredTable] = $requiredTable;
+			$finalJoinConditions[$tableAlias] = preg_replace_callback(
+				$this->getColumnChainsRegxp(),
+				function (array $match) use ($tableAlias, &$tableJoins, &$leftJoinDependency): string {
+					$requiredJoins = [];
+					$query = $this->parseJoinsCb($requiredJoins, $match);
+					$queryParts = explode('.', $query);
+					$tableJoins[$queryParts[0]] = $requiredJoins;
+					if ($queryParts[0] !== $tableAlias) {
+						foreach (array_keys($requiredJoins) as $requiredTable) {
+							$leftJoinDependency[$tableAlias][$requiredTable] = $requiredTable;
+						}
 					}
-				}
 
-				return $query;
-			}, $joinCondition);
+					return $query;
+				},
+				$joinCondition,
+			);
 		}
 
 		$this->parameters['joinConditionSorted'] = [];
@@ -647,7 +655,7 @@ class SqlBuilder
 		if (isset($this->expandingJoins[$table])) {
 			$path = implode("' => '", array_map(
 				fn(string $value): string => $this->reservedTableNames[$value],
-				array_merge(array_keys($this->expandingJoins), [$table]),
+				[...array_keys($this->expandingJoins), $table],
 			));
 			throw new Nette\InvalidArgumentException("Circular reference detected at left join conditions (tables '$path').");
 		}
@@ -839,9 +847,9 @@ class SqlBuilder
 		$return = '';
 		foreach ($joins as [$joinTable, $joinAlias, $table, $tableColumn, $joinColumn]) {
 			$return .=
-				" LEFT JOIN {$joinTable}" . ($joinTable !== $joinAlias ? " {$joinAlias}" : '') .
-				" ON {$table}.{$tableColumn} = {$joinAlias}.{$joinColumn}" .
-				(isset($leftJoinConditions[$joinAlias]) ? " {$leftJoinConditions[$joinAlias]}" : '');
+				" LEFT JOIN {$joinTable}" . ($joinTable !== $joinAlias ? " {$joinAlias}" : '')
+				. " ON {$table}.{$tableColumn} = {$joinAlias}.{$joinColumn}"
+				. (isset($leftJoinConditions[$joinAlias]) ? " {$leftJoinConditions[$joinAlias]}" : '');
 		}
 
 		return $return;

@@ -124,7 +124,7 @@ class MsSqlDriver implements Nette\Database\Driver
 
 	public function getColumns(string $table): array
 	{
-		[$table_schema, $table_name] = explode('.', $table);
+		[$tableSchema, $tableName] = explode('.', $table);
 		$columns = [];
 
 		$rows = $this->connection->query(<<<'X'
@@ -146,7 +146,7 @@ class MsSqlDriver implements Nette\Database\Driver
 			WHERE
 				c.TABLE_SCHEMA = ?
 				AND c.TABLE_NAME = ?
-			X, $table_schema, $table_name);
+			X, $tableSchema, $tableName);
 
 		while ($row = $rows->fetch()) {
 			$columns[] = [
@@ -170,7 +170,7 @@ class MsSqlDriver implements Nette\Database\Driver
 
 	public function getIndexes(string $table): array
 	{
-		[, $table_name] = explode('.', $table);
+		[, $tableName] = explode('.', $table);
 		$indexes = [];
 
 		$rows = $this->connection->query(<<<'X'
@@ -188,7 +188,7 @@ class MsSqlDriver implements Nette\Database\Driver
 				t.name = ?
 			ORDER BY
 				ind.name, ic.index_column_id
-			X, $table_name);
+			X, $tableName);
 
 		while ($row = $rows->fetch()) {
 			$id = (string) $row['name'];
@@ -207,7 +207,7 @@ class MsSqlDriver implements Nette\Database\Driver
 
 	public function getForeignKeys(string $table): array
 	{
-		[$table_schema, $table_name] = explode('.', $table);
+		[$tableSchema, $tableName] = explode('.', $table);
 		$keys = [];
 
 		$rows = $this->connection->query(<<<'X'
@@ -232,13 +232,13 @@ class MsSqlDriver implements Nette\Database\Driver
 					ON col2.column_id = referenced_column_id AND col2.object_id = tab2.object_id
 			WHERE
 				tab1.name = ?
-			X, $table_name);
+			X, $tableName);
 
 		while ($row = $rows->fetch()) {
 			$keys[] = [
 				'name' => (string) $row['name'],
 				'local' => (string) $row['local'],
-				'table' => $table_schema . '.' . $row['table'],
+				'table' => $tableSchema . '.' . $row['table'],
 				'foreign' => (string) $row['foreign'],
 			];
 		}

@@ -122,7 +122,7 @@ Assert::same([
 $res = $connection->query('SELECT `int` AS a, `char` AS a FROM types');
 Assert::same([
 	'a' => 'a',
-], (array) @$res->fetch());
+], (array) @$res->fetch()); // @ duplicate columns trigger a notice
 
 
 $res = $connection->query('SELECT sec_to_time(avg(time_to_sec(`time`))) AS `avg_time` FROM `avgs`');

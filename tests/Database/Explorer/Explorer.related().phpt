@@ -53,9 +53,12 @@ test('various related method usages', function () use ($explorer) {
 test('group by multiple columns in relation', function () use ($explorer) {
 	$tagsAuthors = [];
 	foreach ($explorer->table('tag') as $tag) {
-		$book_tags = $tag->related('book_tag')->group('book_tag.tag_id, book.author_id, book.author.name')->select('book.author_id')->order('book.author.name');
-		foreach ($book_tags as $book_tag) {
-			$tagsAuthors[$tag->name][] = $book_tag->ref('author', 'author_id')->name;
+		$bookTags = $tag->related('book_tag')
+			->group('book_tag.tag_id, book.author_id, book.author.name')
+			->select('book.author_id')
+			->order('book.author.name');
+		foreach ($bookTags as $bookTag) {
+			$tagsAuthors[$tag->name][] = $bookTag->ref('author', 'author_id')->name;
 		}
 	}
 
@@ -95,5 +98,5 @@ test('conditional related entry fetching', function () use ($explorer) {
 
 	Assert::same('1001 tipu a triku pro PHP', $author->related('book')->fetch()->title);
 
-	Assert::same('JUSH', $author->related('book', null)->where('translator_id', null)->fetch()->title);
+	Assert::same('JUSH', $author->related('book')->where('translator_id', null)->fetch()->title);
 });

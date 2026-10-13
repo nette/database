@@ -42,14 +42,15 @@ test('Exception thrown for SERIALIZABLE serialization failure', function () use 
 			null,
 			'40001',
 		);
+
 	} finally {
 		try {
 			$connection->rollBack();
-		} catch (\Throwable) {
+		} catch (Throwable) {
 		}
 		try {
 			$other->rollBack();
-		} catch (\Throwable) {
+		} catch (Throwable) {
 		}
 		$connection->query('DROP TABLE IF EXISTS serial_test');
 	}

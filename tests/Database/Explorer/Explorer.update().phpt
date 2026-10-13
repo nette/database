@@ -86,11 +86,11 @@ if ($driverName !== 'sqlsrv') {
 }
 
 
-$book_tag = $explorer->table('book_tag')->get([
+$bookTag2 = $explorer->table('book_tag')->get([
 	'book_id' => 5,
 	'tag_id' => 25,
 ]);  // SELECT * FROM `book_tag` WHERE (`book_id` = (?) AND `tag_id` = (?))
-$book_tag->update(new ArrayIterator([
+$bookTag2->update(new ArrayIterator([
 	'tag_id' => 21,
 ]));  // UPDATE `book_tag` SET `tag_id`=21 WHERE (`book_id` = (?) AND `tag_id` = (?))
-Assert::same(21, $book_tag->tag_id);
+Assert::same(21, $bookTag2->tag_id);

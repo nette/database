@@ -128,7 +128,7 @@ Assert::same([
 $res = $connection->query('SELECT "integer" AS a, "text" AS a FROM types');
 Assert::same([
 	'a' => 'a',
-], (array) @$res->fetch());
+], (array) @$res->fetch()); // @ duplicate columns trigger a notice
 
 
 $res = $connection->query('SELECT SUM("integer") AS int_sum, AVG("integer") AS int_avg, SUM("double") AS float_sum, AVG("double") AS float_avg FROM types WHERE "integer" = 1 GROUP BY "integer"');

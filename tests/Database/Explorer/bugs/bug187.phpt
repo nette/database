@@ -26,7 +26,7 @@ foreach ([true, false] as $published) {
 		/** @var ActiveRow $photoRow */
 		$related = $photoRow->related('PhotoNonPublic');
 
-		if ($related->count() != 0) {
+		if ($related->count() !== 0) {
 			$related->fetch()->toArray();
 		}
 	}

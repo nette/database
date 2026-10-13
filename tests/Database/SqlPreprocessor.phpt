@@ -137,7 +137,10 @@ test('Auto-detects operator in WHERE conditions', function () use ($preprocessor
 		'col_arr NOT' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM tbl WHERE (([col_null] IS NOT NULL) AND ([x].[col_val] != ?) AND ([col_arr] NOT IN (1, 2)))'), $sql);
+	Assert::same(
+		reformat('SELECT id FROM tbl WHERE (([col_null] IS NOT NULL) AND ([x].[col_val] != ?) AND ([col_arr] NOT IN (1, 2)))'),
+		$sql,
+	);
 });
 
 
@@ -151,7 +154,10 @@ test('Supports explicit operators in WHERE conditions', function () use ($prepro
 		'col_arr =' => [1, 2],
 	]]);
 
-	Assert::same(reformat('SELECT id FROM tbl WHERE (([col_is] = ?) AND ([col_not] <> ?) AND ([col_like] LIKE ?) AND ([col_like] NOT LIKE ?) AND ([col_null] = NULL) AND ([col_arr] = (1, 2)))'), $sql);
+	Assert::same(
+		reformat('SELECT id FROM tbl WHERE (([col_is] = ?) AND ([col_not] <> ?) AND ([col_like] LIKE ?) AND ([col_like] NOT LIKE ?) AND ([col_null] = NULL) AND ([col_arr] = (1, 2)))'),
+		$sql,
+	);
 });
 
 
@@ -241,7 +247,9 @@ test('WHERE conditions with indexed items', function () use ($preprocessor) {
 
 
 test('Combines WHERE conditions with array & direct SQL', function () use ($preprocessor) {
-	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE id=?', 10, 'AND ?and', ['c1' => null, 'c2' => 2], 'AND ?or', ['c3' => null, 'c4' => 4]]);
+	[$sql, $params] = $preprocessor->process([
+		'SELECT id FROM tbl WHERE id=?', 10, 'AND ?and', ['c1' => null, 'c2' => 2], 'AND ?or', ['c3' => null, 'c4' => 4],
+	]);
 	Assert::same(reformat('SELECT id FROM tbl WHERE id=? AND (([c1] IS NULL) AND ([c2] = ?)) AND (([c3] IS NULL) OR ([c4] = ?))'), $sql);
 	Assert::same([10, 2, 4], $params);
 });
@@ -429,8 +437,7 @@ test('date and time value formatting', function () use ($preprocessor, $driverNa
 
 test('INSERT query with single row', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['INSERT INTO author',
-		['name' => 'Catelyn Stark', 'born' => new DateTime('2011-11-11')],
-	]);
+		['name' => 'Catelyn Stark', 'born' => new DateTime('2011-11-11')]]);
 
 	Assert::same(reformat([
 		'sqlite' => 'INSERT INTO author ([name], [born]) VALUES (?, 1320966000)',
@@ -440,20 +447,17 @@ test('INSERT query with single row', function () use ($preprocessor) {
 	Assert::same(['Catelyn Stark'], $params);
 
 	[$sql, $params] = $preprocessor->process(["\r\n  INSERT INTO author",
-		['name' => 'Catelyn Stark'],
-	]);
+		['name' => 'Catelyn Stark']]);
 	Assert::same(reformat("\r\n  INSERT INTO author ([name]) VALUES (?)"), $sql);
 	Assert::same(['Catelyn Stark'], $params);
 
 	[$sql, $params] = $preprocessor->process(['REPLACE author ?',
-		['name' => 'Catelyn Stark'],
-	]);
+		['name' => 'Catelyn Stark']]);
 	Assert::same(reformat('REPLACE author ([name]) VALUES (?)'), $sql);
 	Assert::same(['Catelyn Stark'], $params);
 
 	[$sql, $params] = $preprocessor->process(['/* comment */  INSERT INTO author',
-		['name' => 'Catelyn Stark'],
-	]);
+		['name' => 'Catelyn Stark']]);
 	Assert::same(reformat("/* comment */  INSERT INTO author [name]='Catelyn Stark'"), $sql); // autodetection not used
 	Assert::same([], $params);
 });
@@ -461,8 +465,7 @@ test('INSERT query with single row', function () use ($preprocessor) {
 
 test('?values placeholder in INSERT', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['INSERT INTO update ?values',
-		['name' => 'Catelyn Stark'],
-	]);
+		['name' => 'Catelyn Stark']]);
 
 	Assert::same(reformat('INSERT INTO update ([name]) VALUES (?)'), $sql);
 	Assert::same(['Catelyn Stark'], $params);
@@ -549,20 +552,17 @@ test('UPDATE query with multiple columns', function () use ($preprocessor) {
 	Assert::same([12, 'John Doe', 'John', 'DOE'], $params);
 
 	[$sql, $params] = $preprocessor->process(["UPDATE author SET \n",
-		['id' => 12, 'name' => 'John Doe'],
-	]);
+		['id' => 12, 'name' => 'John Doe']]);
 	Assert::same(reformat("UPDATE author SET \n [id]=?, [name]=?"), $sql);
 	Assert::same([12, 'John Doe'], $params);
 
 	[$sql, $params] = $preprocessor->process(['UPDATE author SET',
-		['id' => 12, 'name' => 'John Doe'],
-	]);
+		['id' => 12, 'name' => 'John Doe']]);
 	Assert::same(reformat('UPDATE author SET [id]=?, [name]=?'), $sql);
 	Assert::same([12, 'John Doe'], $params);
 
 	[$sql, $params] = $preprocessor->process(['UPDATE author SET a=1,',
-		['id' => 12, 'name' => 'John Doe'],
-	]);
+		['id' => 12, 'name' => 'John Doe']]);
 	Assert::same(reformat('UPDATE author SET a=1, [id]=?, [name]=?'), $sql);
 	Assert::same([12, 'John Doe'], $params);
 });
@@ -570,8 +570,7 @@ test('UPDATE query with multiple columns', function () use ($preprocessor) {
 
 test('?set placeholder in UPDATE', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['UPDATE insert SET ?set',
-		['id' => 12, 'name' => 'John Doe'],
-	]);
+		['id' => 12, 'name' => 'John Doe']]);
 
 	Assert::same(reformat('UPDATE insert SET [id]=?, [name]=?'), $sql);
 	Assert::same([12, 'John Doe'], $params);
@@ -580,8 +579,7 @@ test('?set placeholder in UPDATE', function () use ($preprocessor) {
 
 test('increment/decrement operators in UPDATE', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['UPDATE author SET ?',
-		['id+=' => 1, 'id-=' => -1],
-	]);
+		['id+=' => 1, 'id-=' => -1]]);
 
 	Assert::same(reformat('UPDATE author SET [id]=[id] + ?, [id]=[id] - ?'), $sql);
 	Assert::same([1, -1], $params);
@@ -591,8 +589,7 @@ test('increment/decrement operators in UPDATE', function () use ($preprocessor) 
 test('INSERT with ON DUPLICATE KEY UPDATE', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['INSERT INTO author ? ON DUPLICATE KEY UPDATE ?',
 		['id' => 12, 'name' => 'John Doe'],
-		['web' => 'http://nette.org', 'name' => 'Dave Lister'],
-	]);
+		['web' => 'http://nette.org', 'name' => 'Dave Lister']]);
 
 	Assert::same(reformat('INSERT INTO author ([id], [name]) VALUES (?, ?) ON DUPLICATE KEY UPDATE [web]=?, [name]=?'), $sql);
 	Assert::same([12, 'John Doe', 'http://nette.org', 'Dave Lister'], $params);

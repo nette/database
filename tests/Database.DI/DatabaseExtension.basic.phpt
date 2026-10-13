@@ -8,7 +8,6 @@ use Nette\Bridges\DatabaseDI\DatabaseExtension;
 use Nette\DI;
 use Tester\Assert;
 
-
 require __DIR__ . '/../bootstrap.php';
 
 
@@ -28,7 +27,7 @@ test('', function () {
 	', 'neon'));
 
 	$compiler = new DI\Compiler;
-	$compiler->addExtension('database', new DatabaseExtension(false));
+	$compiler->addExtension('database', new DatabaseExtension);
 	eval($compiler->addConfig($config)->setClassName('Container1')->compile());
 
 	$container = new Container1;

@@ -46,7 +46,6 @@ class SqlPreprocessor
 		'EXPLAIN' => 1,
 	];
 
-	private readonly Connection $connection;
 	private readonly Driver $driver;
 
 	/** @var list<mixed> */
@@ -61,9 +60,9 @@ class SqlPreprocessor
 	private ?string $arrayMode;
 
 
-	public function __construct(Connection $connection)
-	{
-		$this->connection = $connection;
+	public function __construct(
+		private readonly Connection $connection,
+	) {
 		$this->driver = $connection->getDriver();
 	}
 
@@ -167,7 +166,9 @@ class SqlPreprocessor
 
 		return match ($mode) {
 			null => $this->formatValue($value),
-			self::ModeValues => array_key_exists(0, $check($value, 'iterable')) ? $this->formatMultiInsert($value) : $this->formatInsert($value),
+			self::ModeValues => array_key_exists(0, $check($value, 'iterable'))
+				? $this->formatMultiInsert($value)
+				: $this->formatInsert($value),
 			self::ModeSet => $this->formatSet($check($value, 'iterable')),
 			self::ModeList => $this->formatList($check($value, 'iterable')),
 			self::ModeAnd, self::ModeOr => $this->formatWhere($check($value, 'iterable'), $mode),
@@ -201,7 +202,7 @@ class SqlPreprocessor
 			$value instanceof \DateInterval => $this->driver->formatDateInterval($value),
 			$value instanceof \BackedEnum => $this->formatValue($value->value),
 			$value instanceof \Stringable => $this->formatValue((string) $value),
-			default => throw new Nette\InvalidArgumentException('Unexpected type of parameter: ' . get_debug_type($value))
+			default => throw new Nette\InvalidArgumentException('Unexpected type of parameter: ' . get_debug_type($value)),
 		};
 	}
 
@@ -311,7 +312,12 @@ class SqlPreprocessor
 			if (is_array($v)) {
 				$kind = ['' => true, 'IN' => true, 'NOT' => false, 'NOT IN' => false][$operator] ?? null;
 				if ($v || $kind === null) {
-					$res[] = $k . ' ' . ($kind === null ? $operator : ($kind ? 'IN' : 'NOT IN')) . ' (' . $this->formatList(array_values($v)) . ')';
+					$res[] = $k
+						. ' '
+						. ($kind === null ? $operator : ($kind ? 'IN' : 'NOT IN'))
+						. ' ('
+						. $this->formatList(array_values($v))
+						. ')';
 
 				} else {
 					$default = $kind ? '1=0' : '1=1';

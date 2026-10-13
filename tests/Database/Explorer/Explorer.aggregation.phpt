@@ -54,8 +54,8 @@ test('having clause with group by', function () use ($explorer) {
 test('distinct count in related aggregation', function () use ($explorer) {
 	$bookTags = [];
 	foreach ($explorer->table('book') as $book) {
-		$book_tags = $book->related('book_tag');
-		$bookTags[$book->title] = $book_tags->count('DISTINCT tag.id');
+		$related = $book->related('book_tag');
+		$bookTags[$book->title] = $related->count('DISTINCT tag.id');
 	}
 
 	Assert::same([
@@ -70,8 +70,8 @@ test('distinct count in related aggregation', function () use ($explorer) {
 test('filtering groups by related count', function () use ($explorer) {
 	$bookTags = [];
 	foreach ($explorer->table('book')->group('book.id, book.title')->having('COUNT(DISTINCT :book_tag.tag_id) < 2') as $book) {
-		$book_tags = $book->related('book_tag');
-		$bookTags[$book->title] = $book_tags->count('DISTINCT tag.id');
+		$related = $book->related('book_tag');
+		$bookTags[$book->title] = $related->count('DISTINCT tag.id');
 	}
 
 	Assert::same([

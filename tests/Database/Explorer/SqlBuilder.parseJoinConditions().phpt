@@ -83,14 +83,14 @@ test('combine join conditions with extra filters and parameters', function () us
 
 	if ($driver->isSupported(Driver::SupportSchema)) {
 		Assert::same(
-			'LEFT JOIN book ON author.id = book.translator_id AND (book.id > ?) ' .
-			'LEFT JOIN public.book_tag_alt book_tag_alt ON book.id = book_tag_alt.book_id AND (book_tag_alt.state = ?)',
+			'LEFT JOIN book ON author.id = book.translator_id AND (book.id > ?) '
+			. 'LEFT JOIN public.book_tag_alt book_tag_alt ON book.id = book_tag_alt.book_id AND (book_tag_alt.state = ?)',
 			trim($join),
 		);
 	} else {
 		Assert::same(
-			'LEFT JOIN book ON author.id = book.translator_id AND (book.id > ?) ' .
-			'LEFT JOIN book_tag_alt ON book.id = book_tag_alt.book_id AND (book_tag_alt.state = ?)',
+			'LEFT JOIN book ON author.id = book.translator_id AND (book.id > ?) '
+			. 'LEFT JOIN book_tag_alt ON book.id = book_tag_alt.book_id AND (book_tag_alt.state = ?)',
 			trim($join),
 		);
 	}

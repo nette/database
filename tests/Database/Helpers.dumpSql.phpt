@@ -50,7 +50,10 @@ test('string check without connection', function () {
 
 
 test('string compare with $connection vs without', function () use ($connection) {
-	Assert::notSame(Nette\Database\Helpers::dumpSql('SELECT id FROM author WHERE name = ?', ["Alexej Ch'ruščev"], $connection), Nette\Database\Helpers::dumpSql('SELECT id FROM author WHERE name = ?', ["Alexej Ch'ruščev"]));
+	Assert::notSame(
+		Nette\Database\Helpers::dumpSql('SELECT id FROM author WHERE name = ?', ["Alexej Ch'ruščev"], $connection),
+		Nette\Database\Helpers::dumpSql('SELECT id FROM author WHERE name = ?', ["Alexej Ch'ruščev"]),
+	);
 });
 
 test('string check with \'', function () use ($connection) {

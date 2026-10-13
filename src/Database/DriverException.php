@@ -8,7 +8,6 @@
 namespace Nette\Database;
 
 
-
 /**
  * Base class for all errors in the driver or SQL server.
  */

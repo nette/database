@@ -59,7 +59,7 @@ if ($driverName !== 'sqlsrv') {
 		'mysql' => $explorer->table('author')->select('NULL, id, NULL, CONCAT(?, name), NULL', 'Biography: '),
 		'pgsql' => $explorer->table('author')->select('nextval(?), id, NULL, ? || name, NULL', 'book_id_seq', 'Biography: '),
 		'sqlite' => $explorer->table('author')->select('NULL, id, NULL, ? || name, NULL', 'Biography: '),
-		//'sqlsrv' => $explorer->table('author')->select('id, NULL, CONCAT(?, name), NULL', 'Biography: '),
+		// 'sqlsrv' => $explorer->table('author')->select('id, NULL, CONCAT(?, name), NULL', 'Biography: '),
 		default => Assert::fail("Unsupported driver $driverName"),
 	};
 

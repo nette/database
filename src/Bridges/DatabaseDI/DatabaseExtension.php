@@ -39,8 +39,8 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 				'autowired' => Expect::bool(),
 			]),
 		)->before(fn($val) => is_array(reset($val)) || reset($val) === null
-				? $val
-				: ['default' => $val]);
+			? $val
+			: ['default' => $val]);
 	}
 
 
@@ -88,41 +88,35 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		}
 
 		$connection = $builder->addDefinition($this->prefix("$name.connection"))
-			->setFactory(Nette\Database\Connection::class, [$config->dsn, $config->user, $config->password, $config->options])
+			->setCreator(Nette\Database\Connection::class, [$config->dsn, $config->user, $config->password, $config->options])
 			->setAutowired($config->autowired);
 
 		$structure = $builder->addDefinition($this->prefix("$name.structure"))
-			->setFactory(Nette\Database\Structure::class)
+			->setCreator(Nette\Database\Structure::class)
 			->setArguments([$connection])
 			->setAutowired($config->autowired);
 
 		if (!empty($config->reflection)) {
 			$conventionsServiceName = 'reflection';
 			$config->conventions = $config->reflection;
-			if (is_string($config->conventions) && strtolower($config->conventions) === 'conventional') {
+			if (strtolower($config->conventions) === 'conventional') {
 				$config->conventions = 'Static';
 			}
 		} else {
 			$conventionsServiceName = 'conventions';
 		}
 
-		if (!$config->conventions) {
-			$conventions = null;
-
-		} elseif (is_string($config->conventions)) {
-			$conventions = $builder->addDefinition($this->prefix("$name.$conventionsServiceName"))
-				->setFactory(preg_match('#^[a-z]+$#Di', $config->conventions)
+		$conventions = $config->conventions
+			? $builder->addDefinition($this->prefix("$name.$conventionsServiceName"))
+				->setCreator(preg_match('#^[a-z]+$#Di', $config->conventions)
 					? 'Nette\Database\Conventions\\' . ucfirst($config->conventions) . 'Conventions'
 					: $config->conventions)
 				->setArguments(strtolower($config->conventions) === 'discovered' ? [$structure] : [])
-				->setAutowired($config->autowired);
-
-		} else {
-			$conventions = Nette\DI\Helpers::filterArguments([$config->conventions])[0];
-		}
+				->setAutowired($config->autowired)
+			: null;
 
 		$builder->addDefinition($this->prefix("$name.explorer"))
-			->setFactory(Nette\Database\Explorer::class, [$connection, $structure, $conventions])
+			->setCreator(Nette\Database\Explorer::class, [$connection, $structure, $conventions])
 			->setAutowired($config->autowired);
 
 		$builder->addAlias($this->prefix("$name.context"), $this->prefix("$name.explorer"));

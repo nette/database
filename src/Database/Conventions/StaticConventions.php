@@ -15,14 +15,12 @@ use Nette\Database\Conventions;
  */
 class StaticConventions implements Conventions
 {
-	/**
-	 * @param  string  $primary  %s stands for table name
-	 * @param  string  $foreign  %1$s stands for key used after ->, %2$s for table name
-	 * @param  string  $table  %1$s stands for key used after ->, %2$s for table name
-	 */
 	public function __construct(
+		/** %s stands for table name */
 		protected readonly string $primary = 'id',
+		/** %1$s stands for key used after ->, %2$s for table name */
 		protected readonly string $foreign = '%s_id',
+		/** %1$s stands for key used after ->, %2$s for table name */
 		protected readonly string $table = '%s',
 	) {
 	}

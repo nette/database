@@ -35,13 +35,13 @@ class Connection
 	private int $transactionDepth = 0;
 
 
-	/** @param array<mixed> $options */
 	public function __construct(
 		private readonly string $dsn,
 		#[\SensitiveParameter]
 		private readonly ?string $user = null,
 		#[\SensitiveParameter]
 		private readonly ?string $password = null,
+		/** @var array<mixed> */
 		private readonly array $options = [],
 	) {
 		$this->rowNormalizer = !empty($options['newDateTime'])

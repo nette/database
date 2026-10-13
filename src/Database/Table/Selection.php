@@ -25,7 +25,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/** back compatibility */
 	protected Explorer $context;
-	protected readonly Conventions $conventions;
 	protected readonly ?Nette\Caching\Cache $cache;
 	protected SqlBuilder $sqlBuilder;
 
@@ -53,7 +52,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	protected ?string $generalCacheKey = null;
 	protected ?string $specificCacheKey = null;
 
-	/** @var array<string, array<int|string, Nette\Database\Row|ActiveRow>> of [conditions => [group value => row]]; used by GroupedSelection */
+	/** @var array<string, array<int|string, Nette\Database\Row|ActiveRow>> [conditions => [group value => row]] for GroupedSelection */
 	protected array $aggregation = [];
 
 	/** @var array<string, bool>|false|null column => selected */
@@ -74,12 +73,11 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function __construct(
 		Explorer $explorer,
-		Conventions $conventions,
+		protected readonly Conventions $conventions,
 		string $tableName,
 		?Nette\Caching\Storage $cacheStorage = null,
 	) {
 		$this->explorer = $this->context = $explorer;
-		$this->conventions = $conventions;
 		$this->name = $tableName;
 
 		$this->cache = $cacheStorage
@@ -381,7 +379,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 				}
 
 				$columns[] = $key;
-				$values = array_merge($values, $qNumber > 1 ? $val : [$val]);
+				$values = [...$values, ...$qNumber > 1 ? $val : [$val]];
 			}
 		}
 
@@ -815,12 +813,15 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	 */
 	public function insert(iterable $data): ActiveRow|array|int
 	{
-		//should be called before query for not to spoil PDO::lastInsertId
+		// should be called before query for not to spoil PDO::lastInsertId
 		$primarySequenceName = $this->getPrimarySequence();
 		$primaryAutoincrementKey = $this->explorer->getStructure()->getPrimaryAutoincrementKey($this->name);
 
 		if ($data instanceof self) {
-			$return = $this->explorer->query($this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(), ...$data->getSqlBuilder()->getParameters());
+			$return = $this->explorer->query(
+				$this->sqlBuilder->buildInsertQuery() . ' ' . $data->getSql(),
+				...$data->getSqlBuilder()->getParameters(),
+			);
 
 		} else {
 			if ($data instanceof \Traversable) {
@@ -847,7 +848,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 		// First check sequence
 		if (!empty($primarySequenceName) && $primaryAutoincrementKey) {
-			$primaryKey[$primaryAutoincrementKey] = $this->explorer->getInsertId($this->explorer->getConnection()->getDriver()->delimite($primarySequenceName));
+			$primaryKey[$primaryAutoincrementKey] = $this->explorer->getInsertId(
+				$this->explorer->getConnection()->getDriver()->delimite($primarySequenceName),
+			);
 
 		// Autoincrement primary without sequence
 		} elseif ($primaryAutoincrementKey) {
@@ -880,7 +883,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 			?? throw new Nette\ShouldNotHappenException;
 
 		if ($this->rows !== null) {
-			if ($signature = $row->getSignature(false)) {
+			if ($signature = $row->getSignature(throw: false)) {
 				$this->rows[$signature] = $row;
 				$this->data[$signature] = $row;
 			} else {
@@ -909,7 +912,7 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 		}
 
 		return $this->explorer
-			->query($this->sqlBuilder->buildUpdateQuery(), ...array_merge([$data], $this->sqlBuilder->getParameters()))
+			->query($this->sqlBuilder->buildUpdateQuery(), ...[$data, ...$this->sqlBuilder->getParameters()])
 			->getRowCount()
 			?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
 	}
@@ -932,7 +935,6 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 	/**
 	 * Returns a referenced (parent) row for a belongs-to relationship.
 	 * Returns null if the referenced row does not exist, false if the relationship is not defined.
-	 * @return ActiveRow|false|null
 	 */
 	public function getReferencedTable(ActiveRow $row, ?string $table, ?string $column = null): ActiveRow|false|null
 	{

@@ -51,8 +51,8 @@ test('related data fetching with joins', function () use ($explorer) {
 			'tags' => [],
 		];
 
-		foreach ($book->related('book_tag') as $book_tag) {  // SELECT * FROM `book_tag` WHERE (`book_tag`.`book_id` IN (1, 2, 3, 4))
-			$bookTags[$book->title]['tags'][] = $book_tag->tag->name;  // SELECT * FROM `tag` WHERE (`tag`.`id` IN (21, 22, 23))
+		foreach ($book->related('book_tag') as $bookTag) {  // SELECT * FROM `book_tag` WHERE (`book_tag`.`book_id` IN (1, 2, 3, 4))
+			$bookTags[$book->title]['tags'][] = $bookTag->tag->name;  // SELECT * FROM `tag` WHERE (`tag`.`id` IN (21, 22, 23))
 		}
 	}
 

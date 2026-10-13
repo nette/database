@@ -16,7 +16,7 @@ Nette\Database\Helpers::loadFromFile($connection, __DIR__ . "/../files/{$driverN
 
 $res = [];
 
-for ($i = 1; $i <= 2; ++$i) {
+for ($i = 1; $i <= 2; $i++) {
 	foreach ($explorer->table('author') as $author) {
 		$res[] = (string) $author->name;
 		foreach ($author->related('book', 'author_id') as $book) {

@@ -29,7 +29,6 @@ class GroupedSelection extends Selection
 
 	/**
 	 * Creates filtered and grouped table representation.
-	 * @param Selection<ActiveRow> $refTable
 	 */
 	public function __construct(
 		Explorer $explorer,
@@ -37,7 +36,7 @@ class GroupedSelection extends Selection
 		string $tableName,
 		/** grouping column name */
 		protected readonly string $column,
-		/** referenced table */
+		/** @var Selection<ActiveRow> referenced table */
 		protected readonly Selection $refTable,
 		?Nette\Caching\Storage $cacheStorage = null,
 	) {
@@ -115,7 +114,9 @@ class GroupedSelection extends Selection
 			if ($groupFunction && $selection->getSqlBuilder()->importGroupConditions($this->getSqlBuilder())) {
 				$selection->select("$function AS aggregate, $this->name.$this->column AS groupname");
 				$selection->group($selection->getSqlBuilder()->getGroup() . ", $this->name.$this->column");
-				$query = "SELECT $groupFunction(aggregate) AS groupaggregate, groupname FROM (" . $selection->getSql() . ') AS aggregates GROUP BY groupname';
+				$query = "SELECT $groupFunction(aggregate) AS groupaggregate, groupname FROM ("
+					. $selection->getSql()
+					. ') AS aggregates GROUP BY groupname';
 				foreach ($this->explorer->query($query, ...$selection->getSqlBuilder()->getParameters()) as $row) {
 					$aggregation[$row->groupname] = $row;
 				}
@@ -136,12 +137,6 @@ class GroupedSelection extends Selection
 		}
 
 		return 0;
-	}
-
-
-	public function count(?string $column = null): int
-	{
-		return parent::count($column);
 	}
 
 

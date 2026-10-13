@@ -81,8 +81,8 @@ test('test same table chain with another alias', function () use ($explorer, $dr
 	$join = $sqlBuilder->buildQueryJoins($joins);
 
 	Assert::same(
-		'LEFT JOIN book translated_book ON author.id = translated_book.translator_id ' .
-		'LEFT JOIN book translated_book2 ON author.id = translated_book2.translator_id',
+		'LEFT JOIN book translated_book ON author.id = translated_book.translator_id '
+		. 'LEFT JOIN book translated_book2 ON author.id = translated_book2.translator_id',
 		trim($join),
 	);
 });
@@ -100,15 +100,15 @@ test('test nested alias', function () use ($explorer, $driver) {
 	$join = $sqlBuilder->buildQueryJoins($joins);
 	if ($driver->isSupported(Driver::SupportSchema)) {
 		Assert::same(
-			'LEFT JOIN book translated_book ON author.id = translated_book.translator_id ' .
-			'LEFT JOIN public.book next ON translated_book.next_volume = next.id',
+			'LEFT JOIN book translated_book ON author.id = translated_book.translator_id '
+			. 'LEFT JOIN public.book next ON translated_book.next_volume = next.id',
 			trim($join),
 		);
 
 	} else {
 		Assert::same(
-			'LEFT JOIN book translated_book ON author.id = translated_book.translator_id ' .
-			'LEFT JOIN book next ON translated_book.next_volume = next.id',
+			'LEFT JOIN book translated_book ON author.id = translated_book.translator_id '
+			. 'LEFT JOIN book next ON translated_book.next_volume = next.id',
 			trim($join),
 		);
 	}

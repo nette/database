@@ -56,7 +56,6 @@ test('Tables in schema', function () use ($connection) {
 	Assert::same(['two_master_pkey'], names($driver->getIndexes('master')));
 	Assert::same(['two_slave_fk'], names($driver->getForeignKeys('slave')));
 
-
 	// Reflection for FQN
 	Assert::same(['one_id'], names($driver->getColumns('one.master')));
 	Assert::same(['one_master_pkey'], names($driver->getIndexes('one.master')));
@@ -67,7 +66,6 @@ test('Tables in schema', function () use ($connection) {
 		'table' => 'one.master',
 		'foreign' => 'one_id',
 	], (array) $foreign[0]);
-
 
 	// Limit foreign keys for current schemas only
 	$connection->query('ALTER TABLE "one"."slave" ADD CONSTRAINT "one_two_fk" FOREIGN KEY ("one_id") REFERENCES "two"."master"("two_id")');

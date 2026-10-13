@@ -23,8 +23,8 @@ test('reflection-based related data fetching', function () use ($explorer) {
 			'tags' => [],
 		];
 
-		foreach ($book->related('book_tag') as $book_tag) {
-			$appTags[$book->title]['tags'][] = $book_tag->tag->name;
+		foreach ($book->related('book_tag') as $bookTag) {
+			$appTags[$book->title]['tags'][] = $bookTag->tag->name;
 		}
 	}
 
@@ -90,9 +90,9 @@ test('property existence and empty checks', function () use ($explorer) {
 
 test('case-insensitive table reflection', function () use ($connection, $explorer, $driverName) {
 	if (
-		$driverName === 'mysql' &&
-		($lowerCase = $connection->query('SHOW VARIABLES LIKE "lower_case_table_names"')->fetch()) &&
-		$lowerCase->Value != 0
+		$driverName === 'mysql'
+		&& ($lowerCase = $connection->query('SHOW VARIABLES LIKE "lower_case_table_names"')->fetch())
+		&& $lowerCase->Value !== '0'
 	) {
 		// tests case-insensitive reflection
 		$books = [];

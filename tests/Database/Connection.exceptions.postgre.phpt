@@ -29,7 +29,7 @@ test('Exception thrown for invalid database credentials', function () {
 
 test('Exception thrown when calling rollback with no active transaction', function () use ($connection) {
 	$e = Assert::exception(
-		fn() => $connection->rollback(),
+		fn() => $connection->rollBack(),
 		Nette\Database\DriverException::class,
 		'There is no active transaction',
 		0,

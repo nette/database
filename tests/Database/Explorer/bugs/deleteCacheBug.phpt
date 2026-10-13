@@ -62,7 +62,7 @@ test('', function () use ($explorer) {
 			$books[] = $book->id;
 
 			if ($i === 1) {
-				$explorer->query('DELETE FROM book WHERE id = 4'); //After refetch second row is skipped
+				$explorer->query('DELETE FROM book WHERE id = 4'); // After refetch second row is skipped
 				$book->title; // cause refetch
 			}
 

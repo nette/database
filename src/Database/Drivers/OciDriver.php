@@ -8,7 +8,7 @@
 namespace Nette\Database\Drivers;
 
 use Nette;
-use function in_array, str_replace;
+use function in_array;
 
 
 /**
@@ -36,13 +36,13 @@ class OciDriver implements Nette\Database\Driver
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		$code = $e->errorInfo[1] ?? null;
-		if (in_array($code, [1, 2299, 38911], strict: true)) {
+		if (in_array($code, [1, 2299, 38911], true)) {
 			return Nette\Database\UniqueConstraintViolationException::from($e);
 
-		} elseif (in_array($code, [1400], strict: true)) {
+		} elseif (in_array($code, [1400], true)) {
 			return Nette\Database\NotNullConstraintViolationException::from($e);
 
-		} elseif (in_array($code, [2266, 2291, 2292], strict: true)) {
+		} elseif (in_array($code, [2266, 2291, 2292], true)) {
 			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
 
 		} elseif ($code === 60) {

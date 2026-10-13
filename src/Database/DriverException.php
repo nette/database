@@ -7,7 +7,6 @@
 
 namespace Nette\Database;
 
-use function array_slice;
 
 
 /**

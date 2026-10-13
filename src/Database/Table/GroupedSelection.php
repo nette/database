@@ -10,7 +10,7 @@ namespace Nette\Database\Table;
 use Nette;
 use Nette\Database\Conventions;
 use Nette\Database\Explorer;
-use function array_keys, count, iterator_to_array, preg_match, reset;
+use function count;
 
 
 /**

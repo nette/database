@@ -8,7 +8,7 @@
 namespace Nette\Database\Drivers;
 
 use Nette;
-use function addcslashes, array_change_key_case, array_values, in_array, str_replace, strtoupper, substr;
+use function in_array;
 
 
 /**
@@ -60,10 +60,10 @@ class MySqlDriver implements Nette\Database\Driver
 	public function convertException(\PDOException $e): Nette\Database\DriverException
 	{
 		$code = $e->errorInfo[1] ?? null;
-		if (in_array($code, [1216, 1217, 1451, 1452, 1701], strict: true)) {
+		if (in_array($code, [1216, 1217, 1451, 1452, 1701], true)) {
 			return Nette\Database\ForeignKeyConstraintViolationException::from($e);
 
-		} elseif (in_array($code, [1062, 1557, 1569, 1586], strict: true)) {
+		} elseif (in_array($code, [1062, 1557, 1569, 1586], true)) {
 			return Nette\Database\UniqueConstraintViolationException::from($e);
 
 		} elseif ($code === 3819) {
@@ -81,7 +81,7 @@ class MySqlDriver implements Nette\Database\Driver
 		} elseif ($code >= 2001 && $code <= 2028) {
 			return Nette\Database\ConnectionException::from($e);
 
-		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], strict: true)) {
+		} elseif (in_array($code, [1048, 1121, 1138, 1171, 1252, 1263, 1566], true)) {
 			return Nette\Database\NotNullConstraintViolationException::from($e);
 
 		} else {

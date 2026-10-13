@@ -8,7 +8,6 @@
 namespace Nette\Database\Drivers;
 
 use Nette;
-use function array_values, str_replace, strtr;
 
 
 /**

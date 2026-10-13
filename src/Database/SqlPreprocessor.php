@@ -8,7 +8,7 @@
 namespace Nette\Database;
 
 use Nette;
-use function array_key_exists, array_keys, array_map, array_values, count, explode, get_debug_type, implode, in_array, is_array, is_bool, is_float, is_int, is_resource, is_scalar, is_string, iterator_to_array, ltrim, number_format, rtrim, str_contains, str_ends_with, stream_get_contents, strtoupper, substr;
+use function array_key_exists, count, in_array, is_array, is_bool, is_float, is_int, is_resource, is_scalar, is_string;
 
 
 /**
@@ -126,7 +126,7 @@ class SqlPreprocessor
 	private function parsePart(array $match): string
 	{
 		$match = $match[0];
-		if (in_array($match[0], ["'", '"', '/', '-'], strict: true)) { // string or comment
+		if (in_array($match[0], ["'", '"', '/', '-'], true)) { // string or comment
 			return $match;
 
 		} elseif (!str_contains($match, '?')) { // command

@@ -8,7 +8,6 @@
 namespace Nette\Database\Conventions;
 
 use Nette\Database\Conventions;
-use function preg_match, preg_quote, sprintf, str_replace;
 
 
 /**

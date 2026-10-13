@@ -8,7 +8,6 @@
 namespace Nette\Database;
 
 use Nette\Database\Reflection\Table;
-use function array_values;
 
 
 /**

@@ -8,7 +8,7 @@
 namespace Nette\Database;
 
 use Nette;
-use function array_flip, count, hash, is_array, reset, strlen, strtolower, uksort, usort;
+use function count, is_array, strlen;
 
 
 /**

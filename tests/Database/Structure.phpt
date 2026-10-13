@@ -5,8 +5,7 @@
  */
 
 use Nette\Database\Structure;
-use Tester\Assert;
-use Tester\TestCase;
+use Tester\{Assert, TestCase};
 
 require __DIR__ . '/../bootstrap.php';
 

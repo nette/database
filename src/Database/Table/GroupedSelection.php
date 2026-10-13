@@ -8,8 +8,7 @@
 namespace Nette\Database\Table;
 
 use Nette;
-use Nette\Database\Conventions;
-use Nette\Database\Explorer;
+use Nette\Database\{Conventions, Explorer};
 use function count;
 
 

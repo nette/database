@@ -5,8 +5,7 @@
  * @dataProvider? databases.ini  postgresql
  */
 
-use Tester\Assert;
-use Tester\Environment;
+use Tester\{Assert, Environment};
 
 require __DIR__ . '/../bootstrap.php';
 

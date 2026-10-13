@@ -5,8 +5,7 @@
  * @dataProvider? ../databases.ini
  */
 
-use Nette\Database\Driver;
-use Nette\Database\SqlLiteral;
+use Nette\Database\{Driver, SqlLiteral};
 use Nette\Database\Table\SqlBuilder;
 use Tester\Assert;
 

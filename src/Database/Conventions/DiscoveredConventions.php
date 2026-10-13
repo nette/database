@@ -7,8 +7,7 @@
 
 namespace Nette\Database\Conventions;
 
-use Nette\Database\Conventions;
-use Nette\Database\IStructure;
+use Nette\Database\{Conventions, IStructure};
 use function count;
 
 

@@ -5,11 +5,8 @@
  * Run: vendor/bin/phpstan analyse tests/types
  */
 
-use Nette\Database\Helpers;
-use Nette\Database\ResultSet;
-use Nette\Database\Row;
-use Nette\Database\Table\ActiveRow;
-use Nette\Database\Table\Selection;
+use Nette\Database\{Helpers, ResultSet, Row};
+use Nette\Database\Table\{ActiveRow, Selection};
 use function PHPStan\Testing\assertType;
 
 

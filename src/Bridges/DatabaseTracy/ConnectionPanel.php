@@ -8,8 +8,7 @@
 namespace Nette\Bridges\DatabaseTracy;
 
 use Nette;
-use Nette\Database\Connection;
-use Nette\Database\Helpers;
+use Nette\Database\{Connection, Helpers};
 use Tracy;
 use function is_string;
 

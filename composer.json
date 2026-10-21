@@ -1,17 +1,13 @@
 {
 	"name": "nette/database",
-	"description": "💾 Nette Database: layer with a familiar PDO-like API but much more powerful. Building queries, advanced joins, drivers for MySQL, PostgreSQL, SQLite, MS SQL Server and Oracle.",
-	"keywords": ["nette", "database", "notorm", "queries", "pdo", "mysql", "postgresql", "sqlite", "mssql", "oracle"],
-	"homepage": "https://nette.org",
+	"description": "💾 Nette Database: a database layer with SQL and smart placeholders, plus Explorer, which follows table relations without joins or N+1 queries and fetches only the columns you use.",
+	"keywords": ["nette", "database", "dbal", "sql", "query builder", "active record", "pdo", "mysql", "postgresql", "sqlite", "mssql", "oracle"],
+	"homepage": "https://doc.nette.org/database",
 	"license": ["BSD-3-Clause", "GPL-2.0-only", "GPL-3.0-only"],
 	"authors": [
 		{
 			"name": "David Grudl",
 			"homepage": "https://davidgrudl.com"
-		},
-		{
-			"name": "Nette Community",
-			"homepage": "https://nette.org/contributors"
 		}
 	],
 	"require": {

@@ -127,7 +127,7 @@ class Connection
 	}
 
 
-	/** @deprecated use getDriver() */
+	#[\Deprecated('use getDriver()')]
 	public function getSupplementalDriver(): Driver
 	{
 		$this->connect();
@@ -279,10 +279,10 @@ class Connection
 
 
 	/**
-	 * @deprecated  use query()
 	 * @param  literal-string  $sql
 	 * @param  array<mixed>  $params
 	 */
+	#[\Deprecated('use query()')]
 	public function queryArgs(string $sql, array $params): ResultSet
 	{
 		return $this->query($sql, ...$params);

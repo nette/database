@@ -5,7 +5,7 @@
  * @dataProvider? ../databases.ini
  */
 
-use Nette\Database\ResultSet;
+use Nette\Database\Result;
 use Tester\Assert;
 
 require __DIR__ . '/../../bootstrap.php';
@@ -24,7 +24,7 @@ $cacheStorage->shouldReceive('write')->with(Mockery::any(), ['id' => true, 'auth
 $explorer = new Nette\Database\Explorer($connection, $explorer->getStructure(), $explorer->getConventions(), $cacheStorage);
 
 $queries = 0;
-$connection->onQuery[] = function ($dao, ResultSet $result) use (&$queries) {
+$connection->onQuery[] = function ($dao, Result $result) use (&$queries) {
 	if (!preg_match('#SHOW|CONSTRAINT_NAME|information_schema|pg_catalog|sys\.|SET|PRAGMA|FROM sqlite_#i', $result->getQueryString())) {
 		$queries++;
 	}

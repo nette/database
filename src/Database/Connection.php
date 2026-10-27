@@ -23,13 +23,13 @@ class Connection
 	/** @var array<callable(static): void>  Occurs after connection is established */
 	public array $onConnect = [];
 
-	/** @var array<callable(static, ResultSet|DriverException): void>  Occurs after query is executed */
+	/** @var array<callable(static, Result|DriverException): void>  Occurs after query is executed */
 	public array $onQuery = [];
 	private Driver $driver;
 	private SqlPreprocessor $preprocessor;
 	private ?PDO $pdo = null;
 
-	/** @var ?\Closure(array<string, mixed>, ResultSet): array<string, mixed> */
+	/** @var ?\Closure(array<string, mixed>, Result): array<string, mixed> */
 	private ?\Closure $rowNormalizer;
 	private ?string $sql = null;
 	private int $transactionDepth = 0;
@@ -260,11 +260,11 @@ class Connection
 	 * Generates and executes SQL query.
 	 * @param  literal-string  $sql
 	 */
-	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): ResultSet
+	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): Result
 	{
 		[$this->sql, $params] = $this->preprocess($sql, ...$params);
 		try {
-			$result = new ResultSet($this, $this->sql, $params, $this->rowNormalizer);
+			$result = new Result($this, $this->sql, $params, $this->rowNormalizer);
 		} catch (PDOException $e) {
 			Arrays::invoke($this->onQuery, $this, $e);
 			throw $e;
@@ -280,7 +280,7 @@ class Connection
 	 * @param  array<mixed>  $params
 	 */
 	#[\Deprecated('use query()')]
-	public function queryArgs(string $sql, array $params): ResultSet
+	public function queryArgs(string $sql, array $params): Result
 	{
 		return $this->query($sql, ...$params);
 	}

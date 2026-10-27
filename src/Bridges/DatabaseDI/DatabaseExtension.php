@@ -117,11 +117,6 @@ class DatabaseExtension extends Nette\DI\CompilerExtension
 		$builder->addAlias($this->prefix("$name.connection"), $this->prefix($name));
 		$builder->addAlias($this->prefix("$name.context"), $this->prefix($name));
 		$builder->addAlias($this->prefix("$name.explorer"), $this->prefix($name));
-
-		if ($this->name === 'database') {
-			$builder->addAlias("nette.database.$name", $this->prefix($name));
-			$builder->addAlias("nette.database.$name.context", $this->prefix("$name.explorer"));
-		}
 	}
 
 

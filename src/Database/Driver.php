@@ -21,7 +21,7 @@ interface Driver
 		SupportDefaultValues = 'default_values',
 		SupportSchema = 'schema';
 
-	/** @deprecated use Driver::Support* */
+	#[\Deprecated('use Driver::Support*')]
 	public const
 		SUPPORT_SEQUENCE = 'sequence',
 		SUPPORT_SELECT_UNGROUPED_COLUMNS = 'ungrouped_cols',

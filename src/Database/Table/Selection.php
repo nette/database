@@ -210,8 +210,8 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Fetches single field.
-	 * @deprecated
 	 */
+	#[\Deprecated]
 	public function fetchField(?string $column = null): mixed
 	{
 		if ($column) {
@@ -252,9 +252,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 	/**
 	 * Returns all rows as associative tree.
-	 * @deprecated
 	 * @return array<mixed>
 	 */
+	#[\Deprecated]
 	public function fetchAssoc(string $path): array
 	{
 		$rows = array_map(iterator_to_array(...), $this->fetchAll());
@@ -577,10 +577,10 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * @deprecated
 	 * @param  array<mixed>  $row
 	 * @return T
 	 */
+	#[\Deprecated]
 	protected function createRow(array $row): ActiveRow
 	{
 		/** @var T */
@@ -589,9 +589,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * @deprecated
 	 * @return ($table is null ? Selection<T> : Selection<ActiveRow>)
 	 */
+	#[\Deprecated]
 	public function createSelectionInstance(?string $table = null): self
 	{
 		return $this->explorer->table($table ?: $this->name);
@@ -599,9 +599,9 @@ class Selection implements \Iterator, IRowContainer, \ArrayAccess, \Countable
 
 
 	/**
-	 * @deprecated
 	 * @return GroupedSelection<ActiveRow>
 	 */
+	#[\Deprecated]
 	protected function createGroupedSelectionInstance(string $table, string $column): GroupedSelection
 	{
 		return $this->explorer->createGroupedSelection($this, $table, $column);

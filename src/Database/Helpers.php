@@ -321,7 +321,7 @@ class Helpers
 	}
 
 
-	/** @deprecated  use Nette\Bridges\DatabaseTracy\ConnectionPanel::initialize() */
+	#[\Deprecated('use Nette\\Bridges\\DatabaseTracy\\ConnectionPanel::initialize()')]
 	public static function createDebugPanel(
 		Connection $connection,
 		bool $explain,
@@ -330,12 +330,11 @@ class Helpers
 		Tracy\BlueScreen $blueScreen,
 	): ?ConnectionPanel
 	{
-		trigger_error(__METHOD__ . '() is deprecated, use Nette\Bridges\DatabaseTracy\ConnectionPanel::initialize()', E_USER_DEPRECATED);
 		return ConnectionPanel::initialize($connection, true, $name, $explain, $bar, $blueScreen);
 	}
 
 
-	/** @deprecated  use Nette\Bridges\DatabaseTracy\ConnectionPanel::initialize() */
+	#[\Deprecated('use Nette\\Bridges\\DatabaseTracy\\ConnectionPanel::initialize()')]
 	public static function initializeTracy(
 		Connection $connection,
 		bool $addBarPanel = false,
@@ -345,7 +344,6 @@ class Helpers
 		?Tracy\BlueScreen $blueScreen = null,
 	): ?ConnectionPanel
 	{
-		trigger_error(__METHOD__ . '() is deprecated, use Nette\Bridges\DatabaseTracy\ConnectionPanel::initialize()', E_USER_DEPRECATED);
 		return ConnectionPanel::initialize($connection, $addBarPanel, $name, $explain, $bar, $blueScreen);
 	}
 

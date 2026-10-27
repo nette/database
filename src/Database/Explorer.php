@@ -75,10 +75,10 @@ class Explorer
 
 
 	/**
-	 * @deprecated  use query()
 	 * @param  literal-string  $sql
 	 * @param  array<mixed>  $params
 	 */
+	#[\Deprecated('use query()')]
 	public function queryArgs(string $sql, array $params): ResultSet
 	{
 		return $this->connection->query($sql, ...$params);

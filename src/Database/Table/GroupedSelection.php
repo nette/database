@@ -105,7 +105,7 @@ class GroupedSelection extends Selection
 		if (!isset($aggregations[$key])) {
 			$aggregation = [];
 
-			$selection = $this->createSelectionInstance();
+			$selection = $this->explorer->table($this->name);
 			$selection->getSqlBuilder()->importConditions($this->getSqlBuilder());
 
 			if ($groupFunction && $selection->getSqlBuilder()->importGroupConditions($this->getSqlBuilder())) {

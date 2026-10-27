@@ -160,7 +160,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 					$cmd = is_string($this->explain)
 						? $this->explain
 						: 'EXPLAIN';
-					$explain = (new Nette\Database\ResultSet($connection, "$cmd $sql", $params ?? []))->fetchAll();
+					$explain = new Nette\Database\ResultSet($connection, "$cmd $sql", $params ?? [])->fetchAll();
 				} catch (\PDOException) {
 				}
 			}

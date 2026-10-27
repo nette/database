@@ -253,7 +253,7 @@ class Helpers
 					: new $dateTimeClass($value);
 
 			} elseif ($type === IStructure::FIELD_TIME) {
-				$row[$key] = (new $dateTimeClass($value))->setDate(1, 1, 1);
+				$row[$key] = new $dateTimeClass($value)->setDate(1, 1, 1);
 
 			} elseif ($type === IStructure::FIELD_TIME_INTERVAL) {
 				preg_match('#^(-?)(\d+)\D(\d+)\D(\d+)(\.\d+)?$#D', $value, $m);

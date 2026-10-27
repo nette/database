@@ -30,7 +30,7 @@ is extended at release time from the git history.
 
 Supports MySQL, PostgreSQL, SQLite, MS SQL Server, and Oracle.
 
-- **PHP Version**: 8.3 - 8.6
+- **PHP Version**: 8.4 - 8.6
 - **Package**: `nette/database`
 
 ## Essential Commands

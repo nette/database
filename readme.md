@@ -1,7 +1,7 @@
 [![Nette Database](https://github.com/nette/database/assets/194960/97d8f31b-096c-466c-a76f-f5b9e511ea8d)](https://doc.nette.org/database)
 
 [![Downloads this Month](https://img.shields.io/packagist/dm/nette/database.svg)](https://packagist.org/packages/nette/database)
-[![Tests](https://github.com/nette/database/actions/workflows/tests.yml/badge.svg?branch=v3.3)](https://github.com/nette/database/actions)
+[![Tests](https://github.com/nette/database/actions/workflows/tests.yml/badge.svg?branch=v3.4)](https://github.com/nette/database/actions)
 [![Latest Stable Version](https://poser.pugx.org/nette/database/v/stable)](https://github.com/nette/database/releases)
 [![License](https://img.shields.io/badge/license-New%20BSD-blue.svg)](https://github.com/nette/database/blob/master/license.md)
 

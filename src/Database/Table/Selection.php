@@ -460,7 +460,7 @@ class Selection implements \IteratorAggregate, \ArrayAccess, \Countable
 	 */
 	public function aggregation(string $function, ?string $groupFunction = null): mixed
 	{
-		$selection = $this->createSelectionInstance();
+		$selection = $this->explorer->table($this->name);
 		$selection->getSqlBuilder()->importConditions($this->getSqlBuilder());
 		if ($groupFunction && $selection->getSqlBuilder()->importGroupConditions($this->getSqlBuilder())) {
 			$selection->select("$function AS aggregate");
@@ -547,7 +547,7 @@ class Selection implements \IteratorAggregate, \ArrayAccess, \Countable
 		$this->rows = [];
 		$usedPrimary = true;
 		while ($row = @$result->fetchAssoc()) { // @ may contain duplicate columns
-			$row = $this->createRow($row);
+			$row = $this->explorer->createActiveRow($this, $row);
 			$usedPrimary = $usedPrimary && ($primary = $row->getSignature(throw: false)) !== '';
 			$this->rows[$usedPrimary ? $primary : $key++] = $row;
 		}
@@ -562,35 +562,11 @@ class Selection implements \IteratorAggregate, \ArrayAccess, \Countable
 	}
 
 
-	/**
-	 * @param  array<mixed>  $row
-	 * @return T
-	 */
-	#[\Deprecated]
-	protected function createRow(array $row): ActiveRow
-	{
-		/** @var T */
-		return $this->explorer->createActiveRow($row, $this);
-	}
-
-
-	/**
-	 * @return ($table is null ? Selection<T> : Selection<ActiveRow>)
-	 */
 	#[\Deprecated]
 	public function createSelectionInstance(?string $table = null): self
 	{
-		return $this->explorer->table($table ?: $this->name);
-	}
-
-
-	/**
-	 * @return GroupedSelection<ActiveRow>
-	 */
-	#[\Deprecated]
-	protected function createGroupedSelectionInstance(string $table, string $column): GroupedSelection
-	{
-		return $this->explorer->createGroupedSelection($this, $table, $column);
+		// DELETE
+		return $this->explorer->table($table ?? $this->name);
 	}
 
 
@@ -881,8 +857,7 @@ class Selection implements \IteratorAggregate, \ArrayAccess, \Countable
 				?? throw new Nette\InvalidStateException('Cannot determine the number of affected rows.');
 		}
 
-		/** @phpstan-var T $row */
-		$row = $this->createSelectionInstance()
+		$row = $this->explorer->table($this->name)
 			->select('*')
 			->wherePrimary($primaryKey)
 			->fetch()
@@ -976,7 +951,7 @@ class Selection implements \IteratorAggregate, \ArrayAccess, \Countable
 			}
 
 			if ($cacheKeys) {
-				$selection = $this->createSelectionInstance($table);
+				$selection = $this->explorer->table($table);
 				$selection->where($selection->getPrimary(), array_keys($cacheKeys));
 			} else {
 				$selection = [];
@@ -1011,7 +986,7 @@ class Selection implements \IteratorAggregate, \ArrayAccess, \Countable
 		/** @var ?GroupedSelection<ActiveRow> $prototype */
 		$prototype = &$this->refCache['referencingPrototype'][$this->getSpecificCacheKey()]["$table.$column"];
 		if (!$prototype) {
-			$prototype = $this->createGroupedSelectionInstance($table, $column);
+			$prototype = $this->explorer->createGroupedSelectionInstance($this, $table, $column);
 			$prototype->where("$table.$column", array_keys((array) $this->rows));
 			$prototype->getSpecificCacheKey();
 		}

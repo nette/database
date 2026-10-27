@@ -1,7 +1,7 @@
 <?php declare(strict_types=1);
 
 /**
- * Test: Nette\Database\ResultSet: Fetch pairs.
+ * Test: Nette\Database\Result::fetchPairs()
  * @dataProvider? databases.ini
  */
 

@@ -68,7 +68,7 @@ class Explorer
 	 * Generates and executes SQL query.
 	 * @param  literal-string  $sql
 	 */
-	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): ResultSet
+	public function query(#[Language('SQL')] string $sql, #[Language('GenericSQL')] mixed ...$params): Result
 	{
 		return $this->connection->query($sql, ...$params);
 	}
@@ -79,7 +79,7 @@ class Explorer
 	 * @param  array<mixed>  $params
 	 */
 	#[\Deprecated('use query()')]
-	public function queryArgs(string $sql, array $params): ResultSet
+	public function queryArgs(string $sql, array $params): Result
 	{
 		return $this->connection->query($sql, ...$params);
 	}

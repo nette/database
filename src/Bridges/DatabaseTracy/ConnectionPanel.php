@@ -8,7 +8,7 @@
 namespace Nette\Bridges\DatabaseTracy;
 
 use Nette;
-use Nette\Database\{Connection, Helpers};
+use Nette\Database\{Connection, Helpers, Result};
 use Tracy;
 use function is_string;
 
@@ -70,14 +70,14 @@ class ConnectionPanel implements Tracy\IBarPanel
 	}
 
 
-	private function logQuery(Connection $connection, Nette\Database\ResultSet|\PDOException $result): void
+	private function logQuery(Connection $connection, Result|\PDOException $result): void
 	{
 		if ($this->disabled) {
 			return;
 		}
 
 		$this->count++;
-		if ($result instanceof Nette\Database\ResultSet) {
+		if ($result instanceof Result) {
 			$this->totalTime += $result->getTime();
 		}
 
@@ -101,7 +101,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 			array_shift($trace);
 		}
 
-		$this->events[] = $result instanceof Nette\Database\ResultSet
+		$this->events[] = $result instanceof Result
 			? [$connection, $result->getQueryString(), $result->getParameters(), $trace, $result->getTime(), $result->getRowCount(), null]
 			: [$connection, $result->queryString, null, $trace, null, null, $result->getMessage()];
 	}
@@ -160,7 +160,7 @@ class ConnectionPanel implements Tracy\IBarPanel
 					$cmd = is_string($this->explain)
 						? $this->explain
 						: 'EXPLAIN';
-					$explain = new Nette\Database\ResultSet($connection, "$cmd $sql", $params ?? [])->fetchAll();
+					$explain = new Result($connection, "$cmd $sql", $params ?? [])->fetchAll();
 				} catch (\PDOException) {
 				}
 			}

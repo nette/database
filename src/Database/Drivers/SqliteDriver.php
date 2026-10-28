@@ -154,8 +154,15 @@ class SqliteDriver implements Nette\Database\Driver
 			X, $table, $table)->fetch();
 
 		$columns = [];
-		$rows = $this->connection->query('PRAGMA table_info(?name)', $table);
+		$pragma = version_compare($this->connection->getPdo()->getAttribute(\PDO::ATTR_SERVER_VERSION), '3.26', '>=')
+			? 'table_xinfo' // lists generated columns too
+			: 'table_info';
+		$rows = $this->connection->query("PRAGMA $pragma(?name)", $table);
 		while ($row = $rows->fetch()) {
+			if (($row['hidden'] ?? 0) === 1) { // hidden column of a virtual table
+				continue;
+			}
+
 			$column = $row['name'];
 			$q = preg_quote($column, '/');
 			$pattern = "/(\"$q\"|`$q`|\\[$q]|\\b$q)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";

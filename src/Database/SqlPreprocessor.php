@@ -98,6 +98,7 @@ class SqlPreprocessor
 						~
 							'[^']*+'
 							|"[^"]*+"
+							|`[^`]*+`
 							|\?[a-z]*
 							|^\s*+(?:\(?\s*SELECT|INSERT|UPDATE|DELETE|REPLACE|EXPLAIN)\b
 							|\b(?:SET|WHERE|HAVING|ORDER\ BY|GROUP\ BY|KEY\ UPDATE)(?=\s*$|\s*\?)
@@ -125,7 +126,7 @@ class SqlPreprocessor
 	private function parsePart(array $match): string
 	{
 		$match = $match[0];
-		if (in_array($match[0], ["'", '"', '/', '-'], true)) { // string or comment
+		if (in_array($match[0], ["'", '"', '`', '/', '-'], true)) { // string, identifier or comment
 			return $match;
 
 		} elseif (!str_contains($match, '?')) { // command

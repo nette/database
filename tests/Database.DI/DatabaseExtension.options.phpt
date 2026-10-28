@@ -67,6 +67,32 @@ test('an unknown PDO:: constant in options names the offending config key', func
 });
 
 
+test('driver-specific constants like Pdo\Sqlite::ATTR_* are translated as well', function () {
+	$container = buildContainer('
+	database:
+		dsn: "sqlite::memory:"
+		options:
+			Pdo\Sqlite::ATTR_EXTENDED_RESULT_CODES: true
+
+	services:
+		cache: Nette\Caching\Storages\DevNullStorage
+	', 'ContainerOptDriver');
+
+	Assert::noError(fn() => $container->getService('database.default')->connect());
+
+	Assert::exception(
+		fn() => buildContainer('
+	database:
+		dsn: "sqlite::memory:"
+		options:
+			Pdo\Sqlite::ATTR_FOO: true
+	', 'ContainerOptDriverBad'),
+		Nette\DI\InvalidConfigurationException::class,
+		"Unknown constant 'Pdo\\Sqlite::ATTR_FOO' in the 'database.default.options' option.",
+	);
+});
+
+
 test('removed option reflection is rejected', function () {
 	Assert::exception(
 		fn() => buildContainer('

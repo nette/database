@@ -148,8 +148,15 @@ class SQLiteEngine implements Engine
 			X, [$table, $table])->fetch();
 
 		$columns = [];
-		$rows = $this->connection->query("PRAGMA table_info({$this->delimit($table)})");
+		$pragma = version_compare($this->connection->getServerVersion(), '3.26', '>=')
+			? 'table_xinfo' // lists generated columns too
+			: 'table_info';
+		$rows = $this->connection->query("PRAGMA $pragma({$this->delimit($table)})");
 		while ($row = $rows->fetch()) {
+			if (($row['hidden'] ?? 0) === 1) { // hidden column of a virtual table
+				continue;
+			}
+
 			$column = $row['name'];
 			$q = preg_quote($column, '/');
 			$pattern = "/(\"$q\"|`$q`|\\[$q]|\\b$q)\\s+[^,]+\\s+PRIMARY\\s+KEY\\s+AUTOINCREMENT/Ui";

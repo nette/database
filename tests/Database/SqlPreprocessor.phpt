@@ -134,6 +134,17 @@ test('Preserves string literals containing question marks', function () use ($pr
 });
 
 
+test('Preserves backtick identifiers containing question marks or comment marks', function () use ($preprocessor) {
+	[$sql, $params] = $preprocessor->process(['SELECT `a?`.id FROM author AS `a?` WHERE id = ?', 11]);
+	Assert::same('SELECT `a?`.id FROM author AS `a?` WHERE id = ?', $sql);
+	Assert::same([11], $params);
+
+	[$sql, $params] = $preprocessor->process(['SELECT `a--b`.id FROM author AS `a--b` WHERE id > ? AND id < ?', 11, 12]);
+	Assert::same('SELECT `a--b`.id FROM author AS `a--b` WHERE id > ? AND id < ?', $sql);
+	Assert::same([11, 12], $params);
+});
+
+
 test('Auto-detects operator in WHERE conditions', function () use ($preprocessor) {
 	[$sql, $params] = $preprocessor->process(['SELECT id FROM tbl WHERE', [
 		'col_null' => null,

@@ -222,7 +222,7 @@ class Structure implements IStructure
 			}
 		}
 
-		if (count($primary) === 0) {
+		if ($primary === []) {
 			return null;
 		} elseif (count($primary) === 1) {
 			return reset($primary);

@@ -362,7 +362,7 @@ class Helpers
 				return [];
 			}
 			$keys = array_keys((array) reset($rows));
-			if (!count($keys)) {
+			if ($keys === []) {
 				throw new \LogicException('Result set does not contain any column.');
 			}
 			if (count($keys) === 1) {
